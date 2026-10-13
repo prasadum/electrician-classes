@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Site Admin</title>
+<style>
+  :root { --bg:#f6f7fb; --card:#fff; --ink:#1b2333; --muted:#5d6678; --accent:#0b6bcb; --line:#e3e7ef; --ok:#16794a; --err:#b42318; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0f141c; --card:#171e29; --ink:#e7ecf4; --muted:#9aa5b7; --accent:#5aa9ff; --line:#263142; --ok:#4ccb8a; --err:#ff7b6e; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--ink); line-height:1.5; }
+  main { max-width:860px; margin:auto; padding:24px 16px 48px; }
+  h1 { margin:0 0 4px; } .sub { color:var(--muted); margin:0 0 20px; }
+  .box { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
+  .box h2 { margin:0 0 12px; font-size:1.05rem; }
+  label { display:block; font-size:.85rem; color:var(--muted); margin:10px 0 4px; }
+  input, textarea, select { width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink); font:inherit; }
+  textarea { min-height:160px; font-family:ui-monospace,Consolas,monospace; font-size:.85rem; }
+  .row { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); }
+  button { margin-top:14px; padding:10px 16px; border:0; border-radius:8px; background:var(--accent); color:#fff; font:inherit; font-weight:600; cursor:pointer; }
+  button.ghost { background:transparent; color:var(--accent); border:1px solid var(--line); }
+  button.danger { background:transparent; color:var(--err); border:1px solid var(--line); margin:0; padding:4px 10px; font-size:.8rem; }
+  #msg { margin-top:12px; font-size:.9rem; white-space:pre-wrap; }
+  .ok { color:var(--ok); } .err { color:var(--err); }
+  table { width:100%; border-collapse:collapse; font-size:.9rem; }
+  td, th { text-align:left; padding:6px 4px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:500; }
+  .hint { font-size:.8rem; color:var(--muted); }
+  .hidden { display:none; }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Site Admin</h1>
+  <p class="sub">Add or replace a lesson page. The home page (index.html) rebuilds itself automatically about a minute after each change. <a href="index.html">← Back to site</a></p>
+
+  <div class="box">
+    <h2>1 · Connect to GitHub</h2>
+    <div class="row">
+      <div><label>Owner (GitHub username)</label><input id="owner" placeholder="your-username"></div>
+      <div><label>Repository</label><input id="repo" placeholder="repo-name"></div>
+      <div><label>Branch</label><input id="branch" value="main"></div>
+    </div>
+    <label>Access token (fine-grained, this repo only, Contents: Read and write)</label>
+    <input id="token" type="password" placeholder="github_pat_…" autocomplete="off">
+    <label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input id="remember" type="checkbox" style="width:auto"> Remember on this computer only</label>
+    <p class="hint">The token stays in this browser and is sent only to api.github.com. Never use "Remember" on a shared computer.</p>
+    <button id="connect">Connect &amp; load pages</button>
+  </div>
+
+  <div class="box hidden" id="addBox">
+    <h2>2 · Add or replace a page</h2>
+    <label>HTML file</label>
+    <input id="file" type="file" accept=".html,.htm,text/html">
+    <label>…or paste HTML</label>
+    <textarea id="html" placeholder="<!doctype html>…"></textarea>
+    <div class="row">
+      <div><label>Title</label><input id="title" placeholder="Read from &lt;title&gt; if blank"></div>
+      <div><label>Section / Module</label><input id="section" list="sectionList" placeholder="e.g. Module 1 – Basics"><datalist id="sectionList"></datalist></div>
+    </div>
+    <div class="row">
+      <div><label>Section order</label><input id="sorder" type="number" min="1" placeholder="1"></div>
+      <div><label>Order inside section</label><input id="order" type="number" min="1" placeholder="1"></div>
+      <div><label>File name</label><input id="fname" placeholder="auto from title"></div>
+    </div>
+    <label>Short description (optional)</label>
+    <input id="desc" placeholder="One line shown on the home page card">
+    <button id="publish">Publish page</button>
+    <div id="msg"></div>
+  </div>
+
+  <div class="box hidden" id="listBox">
+    <h2>Current pages (in site order)</h2>
+    <div id="list"></div>
+    <button class="ghost" id="rebuild">Refresh list</button>
+  </div>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+// Pre-fill owner/repo from the GitHub Pages URL (owner.github.io/repo)
+(() => {
+  const h = location.hostname, p = location.pathname.split("/").filter(Boolean);
+  if (h.endsWith(".github.io")) { $("owner").value = h.split(".")[0]; if (p[0] && !p[0].endsWith(".html")) $("repo").value = p[0]; }
+  ["owner","repo","branch"].forEach(k => { const v = store.get("adm_"+k); if (v) $(k).value = v; });
+  const t = store.get("adm_token"); if (t) { $("token").value = t; $("remember").checked = true; }
+})();
+
+const cfg = () => ({ owner: $("owner").value.trim(), repo: $("repo").value.trim(), branch: $("branch").value.trim() || "main", token: $("token").value.trim() });
+const say = (t, cls = "") => { const m = $("msg"); m.textContent = t; m.className = cls; };
+
+async function gh(path, opts = {}) {
+  const c = cfg();
+  const r = await fetch(`https://api.github.com/repos/${c.owner}/${c.repo}/${path}`, {
+    ...opts,
+    headers: { Authorization: `Bearer ${c.token}`, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", ...(opts.headers || {}) },
+  });
+  if (r.status === 404 && opts.allow404) return null;
+  if (!r.ok) throw new Error(`${r.status} ${(await r.json().catch(() => ({}))).message || r.statusText}`);
+  return r.json();
+}
+const b64encode = (s) => { const b = new TextEncoder().encode(s); let x = ""; for (let i = 0; i < b.length; i += 0x8000) x += String.fromCharCode(...b.subarray(i, i + 0x8000)); return btoa(x); };
+const b64decode = (s) => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g, "")), c => c.charCodeAt(0)));
+const escAttr = (s) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+const slug = (s) => s.toLowerCase().normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/[\s_]+/g, "-").replace(/-+/g, "-").slice(0, 60) || "page";
+
+$("connect").onclick = async () => {
+  const c = cfg();
+  if (!c.owner || !c.repo || !c.token) return alert("Fill owner, repository and token.");
+  ["owner","repo","branch"].forEach(k => store.set("adm_"+k, c[k]));
+  if ($("remember").checked) store.set("adm_token", c.token); else store.del("adm_token");
+  try { await gh(""); $("addBox").classList.remove("hidden"); $("listBox").classList.remove("hidden"); await loadList(); }
+  catch (e) { alert("Could not connect: " + e.message); }
+};
+
+async function loadList() {
+  const c = cfg();
+  const f = await gh(`contents/pages.json?ref=${c.branch}`, { allow404: true });
+  const data = f ? JSON.parse(b64decode(f.content)) : { sections: [] };
+  $("sectionList").innerHTML = data.sections.map(s => `<option value="${escAttr(s.name)}">`).join("");
+  if (!data.sections.length) { $("list").innerHTML = '<p class="hint">No pages yet.</p>'; return; }
+  let n = 0;
+  $("list").innerHTML = "<table><tr><th>#</th><th>Title</th><th>Section</th><th>File</th><th></th></tr>" +
+    data.sections.flatMap(s => s.pages.map(p => `<tr><td>${++n}</td><td>${escAttr(p.title)}</td><td>${escAttr(s.name)}</td><td><a href="${escAttr(p.file)}" target="_blank">${escAttr(p.file.replace("pages/",""))}</a></td><td><button class="danger" data-f="${escAttr(p.file)}">Delete</button></td></tr>`)).join("") + "</table>" +
+    `<p class="hint">List reflects the last automatic rebuild (${new Date(data.updated).toLocaleString()}).</p>`;
+  $("list").querySelectorAll("button[data-f]").forEach(b => b.onclick = () => del(b.dataset.f));
+}
+$("rebuild").onclick = () => loadList().catch(e => alert(e.message));
+
+async function del(path) {
+  if (!confirm(`Delete ${path}? This removes it from the site.`)) return;
+  try {
+    const c = cfg();
+    const f = await gh(`contents/${path}?ref=${c.branch}`);
+    await gh(`contents/${path}`, { method: "DELETE", body: JSON.stringify({ message: `Remove ${path}`, sha: f.sha, branch: c.branch }) });
+    alert("Deleted. The home page will update in about a minute.");
+    loadList();
+  } catch (e) { alert("Delete failed: " + e.message); }
+}
+
+$("file").onchange = async (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  $("html").value = await f.text();
+  if (!$("fname").value) $("fname").value = f.name.replace(/\.htm$/i, ".html");
+};
+
+function setMeta(html, name, value) {
+  if (!value) return html;
+  const tag = `<meta name="${name}" content="${escAttr(String(value))}">`;
+  const re = new RegExp(`<meta[^>]+name=["']${name}["'][^>]*>`, "i");
+  if (re.test(html)) return html.replace(re, tag);
+  if (/<head[^>]*>/i.test(html)) return html.replace(/<head[^>]*>/i, m => `${m}\n${tag}`);
+  return `${tag}\n${html}`;
+}
+
+$("publish").onclick = async () => {
+  let html = $("html").value;
+  if (!html.trim()) return say("Choose a file or paste HTML first.", "err");
+  const title = $("title").value.trim() || (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] || "").trim();
+  if (!title) return say("Give the page a title.", "err");
+  if (!/<title/i.test(html)) html = /<head[^>]*>/i.test(html) ? html.replace(/<head[^>]*>/i, m => `${m}\n<title>${escAttr(title)}</title>`) : `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escAttr(title)}</title></head><body>\n${html}\n</body></html>`;
+  else if ($("title").value.trim()) html = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>${escAttr(title)}</title>`);
+  html = setMeta(html, "section", $("section").value.trim());
+  html = setMeta(html, "section-order", $("sorder").value);
+  html = setMeta(html, "order", $("order").value);
+  html = setMeta(html, "description", $("desc").value.trim());
+  if (!/site home link/.test(html)) {
+    const btn = `\n<!-- site home link -->\n<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>\n`;
+    html = /<\/body>/i.test(html) ? html.replace(/<\/body>(?![\s\S]*<\/body>)/i, `${btn}</body>`) : html + btn;
+  }
+
+  let name = $("fname").value.trim() || slug(title) + ".html";
+  name = name.replace(/[\/\\]/g, "-"); if (!/\.html$/i.test(name)) name += ".html";
+  const c = cfg(), path = `pages/${name}`;
+  say("Publishing…");
+  try {
+    const existing = await gh(`contents/${path}?ref=${c.branch}`, { allow404: true });
+    if (existing && !confirm(`${name} already exists. Replace it?`)) return say("Cancelled.");
+    await gh(`contents/${path}`, { method: "PUT", body: JSON.stringify({ message: `${existing ? "Update" : "Add"} ${name}`, content: b64encode(html), branch: c.branch, ...(existing ? { sha: existing.sha } : {}) }) });
+    say(`✓ ${existing ? "Updated" : "Added"} ${path}.\nThe home page will rebuild automatically in about a minute.`, "ok");
+    ["html","title","fname","desc","order"].forEach(k => $(k).value = ""); $("file").value = "";
+  } catch (e) { say("Publish failed: " + e.message, "err"); }
+};
+</script>
+</body>
+</html>

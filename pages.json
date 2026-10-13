@@ -1,0 +1,233 @@
+{
+  "updated": "2026-10-13T08:13:42.412Z",
+  "sections": [
+    {
+      "name": "Electrical Machines & Control",
+      "pages": [
+        {
+          "file": "pages/101-dol-starter.html",
+          "title": "DOL Starter Simulator",
+          "description": "Wire and operate a direct-on-line starter",
+          "section": "Electrical Machines & Control",
+          "sectionOrder": 1,
+          "order": 1
+        },
+        {
+          "file": "pages/102-logic-builder.html",
+          "title": "Control Logic Builder",
+          "description": "Industrial control circuit simulator with multimeter",
+          "section": "Electrical Machines & Control",
+          "sectionOrder": 1,
+          "order": 2
+        },
+        {
+          "file": "pages/103-alternator-synchronisation.html",
+          "title": "Alternator Synchronisation",
+          "description": "KS5 synchroscope and lamp methods",
+          "section": "Electrical Machines & Control",
+          "sectionOrder": 1,
+          "order": 3
+        },
+        {
+          "file": "pages/104-synchronous-motor.html",
+          "title": "Synchronous Motor",
+          "description": "Synchronous motor trainer – 6.5 A / 415 V",
+          "section": "Electrical Machines & Control",
+          "sectionOrder": 1,
+          "order": 4
+        },
+        {
+          "file": "pages/105-single-phasing-preventer.html",
+          "title": "Single Phasing Preventer",
+          "description": "GIC SM-301 working and connection",
+          "section": "Electrical Machines & Control",
+          "sectionOrder": 1,
+          "order": 5
+        }
+      ]
+    },
+    {
+      "name": "Circuits & Power Systems",
+      "pages": [
+        {
+          "file": "pages/201-series-parallel-lamps.html",
+          "title": "Series & Parallel Circuits",
+          "description": "Series and parallel connection of lamps",
+          "section": "Circuits & Power Systems",
+          "sectionOrder": 2,
+          "order": 1
+        },
+        {
+          "file": "pages/202-power-factor-improvement.html",
+          "title": "Power Factor Improvement",
+          "description": "Capacitor sizing calculations",
+          "section": "Circuits & Power Systems",
+          "sectionOrder": 2,
+          "order": 2
+        },
+        {
+          "file": "pages/203-power-system-terms.html",
+          "title": "Wiring & Power System Terms",
+          "description": "Key terminology for electricians",
+          "section": "Circuits & Power Systems",
+          "sectionOrder": 2,
+          "order": 3
+        },
+        {
+          "file": "pages/204-protective-earthing.html",
+          "title": "Protective Earthing Systems",
+          "description": "TN, TT, IT and protective multiple earthing",
+          "section": "Circuits & Power Systems",
+          "sectionOrder": 2,
+          "order": 4
+        }
+      ]
+    },
+    {
+      "name": "Electronics",
+      "pages": [
+        {
+          "file": "pages/301-resistor-colour-code.html",
+          "title": "Resistor Colour Code Game",
+          "description": "Practise reading resistor bands",
+          "section": "Electronics",
+          "sectionOrder": 3,
+          "order": 1
+        },
+        {
+          "file": "pages/302-capacitor-charging.html",
+          "title": "Capacitor Charging",
+          "description": "RC charging and discharging trainer",
+          "section": "Electronics",
+          "sectionOrder": 3,
+          "order": 2
+        },
+        {
+          "file": "pages/303-cro.html",
+          "title": "Cathode Ray Oscilloscope",
+          "description": "Scientific SM203G CRO – annotated guide",
+          "section": "Electronics",
+          "sectionOrder": 3,
+          "order": 3
+        },
+        {
+          "file": "pages/304-transistor-biasing.html",
+          "title": "Transistor Biasing",
+          "description": "Biasing methods and calculator",
+          "section": "Electronics",
+          "sectionOrder": 3,
+          "order": 4
+        },
+        {
+          "file": "pages/305-ce-amplifier.html",
+          "title": "CE Amplifier",
+          "description": "Transistor in common-emitter configuration",
+          "section": "Electronics",
+          "sectionOrder": 3,
+          "order": 5
+        },
+        {
+          "file": "pages/306-ujt.html",
+          "title": "Uni-Junction Transistor",
+          "description": "UJT construction and characteristics",
+          "section": "Electronics",
+          "sectionOrder": 3,
+          "order": 6
+        },
+        {
+          "file": "pages/307-ujt-relaxation-oscillator.html",
+          "title": "UJT Relaxation Oscillator",
+          "description": "Timing, waveforms and frequency",
+          "section": "Electronics",
+          "sectionOrder": 3,
+          "order": 7
+        },
+        {
+          "file": "pages/308-op-amp.html",
+          "title": "Operational Amplifier",
+          "description": "LM741 op-amp trainer",
+          "section": "Electronics",
+          "sectionOrder": 3,
+          "order": 8
+        },
+        {
+          "file": "pages/309-number-systems.html",
+          "title": "Number Systems",
+          "description": "Binary, octal, decimal and hexadecimal",
+          "section": "Electronics",
+          "sectionOrder": 3,
+          "order": 9
+        },
+        {
+          "file": "pages/310-logic-gates.html",
+          "title": "Logic Gates",
+          "description": "74xx series logic gate IC trainer",
+          "section": "Electronics",
+          "sectionOrder": 3,
+          "order": 10
+        },
+        {
+          "file": "pages/311-ic555-cd4017.html",
+          "title": "IC 555 & CD4017",
+          "description": "Timer and decade counter circuits",
+          "section": "Electronics",
+          "sectionOrder": 3,
+          "order": 11
+        }
+      ]
+    },
+    {
+      "name": "Installation, Estimation & Appliances",
+      "pages": [
+        {
+          "file": "pages/401-estimation-costing.html",
+          "title": "Estimation & Costing",
+          "description": "Material estimation and cost calculation",
+          "section": "Installation, Estimation & Appliances",
+          "sectionOrder": 4,
+          "order": 1
+        },
+        {
+          "file": "pages/402-water-pump-selection.html",
+          "title": "Water Pump Motor Selection",
+          "description": "Selecting the right pump motor",
+          "section": "Installation, Estimation & Appliances",
+          "sectionOrder": 4,
+          "order": 2
+        },
+        {
+          "file": "pages/403-mall-electrical-systems.html",
+          "title": "Shopping Mall Electrical Systems",
+          "description": "Distribution and services in a commercial building",
+          "section": "Installation, Estimation & Appliances",
+          "sectionOrder": 4,
+          "order": 3
+        },
+        {
+          "file": "pages/404-ev-charging.html",
+          "title": "EV Charging Installation",
+          "description": "Charger types and installation practice",
+          "section": "Installation, Estimation & Appliances",
+          "sectionOrder": 4,
+          "order": 4
+        },
+        {
+          "file": "pages/405-bldc-fan.html",
+          "title": "BLDC Ceiling Fan",
+          "description": "Brushless DC fan theory",
+          "section": "Installation, Estimation & Appliances",
+          "sectionOrder": 4,
+          "order": 5
+        },
+        {
+          "file": "pages/406-induction-cooker.html",
+          "title": "Domestic Induction Cooker",
+          "description": "Working principle and troubleshooting",
+          "section": "Installation, Estimation & Appliances",
+          "sectionOrder": 4,
+          "order": 6
+        }
+      ]
+    }
+  ]
+}
