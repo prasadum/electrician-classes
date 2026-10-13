@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transistor Biasing</title>
+<meta name="section" content="Electronics">
+<meta name="section-order" content="3">
+<meta name="order" content="4">
+<meta name="description" content="Biasing methods and calculator">
+
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e17;
+    --panel: #0f1520;
+    --panel2: #141c2e;
+    --border: #1e3a5f;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #39ff14;
+    --text: #c8dff5;
+    --text-dim: #5a7a9a;
+    --label: #7ab3d4;
+    --warn: #ffd700;
+    --red: #ff4545;
+    --glow: 0 0 12px rgba(0,212,255,0.4);
+    --glow2: 0 0 12px rgba(57,255,20,0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(0,80,120,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(0,180,100,0.07) 0%, transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(30,58,95,0.15) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(30,58,95,0.1) 40px);
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #060d1a 0%, #0d1e35 50%, #060d1a 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 18px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 4px 30px rgba(0,212,255,0.2);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { display: flex; align-items: center; gap: 14px; }
+  .logo-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), #0077aa);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; box-shadow: var(--glow);
+  }
+  .logo-text { font-family: 'Orbitron', monospace; }
+  .logo-text h1 { font-size: 1.2rem; font-weight: 900; color: var(--accent); letter-spacing: 2px; }
+  .logo-text p { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 3px; text-transform: uppercase; }
+  .header-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent3);
+    border: 1px solid var(--accent3);
+    padding: 4px 10px;
+    border-radius: 4px;
+    box-shadow: var(--glow2);
+    animation: blink 2s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  .main-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr 280px;
+    gap: 0;
+    height: calc(100vh - 73px);
+  }
+
+  /* PANELS */
+  .panel {
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .panel:last-child { border-right: none; border-left: 1px solid var(--border); }
+
+  .panel-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .panel-title::before {
+    content: '';
+    width: 3px; height: 14px;
+    background: var(--accent);
+    border-radius: 2px;
+    box-shadow: var(--glow);
+  }
+
+  /* FORM ELEMENTS */
+  .field { margin-bottom: 14px; }
+  label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--label);
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  select, input[type="number"] {
+    width: 100%;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.88rem;
+    appearance: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%2300d4ff'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; cursor: pointer; }
+  select:focus, input[type="number"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(0,212,255,0.25);
+  }
+  input[type="number"] { -moz-appearance: textfield; }
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .input-unit {
+    display: flex; gap: 6px;
+  }
+  .input-unit input { flex: 1; }
+  .unit-badge {
+    background: var(--border);
+    color: var(--accent);
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+  }
+
+  /* RANGE SLIDER */
+  .range-row { display: flex; gap: 8px; align-items: center; }
+  .range-row input[type="number"] { width: 80px; }
+  .range-sep { color: var(--text-dim); font-size: 0.8rem; }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+    height: 4px;
+    margin: 6px 0;
+  }
+  .slider-val { font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; color: var(--accent); text-align: right; }
+
+  /* TRANSISTOR CARD */
+  .transistor-card {
+    background: linear-gradient(135deg, var(--panel2), #0a1525);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .transistor-name { font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+  .transistor-type { font-size: 0.7rem; color: var(--accent2); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+  .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .spec-item { background: rgba(0,0,0,0.3); border-radius: 5px; padding: 6px 8px; }
+  .spec-key { font-size: 0.62rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .spec-val { font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: var(--accent3); }
+
+  /* CALCULATE BUTTON */
+  .calc-btn {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #003d5c, #006a9e);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 8px rgba(0,212,255,0.2);
+    margin-top: 6px;
+  }
+  .calc-btn:hover { background: linear-gradient(135deg, #005080, #0088cc); box-shadow: 0 0 20px rgba(0,212,255,0.5); }
+  .calc-btn:active { transform: scale(0.98); }
+
+  /* CENTER - CIRCUIT + RESULTS */
+  .center-panel {
+    padding: 20px 24px;
+    overflow-y: auto;
+    background: var(--panel);
+  }
+
+  /* CIRCUIT SVG AREA */
+  .circuit-area {
+    background: linear-gradient(135deg, #080f1c, #0d1825);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .circuit-area::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(0,212,255,0.02) 20px, rgba(0,212,255,0.02) 21px);
+  }
+  .circuit-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  #circuit-svg { max-width: 100%; }
+
+  /* RESULTS */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .result-card {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    transition: border-color 0.2s;
+  }
+  .result-card.highlight { border-color: var(--accent3); box-shadow: 0 0 10px rgba(57,255,20,0.15); }
+  .result-card.warn { border-color: var(--warn); box-shadow: 0 0 10px rgba(255,215,0,0.15); }
+  .result-card.danger { border-color: var(--red); box-shadow: 0 0 10px rgba(255,69,69,0.15); }
+  .result-label { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .result-value { font-family: 'Share Tech Mono', monospace; font-size: 1.1rem; color: var(--accent); }
+  .result-value.green { color: var(--accent3); }
+  .result-value.yellow { color: var(--warn); }
+  .result-value.red { color: var(--red); }
+  .result-note { font-size: 0.6rem; color: var(--text-dim); margin-top: 3px; }
+
+  /* STATUS BAR */
+  .status-bar {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+  }
+  .status-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .status-dot.active { background: var(--accent3); box-shadow: 0 0 8px var(--accent3); animation: pulse 1.5s infinite; }
+  .status-dot.warn { background: var(--warn); }
+  .status-dot.danger { background: var(--red); }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.3)} }
+  .status-text { color: var(--text); }
+
+  /* OPERATING POINT CHART */
+  .load-line-area {
+    background: #070e1c;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  #loadLineCanvas { width: 100%; border-radius: 6px; }
+
+  /* RIGHT PANEL - FORMULAS */
+  .formula-block {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .formula-title { font-size: 0.65rem; color: var(--accent2); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+  .formula-line { font-size: 0.78rem; color: var(--text); line-height: 1.8; }
+  .formula-line span { color: var(--accent); }
+  .formula-line em { color: var(--accent3); font-style: normal; }
+
+  .region-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .region-active { background: rgba(57,255,20,0.15); color: var(--accent3); border: 1px solid var(--accent3); }
+  .region-sat { background: rgba(255,215,0,0.15); color: var(--warn); border: 1px solid var(--warn); }
+  .region-cutoff { background: rgba(255,69,69,0.15); color: var(--red); border: 1px solid var(--red); }
+
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* TOOLTIP */
+  .tip { position: relative; display: inline-block; cursor: help; }
+  .tip::after { content: attr(data-tip); position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); background: #1a2a3d; border: 1px solid var(--accent); color: var(--text); font-size: 0.7rem; padding: 5px 10px; border-radius: 5px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 99; }
+  .tip:hover::after { opacity: 1; }
+
+  .section-sep {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 8px 0 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-sep::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  @media (max-width: 1100px) {
+    .main-grid { grid-template-columns: 1fr; height: auto; }
+    .panel:last-child { border-left: none; border-top: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    <div class="logo-text">
+      <h1>TRANSISTOR BIAS LAB</h1>
+      <p>DC Operating Point Calculator · BJT Analysis</p>
+    </div>
+  </div>
+  <div class="header-badge">● SYSTEM READY</div>
+</header>
+
+<div class="main-grid">
+
+  <!-- LEFT: CONFIGURATION -->
+  <div class="panel">
+    <div class="panel-title">Configuration</div>
+
+    <div class="field">
+      <label>Transistor Model</label>
+      <select id="transistorSel" onchange="onTransistorChange()">
+        <optgroup label="NPN — General Purpose">
+          <option value="BC547">BC547 — NPN GP (45V, 100mA)</option>
+          <option value="BC548">BC548 — NPN GP (30V, 100mA)</option>
+          <option value="BC549">BC549 — NPN LN (30V, 100mA)</option>
+          <option value="BC337">BC337 — NPN GP (45V, 800mA)</option>
+          <option value="BC107">BC107 — NPN GP (45V, 200mA)</option>
+          <option value="BC108">BC108 — NPN GP (20V, 200mA)</option>
+          <option value="BC109">BC109 — NPN LN (20V, 200mA)</option>
+          <option value="2N2222">2N2222 — NPN GP (40V, 600mA)</option>
+          <option value="2N3904">2N3904 — NPN GP (40V, 200mA)</option>
+          <option value="BC182">BC182 — NPN GP (50V, 100mA)</option>
+          <option value="BC183">BC183 — NPN GP (30V, 100mA)</option>
+        </optgroup>
+        <optgroup label="NPN — Medium Power">
+          <option value="SL100">SL100 — NPN MP (50V, 500mA)</option>
+          <option value="BD139">BD139 — NPN MP (80V, 1.5A)</option>
+          <option value="TIP31">TIP31 — NPN MP (40V, 3A)</option>
+          <option value="TIP41">TIP41 — NPN MP (40V, 6A)</option>
+          <option value="2N3055">2N3055 — NPN Power (60V, 15A)</option>
+          <option value="BD135">BD135 — NPN MP (45V, 1.5A)</option>
+          <option value="TIP120">TIP120 — NPN Darlington (60V, 5A)</option>
+        </optgroup>
+        <optgroup label="PNP — General Purpose">
+          <option value="BC557">BC557 — PNP GP (45V, 100mA)</option>
+          <option value="BC558">BC558 — PNP GP (30V, 100mA)</option>
+          <option value="BC559">BC559 — PNP LN (30V, 100mA)</option>
+          <option value="BC327">BC327 — PNP GP (45V, 800mA)</option>
+          <option value="BC177">BC177 — PNP GP (45V, 200mA)</option>
+          <option value="2N2907">2N2907 — PNP GP (40V, 600mA)</option>
+          <option value="2N3906">2N3906 — PNP GP (40V, 200mA)</option>
+          <option value="SK100">SK100 — PNP MP (50V, 500mA)</option>
+          <option value="BC212">BC212 — PNP GP (25V, 200mA)</option>
+        </optgroup>
+        <optgroup label="PNP — Medium Power">
+          <option value="BD140">BD140 — PNP MP (80V, 1.5A)</option>
+          <option value="TIP32">TIP32 — PNP MP (40V, 3A)</option>
+          <option value="TIP42">TIP42 — PNP MP (40V, 6A)</option>
+          <option value="BD136">BD136 — PNP MP (45V, 1.5A)</option>
+        </optgroup>
+        <optgroup label="NPN — High Frequency">
+          <option value="BF194">BF194 — NPN HF (20V, 25mA)</option>
+          <option value="BF195">BF195 — NPN HF (20V, 25mA)</option>
+          <option value="BF199">BF199 — NPN HF (25V, 25mA)</option>
+          <option value="2N2369">2N2369 — NPN HF (40V, 200mA)</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <div class="transistor-card" id="transCard">
+      <div class="transistor-name" id="tName">BC547</div>
+      <div class="transistor-type" id="tType">NPN · General Purpose</div>
+      <div class="spec-grid" id="tSpecs"></div>
+    </div>
+
+    <div class="field">
+      <label>Biasing Configuration</label>
+      <select id="biasSel" onchange="onBiasChange()">
+        <option value="fixed">Fixed Bias (Base Resistor)</option>
+        <option value="emitter">Emitter Feedback Bias</option>
+        <option value="vdiv" selected>Voltage Divider Bias</option>
+        <option value="collector">Collector Feedback Bias</option>
+        <option value="two_supply">Dual Supply Bias (±VCC)</option>
+        <option value="self">Self Bias (Emitter + Collector FB)</option>
+      </select>
+    </div>
+
+    <div class="section-sep">Power Supply</div>
+
+    <div class="field">
+      <label>Supply Voltage V<sub>CC</sub></label>
+      <input type="range" id="vccSlider" min="1" max="30" step="0.5" value="12" oninput="syncVcc(this.value)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;gap:6px;align-items:center">
+          <span style="font-size:0.7rem;color:var(--text-dim)">Min:</span>
+          <input type="number" id="vccMin" value="1" min="0.5" max="5" step="0.5" style="width:58px;font-size:0.8rem;padding:4px 6px" oninput="updateSliderRange()">
+          <span style="font-size:0.7rem;color:var(--text-dim)">Max:</span>
+          <input type="number" id="vccMax" value="30" min="5" max="100" step="1" style="width:62px;font-size:0.8rem;padding:4px 6px" oninput="updateSliderRange()">
+        </div>
+        <div class="slider-val"><span id="vccVal">12.0</span> V</div>
+      </div>
+    </div>
+
+    <div class="section-sep">Resistor Values</div>
+
+    <div id="resistorFields"></div>
+
+    <div class="field">
+      <label class="tip" data-tip="Target collector current for Q-point">Target I<sub>C</sub> (mA)</label>
+      <input type="range" id="icSlider" min="0.1" max="50" step="0.1" value="2" oninput="syncIc(this.value)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;gap:6px;align-items:center">
+          <span style="font-size:0.7rem;color:var(--text-dim)">Min:</span>
+          <input type="number" id="icMin" value="0.1" min="0.01" max="1" step="0.1" style="width:58px;font-size:0.8rem;padding:4px 6px" oninput="updateIcRange()">
+          <span style="font-size:0.7rem;color:var(--text-dim)">Max:</span>
+          <input type="number" id="icMax" value="50" min="5" max="5000" step="1" style="width:62px;font-size:0.8rem;padding:4px 6px" oninput="updateIcRange()">
+        </div>
+        <div class="slider-val"><span id="icVal">2.0</span> mA</div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">⚡ CALCULATE Q-POINT</button>
+  </div>
+
+  <!-- CENTER -->
+  <div class="center-panel">
+    <div class="circuit-area">
+      <div class="circuit-title">Circuit Diagram — <span id="circuitLabel">Voltage Divider Bias</span></div>
+      <svg id="circuit-svg" width="400" height="320" viewBox="0 0 400 320"></svg>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-dot" id="statusDot"></div>
+      <span class="status-text" id="statusText">Configure parameters and press Calculate</span>
+      <span id="regionBadge" style="margin-left:auto"></span>
+    </div>
+
+    <div class="results-grid" id="resultsGrid">
+      <!-- filled by JS -->
+    </div>
+
+    <div class="load-line-area">
+      <div class="panel-title" style="margin-bottom:10px">DC Load Line & Q-Point</div>
+      <canvas id="loadLineCanvas" width="600" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- RIGHT: FORMULAS & THEORY -->
+  <div class="panel">
+    <div class="panel-title">Formulas</div>
+    <div id="formulaPanel"></div>
+  </div>
+
+</div>
+
+<script>
+// ─── TRANSISTOR DATABASE ──────────────────────────────────
+const TRANSISTORS = {
+  BC547: { type:'NPN', Vceo:45, Ic_max:100, hFE:[110,800], Vbe:0.65, Pd:500, pkg:'TO-92', use:'GP' },
+  BC548: { type:'NPN', Vceo:30, Ic_max:100, hFE:[110,800], Vbe:0.65, Pd:500, pkg:'TO-92', use:'GP' },
+  BC549: { type:'NPN', Vceo:30, Ic_max:100, hFE:[200,800], Vbe:0.65, Pd:500, pkg:'TO-92', use:'LN' },
+  BC337: { type:'NPN', Vceo:45, Ic_max:800, hFE:[100,600], Vbe:0.65, Pd:625, pkg:'TO-92', use:'GP' },
+  BC107: { type:'NPN', Vceo:45, Ic_max:200, hFE:[75,260],  Vbe:0.65, Pd:300, pkg:'TO-18', use:'GP' },
+  BC108: { type:'NPN', Vceo:20, Ic_max:200, hFE:[110,450], Vbe:0.65, Pd:300, pkg:'TO-18', use:'GP' },
+  BC109: { type:'NPN', Vceo:20, Ic_max:200, hFE:[200,800], Vbe:0.65, Pd:300, pkg:'TO-18', use:'LN' },
+  '2N2222':{ type:'NPN', Vceo:40, Ic_max:600, hFE:[100,300], Vbe:0.65, Pd:500, pkg:'TO-18', use:'GP' },
+  '2N3904':{ type:'NPN', Vceo:40, Ic_max:200, hFE:[100,300], Vbe:0.65, Pd:625, pkg:'TO-92', use:'GP' },
+  BC182: { type:'NPN', Vceo:50, Ic_max:100, hFE:[100,400], Vbe:0.65, Pd:300, pkg:'TO-92', use:'GP' },
+  BC183: { type:'NPN', Vceo:30, Ic_max:100, hFE:[120,400], Vbe:0.65, Pd:300, pkg:'TO-92', use:'GP' },
+  SL100: { type:'NPN', Vceo:50, Ic_max:500, hFE:[50,300],  Vbe:0.65, Pd:800, pkg:'TO-39', use:'MP' },
+  BD139: { type:'NPN', Vceo:80, Ic_max:1500,hFE:[40,250],  Vbe:0.7,  Pd:8000,pkg:'TO-126',use:'MP' },
+  TIP31: { type:'NPN', Vceo:40, Ic_max:3000,hFE:[25,50],   Vbe:1.0,  Pd:40000,pkg:'TO-220',use:'MP' },
+  TIP41: { type:'NPN', Vceo:40, Ic_max:6000,hFE:[15,75],   Vbe:1.0,  Pd:65000,pkg:'TO-220',use:'MP' },
+  '2N3055':{ type:'NPN', Vceo:60, Ic_max:15000,hFE:[20,70],Vbe:1.0,  Pd:115000,pkg:'TO-3',use:'Power' },
+  BD135: { type:'NPN', Vceo:45, Ic_max:1500,hFE:[40,250],  Vbe:0.7,  Pd:8000,pkg:'TO-126',use:'MP' },
+  TIP120: { type:'NPN', Vceo:60, Ic_max:5000,hFE:[1000,20000],Vbe:1.4,Pd:65000,pkg:'TO-220',use:'Darl'},
+  BC557: { type:'PNP', Vceo:45, Ic_max:100, hFE:[110,800], Vbe:0.65, Pd:500, pkg:'TO-92', use:'GP' },
+  BC558: { type:'PNP', Vceo:30, Ic_max:100, hFE:[110,800], Vbe:0.65, Pd:500, pkg:'TO-92', use:'GP' },
+  BC559: { type:'PNP', Vceo:30, Ic_max:100, hFE:[200,800], Vbe:0.65, Pd:500, pkg:'TO-92', use:'LN' },
+  BC327: { type:'PNP', Vceo:45, Ic_max:800, hFE:[100,600], Vbe:0.65, Pd:625, pkg:'TO-92', use:'GP' },
+  BC177: { type:'PNP', Vceo:45, Ic_max:200, hFE:[75,260],  Vbe:0.65, Pd:300, pkg:'TO-18', use:'GP' },
+  '2N2907':{ type:'PNP', Vceo:40, Ic_max:600, hFE:[100,300], Vbe:0.65, Pd:500, pkg:'TO-18', use:'GP' },
+  '2N3906':{ type:'PNP', Vceo:40, Ic_max:200, hFE:[100,300], Vbe:0.65, Pd:625, pkg:'TO-92', use:'GP' },
+  SK100: { type:'PNP', Vceo:50, Ic_max:500, hFE:[50,300],  Vbe:0.65, Pd:800, pkg:'TO-39', use:'MP' },
+  BC212: { type:'PNP', Vceo:25, Ic_max:200, hFE:[100,400], Vbe:0.65, Pd:300, pkg:'TO-92', use:'GP' },
+  BD140: { type:'PNP', Vceo:80, Ic_max:1500,hFE:[40,250],  Vbe:0.7,  Pd:8000,pkg:'TO-126',use:'MP' },
+  TIP32: { type:'PNP', Vceo:40, Ic_max:3000,hFE:[25,50],   Vbe:1.0,  Pd:40000,pkg:'TO-220',use:'MP' },
+  TIP42: { type:'PNP', Vceo:40, Ic_max:6000,hFE:[15,75],   Vbe:1.0,  Pd:65000,pkg:'TO-220',use:'MP' },
+  BD136: { type:'PNP', Vceo:45, Ic_max:1500,hFE:[40,250],  Vbe:0.7,  Pd:8000,pkg:'TO-126',use:'MP' },
+  BF194: { type:'NPN', Vceo:20, Ic_max:25,  hFE:[30,300],  Vbe:0.6,  Pd:150, pkg:'TO-92', use:'HF' },
+  BF195: { type:'NPN', Vceo:20, Ic_max:25,  hFE:[40,300],  Vbe:0.6,  Pd:150, pkg:'TO-92', use:'HF' },
+  BF199: { type:'NPN', Vceo:25, Ic_max:25,  hFE:[40,300],  Vbe:0.6,  Pd:150, pkg:'TO-92', use:'HF' },
+  '2N2369':{ type:'NPN', Vceo:40, Ic_max:200, hFE:[40,120], Vbe:0.65, Pd:360, pkg:'TO-18', use:'HF' },
+};
+
+const BIAS_NAMES = {
+  fixed: 'Fixed Bias (Base Resistor)',
+  emitter: 'Emitter Feedback Bias',
+  vdiv: 'Voltage Divider Bias',
+  collector: 'Collector Feedback Bias',
+  two_supply: 'Dual Supply Bias',
+  self: 'Self Bias (Emitter + Collector FB)',
+};
+
+let currentTrans = 'BC547';
+let currentBias  = 'vdiv';
+let results      = {};
+
+// ─── INIT ─────────────────────────────────────────────────
+window.onload = () => {
+  onTransistorChange();
+  onBiasChange();
+  drawCircuit();
+  drawLoadLine(null);
+};
+
+function onTransistorChange() {
+  currentTrans = document.getElementById('transistorSel').value;
+  const T = TRANSISTORS[currentTrans];
+  document.getElementById('tName').textContent = currentTrans;
+  document.getElementById('tType').textContent = `${T.type} · ${{GP:'General Purpose',MP:'Medium Power',LN:'Low Noise',HF:'High Frequency',Power:'Power',Darl:'Darlington'}[T.use]||T.use}`;
+  document.getElementById('tSpecs').innerHTML = `
+    <div class="spec-item"><div class="spec-key">V<sub>CEO</sub></div><div class="spec-val">${T.Vceo} V</div></div>
+    <div class="spec-item"><div class="spec-key">I<sub>C</sub> max</div><div class="spec-val">${T.Ic_max>=1000?T.Ic_max/1000+'A':T.Ic_max+' mA'}</div></div>
+    <div class="spec-item"><div class="spec-key">hFE typ</div><div class="spec-val">${Math.round((T.hFE[0]+T.hFE[1])/2)}</div></div>
+    <div class="spec-item"><div class="spec-key">V<sub>BE</sub></div><div class="spec-val">${T.Vbe} V</div></div>
+    <div class="spec-item"><div class="spec-key">P<sub>d</sub></div><div class="spec-val">${T.Pd>=1000?T.Pd/1000+' W':T.Pd+' mW'}</div></div>
+    <div class="spec-item"><div class="spec-key">Package</div><div class="spec-val">${T.pkg}</div></div>
+  `;
+}
+
+function onBiasChange() {
+  currentBias = document.getElementById('biasSel').value;
+  document.getElementById('circuitLabel').textContent = BIAS_NAMES[currentBias];
+  buildResistorFields();
+  updateFormulas();
+  drawCircuit();
+}
+
+// ─── RESISTOR FIELDS ──────────────────────────────────────
+const BIAS_FIELDS = {
+  fixed:      [['RB','Base Resistor R_B','kΩ','470'],['RC','Collector Resistor R_C','kΩ','4.7']],
+  emitter:    [['RB','Base Resistor R_B','kΩ','470'],['RC','Collector Resistor R_C','kΩ','4.7'],['RE','Emitter Resistor R_E','kΩ','1']],
+  vdiv:       [['R1','Voltage Divider R1','kΩ','47'],['R2','Voltage Divider R2','kΩ','10'],['RC','Collector Resistor R_C','kΩ','4.7'],['RE','Emitter Resistor R_E','kΩ','1']],
+  collector:  [['RF','Feedback Resistor R_F','kΩ','470'],['RC','Collector Resistor R_C','kΩ','4.7']],
+  two_supply: [['RB','Base Resistor R_B','kΩ','470'],['RC','Collector Resistor R_C','kΩ','4.7'],['RE','Emitter Resistor R_E','kΩ','1']],
+  self:       [['RF','Feedback Resistor R_F','kΩ','470'],['RC','Collector Resistor R_C','kΩ','4.7'],['RE','Emitter Resistor R_E','kΩ','1']],
+};
+
+function buildResistorFields() {
+  const fields = BIAS_FIELDS[currentBias] || [];
+  let html = '';
+  fields.forEach(([id, lbl, unit, def]) => {
+    html += `<div class="field">
+      <label>${lbl}</label>
+      <div class="input-unit">
+        <input type="number" id="r_${id}" value="${def}" min="0.01" step="0.1">
+        <span class="unit-badge">${unit}</span>
+      </div>
+    </div>`;
+  });
+  document.getElementById('resistorFields').innerHTML = html;
+}
+
+// ─── SLIDER SYNC ──────────────────────────────────────────
+function syncVcc(v) {
+  document.getElementById('vccVal').textContent = parseFloat(v).toFixed(1);
+}
+function syncIc(v) {
+  document.getElementById('icVal').textContent = parseFloat(v).toFixed(1);
+}
+function updateSliderRange() {
+  const sl = document.getElementById('vccSlider');
+  const mn = parseFloat(document.getElementById('vccMin').value)||1;
+  const mx = parseFloat(document.getElementById('vccMax').value)||30;
+  sl.min = mn; sl.max = mx;
+  if (parseFloat(sl.value) < mn) sl.value = mn;
+  if (parseFloat(sl.value) > mx) sl.value = mx;
+  syncVcc(sl.value);
+}
+function updateIcRange() {
+  const sl = document.getElementById('icSlider');
+  const mn = parseFloat(document.getElementById('icMin').value)||0.1;
+  const mx = parseFloat(document.getElementById('icMax').value)||50;
+  sl.min = mn; sl.max = mx;
+  if (parseFloat(sl.value) < mn) sl.value = mn;
+  if (parseFloat(sl.value) > mx) sl.value = mx;
+  syncIc(sl.value);
+}
+
+function getR(id) { const el = document.getElementById('r_'+id); return el ? parseFloat(el.value)*1000 : NaN; }
+function getVcc() { return parseFloat(document.getElementById('vccSlider').value); }
+function getIcTarget() { return parseFloat(document.getElementById('icSlider').value)/1000; }
+function getHfe() { const T=TRANSISTORS[currentTrans]; return Math.round((T.hFE[0]+T.hFE[1])/2); }
+
+// ─── CALCULATE ────────────────────────────────────────────
+function calculate() {
+  const T   = TRANSISTORS[currentTrans];
+  const Vcc = getVcc();
+  const Vbe = T.Vbe;
+  const hFE = getHfe();
+  const bias = currentBias;
+  let r = {};
+
+  try {
+    if (bias === 'fixed') {
+      const RB = getR('RB'), RC = getR('RC');
+      const IB = (Vcc - Vbe) / RB;
+      const IC = hFE * IB;
+      const VCE = Vcc - IC * RC;
+      r = { IB, IC, IE:IC+IB, VCE, VBE:Vbe, VB:Vbe, VC:VCE, VE:0, RC, stability:'Poor', Pd:IC*VCE };
+    }
+    else if (bias === 'emitter') {
+      const RB = getR('RB'), RC = getR('RC'), RE = getR('RE');
+      const IB = (Vcc - Vbe) / (RB + (1+hFE)*RE);
+      const IC = hFE * IB;
+      const IE = IC + IB;
+      const VE = IE * RE;
+      const VC = Vcc - IC * RC;
+      const VCE = VC - VE;
+      r = { IB, IC, IE, VCE, VBE:Vbe, VB:VE+Vbe, VC, VE, RC, RE, stability:'Moderate', Pd:IC*VCE };
+    }
+    else if (bias === 'vdiv') {
+      const R1 = getR('R1'), R2 = getR('R2'), RC = getR('RC'), RE = getR('RE');
+      const Vth = Vcc * R2/(R1+R2);
+      const Rth = R1*R2/(R1+R2);
+      const IE  = (Vth - Vbe) / (RE + Rth/(1+hFE));
+      const IC  = IE * hFE/(1+hFE);
+      const IB  = IE/(1+hFE);
+      const VE  = IE * RE;
+      const VC  = Vcc - IC * RC;
+      const VCE = VC - VE;
+      r = { IB, IC, IE, VCE, VBE:Vbe, VB:VE+Vbe, VC, VE, Vth, Rth:Rth/1000, RC, R1, R2, RE, stability:'Excellent', Pd:IC*VCE };
+    }
+    else if (bias === 'collector') {
+      const RF = getR('RF'), RC = getR('RC');
+      const IB = (Vcc - Vbe) / (RF + hFE*RC);
+      const IC = hFE * IB;
+      const VCE = Vcc - (IC+IB)*RC;
+      r = { IB, IC, IE:IC+IB, VCE, VBE:Vbe, VB:Vbe, VC:VCE, VE:0, RC, RF, stability:'Good', Pd:IC*VCE };
+    }
+    else if (bias === 'two_supply') {
+      const RB = getR('RB'), RC = getR('RC'), RE = getR('RE');
+      const VEE = Vcc;
+      const IB = (VEE - Vbe) / (RB + (1+hFE)*RE);
+      const IC = hFE * IB;
+      const IE = IC + IB;
+      const VE = -IE * RE;
+      const VC = Vcc - IC * RC;
+      const VCE = VC - VE;
+      r = { IB, IC, IE, VCE, VBE:Vbe, VB:0, VC, VE, RC, RE, stability:'Good', Pd:IC*VCE };
+    }
+    else if (bias === 'self') {
+      const RF = getR('RF'), RC = getR('RC'), RE = getR('RE');
+      const IB = (Vcc - Vbe) / (RF + hFE*(RC+RE));
+      const IC = hFE * IB;
+      const IE = IC + IB;
+      const VE = IE * RE;
+      const VC = Vcc - (IC+IB)*RC - VE;
+      const VCE = VC - VE;
+      r = { IB, IC, IE, VCE, VBE:Vbe, VB:VE+Vbe, VC:Vcc - (IC+IB)*RC, VE, RF, RC, RE, stability:'Good', Pd:IC*VCE };
+    }
+
+    // Validate
+    r.region = 'Active';
+    if (r.IC <= 0 || r.VCE <= 0) r.region = 'Cutoff';
+    else if (r.VCE < 0.2) r.region = 'Saturation';
+    else if (r.IC * 1000 > T.Ic_max) r.region = 'Overcurrent';
+    else if (r.Pd * 1000 > T.Pd) r.region = 'Overdissipation';
+
+    results = r;
+    showResults(r, T, Vcc);
+    drawLoadLine(r, Vcc);
+  } catch(e) {
+    setStatus('danger', 'Calculation error: ' + e.message, '');
+  }
+}
+
+function fmt(v, dec=3) { if(isNaN(v)||!isFinite(v)) return '—'; return v.toFixed(dec); }
+function fmtI(A) { if(Math.abs(A)<0.001) return (A*1e6).toFixed(1)+' μA'; return (A*1000).toFixed(3)+' mA'; }
+function fmtR(ohm) { if(ohm>=1e6) return (ohm/1e6).toFixed(2)+' MΩ'; if(ohm>=1000) return (ohm/1000).toFixed(2)+' kΩ'; return ohm.toFixed(0)+' Ω'; }
+
+function showResults(r, T, Vcc) {
+  const region = r.region;
+  const cls = region==='Active'?'highlight':region==='Saturation'||region==='Cutoff'?'warn':'danger';
+  const vcls = region==='Active'?'green':region.includes('Over')?'red':'yellow';
+
+  setStatus(
+    region==='Active'?'active':region.includes('Over')?'danger':'warn',
+    region==='Active'
+      ? `Active Region ✓ — Q-Point stable. Stability Factor: ${r.stability}`
+      : `⚠ ${region} — Adjust component values`,
+    region==='Active' ? `<span class="region-badge region-active">ACTIVE</span>`
+    : region==='Saturation' ? `<span class="region-badge region-sat">SATURATION</span>`
+    : `<span class="region-badge region-cutoff">CUTOFF</span>`
+  );
+
+  const cards = [
+    ['I_C (Collector)', fmtI(r.IC), '', r.IC*1000>T.Ic_max*0.8?'warn':'highlight', 'Collector current'],
+    ['I_B (Base)', fmtI(r.IB), 'green', 'result-card', 'Base current'],
+    ['I_E (Emitter)', fmtI(r.IE), 'green', 'result-card', 'Emitter current'],
+    ['V_CE', fmt(r.VCE,2)+' V', vcls, cls, 'Collector-Emitter voltage'],
+    ['V_BE', fmt(r.VBE,2)+' V', '', 'result-card', 'Base-Emitter junction'],
+    ['V_C', fmt(r.VC,2)+' V', '', 'result-card', 'Collector voltage to GND'],
+    ['V_B', fmt(r.VB,2)+' V', '', 'result-card', 'Base voltage to GND'],
+    ['V_E', fmt(r.VE,2)+' V', '', 'result-card', 'Emitter voltage to GND'],
+    ['P_diss', fmt(r.Pd*1000,1)+' mW', r.Pd*1000>T.Pd*0.7?'red':'green', r.Pd*1000>T.Pd?'danger':'result-card', 'Device dissipation'],
+    ['Stability', r.stability, r.stability==='Excellent'?'green':r.stability==='Good'?'green':'yellow', 'result-card', 'Thermal stability rating'],
+    ['hFE (β)', getHfe()+'', 'green', 'result-card', 'DC current gain used'],
+    ['V_CC', fmt(Vcc,1)+' V', '', 'result-card', 'Supply voltage'],
+  ];
+
+  document.getElementById('resultsGrid').innerHTML = cards.map(([lbl,val,vcl,ccl,note])=>`
+    <div class="result-card ${ccl}">
+      <div class="result-label">${lbl}</div>
+      <div class="result-value ${vcl}">${val}</div>
+      <div class="result-note">${note}</div>
+    </div>
+  `).join('');
+}
+
+function setStatus(type, msg, badge) {
+  const dot = document.getElementById('statusDot');
+  dot.className = 'status-dot' + (type?' '+type:'');
+  document.getElementById('statusText').textContent = msg;
+  document.getElementById('regionBadge').innerHTML = badge||'';
+}
+
+// ─── LOAD LINE ────────────────────────────────────────────
+function drawLoadLine(r, Vcc) {
+  const canvas = document.getElementById('loadLineCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  const pad = {l:52,r:20,t:16,b:38};
+  const cW = W-pad.l-pad.r, cH = H-pad.t-pad.b;
+
+  // BG
+  ctx.fillStyle = '#070e1c';
+  ctx.fillRect(0,0,W,H);
+
+  const vcc = Vcc || getVcc();
+  const RC  = r?.RC || 4700;
+  const RE  = r?.RE || 0;
+  const RL  = RC + RE;
+  const Ic_sat = vcc / RL;
+  const maxIc  = Ic_sat * 1.15;
+  const maxVce = vcc * 1.1;
+
+  function toX(vce) { return pad.l + (vce/maxVce)*cW; }
+  function toY(ic)  { return pad.t + cH - (ic/maxIc)*cH; }
+
+  // Grid
+  ctx.strokeStyle = 'rgba(30,58,95,0.7)'; ctx.lineWidth = 1;
+  for(let i=0;i<=5;i++) {
+    const x = pad.l + i*cW/5;
+    ctx.beginPath(); ctx.moveTo(x,pad.t); ctx.lineTo(x,pad.t+cH); ctx.stroke();
+    const y = pad.t + i*cH/5;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+cW,y); ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = '#2a4a7a'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+cH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t+cH); ctx.lineTo(pad.l+cW,pad.t+cH); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = '#5a7a9a'; ctx.font = '10px Share Tech Mono';
+  ctx.fillText('V_CE (V)', pad.l+cW/2-20, H-4);
+  ctx.save(); ctx.translate(12, pad.t+cH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('I_C (mA)', -22, 0); ctx.restore();
+
+  // Tick labels
+  ctx.fillStyle = '#7ab3d4'; ctx.font = '9px Share Tech Mono';
+  for(let i=0;i<=5;i++) {
+    const vce = i*maxVce/5;
+    ctx.fillText(vce.toFixed(1), toX(vce)-8, pad.t+cH+14);
+    const ic = i*maxIc/5;
+    ctx.fillText((ic*1000).toFixed(1), 4, toY(ic)+4);
+  }
+
+  // Load line
+  ctx.strokeStyle = '#00d4ff'; ctx.lineWidth = 2;
+  ctx.shadowBlur = 8; ctx.shadowColor = '#00d4ff';
+  ctx.beginPath();
+  ctx.moveTo(toX(0), toY(Ic_sat));
+  ctx.lineTo(toX(vcc), toY(0));
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // IC-max and VCE-max limit lines
+  const T = TRANSISTORS[currentTrans];
+  const icMax = T.Ic_max/1000;
+  if (icMax < maxIc) {
+    ctx.strokeStyle = 'rgba(255,69,69,0.5)'; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(pad.l, toY(icMax)); ctx.lineTo(pad.l+cW, toY(icMax)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ff4545'; ctx.font = '9px Share Tech Mono';
+    ctx.fillText('I_C max', pad.l+4, toY(icMax)-3);
+  }
+  const vceMax = T.Vceo;
+  if (vceMax < maxVce) {
+    ctx.strokeStyle = 'rgba(255,107,53,0.5)'; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(toX(vceMax), pad.t); ctx.lineTo(toX(vceMax), pad.t+cH); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ff6b35'; ctx.font = '9px Share Tech Mono';
+    ctx.fillText('V_CEO', toX(vceMax)+2, pad.t+14);
+  }
+
+  // Q-Point
+  if (r && r.IC && r.VCE && isFinite(r.IC) && isFinite(r.VCE)) {
+    const qx = toX(r.VCE), qy = toY(r.IC);
+    // Crosshairs
+    ctx.strokeStyle = 'rgba(57,255,20,0.3)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(pad.l,qy); ctx.lineTo(qx,qy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(qx,pad.t+cH); ctx.lineTo(qx,qy); ctx.stroke();
+    ctx.setLineDash([]);
+    // Dot
+    ctx.fillStyle = '#39ff14';
+    ctx.shadowBlur = 12; ctx.shadowColor = '#39ff14';
+    ctx.beginPath(); ctx.arc(qx,qy,7,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+    // Label
+    ctx.fillStyle = '#39ff14'; ctx.font = 'bold 10px Share Tech Mono';
+    ctx.fillText(`Q(${r.VCE.toFixed(1)}V, ${(r.IC*1000).toFixed(2)}mA)`, qx+10, qy-8);
+  }
+
+  // Legend
+  ctx.strokeStyle='#00d4ff'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(W-120,H-18); ctx.lineTo(W-96,H-18); ctx.stroke();
+  ctx.fillStyle='#00d4ff'; ctx.font='9px Share Tech Mono';
+  ctx.fillText('Load Line', W-92, H-14);
+}
+
+// ─── CIRCUIT DIAGRAMS ─────────────────────────────────────
+function drawCircuit() {
+  const svg = document.getElementById('circuit-svg');
+  const bias = currentBias;
+  const T = TRANSISTORS[currentTrans];
+  const isNPN = T.type === 'NPN';
+  const diagrams = {
+    fixed: drawFixed, emitter: drawEmitter, vdiv: drawVdiv,
+    collector: drawCollector, two_supply: drawTwoSupply, self: drawSelf
+  };
+  svg.innerHTML = (diagrams[bias]||drawVdiv)(isNPN);
+}
+
+const WIRE = 'stroke="#00d4ff" stroke-width="1.8" fill="none"';
+const WIRE_DIM = 'stroke="#1e4a6a" stroke-width="1.5" fill="none"';
+const TEXT = 'fill="#7ab3d4" font-family="Share Tech Mono" font-size="11"';
+const LABEL = 'fill="#00d4ff" font-family="Share Tech Mono" font-size="12" font-weight="bold"';
+
+function transistorSymbol(cx, cy, isNPN) {
+  const d = isNPN ? 1 : -1;
+  return `
+    <!-- BJT body -->
+    <line x1="${cx}" y1="${cy-30}" x2="${cx}" y2="${cy+30}" ${WIRE}/>
+    <!-- Base -->
+    <line x1="${cx-30}" y1="${cy}" x2="${cx}" y2="${cy}" ${WIRE}/>
+    <!-- Collector -->
+    <line x1="${cx}" y1="${cy-18}" x2="${cx+22}" y2="${cy-32}" ${WIRE}/>
+    <line x1="${cx+22}" y1="${cy-32}" x2="${cx+22}" y2="${cy-55}" ${WIRE}/>
+    <!-- Emitter -->
+    <line x1="${cx}" y1="${cy+18}" x2="${cx+22}" y2="${cy+32}" ${WIRE}/>
+    <line x1="${cx+22}" y1="${cy+32}" x2="${cx+22}" y2="${cy+55}" ${WIRE}/>
+    <!-- Arrow (NPN outward, PNP inward) -->
+    ${isNPN
+      ? `<polygon points="${cx+12},${cy+22} ${cx+22},${cy+32} ${cx+6},${cy+34}" fill="#00d4ff"/>`
+      : `<polygon points="${cx+10},${cy+24} ${cx+0},${cy+18} ${cx+14},${cy+16}" fill="#00d4ff"/>`
+    }
+    <!-- Circle -->
+    <circle cx="${cx+11}" cy="${cy}" r="28" stroke="#1e4a6a" stroke-width="1.5" fill="none"/>
+    <text x="${cx+42}" y="${cy+4}" ${LABEL}>${TRANSISTORS[currentTrans].type}</text>
+  `;
+}
+
+function resistorSymbol(x1,y1,x2,y2,label,value) {
+  const isV = x1===x2;
+  const mx=(x1+x2)/2, my=(y1+y2)/2;
+  const w=isV?8:0, h=isV?0:8;
+  const len=isV?Math.abs(y2-y1):Math.abs(x2-x1);
+  const seg=len/8;
+  let pts = '';
+  if(isV) {
+    const sy = Math.min(y1,y2); const segs=6; const sl=(len-10)/segs;
+    pts=`M ${x1},${sy+5}`;
+    for(let i=0;i<segs;i++) { pts+=` L ${x1+(i%2===0?8:-8)},${sy+5+(i+0.5)*sl}`; }
+    pts+=` L ${x1},${sy+len-5}`;
+  } else {
+    const sx = Math.min(x1,x2); const segs=6; const sl=(len-10)/segs;
+    pts=`M ${sx+5},${y1}`;
+    for(let i=0;i<segs;i++) { pts+=` L ${sx+5+(i+0.5)*sl},${y1+(i%2===0?8:-8)}`; }
+    pts+=` L ${sx+len-5},${y1}`;
+  }
+  return `<path d="${pts}" ${WIRE}/>
+    <text x="${mx+(isV?12:0)}" y="${my+(isV?0:-12)}" ${TEXT}>${label}</text>
+    <text x="${mx+(isV?12:0)}" y="${my+(isV?14:-0)}" fill="#5a9a7a" font-family="Share Tech Mono" font-size="9">${value}</text>`;
+}
+
+function drawVdiv(isNPN) {
+  const cx=200, cy=160;
+  return `
+    ${transistorSymbol(cx,cy,isNPN)}
+    <!-- VCC top -->
+    <line x1="${cx+22}" y1="20" x2="${cx+22}" y2="${cy-55}" ${WIRE}/>
+    <text x="${cx+28}" y="18" ${LABEL}>+VCC</text>
+    <!-- RC -->
+    ${resistorSymbol(cx+22,20,cx+22,cy-55,'RC','4.7kΩ')}
+    <!-- GND bottom -->
+    <line x1="${cx+22}" y1="${cy+55}" x2="${cx+22}" y2="300" ${WIRE}/>
+    <line x1="${cx+12}" y1="300" x2="${cx+32}" y2="300" stroke="#00d4ff" stroke-width="2"/>
+    <line x1="${cx+16}" y1="305" x2="${cx+28}" y2="305" stroke="#00d4ff" stroke-width="1.5"/>
+    <line x1="${cx+19}" y1="310" x2="${cx+25}" y2="310" stroke="#00d4ff" stroke-width="1"/>
+    <!-- RE -->
+    ${resistorSymbol(cx+22,cy+55,cx+22,280,'RE','1kΩ')}
+    <!-- R1 - VCC to base node -->
+    <line x1="60" y1="20" x2="60" y2="140" ${WIRE}/>
+    <line x1="60" y1="20" x2="${cx+22}" y2="20" ${WIRE}/>
+    <text x="30" y="18" ${LABEL}>+VCC</text>
+    ${resistorSymbol(60,20,60,140,'R1','47kΩ')}
+    <!-- R2 - base node to GND -->
+    ${resistorSymbol(60,160,60,280,'R2','10kΩ')}
+    <line x1="50" y1="280" x2="70" y2="280" stroke="#00d4ff" stroke-width="2"/>
+    <line x1="54" y1="285" x2="66" y2="285" stroke="#00d4ff" stroke-width="1.5"/>
+    <line x1="57" y1="290" x2="63" y2="290" stroke="#00d4ff" stroke-width="1"/>
+    <!-- Base connection -->
+    <line x1="60" y1="160" x2="${cx-30}" y2="${cy}" ${WIRE}/>
+    <!-- Node dot -->
+    <circle cx="60" cy="160" r="3" fill="#00d4ff"/>
+    <!-- Labels -->
+    <text x="10" y="${cy+4}" ${TEXT}>B</text>
+    <text x="${cx+22}" y="${cy-60}" ${TEXT}>C</text>
+    <text x="${cx+22}" y="${cy+70}" ${TEXT}>E</text>
+  `;
+}
+
+function drawFixed(isNPN) {
+  const cx=200, cy=155;
+  return `
+    ${transistorSymbol(cx,cy,isNPN)}
+    <line x1="${cx+22}" y1="20" x2="${cx+22}" y2="${cy-55}" ${WIRE}/>
+    <text x="${cx+28}" y="18" ${LABEL}>+VCC</text>
+    ${resistorSymbol(cx+22,20,cx+22,cy-55,'RC','4.7kΩ')}
+    <line x1="${cx+22}" y1="${cy+55}" x2="${cx+22}" y2="300" ${WIRE}/>
+    <line x1="${cx+12}" y1="300" x2="${cx+32}" y2="300" stroke="#00d4ff" stroke-width="2"/>
+    <line x1="${cx+16}" y1="305" x2="${cx+28}" y2="305" stroke="#00d4ff" stroke-width="1.5"/>
+    <line x1="${cx+19}" y1="310" x2="${cx+25}" y2="310" stroke="#00d4ff" stroke-width="1"/>
+    <!-- RB from VCC to base -->
+    <line x1="80" y1="20" x2="${cx+22}" y2="20" ${WIRE}/>
+    <text x="40" y="18" ${LABEL}>+VCC</text>
+    ${resistorSymbol(80,20,80,cy,'RB','470kΩ')}
+    <line x1="80" y1="${cy}" x2="${cx-30}" y2="${cy}" ${WIRE}/>
+    <circle cx="80" cy="${cy}" r="3" fill="#00d4ff"/>
+  `;
+}
+
+function drawEmitter(isNPN) {
+  const cx=200, cy=150;
+  return `
+    ${transistorSymbol(cx,cy,isNPN)}
+    <line x1="${cx+22}" y1="20" x2="${cx+22}" y2="${cy-55}" ${WIRE}/>
+    <text x="${cx+28}" y="18" ${LABEL}>+VCC</text>
+    ${resistorSymbol(cx+22,20,cx+22,cy-55,'RC','4.7kΩ')}
+    ${resistorSymbol(cx+22,cy+55,cx+22,280,'RE','1kΩ')}
+    <line x1="${cx+12}" y1="280" x2="${cx+32}" y2="280" stroke="#00d4ff" stroke-width="2"/>
+    <line x1="${cx+16}" y1="285" x2="${cx+28}" y2="285" stroke="#00d4ff" stroke-width="1.5"/>
+    <line x1="${cx+19}" y1="290" x2="${cx+25}" y2="290" stroke="#00d4ff" stroke-width="1"/>
+    <line x1="80" y1="20" x2="${cx+22}" y2="20" ${WIRE}/>
+    <text x="40" y="18" ${LABEL}>+VCC</text>
+    ${resistorSymbol(80,20,80,cy,'RB','470kΩ')}
+    <line x1="80" y1="${cy}" x2="${cx-30}" y2="${cy}" ${WIRE}/>
+    <circle cx="80" cy="${cy}" r="3" fill="#00d4ff"/>
+  `;
+}
+
+function drawCollector(isNPN) {
+  const cx=200, cy=155;
+  return `
+    ${transistorSymbol(cx,cy,isNPN)}
+    <line x1="${cx+22}" y1="20" x2="${cx+22}" y2="${cy-55}" ${WIRE}/>
+    <text x="${cx+28}" y="18" ${LABEL}>+VCC</text>
+    ${resistorSymbol(cx+22,20,cx+22,cy-55,'RC','4.7kΩ')}
+    <line x1="${cx+22}" y1="${cy+55}" x2="${cx+22}" y2="300" ${WIRE}/>
+    <line x1="${cx+12}" y1="300" x2="${cx+32}" y2="300" stroke="#00d4ff" stroke-width="2"/>
+    <!-- RF from collector to base -->
+    <line x1="${cx+22}" y1="${cy-55}" x2="80" y2="${cy-55}" ${WIRE}/>
+    ${resistorSymbol(80,cy-55,80,cy,'RF','470kΩ')}
+    <line x1="80" y1="${cy}" x2="${cx-30}" y2="${cy}" ${WIRE}/>
+    <circle cx="80" cy="${cy}" r="3" fill="#00d4ff"/>
+    <circle cx="${cx+22}" cy="${cy-55}" r="3" fill="#ff6b35"/>
+    <text x="20" y="${cy}" ${TEXT}>Feedback</text>
+  `;
+}
+
+function drawTwoSupply(isNPN) {
+  const cx=200, cy=155;
+  return `
+    ${transistorSymbol(cx,cy,isNPN)}
+    <line x1="${cx+22}" y1="20" x2="${cx+22}" y2="${cy-55}" ${WIRE}/>
+    <text x="${cx+28}" y="18" ${LABEL}>+VCC</text>
+    ${resistorSymbol(cx+22,20,cx+22,cy-55,'RC','4.7kΩ')}
+    ${resistorSymbol(cx+22,cy+55,cx+22,270,'RE','1kΩ')}
+    <line x1="${cx+22}" y1="270" x2="${cx+22}" y2="290" ${WIRE}/>
+    <text x="${cx+28}" y="300" ${LABEL}>-VEE</text>
+    <line x1="60" y1="${cy}" x2="${cx-30}" y2="${cy}" ${WIRE}/>
+    ${resistorSymbol(60,cy,60,cy,'RB','470kΩ')}
+    <text x="14" y="22" ${LABEL}>−VEE</text>
+    <line x1="60" y1="25" x2="60" y2="${cy}" ${WIRE}/>
+    ${resistorSymbol(60,25,60,cy,'RB','470kΩ')}
+    <circle cx="60" cy="${cy}" r="3" fill="#00d4ff"/>
+  `;
+}
+
+function drawSelf(isNPN) {
+  const cx=200, cy=150;
+  return `
+    ${transistorSymbol(cx,cy,isNPN)}
+    <line x1="${cx+22}" y1="20" x2="${cx+22}" y2="${cy-55}" ${WIRE}/>
+    <text x="${cx+28}" y="18" ${LABEL}>+VCC</text>
+    ${resistorSymbol(cx+22,20,cx+22,cy-55,'RC','4.7kΩ')}
+    ${resistorSymbol(cx+22,cy+55,cx+22,280,'RE','1kΩ')}
+    <line x1="${cx+12}" y1="280" x2="${cx+32}" y2="280" stroke="#00d4ff" stroke-width="2"/>
+    <!-- RF collector to base -->
+    <line x1="${cx+22}" y1="${cy-55}" x2="80" y2="${cy-55}" ${WIRE}/>
+    ${resistorSymbol(80,cy-55,80,cy,'RF','470kΩ')}
+    <line x1="80" y1="${cy}" x2="${cx-30}" y2="${cy}" ${WIRE}/>
+    <circle cx="80" cy="${cy}" r="3" fill="#00d4ff"/>
+    <circle cx="${cx+22}" cy="${cy-55}" r="3" fill="#ff6b35"/>
+  `;
+}
+
+// ─── FORMULAS ─────────────────────────────────────────────
+function updateFormulas() {
+  const bias = currentBias;
+  const formulas = {
+    fixed: `
+      <div class="formula-block">
+        <div class="formula-title">Fixed Bias</div>
+        <div class="formula-line">I<sub>B</sub> = <span>(V<sub>CC</sub> − V<sub>BE</sub>)</span> / <em>R<sub>B</sub></em></div>
+        <div class="formula-line">I<sub>C</sub> = <span>β</span> × <em>I<sub>B</sub></em></div>
+        <div class="formula-line">V<sub>CE</sub> = <span>V<sub>CC</sub></span> − <em>I<sub>C</sub>·R<sub>C</sub></em></div>
+        <div class="formula-line">S = <em>β + 1</em> (worst stability)</div>
+      </div>
+      <div class="formula-block">
+        <div class="formula-title">Notes</div>
+        <div class="formula-line" style="color:#ff6b35">⚠ Very sensitive to β variation</div>
+        <div class="formula-line">Simplest circuit, used in switching</div>
+      </div>`,
+    emitter: `
+      <div class="formula-block">
+        <div class="formula-title">Emitter Feedback</div>
+        <div class="formula-line">I<sub>B</sub> = <span>(V<sub>CC</sub> − V<sub>BE</sub>)</span> / [<em>R<sub>B</sub> + (1+β)R<sub>E</sub></em>]</div>
+        <div class="formula-line">I<sub>C</sub> = <span>β</span> × <em>I<sub>B</sub></em></div>
+        <div class="formula-line">V<sub>CE</sub> = <span>V<sub>CC</sub></span> − <em>I<sub>C</sub>(R<sub>C</sub>+R<sub>E</sub>)</em></div>
+        <div class="formula-line">S = <span>(β+1)</span>/<em>[1 + β·R<sub>E</sub>/(R<sub>E</sub>+R<sub>B</sub>)]</em></div>
+      </div>`,
+    vdiv: `
+      <div class="formula-block">
+        <div class="formula-title">Voltage Divider</div>
+        <div class="formula-line">V<sub>TH</sub> = <span>V<sub>CC</sub>·R<sub>2</sub></span>/<em>(R<sub>1</sub>+R<sub>2</sub>)</em></div>
+        <div class="formula-line">R<sub>TH</sub> = <span>R<sub>1</sub>||R<sub>2</sub></span></div>
+        <div class="formula-line">I<sub>E</sub> ≈ <span>(V<sub>TH</sub> − V<sub>BE</sub>)</span>/<em>R<sub>E</sub></em></div>
+        <div class="formula-line">I<sub>C</sub> ≈ <em>I<sub>E</sub></em> (when β≫1)</div>
+        <div class="formula-line">V<sub>CE</sub> = <span>V<sub>CC</sub></span> − <em>I<sub>C</sub>R<sub>C</sub></em> − <em>I<sub>E</sub>R<sub>E</sub></em></div>
+      </div>
+      <div class="formula-block">
+        <div class="formula-title">Stability</div>
+        <div class="formula-line">S ≈ <span>1 + R<sub>B</sub>/R<sub>E</sub></span></div>
+        <div class="formula-line" style="color:#39ff14">✓ Best for linear amplifiers</div>
+        <div class="formula-line">β-independent when R<sub>TH</sub>≪β·R<sub>E</sub></div>
+      </div>`,
+    collector: `
+      <div class="formula-block">
+        <div class="formula-title">Collector Feedback</div>
+        <div class="formula-line">I<sub>B</sub> = <span>(V<sub>CC</sub> − V<sub>BE</sub>)</span>/<em>(R<sub>F</sub> + β·R<sub>C</sub>)</em></div>
+        <div class="formula-line">I<sub>C</sub> = <span>β</span> × <em>I<sub>B</sub></em></div>
+        <div class="formula-line">V<sub>CE</sub> = <span>V<sub>CC</sub></span> − <em>(I<sub>C</sub>+I<sub>B</sub>)R<sub>C</sub></em></div>
+        <div class="formula-line" style="color:#ffd700">Self-compensating via V<sub>CE</sub> feedback</div>
+      </div>`,
+    two_supply: `
+      <div class="formula-block">
+        <div class="formula-title">Dual Supply Bias</div>
+        <div class="formula-line">I<sub>B</sub> = <span>(V<sub>EE</sub> − V<sub>BE</sub>)</span>/<em>[R<sub>B</sub>+(1+β)R<sub>E</sub>]</em></div>
+        <div class="formula-line">I<sub>C</sub> = <span>β</span> × <em>I<sub>B</sub></em></div>
+        <div class="formula-line">V<sub>CE</sub> = <span>V<sub>CC</sub>+V<sub>EE</sub></span> − <em>I<sub>C</sub>R<sub>C</sub></em> − <em>I<sub>E</sub>R<sub>E</sub></em></div>
+        <div class="formula-line" style="color:#00d4ff">Used in op-amp input stages</div>
+      </div>`,
+    self: `
+      <div class="formula-block">
+        <div class="formula-title">Self Bias (Emitter + Coll. FB)</div>
+        <div class="formula-line">I<sub>B</sub> = <span>(V<sub>CC</sub> − V<sub>BE</sub>)</span>/<em>[R<sub>F</sub>+β(R<sub>C</sub>+R<sub>E</sub>)]</em></div>
+        <div class="formula-line">I<sub>C</sub> = <span>β</span> × <em>I<sub>B</sub></em></div>
+        <div class="formula-line">V<sub>CE</sub> = <span>V<sub>CC</sub></span> − <em>I<sub>C</sub>R<sub>C</sub></em> − <em>I<sub>E</sub>R<sub>E</sub></em> − <em>I<sub>B</sub>R<sub>F</sub></em></div>
+        <div class="formula-line" style="color:#39ff14">Double feedback, good stability</div>
+      </div>`,
+  };
+
+  document.getElementById('formulaPanel').innerHTML = `
+    ${formulas[bias]||''}
+    <div class="divider"></div>
+    <div class="formula-block">
+      <div class="formula-title">Q-Point Conditions</div>
+      <div class="formula-line">Active: V<sub>BE</sub>≈<em>0.6–0.7V</em>, V<sub>CE</sub>&gt;<em>0.2V</em></div>
+      <div class="formula-line">Saturation: V<sub>CE(sat)</sub>≈<em>0.1–0.2V</em></div>
+      <div class="formula-line">Cutoff: I<sub>C</sub>≈<em>I<sub>CEO</sub></em>, I<sub>B</sub>=<em>0</em></div>
+    </div>
+    <div class="formula-block">
+      <div class="formula-title">Power Dissipation</div>
+      <div class="formula-line">P<sub>D</sub> = <span>V<sub>CE</sub></span> × <em>I<sub>C</sub></em></div>
+      <div class="formula-line">Derate above 25°C</div>
+    </div>
+    <div class="formula-block">
+      <div class="formula-title">Midpoint Bias (Optimal)</div>
+      <div class="formula-line">V<sub>CE</sub> ≈ <em>V<sub>CC</sub>/2</em></div>
+      <div class="formula-line">I<sub>C</sub> ≈ <em>V<sub>CC</sub>/(2R<sub>C</sub>)</em></div>
+    </div>
+  `;
+}
+
+// Initial draw
+drawCircuit();
+updateFormulas();
+buildResistorFields();
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

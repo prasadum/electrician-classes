@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alternator Synchronisation</title>
+<meta name="section" content="Electrical Machines &amp; Control">
+<meta name="section-order" content="1">
+<meta name="order" content="3">
+<meta name="description" content="KS5 synchroscope and lamp methods">
+
+    <style>
+        :root { --bg: #121212; --panel: #222; --accent: #4CAF50; --err: #ff3333; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding: 5px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        /* Sliders at the top for accessibility */
+        .top-controls { background: var(--panel); border-radius: 8px; padding: 12px; width: 95%; max-width: 1000px; display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 10px; border: 1px solid #444; }
+        .slider-group { flex: 1; min-width: 250px; display: flex; flex-direction: column; }
+        label { font-size: 11px; color: #aaa; font-weight: bold; margin-bottom: 5px; }
+        input[type=range] { width: 100%; height: 30px; cursor: pointer; }
+
+        .main-container { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; }
+
+        /* Measurement Section with Frequency */
+        .side-panel { background: var(--panel); border: 2px solid #444; border-radius: 8px; padding: 10px; width: 280px; text-align: center; }
+        
+        .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; border-top: 1px solid #444; margin-top: 10px; padding-top: 8px; }
+        .val-disp { font-family: monospace; font-size: 13px; font-weight: bold; margin-bottom: 2px; }
+
+        /* Triangle Lamp Geometry */
+        .lamp-triangle-container { position: relative; width: 220px; height: 180px; margin: 10px auto; background: #000; border-radius: 10px; border: 2px solid #333; }
+        .bulb { width: 18px; height: 18px; border-radius: 50%; border: 1px solid #444; background: #050505; position: absolute; }
+        
+        #l1-tip { top: 10px; left: 50%; transform: translateX(-50%); }
+        #l1-adj { top: 32px; left: 42%; }
+        #l2-tip { bottom: 15px; left: 15px; }
+        #l2-adj { bottom: 15px; left: 42px; }
+        #l3-tip { bottom: 15px; right: 15px; }
+        #l3-adj { bottom: 15px; right: 42px; }
+
+        .ks5-unit { background: #333; padding: 10px; border: 3px solid #555; border-radius: 8px; width: 340px; }
+        .screen { background: #000; height: 320px; position: relative; border: 2px solid #111; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+        .ring { width: 100px; height: 100px; border: 4px solid #004466; border-radius: 50%; position: relative; margin-top: 15px; }
+        #arrow { width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 18px solid red; position: absolute; top: -18px; left: 50%; transform-origin: 8px 68px; }
+        #waveCanvas { background: #000; width: 100%; height: 100px; border-top: 1px solid #444; margin-top: auto; }
+
+        .logic-panel { background: #e0e0e0; color: #333; width: 220px; border: 2px solid #666; padding: 10px; border-radius: 8px; }
+        .btn { padding: 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; color: white; width: 100%; margin-top: 8px; }
+    </style>
+</head>
+<body>
+
+    <h4 style="color: var(--accent); margin: 5px 0;">NSTI Calicut: Full Scale KS5 & Lamp Bench</h4>
+
+    <div class="top-controls">
+        <div class="slider-group">
+            <label>EXCITATION / VOLTAGE (±1%)</label>
+            <input type="range" id="u-s" min="300" max="500" step="0.5" value="402">
+        </div>
+        <div class="slider-group">
+            <label>GOVERNOR / FREQUENCY (40.000 Hz - 60.000 Hz)</label>
+            <input type="range" id="f-s" min="40.000" max="60.000" step="0.001" value="48.000">
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="side-panel">
+            <h6 style="margin:0; color:yellow; font-size:10px;">RAW DATA & LAMPS</h6>
+            <div class="lamp-triangle-container">
+                <div id="l1-tip" class="bulb b1"></div><div id="l1-adj" class="bulb b1"></div>
+                <div id="l2-tip" class="bulb b2"></div><div id="l2-adj" class="bulb b2"></div>
+                <div id="l3-tip" class="bulb b3"></div><div id="l3-adj" class="bulb b3"></div>
+            </div>
+            
+            <div class="comp-grid">
+                <div style="text-align:left; border-right:1px solid #444; padding-right:5px;">
+                    <small style="font-size:8px; color:#888;">EB GRID</small>
+                    <div class="val-disp" style="color: cyan;">415.0V</div>
+                    <div class="val-disp" style="color: cyan;">50.000Hz</div>
+                </div>
+                <div style="text-align:right; padding-left:5px;">
+                    <small style="font-size:8px; color:#888;">ALT (G)</small>
+                    <div id="alt-v-txt" class="val-disp out-tol">402.0V</div>
+                    <div id="alt-f-txt" class="val-disp out-tol">48.000Hz</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ks5-unit">
+            <div class="screen">
+                <div class="ring"><div id="arrow"></div></div>
+                <div style="font-family:monospace; margin-top:10px; text-align:center;">
+                    <div id="phi-ui" style="color:yellow; font-size:22px;">φ 88.5°</div>
+                    <div id="diff-ui" style="font-size:11px; color:cyan;">δU: -3.1% | δf: -4.00%</div>
+                </div>
+                <canvas id="waveCanvas" width="340" height="100"></canvas>
+            </div>
+        </div>
+
+        <div class="logic-panel">
+            <label style="font-size:10px; font-weight:bold;">METHOD:</label>
+            <select id="method-select" style="width:100%; padding:5px; margin-bottom:10px;">
+                <option value="bright">2-Bright 1-Dark</option>
+                <option value="dark">3-Dark Lamps</option>
+            </select>
+            <div id="breaker-ui" style="height:40px; background:#bbb; border:1px solid #444; display:flex; align-items:center; justify-content:center; font-weight:bold; border-radius:4px; font-size:11px;">OPEN</div>
+            <button id="sync-btn" class="btn" style="background:#2196F3;">CLOSE SYNC</button>
+            <button id="reset-btn" class="btn" style="background:#666;">RESET SYSTEM</button>
+            <div id="cost-txt" style="color:red; font-weight:bold; font-size:12px; margin-top:10px; text-align:center;">Repair: ₹ 0</div>
+        </div>
+    </div>
+
+    <script>
+        let p = 88.5, synced = false, fault = false, totalCost = 0;
+        const canvas = document.getElementById('waveCanvas'), ctx = canvas.getContext('2d');
+
+        function update() {
+            const f = parseFloat(document.getElementById('f-s').value), v = parseFloat(document.getElementById('u-s').value);
+            const method = document.getElementById('method-select').value;
+            const du = ((v-415)/415)*100, df = f-50.0;
+            const vOk = Math.abs(du) <= 1.0, fOk = Math.abs(df) <= 0.1;
+
+            if(!synced && !fault) p = (p + (df * 360 * 0.016) + 360) % 360;
+            const pOk = (p <= 5 || p >= 355);
+
+            document.getElementById('alt-v-txt').innerText = v.toFixed(1) + "V";
+            document.getElementById('alt-v-txt').style.color = vOk ? "#00ff00" : "red";
+            document.getElementById('alt-f-txt').innerText = f.toFixed(3) + "Hz";
+            document.getElementById('alt-f-txt').style.color = fOk ? "#00ff00" : "red";
+            
+            document.getElementById('phi-ui').innerText = `φ ${p.toFixed(1)}°`;
+            document.getElementById('diff-ui').innerText = `δU: ${du.toFixed(1)}% | δf: ${(df/50*100).toFixed(2)}%`;
+            document.getElementById('arrow').style.transform = `translateX(-50%) rotate(${p}deg)`;
+
+            const pRad = p * Math.PI / 180;
+            let b1, b2, b3;
+
+            if(method === "bright") {
+                b1 = Math.pow(Math.sin(pRad/2), 2);
+                b2 = Math.pow(Math.sin((pRad + (2*Math.PI/3))/2), 2);
+                b3 = Math.pow(Math.sin((pRad - (2*Math.PI/3))/2), 2);
+            } else {
+                b1 = b2 = b3 = Math.pow(Math.sin(pRad/2), 2);
+            }
+
+            const activeColor = (vOk && fOk && pOk) ? "rgba(0,255,0," : "rgba(255,255,0,";
+            document.querySelectorAll('.b1').forEach(b => { b.style.background = `radial-gradient(circle, rgba(255,255,0,${b1}) 0%, #050505 100%)`; b.style.boxShadow = `0 0 ${b1*15}px yellow`; });
+            document.querySelectorAll('.b2').forEach(b => { b.style.background = `radial-gradient(circle, ${activeColor}${b2}) 0%, #050505 100%)`; b.style.boxShadow = `0 0 ${b2*15}px yellow`; });
+            document.querySelectorAll('.b3').forEach(b => { b.style.background = `radial-gradient(circle, ${activeColor}${b3}) 0%, #050505 100%)`; b.style.boxShadow = `0 0 ${b3*15}px yellow`; });
+
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            ctx.strokeStyle = "yellow"; ctx.lineWidth = 2; ctx.beginPath();
+            for(let x=0; x<canvas.width; x++){ ctx.lineTo(x, 50 + Math.sin(x*0.06)*35); } ctx.stroke();
+            ctx.strokeStyle = fault ? "white" : "red"; ctx.beginPath();
+            for(let x=0; x<canvas.width; x++){ ctx.lineTo(x, 50 + Math.sin(x*0.06 - pRad)*(v/415*35)); } ctx.stroke();
+
+            requestAnimationFrame(update);
+        }
+
+        document.getElementById('sync-btn').onclick = () => {
+            if(fault) return;
+            const v = parseFloat(document.getElementById('u-s').value), f = parseFloat(document.getElementById('f-s').value);
+            if (Math.abs(((v-415)/415)*100) <= 1.0 && Math.abs(f-50) <= 0.1 && (p <= 5 || p >= 355)) {
+                synced = true; p = 0; document.getElementById('breaker-ui').innerText = "CLOSED"; document.getElementById('breaker-ui').style.background = "#4CAF50";
+            } else {
+                fault = true; totalCost += 150000;
+                document.getElementById('cost-txt').innerText = "Repair: ₹ " + totalCost.toLocaleString();
+                document.getElementById('breaker-ui').innerText = "TRIPPED"; document.getElementById('breaker-ui').style.background = "red";
+            }
+        };
+
+        document.getElementById('reset-btn').onclick = () => {
+            synced = false; fault = false; p = 88.5;
+            document.getElementById('breaker-ui').innerText = "OPEN"; document.getElementById('breaker-ui').style.background = "#bbb";
+            document.getElementById('f-s').value = 48.000; document.getElementById('u-s').value = 402;
+        };
+
+        update();
+    </script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

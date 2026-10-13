@@ -1,0 +1,2561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synchronous Motor</title>
+<meta name="section" content="Electrical Machines &amp; Control">
+<meta name="section-order" content="1">
+<meta name="order" content="4">
+<meta name="description" content="Synchronous motor trainer – 6.5 A / 415 V">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0a0e1a;
+    --panel: #0f1628;
+    --panel2: #141c35;
+    --border: #1e3a5f;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #39ff14;
+    --accent4: #ffd700;
+    --warn: #ff4444;
+    --text: #c8d8f0;
+    --dim: #5a7a9a;
+    --grid: #1a2a40;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(0,100,200,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(0,212,255,0.04) 0%, transparent 50%);
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #060d1f 0%, #0f1e3a 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 0 30px rgba(0,212,255,0.2);
+  }
+  .header-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--accent);
+    text-shadow: 0 0 20px rgba(0,212,255,0.6);
+    letter-spacing: 2px;
+  }
+  .header-sub { font-size: 12px; color: var(--dim); font-family: 'Share Tech Mono'; margin-top: 2px; }
+  .header-specs {
+    display: flex; gap: 20px;
+  }
+  .spec-badge {
+    background: rgba(0,212,255,0.08);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 12px;
+    text-align: center;
+  }
+  .spec-badge .val { font-family: 'Orbitron'; font-size: 16px; font-weight: 700; color: var(--accent4); }
+  .spec-badge .lbl { font-size: 10px; color: var(--dim); }
+
+  /* STATUS BAR */
+  .status-bar {
+    background: #080d1a;
+    border-bottom: 1px solid var(--border);
+    padding: 6px 20px;
+    display: flex; gap: 20px; align-items: center;
+    font-family: 'Share Tech Mono'; font-size: 12px;
+  }
+  .status-item { display: flex; gap: 6px; align-items: center; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-green { background: var(--accent3); box-shadow: 0 0 8px var(--accent3); animation: pulse 2s infinite; }
+  .dot-red { background: var(--warn); box-shadow: 0 0 8px var(--warn); }
+  .dot-yellow { background: var(--accent4); box-shadow: 0 0 8px var(--accent4); }
+  .dot-gray { background: #444; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* MAIN LAYOUT */
+  .main { display: grid; grid-template-columns: 260px 1fr 300px; gap: 0; height: calc(100vh - 100px); overflow: hidden; }
+
+  /* PANELS */
+  .panel { background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; padding: 14px; }
+  .panel::-webkit-scrollbar { width: 4px; }
+  .panel::-webkit-scrollbar-track { background: var(--bg); }
+  .panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .panel-title {
+    font-family: 'Orbitron'; font-size: 10px; letter-spacing: 3px;
+    color: var(--accent); text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px; margin-bottom: 12px;
+  }
+
+  /* CONTROLS */
+  .ctrl-group { margin-bottom: 16px; }
+  .ctrl-label {
+    font-size: 11px; color: var(--dim); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 6px; display: flex; justify-content: space-between;
+  }
+  .ctrl-val { color: var(--accent4); font-family: 'Share Tech Mono'; }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%; height: 6px;
+    background: var(--grid);
+    border-radius: 3px; outline: none;
+    border: 1px solid var(--border);
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--accent);
+    border: 2px solid var(--bg);
+  }
+  input[type=range].red::-webkit-slider-thumb { background: var(--accent2); box-shadow: 0 0 10px var(--accent2); }
+  input[type=range].green::-webkit-slider-thumb { background: var(--accent3); box-shadow: 0 0 10px var(--accent3); }
+
+  /* LOAD BUTTONS */
+  .load-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+  .load-btn {
+    padding: 7px 4px; border: 1px solid var(--border);
+    background: var(--panel2); color: var(--text);
+    border-radius: 4px; cursor: pointer; font-family: 'Rajdhani';
+    font-size: 12px; font-weight: 600; text-align: center;
+    transition: all 0.2s; text-transform: uppercase;
+  }
+  .load-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .load-btn.active { background: rgba(0,212,255,0.15); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 10px rgba(0,212,255,0.2); }
+
+  /* BIG BUTTONS */
+  .big-btn {
+    width: 100%; padding: 10px; border-radius: 6px;
+    border: 1px solid; cursor: pointer;
+    font-family: 'Orbitron'; font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    transition: all 0.2s; margin-bottom: 8px;
+  }
+  .btn-start { background: rgba(57,255,20,0.1); border-color: var(--accent3); color: var(--accent3); }
+  .btn-start:hover { background: rgba(57,255,20,0.25); box-shadow: 0 0 15px rgba(57,255,20,0.3); }
+  .btn-excite { background: rgba(0,212,255,0.1); border-color: var(--accent); color: var(--accent); }
+  .btn-excite:hover { background: rgba(0,212,255,0.25); box-shadow: 0 0 15px rgba(0,212,255,0.3); }
+  .btn-stop { background: rgba(255,68,68,0.1); border-color: var(--warn); color: var(--warn); }
+  .btn-stop:hover { background: rgba(255,68,68,0.25); box-shadow: 0 0 15px rgba(255,68,68,0.3); }
+  .big-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* METERS */
+  .meters-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .meter-box {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .meter-box::before {
+    content:''; position:absolute; top:0; left:0; right:0; height: 2px;
+  }
+  .meter-box.cyan::before { background: var(--accent); }
+  .meter-box.orange::before { background: var(--accent2); }
+  .meter-box.green::before { background: var(--accent3); }
+  .meter-box.gold::before { background: var(--accent4); }
+  .meter-box.red::before { background: var(--warn); }
+
+  .meter-label { font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .meter-value {
+    font-family: 'Share Tech Mono'; font-size: 22px; font-weight: bold;
+    line-height: 1; margin-bottom: 2px;
+  }
+  .meter-unit { font-size: 10px; color: var(--dim); }
+  .meter-box.cyan .meter-value { color: var(--accent); text-shadow: 0 0 15px rgba(0,212,255,0.5); }
+  .meter-box.orange .meter-value { color: var(--accent2); text-shadow: 0 0 15px rgba(255,107,53,0.5); }
+  .meter-box.green .meter-value { color: var(--accent3); text-shadow: 0 0 15px rgba(57,255,20,0.5); }
+  .meter-box.gold .meter-value { color: var(--accent4); text-shadow: 0 0 15px rgba(255,215,0,0.5); }
+  .meter-box.red .meter-value { color: var(--warn); text-shadow: 0 0 15px rgba(255,68,68,0.5); }
+
+  .meter-full { background: var(--panel2); border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-bottom: 10px; position:relative; overflow:hidden; }
+  .meter-full::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: var(--accent4); }
+
+  /* TACHOMETER */
+  .tacho-wrap { position: relative; width: 140px; height: 80px; margin: 6px auto; }
+  .tacho-arc { width: 140px; height: 80px; }
+
+  /* PF METER */
+  .pf-wrap { position: relative; width: 160px; height: 90px; margin: 0 auto 4px; }
+  .pf-arc { width: 160px; height: 90px; }
+
+  /* CANVAS CENTER */
+  .center-panel { background: var(--bg); overflow-y: auto; display: flex; flex-direction: column; }
+  .canvas-section { padding: 14px; border-bottom: 1px solid var(--border); }
+  .canvas-section-title {
+    font-family: 'Orbitron'; font-size: 10px; letter-spacing: 2px;
+    color: var(--dim); text-transform: uppercase; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  canvas { display: block; background: #060b18; border: 1px solid var(--border); border-radius: 4px; width: 100%; }
+
+  /* MOTOR ANIMATION */
+  .motor-anim-wrap { display: flex; justify-content: center; padding: 14px 14px 0; }
+  .motor-svg-wrap { position: relative; }
+  .motor-svg { width: 200px; height: 140px; }
+
+  /* STATUS MESSAGES */
+  .status-msgs {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    font-family: 'Share Tech Mono';
+    font-size: 11px;
+    height: 120px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
+  .msg-line { padding: 2px 0; border-bottom: 1px solid rgba(30,58,95,0.5); }
+  .msg-line:last-child { border: none; }
+  .msg-info { color: var(--accent); }
+  .msg-warn { color: var(--accent4); }
+  .msg-err { color: var(--warn); }
+  .msg-ok { color: var(--accent3); }
+
+  /* EFFECTS PANEL */
+  .effect-box {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .effect-title { font-size: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .effect-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 11px; }
+  .effect-key { color: var(--dim); }
+  .effect-val { font-family: 'Share Tech Mono'; }
+  .effect-val.good { color: var(--accent3); }
+  .effect-val.warn { color: var(--accent4); }
+  .effect-val.bad { color: var(--warn); }
+  .effect-val.info { color: var(--accent); }
+
+  /* PROGRESS BARS */
+  .prog-bar-wrap { margin-top: 4px; margin-bottom: 6px; }
+  .prog-bar-label { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 3px; }
+  .prog-bar-track { background: var(--grid); border-radius: 3px; height: 6px; overflow: hidden; border: 1px solid var(--border); }
+  .prog-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+  .fill-cyan { background: linear-gradient(90deg, var(--accent), #00aacc); box-shadow: 0 0 8px var(--accent); }
+  .fill-orange { background: linear-gradient(90deg, var(--accent2), #cc4400); box-shadow: 0 0 8px var(--accent2); }
+  .fill-green { background: linear-gradient(90deg, var(--accent3), #00aa00); box-shadow: 0 0 8px var(--accent3); }
+  .fill-gold { background: linear-gradient(90deg, var(--accent4), #cc9900); box-shadow: 0 0 8px var(--accent4); }
+  .fill-red { background: linear-gradient(90deg, var(--warn), #aa0000); box-shadow: 0 0 8px var(--warn); }
+
+  /* SYNC INDICATOR */
+  .sync-indicator {
+    text-align: center; padding: 8px;
+    border: 2px solid var(--border); border-radius: 8px;
+    margin-bottom: 10px; font-family: 'Orbitron'; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase;
+    transition: all 0.5s;
+  }
+  .sync-indicator.synced { border-color: var(--accent3); color: var(--accent3); box-shadow: 0 0 20px rgba(57,255,20,0.3); background: rgba(57,255,20,0.05); }
+  .sync-indicator.near { border-color: var(--accent4); color: var(--accent4); box-shadow: 0 0 15px rgba(255,215,0,0.2); animation: pulse 1s infinite; }
+  .sync-indicator.off { border-color: var(--border); color: var(--dim); }
+  .sync-indicator.lost { border-color: var(--warn); color: var(--warn); box-shadow: 0 0 20px rgba(255,68,68,0.3); animation: pulse 0.5s infinite; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+
+  /* Scrollbar */
+  .center-panel::-webkit-scrollbar { width: 4px; }
+  .center-panel::-webkit-scrollbar-track { background: var(--bg); }
+  .center-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .tab-btns { display: flex; gap: 4px; margin-bottom: 10px; }
+  .tab-btn {
+    flex: 1; padding: 6px; background: var(--panel2);
+    border: 1px solid var(--border); border-radius: 4px;
+    cursor: pointer; font-family: 'Rajdhani'; font-size: 11px;
+    font-weight: 600; text-transform: uppercase; color: var(--dim);
+    transition: all 0.2s; text-align: center;
+  }
+  .tab-btn.active { background: rgba(0,212,255,0.12); border-color: var(--accent); color: var(--accent); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .alert-box {
+    padding: 8px 12px; border-radius: 4px; margin-bottom: 8px;
+    font-size: 11px; line-height: 1.6; display: none;
+  }
+  .alert-box.show { display: block; }
+  .alert-warn { background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.4); color: var(--accent4); }
+  .alert-danger { background: rgba(255,68,68,0.08); border: 1px solid rgba(255,68,68,0.4); color: var(--warn); }
+  .alert-info { background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.4); color: var(--accent); }
+  .alert-good { background: rgba(57,255,20,0.08); border: 1px solid rgba(57,255,20,0.4); color: var(--accent3); }
+
+  /* LANGUAGE SELECTOR */
+  .lang-sel {
+    position: fixed; bottom: 14px; right: 14px; z-index: 999;
+    background: var(--panel2); border: 1px solid var(--accent);
+    border-radius: 6px; padding: 5px 10px; display: flex; align-items: center; gap: 8px;
+    font-family: 'Share Tech Mono'; font-size: 11px; box-shadow: 0 0 15px rgba(0,212,255,0.2);
+  }
+  .lang-sel label { color: var(--accent); font-size: 10px; letter-spacing: 1px; }
+  .lang-sel select {
+    background: var(--bg); color: var(--text); border: 1px solid var(--border);
+    border-radius: 3px; padding: 3px 6px; font-family: 'Share Tech Mono'; font-size: 11px;
+    cursor: pointer; outline: none;
+  }
+  .lang-sel select:hover { border-color: var(--accent); }
+
+  /* PULL-OUT GAUGE */
+  .pullout-gauge-wrap { margin: 8px 0; }
+  .pullout-gauge-track {
+    position: relative; height: 26px;
+    background: linear-gradient(90deg,
+      #003a00 0%, #0a5a0a 30%,
+      #5a5a00 50%, #7a3a00 70%,
+      #7a0000 85%, #aa0000 100%);
+    border-radius: 5px; border: 1px solid var(--border); overflow: visible;
+  }
+  .pullout-zone-label {
+    position: absolute; font-size: 9px; top: 6px; font-family: 'Share Tech Mono'; font-weight:700;
+  }
+  .pullout-marker {
+    position: absolute; top: -5px; width: 4px; height: 36px;
+    border-radius: 2px; box-shadow: 0 0 12px 2px currentColor;
+    transition: left 0.35s ease, background 0.35s, color 0.35s;
+    transform: translateX(-50%); z-index:10;
+  }
+  .needle-green { background: #39ff14; color: #39ff14; }
+  .needle-yellow { background: #ffd700; color: #ffd700; }
+  .needle-red { background: #ff2222; color: #ff2222; animation: needleFlash 0.4s infinite alternate; }
+  @keyframes needleFlash { from { opacity:1; box-shadow:0 0 16px 4px #ff2222; } to { opacity:0.4; box-shadow:0 0 4px 1px #ff2222; } }
+  .pullout-labels { display: flex; justify-content: space-between; font-size: 9px; color: var(--dim); margin-top: 3px; }
+  .gauge-zones { display: flex; height: 7px; border-radius: 3px; overflow: hidden; margin-top: 6px; gap:1px; }
+  .gz-safe  { flex: 4.5; background: #39ff14; opacity:0.8; border-radius:3px 0 0 3px; }
+  .gz-warn  { flex: 2;   background: #ffd700; opacity:0.8; }
+  .gz-crit  { flex: 1.5; background: #ff6b35; opacity:0.9; }
+  .gz-trip  { flex: 1;   background: #ff0000; opacity:1;   border-radius:0 3px 3px 0; }
+
+  /* LOAD ANGLE DIAL */
+  .load-angle-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    background: var(--panel2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 8px 6px; margin-bottom: 10px;
+    position: relative; overflow: hidden;
+  }
+  .load-angle-wrap::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background: var(--accent4);
+  }
+  .load-angle-title {
+    font-size:10px; color:var(--accent4); text-transform:uppercase;
+    letter-spacing:1px; margin-bottom:6px; font-family:'Share Tech Mono';
+  }
+  .dial-canvas { display:block; }
+  .dial-readout {
+    font-family:'Share Tech Mono'; font-size:20px; font-weight:bold;
+    margin-top:2px; transition: color 0.3s;
+  }
+  .dial-readout.safe  { color:#39ff14; text-shadow:0 0 12px #39ff14; }
+  .dial-readout.warn  { color:#ffd700; text-shadow:0 0 12px #ffd700; }
+  .dial-readout.crit  { color:#ff4444; text-shadow:0 0 12px #ff4444; }
+  .dial-sublabel { font-size:10px; color:var(--dim); margin-top:1px; }
+
+
+  /* SIMULATION SWITCHES */
+  .sim-switches { margin-top: 8px; }
+  .sim-switch-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 8px; margin-bottom: 5px;
+    background: var(--panel2); border: 1px solid var(--border); border-radius: 5px;
+    font-size: 10px; font-family: 'Share Tech Mono';
+  }
+  .sim-switch-row.active { border-color: #ff6b35; background: rgba(255,107,53,0.08); }
+  .sim-switch-label { color: var(--dim); flex: 1; }
+  .sim-switch-label b { color: var(--text); display: block; font-size: 11px; margin-bottom: 1px; }
+  .toggle-sw {
+    position: relative; width: 38px; height: 20px; cursor: pointer; flex-shrink: 0;
+  }
+  .toggle-sw input { opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute; inset: 0; background: #1a2a3a; border-radius: 10px;
+    border: 1px solid var(--border); transition: background 0.2s;
+  }
+  .toggle-track::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #4a6a8a; transition: left 0.2s, background 0.2s;
+  }
+  .toggle-sw input:checked + .toggle-track { background: rgba(255,107,53,0.25); border-color: #ff6b35; }
+  .toggle-sw input:checked + .toggle-track::after { left: 20px; background: #ff6b35; }
+  .sim-badge {
+    font-size: 9px; padding: 1px 5px; border-radius: 3px; margin-left: 6px;
+    font-family: 'Share Tech Mono'; font-weight: bold; letter-spacing: 0.5px;
+  }
+  .badge-warn { background: rgba(255,107,53,0.2); color: #ff6b35; border: 1px solid rgba(255,107,53,0.4); }
+  .badge-safe { background: rgba(57,255,20,0.1); color: #39ff14; border: 1px solid rgba(57,255,20,0.3); }
+  /* Hunting oscillation overlay on tachometer area */
+  .hunting-indicator {
+    text-align:center; font-family:'Share Tech Mono'; font-size:10px;
+    padding: 3px 8px; border-radius: 4px; margin-top: 3px; display:none;
+  }
+  .hunting-indicator.show { display:block; }
+  .hunting-indicator.mild  { color:#ffd700; background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.3); }
+  .hunting-indicator.severe{ color:#ff4444; background:rgba(255,68,68,0.1);  border:1px solid rgba(255,68,68,0.4); animation: pulse 0.6s infinite alternate; }
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="header-title" id="hdr_title">⚡ SYNCHRONOUS MOTOR TRAINER</div>
+    <div class="header-sub" id="hdr_sub">INDUSTRIAL LABORATORY SIMULATOR — 3-PHASE AC SYNCHRONOUS MACHINE</div>
+  </div>
+  <div class="header-specs">
+    <div class="spec-badge"><div class="val">6.5A</div><div class="lbl">RATED CURRENT</div></div>
+    <div class="spec-badge"><div class="val">415V</div><div class="lbl">LINE VOLTAGE</div></div>
+    <div class="spec-badge"><div class="val">220V</div><div class="lbl">FIELD SUPPLY</div></div>
+    <div class="spec-badge"><div class="val">1500</div><div class="lbl">SYNC RPM</div></div>
+    <div class="spec-badge"><div class="val">4-POLE</div><div class="lbl">50Hz</div></div>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar" id="statusBar">
+  <div class="status-item"><div class="status-dot dot-gray" id="dotPower"></div><span id="lblPower"><span id="ui_lblPower">SUPPLY: OFF</span></span></div>
+  <div class="status-item"><div class="status-dot dot-gray" id="dotMotor"></div><span id="lblMotor"><span id="ui_lblMotorStatus">MOTOR STOPPED</span></span></div>
+  <div class="status-item"><div class="status-dot dot-gray" id="dotExcite"></div><span id="lblExcite"><span id="ui_lblExciteStatus">FIELD: NOT EXCITED</span></span></div>
+  <div class="status-item"><div class="status-dot dot-gray" id="dotSync"></div><span id="lblSync"><span id="ui_lblSyncStatus">SYNCHRONISM: —</span></span></div>
+  <div style="margin-left:auto; font-size:11px; color:var(--dim);" id="timeDisp"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT: CONTROLS -->
+  <div class="panel">
+    <div class="panel-title" id="ui_controlPanel">Control Panel</div>
+
+    <!-- SUPPLY -->
+    <div class="ctrl-group">
+      <div class="ctrl-label"><span id="ui_lblVolt">Supply Voltage (Line)</span><span class="ctrl-val" id="voltDisp">415 V</span></div>
+      <input type="range" id="voltSlider" min="350" max="440" value="415" step="5">
+    </div>
+
+    <!-- START/STOP -->
+    <button class="big-btn btn-start" id="btnStart" onclick="startMotor()">▶ START (As Induction)</button>
+    <button class="big-btn btn-excite" id="btnExcite" onclick="applyExcitation()" disabled>⚡ APPLY FIELD EXCITATION</button>
+    <button class="big-btn btn-stop" id="btnStop" onclick="stopMotor()" disabled>■ STOP MOTOR</button>
+    <hr class="divider">
+
+    <!-- FIELD EXCITATION -->
+    <div class="ctrl-group">
+      <div class="ctrl-label"><span id="ui_lblIf">Field Excitation Current</span><span class="ctrl-val" id="ifDisp">0.00 A</span></div>
+      <input type="range" class="red" id="ifSlider" min="0" max="3" value="0" step="0.05" oninput="updateControls()" disabled>
+      <div style="font-size:10px; color:var(--dim); margin-top:4px;">Rated: 1.5A | Supply: 220V DC</div>
+    </div>
+
+    <!-- LOAD -->
+    <hr class="divider">
+    <div class="ctrl-label" style="margin-bottom:8px;" id="ui_lblLoad">Mechanical Load</div>
+    <div class="load-btns">
+      <button class="load-btn active" onclick="setLoad(0)" id="loadBtn0"><span id="ui_loadNone">No Load</span></button>
+      <button class="load-btn" onclick="setLoad(0.25)" id="loadBtn25"><span id="ui_loadQ">¼ Load</span></button>
+      <button class="load-btn" onclick="setLoad(0.5)" id="loadBtn50"><span id="ui_loadH">½ Load</span></button>
+      <button class="load-btn" onclick="setLoad(0.75)" id="loadBtn75"><span id="ui_loadT">¾ Load</span></button>
+      <button class="load-btn" onclick="setLoad(1.0)" id="loadBtn100"><span id="ui_loadF">Full Load</span></button>
+      <button class="load-btn" onclick="setLoad(1.2)" id="loadBtnOL"><span id="ui_loadOL">Overload</span></button>
+    </div>
+
+    <hr class="divider">
+
+    <!-- SIMULATION PROTECTION BYPASS SWITCHES -->
+    <div style="font-size:9px; color:var(--accent4); letter-spacing:1px; text-transform:uppercase; margin-bottom:5px; font-family:'Share Tech Mono';">
+      🔬 Simulation Controls
+    </div>
+    <div class="sim-switches">
+
+      <div class="sim-switch-row" id="swRowOC">
+        <div class="sim-switch-label">
+          <b>Bypass OC Protection</b>
+          Disable CB trip — observe overload freely
+          <span class="sim-badge badge-warn">BYPASS</span>
+        </div>
+        <label class="toggle-sw">
+          <input type="checkbox" id="swOCBypass" onchange="updateSimSwitches()">
+          <div class="toggle-track"></div>
+        </label>
+      </div>
+
+      <div class="sim-switch-row" id="swRowPO">
+        <div class="sim-switch-label">
+          <b>Bypass Pull-out Trip</b>
+          Motor stays running past δ = 90° — observe hunting &amp; loss of sync
+          <span class="sim-badge badge-warn">BYPASS</span>
+        </div>
+        <label class="toggle-sw">
+          <input type="checkbox" id="swPOBypass" onchange="updateSimSwitches()">
+          <div class="toggle-track"></div>
+        </label>
+      </div>
+
+      <div class="sim-switch-row" id="swRowHunt">
+        <div class="sim-switch-label">
+          <b>Hunting Simulation</b>
+          Add load disturbance to trigger rotor oscillation
+          <span class="sim-badge badge-safe">SIM</span>
+        </div>
+        <label class="toggle-sw">
+          <input type="checkbox" id="swHunting" onchange="updateSimSwitches()">
+          <div class="toggle-track"></div>
+        </label>
+      </div>
+
+    </div>
+
+    <hr class="divider">
+    <!-- MOTOR ANIMATION -->
+    <div class="motor-anim-wrap">
+      <svg class="motor-svg" viewBox="0 0 200 140" id="motorSVG">
+        <!-- Motor Body -->
+        <rect x="40" y="30" width="120" height="80" rx="10" fill="#0f1e3a" stroke="#1e3a5f" stroke-width="2"/>
+        <!-- Stator coils -->
+        <g id="statorCoils">
+          <rect x="48" y="38" width="12" height="64" rx="3" fill="#1a3a6a" stroke="#00d4ff" stroke-width="0.8" opacity="0.7"/>
+          <rect x="68" y="38" width="12" height="64" rx="3" fill="#1a3a6a" stroke="#00d4ff" stroke-width="0.8" opacity="0.7"/>
+          <rect x="128" y="38" width="12" height="64" rx="3" fill="#1a3a6a" stroke="#00d4ff" stroke-width="0.8" opacity="0.7"/>
+          <rect x="140" y="38" width="12" height="64" rx="3" fill="#1a3a6a" stroke="#00d4ff" stroke-width="0.8" opacity="0.7"/>
+        </g>
+        <!-- Rotor -->
+        <circle cx="100" cy="70" r="28" fill="#0a1830" stroke="#1e3a5f" stroke-width="2" id="rotorOuter"/>
+        <g id="rotorGroup" transform-origin="100 70">
+          <line x1="100" y1="70" x2="100" y2="44" stroke="#00d4ff" stroke-width="3" stroke-linecap="round" id="rLine1"/>
+          <line x1="100" y1="70" x2="100" y2="96" stroke="#00d4ff" stroke-width="3" stroke-linecap="round" id="rLine2"/>
+          <line x1="100" y1="70" x2="76" y2="70" stroke="#1e3a5f" stroke-width="2" id="rLine3"/>
+          <line x1="100" y1="70" x2="124" y2="70" stroke="#1e3a5f" stroke-width="2" id="rLine4"/>
+        </g>
+        <circle cx="100" cy="70" r="6" fill="#00d4ff" id="rotorCenter" opacity="0.8"/>
+        <!-- Field winding glow -->
+        <circle cx="100" cy="70" r="28" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0" id="fieldGlow"/>
+        <!-- Shaft left -->
+        <rect x="10" y="65" width="30" height="10" rx="5" fill="#1e3a5f"/>
+        <!-- Shaft right -->
+        <rect x="160" y="65" width="30" height="10" rx="5" fill="#1e3a5f"/>
+        <!-- Terminal box -->
+        <rect x="82" y="108" width="36" height="20" rx="3" fill="#0f1e3a" stroke="#1e3a5f" stroke-width="1"/>
+        <circle cx="90" cy="118" r="4" fill="#ff4444" opacity="0.8"/>
+        <circle cx="100" cy="118" r="4" fill="#ffd700" opacity="0.8"/>
+        <circle cx="110" cy="118" r="4" fill="#00d4ff" opacity="0.8"/>
+        <!-- Speed flash -->
+        <g id="speedFlash" opacity="0">
+          <line x1="20" y1="55" x2="35" y2="70" stroke="#ffd700" stroke-width="1.5" opacity="0.6"/>
+          <line x1="20" y1="85" x2="35" y2="70" stroke="#ffd700" stroke-width="1.5" opacity="0.6"/>
+        </g>
+        <!-- Label -->
+        <text x="100" y="26" text-anchor="middle" fill="#5a7a9a" font-size="8" font-family="Share Tech Mono">3-PH SYNC MOTOR</text>
+      </svg>
+    </div>
+
+    <!-- SYNC STATUS -->
+    <div class="sync-indicator off" id="syncIndicator">● SYNCHRONISM: OFF</div>
+
+  </div>
+
+  <!-- CENTER: INSTRUMENTS + GRAPHS -->
+  <div class="center-panel">
+
+    <!-- METERS ROW -->
+    <div style="padding:14px 14px 0;">
+      <div class="meters-grid">
+        <div class="meter-box cyan">
+          <div class="meter-label" id="ui_mLblIL">Line Current (IL)</div>
+          <div class="meter-value" id="mIL">0.00</div>
+          <div class="meter-unit">AMPERES</div>
+          <div class="prog-bar-wrap">
+            <div class="prog-bar-track"><div class="prog-bar-fill fill-cyan" id="barIL" style="width:0%"></div></div>
+          </div>
+        </div>
+        <div class="meter-box orange">
+          <div class="meter-label" id="ui_mLblIF">Field Current (If)</div>
+          <div class="meter-value" id="mIF">0.00</div>
+          <div class="meter-unit">AMPERES</div>
+          <div class="prog-bar-wrap">
+            <div class="prog-bar-track"><div class="prog-bar-fill fill-orange" id="barIF" style="width:0%"></div></div>
+          </div>
+        </div>
+        <div class="meter-box gold">
+          <div class="meter-label" id="ui_mLblVL">Supply Voltage</div>
+          <div class="meter-value" id="mVL">0</div>
+          <div class="meter-unit">VOLTS (LINE)</div>
+          <div class="prog-bar-wrap">
+            <div class="prog-bar-track"><div class="prog-bar-fill fill-gold" id="barVL" style="width:0%"></div></div>
+          </div>
+        </div>
+        <div class="meter-box green">
+          <div class="meter-label" id="ui_mLblPW">Active Power</div>
+          <div class="meter-value" id="mPW">0</div>
+          <div class="meter-unit">WATTS</div>
+          <div class="prog-bar-wrap">
+            <div class="prog-bar-track"><div class="prog-bar-fill fill-green" id="barPW" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TACHOMETER + PF METER -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+        <div class="meter-full">
+          <div class="meter-label" style="text-align:center; margin-bottom:6px;" id="ui_tachoLbl">TACHOMETER — SPEED</div>
+          <canvas id="tachoCanvas" width="220" height="110" style="background:transparent; border:none;"></canvas>
+          <div style="text-align:center; font-family:'Share Tech Mono'; font-size:18px; color:var(--accent3); margin-top:2px;" id="rpmDisp">0 RPM</div>
+          <div style="text-align:center; font-size:10px; color:var(--dim);" id="ui_syncSpeedLbl">SYNC SPEED: 1500 RPM</div>
+          <div class="hunting-indicator" id="huntingIndicator"></div>
+        </div>
+        <div class="meter-full">
+          <div class="meter-label" style="text-align:center; margin-bottom:6px;" id="ui_pfLbl">POWER FACTOR METER</div>
+          <canvas id="pfCanvas" width="220" height="110" style="background:transparent; border:none;"></canvas>
+          <div style="text-align:center; font-family:'Share Tech Mono'; font-size:18px; color:var(--accent4); margin-top:2px;" id="pfDisp">0.00</div>
+          <div style="text-align:center; font-size:10px; color:var(--dim);" id="pfTypeDisp">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOAD ANGLE DIAL — HOME VIEW -->
+    <div style="padding:0 14px 14px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <!-- Load Angle Dial -->
+        <div class="meter-full" style="position:relative; overflow:hidden;">
+          <div class="meter-label" style="text-align:center; margin-bottom:4px;" id="ui_loadAngleHome">LOAD ANGLE (δ)</div>
+          <canvas id="loadAngleDial" width="220" height="110" style="background:transparent; border:none; display:block;"></canvas>
+          <div style="text-align:center; font-family:'Share Tech Mono'; font-size:18px; margin-top:2px; transition:color 0.3s;" id="dialReadout" class="dial-readout safe">0.0°</div>
+          <div style="text-align:center; font-size:10px; color:var(--dim);" id="dialSubLabel">δ = 0° → No load | δ = 90° → Pull-out</div>
+        </div>
+        <!-- Overcurrent Meter -->
+        <div class="meter-box red" id="ocMeterBox" style="border-top-color:var(--accent);">
+          <div class="meter-label" id="ui_ocMeterLbl">Line Current vs Rated</div>
+          <div class="meter-value cyan" id="mIL2" style="color:var(--accent);">0.00</div>
+          <div class="meter-unit">/ 6.5A RATED</div>
+          <div class="prog-bar-wrap" style="margin-top:8px;">
+            <div class="prog-bar-track" style="height:10px;">
+              <div class="prog-bar-fill fill-cyan" id="barIL2" style="width:0%; height:100%; transition:width 0.3s, background 0.3s;"></div>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:9px; color:var(--dim); margin-top:2px;">
+            <span>0A</span><span id="ui_ocRatedMark" style="color:#ffd700;">6.5A</span><span id="ui_ocTripMark" style="color:#ff4444;">9.75A↑</span>
+          </div>
+          <div style="margin-top:6px; font-family:'Share Tech Mono'; font-size:11px; text-align:center;" id="ocStatusText">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRAPHS -->
+    <div class="canvas-section">
+      <div class="canvas-section-title">
+        <span id="ui_vcurveTitle">V-CURVE (Armature Current vs Field Current)</span>
+        <span style="font-size:10px; color:var(--dim);">Ia vs If at different loads</span>
+      </div>
+      <canvas id="vcurveCanvas" height="180"></canvas>
+    </div>
+
+    <div class="canvas-section">
+      <div class="canvas-section-title">
+        <span id="ui_invvcurveTitle">INVERTED V-CURVE (Power Factor vs Field Current)</span>
+        <span style="font-size:10px; color:var(--dim);">PF vs If at different loads</span>
+      </div>
+      <canvas id="invvcurveCanvas" height="180"></canvas>
+    </div>
+
+    <div class="canvas-section">
+      <div class="canvas-section-title">
+        <span id="ui_phasorTitle">PHASOR DIAGRAM</span>
+        <span style="font-size:10px; color:var(--dim);">V, Ia, Ef relationships</span>
+      </div>
+      <canvas id="phasorCanvas" height="180"></canvas>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: EFFECTS & STATUS -->
+  <div class="panel" style="border-right:none; border-left:1px solid var(--border);">
+    <div class="panel-title" id="ui_analysisPanel">Analysis & Effects</div>
+
+    <!-- LOG -->
+    <div class="status-msgs" id="logBox"></div>
+
+    <!-- ALERTS -->
+    <div class="alert-box alert-danger" id="alertPullout">⚠ PULL-OUT WARNING: Torque angle > 80°! Reduce load or increase excitation!</div>
+    <div class="alert-box alert-danger" id="alertLost">🔴 SYNCHRONISM LOST! Motor tripped. Restart required.</div>
+    <div class="alert-box alert-warn" id="alertUnder">⚡ UNDER-EXCITED: Motor drawing lagging reactive power (inductive). Increase If.</div>
+    <div class="alert-box alert-info" id="alertNormal">✔ NORMALLY EXCITED: Unity power factor operation.</div>
+    <div class="alert-box alert-good" id="alertOver">⭐ OVER-EXCITED: Motor supplying reactive power to grid (capacitive). Like a synchronous condenser!</div>
+    <div class="alert-box alert-warn" id="alertOC" style="border-color:#ff8800; background:rgba(255,136,0,0.1); color:#ffaa00;">⚡ OVERCURRENT WARNING: IL &gt; rated 6.5A! Motor overloaded. Reduce load.</div>
+    <div class="alert-box alert-danger" id="alertOCTrip">🔴 OVERCURRENT TRIP: IL exceeded safe limit! Motor protection tripped. Press STOP to reset.</div>
+    <div class="alert-box alert-warn" id="alertHunting" style="border-color:#ffd700; background:rgba(255,215,0,0.08); color:#ffd700;">🌀 HUNTING: Rotor oscillating around sync speed. Speed &amp; current fluctuating rhythmically.</div>
+    <div class="alert-box alert-danger" id="alertHuntingSevere">🔴 SEVERE HUNTING: Large oscillations — motor may pull out! Increase field excitation or reduce load.</div>
+
+    <div class="tab-btns">
+      <div class="tab-btn active" onclick="showTab('tabMotor')">Motor</div>
+      <div class="tab-btn" onclick="showTab('tabTorque')">Torque</div>
+      <div class="tab-btn" onclick="showTab('tabLearn')">Theory</div>
+    </div>
+
+    <div class="tab-content active" id="tabMotor">
+      <div class="effect-box">
+        <div class="effect-title" id="ui_motorParams">⚡ Motor Parameters</div>
+        <div class="effect-row"><span class="effect-key" id="ui_eTorqAngleLbl">Load Angle (δ)</span><span class="effect-val info" id="eTorqAngle">—</span></div>
+        <div class="effect-row"><span class="effect-key" id="ui_eEfLbl">Excitation EMF (Ef)</span><span class="effect-val info" id="eEf">—</span></div>
+        <div class="effect-row"><span class="effect-key" id="ui_eQLbl">Reactive Power Q</span><span class="effect-val" id="eQ">—</span></div>
+        <div class="effect-row"><span class="effect-key" id="ui_eSLbl">Apparent Power S</span><span class="effect-val info" id="eS">—</span></div>
+        <div class="effect-row"><span class="effect-key" id="ui_eXsLbl">Synchronous Xs</span><span class="effect-val">8.2 Ω</span></div>
+        <div class="effect-row"><span class="effect-key" id="ui_eEffLbl">Efficiency η</span><span class="effect-val good" id="eEff">—</span></div>
+      </div>
+
+      <div class="effect-box">
+        <div class="effect-title" id="ui_startSeq">🔄 Starting Sequence</div>
+        <div class="effect-row"><span class="effect-key" id="ui_eModeLbl">Mode</span><span class="effect-val info" id="eMode">STOPPED</span></div>
+        <div class="effect-row"><span class="effect-key" id="ui_eSpeedLbl">Speed</span><span class="effect-val good" id="eSpeed">0 RPM</span></div>
+        <div class="effect-row"><span class="effect-key" id="ui_eSyncPctLbl">% Sync Speed</span><span class="effect-val" id="eSyncPct">0%</span></div>
+        <div class="effect-row"><span class="effect-key" id="ui_eSlipLbl">Slip</span><span class="effect-val" id="eSlip">—</span></div>
+        <div class="effect-row"><span class="effect-key" id="ui_eStartILbl">Starting Current</span><span class="effect-val" id="eStartI">—</span></div>
+      </div>
+
+      <div class="effect-box">
+        <div class="effect-title" id="ui_exciteState">📊 Excitation State</div>
+        <div class="prog-bar-wrap">
+          <div class="prog-bar-label"><span style="color:var(--dim)" id="ui_underExcLbl">Under-excited</span><span style="color:var(--dim)" id="ui_normalExcLbl">Normal</span><span style="color:var(--dim)" id="ui_overExcLbl">Over-excited</span></div>
+          <div style="position:relative; height:12px; background:linear-gradient(90deg, #ff6b35, #ffd700, #39ff14); border-radius:6px; border:1px solid var(--border);">
+            <div id="exciteMarker" style="position:absolute; top:-4px; left:50%; width:4px; height:20px; background:white; border-radius:2px; transform:translateX(-50%); box-shadow:0 0 10px white; transition:left 0.3s;"></div>
+          </div>
+        </div>
+        <div style="text-align:center; margin-top:4px; font-size:11px;" id="exciteStateText">—</div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tabTorque">
+      <div class="effect-box">
+        <div class="effect-title" id="ttl_torqAnalysis">⚙ Torque Analysis</div>
+        <div class="effect-row"><span class="effect-key" id="ttl_devTorq">Developed Torque</span><span class="effect-val good" id="tDev">—</span></div>
+        <div class="effect-row"><span class="effect-key" id="ttl_loadTorq">Load Torque</span><span class="effect-val" id="tLoad">—</span></div>
+        <div class="effect-row"><span class="effect-key" id="ttl_pulloutTorq">Pull-out Torque (Max)</span><span class="effect-val warn" id="tPullout">—</span></div>
+        <div class="effect-row"><span class="effect-key" id="ttl_margin">Safety Margin</span><span class="effect-val" id="tMargin">—</span></div>
+      </div>
+
+      <!-- PULL-OUT VISUAL GAUGE -->
+      <div class="effect-box">
+        <div class="effect-title" id="ttl_pulloutGauge">⚠ Pull-out Torque Meter</div>
+        <div style="font-size:10px; color:var(--dim); margin-bottom:6px;" id="ttl_pulloutDesc">
+          Needle shows how close motor is to pull-out. Stay in GREEN zone.
+        </div>
+        <div class="pullout-gauge-wrap">
+          <div class="pullout-gauge-track">
+            <span class="pullout-zone-label" style="left:5px; color:#39ff14;" id="lbl_safe">SAFE</span>
+            <span class="pullout-zone-label" style="left:44%; color:#ffd700;" id="lbl_warn">WARN</span>
+            <span class="pullout-zone-label" style="right:5px; color:#ff4444;" id="lbl_trip">TRIP</span>
+            <div class="pullout-marker needle-green" id="pulloutNeedle" style="left:3%"></div>
+          </div>
+          <div class="pullout-labels">
+            <span>0°</span><span>30°</span><span>45°</span><span>60°</span><span>75°</span><span>90°</span>
+          </div>
+        </div>
+        <div class="gauge-zones" style="margin-top:4px;">
+          <div class="gz-safe"></div><div class="gz-warn"></div><div class="gz-crit"></div><div class="gz-trip"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:9px; margin-top:2px;">
+          <span style="color:#39ff14" id="lbl_stable">0–45° Stable</span>
+          <span style="color:#ffd700" id="lbl_caution">45–70° Caution</span>
+          <span style="color:#ff6b35" id="lbl_danger">70–85° Danger</span>
+          <span style="color:#ff0000" id="lbl_pullout">85°+ Pull-out!</span>
+        </div>
+        <div class="effect-row" style="margin-top:8px;">
+          <span class="effect-key" id="ttl_deltaVal">Load Angle δ</span>
+          <span class="effect-val info" id="deltaVal">—</span>
+        </div>
+        <div class="effect-row">
+          <span class="effect-key" id="ttl_stability">Stability</span>
+          <span class="effect-val" id="stabilityTxt">—</span>
+        </div>
+      </div>
+
+      <!-- WHAT IS PULL-OUT — simple explanation -->
+      <div class="effect-box" style="border-color:rgba(255,107,53,0.3);">
+        <div class="effect-title" style="color:var(--accent2);" id="ttl_whatPullout">❓ What is Pull-out?</div>
+        <div id="pulloutExplainText" style="font-size:11px; line-height:1.8; color:var(--text);">
+          <b style="color:#ffd700">Pull-out Torque</b> = Maximum torque the motor can develop without losing synchronism.<br>
+          At <b style="color:#ff4444">δ = 90°</b>, motor loses lock with supply → speed drops → motor stalls.<br><br>
+          <b style="color:#39ff14">To avoid pull-out:</b><br>
+          • Increase field excitation (higher If → higher Ef → lower δ)<br>
+          • Reduce mechanical load<br>
+          • Never reduce If below minimum for that load
+        </div>
+      </div>
+
+      <div class="effect-box">
+        <div class="effect-title" id="ttl_minExcTitle">💡 Min. Excitation vs Load</div>
+        <div id="minExciteText" style="font-size:11px; line-height:1.7; color:var(--text);">
+          Start motor and apply load to see analysis.
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tabLearn">
+      <div class="effect-box">
+        <div class="effect-title" id="ui_keyConcepts">📚 Key Concepts</div>
+        <div style="font-size:11px; line-height:1.8; color:var(--text);">
+          <b style="color:var(--accent)">Why can't excitation reduce under load?</b><br>
+          Load requires torque. Torque = (V·Ef·sinδ)/Xs. If Ef decreases, δ must increase to maintain torque. At δ = 90°, motor hits <span style="color:var(--warn)">pull-out (stability limit)</span>.<br><br>
+          <b style="color:var(--accent3)">Under-Excited (If low):</b><br>
+          — Lagging power factor<br>
+          — Motor absorbs reactive power<br>
+          — δ is large → less stability margin<br><br>
+          <b style="color:var(--accent4)">Normally Excited (If = rated):</b><br>
+          — Unity power factor<br>
+          — Minimum armature current<br>
+          — This is the V-curve minimum<br><br>
+          <b style="color:var(--accent2)">Over-Excited (If > rated):</b><br>
+          — Leading power factor<br>
+          — Motor <i>supplies</i> reactive power<br>
+          — Acts as synchronous condenser<br>
+          — Useful for power factor correction<br><br>
+          <b style="color:var(--accent)">Starting as Induction Motor:</b><br>
+          Field is kept OFF. Motor accelerates like squirrel cage IM using damper windings. Near sync speed (~95%), field is switched ON to pull rotor into synchronism.
+        </div>
+      </div>
+      <div class="effect-box">
+        <div class="effect-title" id="ui_keyFormulae">📐 Key Formulae</div>
+        <div style="font-family:'Share Tech Mono'; font-size:10px; line-height:1.9; color:var(--text);">
+          Torque: T = (V·Ef·sinδ) / Xs·ω<br>
+          Ef = V - Ia·Xs (phasor)<br>
+          PF = cos(θ) = P / (√3·VL·IL)<br>
+          Ns = 120f/P = 1500 RPM<br>
+          Slip s = (Ns-N)/Ns × 100%<br>
+          Pull-out at δ = 90°<br>
+          IL_min → at unity PF (normal excite)
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<div class="lang-sel">
+  <label>🌐 LANG</label>
+  <select id="langSel" onchange="setLang(this.value)">
+    <option value="en">English</option>
+    <option value="hi">हिंदी</option>
+    <option value="ml">മലയാളം</option>
+  </select>
+</div>
+
+<script>
+
+// ============================================================
+// MULTILINGUAL TRANSLATIONS
+// Simple technical words — no deep literature
+// ============================================================
+const LANG = {
+  en: {
+    hdr_title:'⚡ SYNCHRONOUS MOTOR TRAINER',
+    hdr_sub:'INDUSTRIAL LABORATORY SIMULATOR — 3-PHASE AC SYNCHRONOUS MACHINE',
+    controlPanel:'Control Panel', analysisPanel:'Analysis & Effects',
+    btnStart:'▶ START (As Induction)', btnExcite:'⚡ APPLY FIELD EXCITATION', btnStop:'■ STOP MOTOR',
+    lblVolt:'Supply Voltage (Line)', lblIf:'Field Excitation Current', lblLoad:'Mechanical Load',
+    loadNone:'No Load', loadQ:'¼ Load', loadH:'½ Load', loadT:'¾ Load', loadF:'Full Load', loadOL:'Overload',
+    mLblIL:'Line Current (IL)', mLblIF:'Field Current (If)', mLblVL:'Supply Voltage', mLblPW:'Active Power',
+    ui_tachoLbl:'TACHOMETER — SPEED', ui_syncSpeedLbl:'SYNC SPEED: 1500 RPM',
+    ui_pfLbl:'POWER FACTOR METER', ui_loadAngleHome:'LOAD ANGLE (δ)',
+    ui_ocMeterLbl:'Line Current vs Rated', ui_ocRatedMark:'6.5A Rated', ui_ocTripMark:'9.75A Trip',
+    tabMotor:'Motor', tabTorque:'Torque', tabLearn:'Theory',
+    ui_motorParams:'⚡ Motor Parameters', ui_startSeq:'🔄 Starting Sequence', ui_exciteState:'📊 Excitation State',
+    ui_eTorqAngleLbl:'Load Angle (δ)', ui_eEfLbl:'Excitation EMF (Ef)', ui_eQLbl:'Reactive Power Q',
+    ui_eSLbl:'Apparent Power S', ui_eXsLbl:'Synchronous Xs', ui_eEffLbl:'Efficiency η',
+    ui_eModeLbl:'Mode', ui_eSpeedLbl:'Speed', ui_eSyncPctLbl:'% Sync Speed', ui_eSlipLbl:'Slip', ui_eStartILbl:'Starting Current',
+    ui_underExcLbl:'Under-excited', ui_normalExcLbl:'Normal', ui_overExcLbl:'Over-excited',
+    ui_keyConcepts:'📚 Key Concepts', ui_keyFormulae:'📐 Key Formulae',
+    ui_vcurveTitle:'V-CURVE (Armature Current vs Field Current)',
+    ui_invvcurveTitle:'INVERTED V-CURVE (Power Factor vs Field Current)',
+    ui_phasorTitle:'PHASOR DIAGRAM',
+    ui_lblPower:'SUPPLY: OFF', ui_lblMotorStatus:'MOTOR STOPPED',
+    ui_lblExciteStatus:'FIELD: NOT EXCITED', ui_lblSyncStatus:'SYNCHRONISM: —',
+    ttl_torqAnalysis:'⚙ Torque Analysis',
+    ttl_devTorq:'Developed Torque', ttl_loadTorq:'Load Torque',
+    ttl_pulloutTorq:'Pull-out Torque (Max)', ttl_margin:'Safety Margin',
+    ttl_pulloutGauge:'⚠ Pull-out Torque Meter',
+    ttl_pulloutDesc:'Needle shows how close motor is to pull-out. Stay in GREEN zone.',
+    lbl_safe:'SAFE', lbl_warn:'WARN', lbl_trip:'TRIP',
+    lbl_stable:'0–45° Stable', lbl_caution:'45–70° Caution', lbl_danger:'70–85° Danger', lbl_pullout:'85°+ Pull-out!',
+    ttl_loadAngleDial:'📐 Load Angle (δ) Monitor', ttl_deltaVal:'Load Angle δ', ttl_stability:'Stability',
+    ttl_whatPullout:'❓ What is Pull-out?',
+    pulloutExplain:`<b style="color:#ffd700">Pull-out Torque</b> = Max torque before motor loses synchronism.<br>At <b style="color:#ff4444">δ = 90°</b>, motor loses lock → speed drops → stalls.<br><br><b style="color:#39ff14">To avoid pull-out:</b><br>• Increase If → Ef rises → δ falls<br>• Reduce mechanical load<br>• Never reduce If below minimum for that load`,
+    ttl_minExcTitle:'💡 Min. Excitation vs Load',
+    alertUnder:'⚡ UNDER-EXCITED: Motor taking lagging reactive power. Increase If.',
+    alertNormal:'✔ NORMALLY EXCITED: Near unity power factor.',
+    alertOver:'⭐ OVER-EXCITED: Motor gives reactive power to grid. Acts as synchronous condenser!',
+    alertPullout:'⚠ PULL-OUT WARNING: Torque angle > 80°! Reduce load or increase If!',
+    alertOC:'⚡ OVERCURRENT: IL > 6.5A rated! Reduce load.',
+    alertOCTrip:'🔴 OVERCURRENT TRIP: IL exceeded limit. Motor protection operated. Press STOP.',
+    oc_starting:'↑ Inrush (Normal)', oc_normal:'✔ Normal', oc_warn:'⚠ Overcurrent!', oc_trip:'🔴 TRIPPED',
+    syncOff:'● SYNCHRONISM: OFF', syncLocked:'✔ SYNCHRONISM: LOCKED',
+    syncNear:'⚡ NEAR SYNC — APPLY FIELD!', syncLost:'⚠ SYNCHRONISM: LOST', syncStarting:'● STARTING UP...',
+    status_supply:'SUPPLY:', status_motorStopped:'MOTOR STOPPED', status_inductionMode:'INDUCTION MODE',
+    status_syncRunning:'SYNC MOTOR RUNNING', status_fieldOff:'FIELD: NOT EXCITED',
+    status_syncLocked:'SYNCHRONISM: LOCKED', status_syncDash:'SYNCHRONISM: —', status_nearSync:'NEAR SYNC SPEED',
+    mode_stopped:'STOPPED', mode_induction:'INDUCTION (STARTING)', mode_nearSync:'NEAR SYNC SPEED',
+    mode_tripped:'TRIPPED!', mode_sync:'SYNCHRONOUS MOTOR',
+    slip_sync:'0% (SYNCHRONOUS)', stability_stable:'STABLE', stability_caution:'CAUTION', stability_crit:'CRITICAL',
+  },
+  hi: {
+    hdr_title:'⚡ सिंक्रोनस मोटर ट्रेनर',
+    hdr_sub:'औद्योगिक प्रयोगशाला सिम्युलेटर — 3-फेज AC सिंक्रोनस मशीन',
+    controlPanel:'नियंत्रण पैनल', analysisPanel:'विश्लेषण और प्रभाव',
+    btnStart:'▶ चालू करें (Induction Mode)', btnExcite:'⚡ Field Excitation लगाएं', btnStop:'■ मोटर बंद करें',
+    lblVolt:'Supply Voltage (Line)', lblIf:'Field Excitation Current', lblLoad:'Mechanical Load',
+    loadNone:'No Load', loadQ:'¼ Load', loadH:'½ Load', loadT:'¾ Load', loadF:'Full Load', loadOL:'Overload',
+    mLblIL:'Line Current (IL)', mLblIF:'Field Current (If)', mLblVL:'Supply Voltage', mLblPW:'Active Power (W)',
+    ui_tachoLbl:'टैकोमीटर — गति', ui_syncSpeedLbl:'Sync Speed: 1500 RPM',
+    ui_pfLbl:'Power Factor Meter', ui_loadAngleHome:'Load Angle (δ)',
+    ui_ocMeterLbl:'Line Current vs Rated', ui_ocRatedMark:'6.5A Rated', ui_ocTripMark:'9.75A Trip',
+    tabMotor:'मोटर', tabTorque:'Torque', tabLearn:'Theory',
+    ui_motorParams:'⚡ Motor Parameters', ui_startSeq:'🔄 Starting Sequence', ui_exciteState:'📊 Excitation State',
+    ui_eTorqAngleLbl:'Load Angle (δ)', ui_eEfLbl:'Excitation EMF (Ef)', ui_eQLbl:'Reactive Power Q',
+    ui_eSLbl:'Apparent Power S', ui_eXsLbl:'Synchronous Xs', ui_eEffLbl:'Efficiency η',
+    ui_eModeLbl:'Mode', ui_eSpeedLbl:'Speed', ui_eSyncPctLbl:'% Sync Speed', ui_eSlipLbl:'Slip', ui_eStartILbl:'Starting Current',
+    ui_underExcLbl:'Under-excited', ui_normalExcLbl:'Normal', ui_overExcLbl:'Over-excited',
+    ui_keyConcepts:'📚 मुख्य अवधारणाएं', ui_keyFormulae:'📐 मुख्य सूत्र',
+    ui_vcurveTitle:'V-Curve (Armature Current vs Field Current)',
+    ui_invvcurveTitle:'Inverted V-Curve (Power Factor vs Field Current)',
+    ui_phasorTitle:'Phasor Diagram',
+    ui_lblPower:'Supply:', ui_lblMotorStatus:'मोटर बंद', ui_lblExciteStatus:'Field: बंद', ui_lblSyncStatus:'Synchronism: —',
+    ttl_torqAnalysis:'⚙ Torque विश्लेषण',
+    ttl_devTorq:'Developed Torque', ttl_loadTorq:'Load Torque',
+    ttl_pulloutTorq:'Pull-out Torque (अधिकतम)', ttl_margin:'Safety Margin',
+    ttl_pulloutGauge:'⚠ Pull-out Torque Meter',
+    ttl_pulloutDesc:'Needle दिखाता है pull-out से कितनी दूर है। GREEN zone में रखें।',
+    lbl_safe:'सुरक्षित', lbl_warn:'सावधान', lbl_trip:'Trip',
+    lbl_stable:'0–45° स्थिर', lbl_caution:'45–70° सावधान', lbl_danger:'70–85° खतरा', lbl_pullout:'85°+ Pull-out!',
+    ttl_loadAngleDial:'📐 Load Angle (δ) Monitor', ttl_deltaVal:'Load Angle δ', ttl_stability:'Stability',
+    ttl_whatPullout:'❓ Pull-out क्या है?',
+    pulloutExplain:`<b style="color:#ffd700">Pull-out Torque</b> = वह max torque जिसके बाद synchronism खो जाता है।<br><b style="color:#ff4444">δ = 90°</b> होने पर → motor lock खो देता है → speed गिरती है → रुक जाता है।<br><br><b style="color:#39ff14">Pull-out से बचाव:</b><br>• If बढ़ाएं → Ef बढ़ता है → δ कम होता है<br>• Load घटाएं<br>• उस load के लिए minimum If से कम न करें`,
+    ttl_minExcTitle:'💡 Load के अनुसार Min. Excitation',
+    alertUnder:'⚡ UNDER-EXCITED: Motor lagging reactive power ले रहा है। If बढ़ाएं।',
+    alertNormal:'✔ NORMAL EXCITATION: Power factor unity के पास।',
+    alertOver:'⭐ OVER-EXCITED: Motor grid को reactive power दे रहा है। Synchronous condenser की तरह!',
+    alertPullout:'⚠ PULL-OUT WARNING: Torque angle > 80°! Load घटाएं या If बढ़ाएं!',
+    alertOC:'⚡ OVERCURRENT: IL > 6.5A Rated! Load घटाएं।',
+    alertOCTrip:'🔴 OVERCURRENT TRIP: Current limit पार! Motor protection चला। STOP दबाएं।',
+    oc_starting:'↑ Inrush (Normal)', oc_normal:'✔ Normal', oc_warn:'⚠ Overcurrent!', oc_trip:'🔴 TRIPPED',
+    syncOff:'● Synchronism: बंद', syncLocked:'✔ Synchronism: Locked',
+    syncNear:'⚡ Sync Speed के पास — Field लगाएं!', syncLost:'⚠ Synchronism: खो गया', syncStarting:'● चालू हो रहा है...',
+    status_supply:'Supply:', status_motorStopped:'मोटर बंद', status_inductionMode:'Induction Mode',
+    status_syncRunning:'Sync मोटर चल रहा है', status_fieldOff:'Field: बंद',
+    status_syncLocked:'Synchronism: Locked', status_syncDash:'Synchronism: —', status_nearSync:'Sync Speed के पास',
+    mode_stopped:'बंद', mode_induction:'Induction (Starting)', mode_nearSync:'Sync Speed के पास',
+    mode_tripped:'Trip हो गया!', mode_sync:'Synchronous Motor',
+    slip_sync:'0% (Synchronous)', stability_stable:'स्थिर', stability_caution:'सावधान', stability_crit:'खतरा',
+  },
+  ml: {
+    hdr_title:'⚡ സിൻക്രോണസ് മോട്ടോർ ട്രെയ്നർ',
+    hdr_sub:'ഇൻഡസ്ട്രിയൽ ലബോറട്ടറി സിമുലേറ്റർ — 3-ഫേസ് AC സിൻക്രോണസ് മെഷീൻ',
+    controlPanel:'നിയന്ത്രണ പാനൽ', analysisPanel:'വിശകലനം & ഫലങ്ങൾ',
+    btnStart:'▶ ആരംഭിക്കുക (Induction Mode)', btnExcite:'⚡ Field Excitation കൊടുക്കുക', btnStop:'■ മോട്ടോർ നിർത്തുക',
+    lblVolt:'Supply Voltage (Line)', lblIf:'Field Excitation Current', lblLoad:'Mechanical Load',
+    loadNone:'No Load', loadQ:'¼ Load', loadH:'½ Load', loadT:'¾ Load', loadF:'Full Load', loadOL:'Overload',
+    mLblIL:'Line Current (IL)', mLblIF:'Field Current (If)', mLblVL:'Supply Voltage', mLblPW:'Active Power (W)',
+    ui_tachoLbl:'ടാക്കോമീറ്റർ — വേഗത', ui_syncSpeedLbl:'Sync Speed: 1500 RPM',
+    ui_pfLbl:'Power Factor മീറ്റർ', ui_loadAngleHome:'Load Angle (δ)',
+    ui_ocMeterLbl:'Line Current vs Rated', ui_ocRatedMark:'6.5A Rated', ui_ocTripMark:'9.75A Trip',
+    tabMotor:'മോട്ടോർ', tabTorque:'Torque', tabLearn:'Theory',
+    ui_motorParams:'⚡ Motor Parameters', ui_startSeq:'🔄 Starting Sequence', ui_exciteState:'📊 Excitation State',
+    ui_eTorqAngleLbl:'Load Angle (δ)', ui_eEfLbl:'Excitation EMF (Ef)', ui_eQLbl:'Reactive Power Q',
+    ui_eSLbl:'Apparent Power S', ui_eXsLbl:'Synchronous Xs', ui_eEffLbl:'Efficiency η',
+    ui_eModeLbl:'Mode', ui_eSpeedLbl:'Speed', ui_eSyncPctLbl:'% Sync Speed', ui_eSlipLbl:'Slip', ui_eStartILbl:'Starting Current',
+    ui_underExcLbl:'Under-excited', ui_normalExcLbl:'Normal', ui_overExcLbl:'Over-excited',
+    ui_keyConcepts:'📚 പ്രധാന ആശയങ്ങൾ', ui_keyFormulae:'📐 പ്രധാന ഫോർമുലകൾ',
+    ui_vcurveTitle:'V-Curve (Armature Current vs Field Current)',
+    ui_invvcurveTitle:'Inverted V-Curve (Power Factor vs Field Current)',
+    ui_phasorTitle:'Phasor Diagram',
+    ui_lblPower:'Supply:', ui_lblMotorStatus:'മോട്ടോർ നിർത്തിയിരിക്കുന്നു',
+    ui_lblExciteStatus:'Field: ഇല്ല', ui_lblSyncStatus:'Synchronism: —',
+    ttl_torqAnalysis:'⚙ Torque വിശകലനം',
+    ttl_devTorq:'Developed Torque', ttl_loadTorq:'Load Torque',
+    ttl_pulloutTorq:'Pull-out Torque (പരമാവധി)', ttl_margin:'Safety Margin',
+    ttl_pulloutGauge:'⚠ Pull-out Torque Meter',
+    ttl_pulloutDesc:'Needle കാണിക്കുന്നത് pull-out-ൽ നിന്ന് എത്ര അകലെ. GREEN zone-ൽ നിൽക്കുക.',
+    lbl_safe:'സുരക്ഷിതം', lbl_warn:'മുന്നറിയിപ്പ്', lbl_trip:'Trip',
+    lbl_stable:'0–45° സ്ഥിരം', lbl_caution:'45–70° ശ്രദ്ധ', lbl_danger:'70–85° അപകടം', lbl_pullout:'85°+ Pull-out!',
+    ttl_loadAngleDial:'📐 Load Angle (δ) Monitor', ttl_deltaVal:'Load Angle δ', ttl_stability:'Stability',
+    ttl_whatPullout:'❓ Pull-out എന്നാൽ?',
+    pulloutExplain:`<b style="color:#ffd700">Pull-out Torque</b> = Synchronism നഷ്ടപ്പെടാതെ develop ചെയ്യാവുന്ന max torque.<br><b style="color:#ff4444">δ = 90°</b> ആകുമ്പോൾ → lock നഷ്ടം → speed കുറയും → motor നിൽക്കും.<br><br><b style="color:#39ff14">Pull-out ഒഴിവാക്കാൻ:</b><br>• If കൂട്ടുക → Ef കൂടും → δ കുറയും<br>• Load കുറയ്ക്കുക<br>• Minimum If-ൽ താഴ്ത്തരുത്`,
+    ttl_minExcTitle:'💡 Load-നനുസരിച്ച് Min. Excitation',
+    alertUnder:'⚡ UNDER-EXCITED: Motor lagging reactive power എടുക്കുന്നു. If കൂട്ടുക.',
+    alertNormal:'✔ NORMAL EXCITATION: Power factor unity-യോട് അടുത്ത്.',
+    alertOver:'⭐ OVER-EXCITED: Motor grid-ലേക്ക് reactive power കൊടുക്കുന്നു. Synchronous condenser ആയി!',
+    alertPullout:'⚠ PULL-OUT WARNING: Torque angle > 80°! Load കുറയ്ക്കുക അല്ലെങ്കിൽ If കൂട്ടുക!',
+    alertOC:'⚡ OVERCURRENT: IL > 6.5A Rated! Load കുറയ്ക്കുക.',
+    alertOCTrip:'🔴 OVERCURRENT TRIP: Current limit കടന്നു! Motor protection operated. STOP അമർത്തുക.',
+    oc_starting:'↑ Inrush (Normal)', oc_normal:'✔ Normal', oc_warn:'⚠ Overcurrent!', oc_trip:'🔴 TRIPPED',
+    syncOff:'● Synchronism: OFF', syncLocked:'✔ Synchronism: Locked',
+    syncNear:'⚡ Sync Speed അടുത്ത് — Field കൊടുക്കുക!', syncLost:'⚠ Synchronism: നഷ്ടമായി', syncStarting:'● ആരംഭിക്കുന്നു...',
+    status_supply:'Supply:', status_motorStopped:'മോട്ടോർ നിർത്തി', status_inductionMode:'Induction Mode',
+    status_syncRunning:'Sync Motor Running', status_fieldOff:'Field: ഇല്ല',
+    status_syncLocked:'Synchronism: Locked', status_syncDash:'Synchronism: —', status_nearSync:'Sync Speed അടുത്ത്',
+    mode_stopped:'നിർത്തി', mode_induction:'Induction (Starting)', mode_nearSync:'Sync Speed അടുത്ത്',
+    mode_tripped:'Trip ആയി!', mode_sync:'Synchronous Motor',
+    slip_sync:'0% (Synchronous)', stability_stable:'സ്ഥിരം', stability_caution:'ശ്രദ്ധ', stability_crit:'അപകടം',
+  }
+};
+
+let currentLang = 'en';
+
+function T(key) {
+  return (LANG[currentLang] && LANG[currentLang][key]) || LANG.en[key] || key;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  applyTranslations();
+}
+
+function applyTranslations() {
+  // All plain text IDs — just map key = id
+  const plainIds = [
+    'hdr_title','hdr_sub',
+    'ui_controlPanel','ui_analysisPanel',
+    'ui_lblVolt','ui_lblIf','ui_lblLoad',
+    'ui_loadNone','ui_loadQ','ui_loadH','ui_loadT','ui_loadF','ui_loadOL',
+    'ui_mLblIL','ui_mLblIF','ui_mLblVL','ui_mLblPW',
+    'ui_tachoLbl','ui_syncSpeedLbl','ui_pfLbl','ui_loadAngleHome',
+    'ui_ocMeterLbl','ui_ocRatedMark','ui_ocTripMark',
+    'ui_motorParams','ui_startSeq','ui_exciteState',
+    'ui_eTorqAngleLbl','ui_eEfLbl','ui_eQLbl','ui_eSLbl','ui_eXsLbl','ui_eEffLbl',
+    'ui_eModeLbl','ui_eSpeedLbl','ui_eSyncPctLbl','ui_eSlipLbl','ui_eStartILbl',
+    'ui_underExcLbl','ui_normalExcLbl','ui_overExcLbl',
+    'ui_keyConcepts','ui_keyFormulae',
+    'ui_vcurveTitle','ui_invvcurveTitle','ui_phasorTitle',
+    'ttl_torqAnalysis','ttl_devTorq','ttl_loadTorq','ttl_pulloutTorq','ttl_margin',
+    'ttl_pulloutGauge','ttl_pulloutDesc',
+    'lbl_safe','lbl_warn','lbl_trip',
+    'lbl_stable','lbl_caution','lbl_danger','lbl_pullout',
+    'ttl_loadAngleDial','ttl_deltaVal','ttl_stability',
+    'ttl_whatPullout','ttl_minExcTitle',
+  ];
+  plainIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = T(id);
+  });
+
+  // Buttons (check disabled state for start btn)
+  const btnS = document.getElementById('btnStart');
+  if (btnS && !btnS.disabled) btnS.textContent = T('btnStart');
+  const btnE = document.getElementById('btnExcite');
+  if (btnE) btnE.textContent = T('btnExcite');
+  const btnSt = document.getElementById('btnStop');
+  if (btnSt) btnSt.textContent = T('btnStop');
+
+  // Tab buttons
+  document.querySelectorAll('.tab-btn').forEach((t, i) => {
+    if (i === 0) t.textContent = T('tabMotor');
+    else if (i === 1) t.textContent = T('tabTorque');
+    else if (i === 2) t.textContent = T('tabLearn');
+  });
+
+  // HTML content (with colour spans)
+  const pe = document.getElementById('pulloutExplainText');
+  if (pe) pe.innerHTML = T('pulloutExplain');
+
+  // Alert boxes
+  ['alertUnder','alertNormal','alertOver','alertPullout','alertOC','alertOCTrip'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = T(id);
+  });
+
+  updateSyncIndicatorText();
+}
+
+function updateSyncIndicatorText() {
+  const si = document.getElementById('syncIndicator');
+  if (!si) return;
+  if (!state.running) { si.textContent = T('syncOff'); }
+  else if (state.lost) { si.textContent = T('syncLost'); }
+  else if (state.synced) { si.textContent = T('syncLocked'); }
+  else if (state.startPhase === 'near_sync') { si.textContent = T('syncNear'); }
+  else { si.textContent = T('syncStarting'); }
+}
+
+
+// ============================================================
+// SIMULATION BYPASS SWITCHES
+// ============================================================
+function updateSimSwitches() {
+  state.bypassOC      = document.getElementById('swOCBypass').checked;
+  state.bypassPullout = document.getElementById('swPOBypass').checked;
+  state.huntingEnabled= document.getElementById('swHunting').checked;
+
+  // Visual feedback on rows
+  document.getElementById('swRowOC').classList.toggle('active',   state.bypassOC);
+  document.getElementById('swRowPO').classList.toggle('active',   state.bypassPullout);
+  document.getElementById('swRowHunt').classList.toggle('active', state.huntingEnabled);
+
+  if (state.bypassOC) {
+    state.ocTripped = false;
+    showAlert('alertOCTrip', false);
+    addLog('⚠ OC Protection BYPASSED — overcurrent will not trip motor. For simulation only!', 'warn');
+  }
+  if (state.bypassPullout) {
+    addLog('⚠ Pull-out Trip BYPASSED — motor will not auto-trip at δ=90°. Observe hunting!', 'warn');
+  }
+  if (state.huntingEnabled) {
+    state.huntingAmplitude = 0;
+    state.huntingPhase = 0;
+    state.huntingVel = 0;
+    addLog('🌀 Hunting simulation enabled — apply load step to trigger oscillations.', 'warn');
+  } else {
+    state.huntingAmplitude = 0;
+    state.deltaOffset = 0;
+  }
+}
+
+// ============================================================
+// MOTOR SIMULATION ENGINE
+// ============================================================
+
+const RATED_V = 415;
+const RATED_I = 6.5;
+// Motor-duty CB (Type-D / BS EN 60947-4):
+// Allows high starting inrush — only protects against sustained running overcurrent
+const OC_WARN  = RATED_I * 1.15;  // 7.48A — warning (running only)
+const OC_TRIP  = RATED_I * 1.50;  // 9.75A — trip    (running only, sustained)
+const OC_TRIP_LABEL = (RATED_I * 1.50).toFixed(1) + 'A';
+const RATED_IF = 1.5;
+const SYNC_RPM = 1500;
+const Xs = 8.2; // Synchronous reactance (Ω)
+const Vph = RATED_V / Math.sqrt(3); // 239.6V phase
+
+let state = {
+  running: false,
+  excited: false,
+  synced: false,
+  lost: false,
+  ocTripped: false,
+  // Simulation bypass flags
+  bypassOC: false,
+  bypassPullout: false,
+  huntingEnabled: false,
+  // Hunting physics state
+  huntingAmplitude: 0,    // current oscillation amplitude (degrees)
+  huntingFreq: 2.0,       // oscillation frequency Hz (~2Hz typical for sync motor)
+  huntingPhase: 0,        // running phase accumulator
+  huntingVel: 0,          // angular velocity perturbation (rad/s equiv)
+  deltaOffset: 0,         // instantaneous δ offset from hunting
+  rpm: 0,
+  targetRpm: 0,
+  speed: 0, // 0-1
+  voltage: 415,
+  If: 0,
+  load: 0, // 0 = no load, 1 = full
+  startPhase: 'stopped', // stopped, starting, near_sync, synced
+  Il: 0,
+  pf: 0,
+  pfAngle: 0,
+  power: 0,
+  Ef: 0,
+  delta: 0,
+  torqueDev: 0,
+  torqueLoad: 0,
+  torquePullout: 0,
+  Q: 0,
+  S: 0,
+  efficiency: 0,
+  time: 0,
+  rpmHistory: [],
+  vcurvePoints: [], // {If, Il, load} collected over time
+};
+
+let animFrame = null;
+let startTime = null;
+
+// V-curve data storage by load
+let vcurveData = { 0: [], 0.25: [], 0.5: [], 0.75: [], 1.0: [] };
+
+// ============================================================
+// PHYSICS ENGINE
+// ============================================================
+
+function calcMotorPhysics() {
+  if (!state.running) return;
+
+  const V = state.voltage;
+  const Vp = V / Math.sqrt(3);
+  const If = state.If;
+  const load = state.load;
+  const synced = state.synced;
+
+  if (!synced) {
+    // INDUCTION MODE: motor accelerates using damper windings (field OFF or not yet locked)
+    // IMPORTANT: Do NOT reset state.If here. applyExcitation() sets state.If = 1.5
+    // during the 800ms pull-in window before state.synced becomes true.
+    // Zeroing it here was causing Ef=0 when synced fired → instant pull-out trip.
+    const Il_start = RATED_I * 5.5 * Math.max(0.1, (1 - state.speed * 0.7));
+    state.Il = Il_start;
+    // Motor-duty CB: NO trip during starting — high inrush is normal and expected.
+    // CB is rated to withstand 6–10× rated current during start.
+    // OC protection only active in synchronous running mode.
+    state.pf = 0.15 + 0.6 * state.speed;
+    state.pfAngle = Math.acos(Math.max(-1, Math.min(1, state.pf)));
+    state.S = Math.sqrt(3) * V * state.Il;
+    state.power = state.S * state.pf;
+    state.Q = state.S * Math.sin(state.pfAngle);
+    state.Ef = 0;
+    state.delta = 0;
+    state.torqueDev = 0;
+    state.torqueLoad = 0;
+    state.efficiency = 0;
+    return;
+  }
+
+  // SYNCHRONOUS MODE
+  // Calculate Ef based on If (linear for simplicity, with saturation)
+  // At If=1.5A, Ef ≈ Vph (normal excitation)
+  const Ef = If * (Vp / RATED_IF) * (1 - 0.05 * (If / RATED_IF)); // slight saturation
+
+  // Required electrical power = mechanical load power + losses
+  const ratedPower = Math.sqrt(3) * RATED_V * RATED_I * 0.87; // ~4kW
+  const loadPower = load * ratedPower;
+  const losses = 80 + load * 120; // friction + electrical losses
+
+  const Pe = loadPower + losses;
+
+  // Torque angle: Pe = (3 * Vp * Ef * sinδ) / Xs
+  // sinδ = Pe * Xs / (3 * Vp * Ef)
+  const sinDeltaRaw = (Pe * Xs) / (3 * Vp * Math.max(0.1, Ef));
+
+  // Check pull-out — bypass switch allows observation past δ=90°
+  if (sinDeltaRaw >= 1.0 && load > 0.05) {
+    if (!state.bypassPullout) {
+      // Normal protection: trip the motor
+      state.synced = false;
+      state.lost = true;
+      state.startPhase = 'lost';
+      state.running = false;
+      addLog('🔴 SYNCHRONISM LOST! Motor tripped due to overload/under-excitation!', 'err');
+      addLog('▶ Enable "Bypass Pull-out Trip" switch to observe hunting past this point.', 'warn');
+      document.getElementById('btnStop').disabled = false;
+      document.getElementById('btnStart').disabled = false;
+      document.getElementById('ifSlider').disabled = true;
+      return;
+    } else {
+      // Bypass active: motor enters hunting / asynchronous running — DO NOT trip
+      // Log once when first entering this region
+      if (!state._loggedPulloutEntry) {
+        addLog('🌀 Motor past pull-out limit (δ > 90°)! Hunting/slipping — bypass active.', 'err');
+        addLog('Rotor oscillating — not synchronised. Increase If or reduce load to re-sync.', 'warn');
+        state._loggedPulloutEntry = true;
+      }
+    }
+  } else {
+    state._loggedPulloutEntry = false;
+  }
+
+  const sinDelta = Math.max(-1, Math.min(0.999, sinDeltaRaw));
+  // Add hunting oscillation offset to displayed delta (visual effect)
+  const huntOffset = state.huntingEnabled ? (state.deltaOffset || 0) : 0;
+  const delta = Math.asin(sinDelta) * (180 / Math.PI) + huntOffset * 0.4;
+
+  // Pull-out torque (at δ=90°)
+  const T_pullout = (3 * Vp * Ef) / (Xs * (SYNC_RPM * 2 * Math.PI / 60));
+  const T_dev = (3 * Vp * Ef * Math.sin(delta * Math.PI / 180)) / (Xs * (SYNC_RPM * 2 * Math.PI / 60));
+  const T_load = loadPower / (SYNC_RPM * 2 * Math.PI / 60);
+
+  // Armature current calculation via phasor
+  // Ia = (V - Ef∠δ) / jXs (simplified scalar for PF analysis)
+  // When Ef > V: leading PF (over-excited), Ef < V: lagging PF (under-excited)
+  // Simplified: 
+  const Ef_ratio = Ef / Vp;
+  const cosTheta_approx = (Vp - Ef * Math.cos(delta * Math.PI / 180)) / Xs;
+  const sinTheta_approx = (Ef * Math.sin(delta * Math.PI / 180) - Pe / (3 * Vp)) / Xs;
+
+  // Better model: 
+  // For unity PF at If=1.5A:
+  const If_normal = RATED_IF;
+  const If_ratio = If / If_normal;
+
+  // Armature current minimum at unity PF, increases both sides
+  // I_a² = I_active² + I_reactive²
+  const I_active = Pe / (3 * Vp);
+  // Reactive component: negative when over-excited (leading), positive when under-excited
+  const I_reactive = (Vp - Ef) / Xs; // positive = lagging (under), negative = leading (over)
+
+  const Ia = Math.sqrt(I_active * I_active + I_reactive * I_reactive);
+  const Il = Ia; // line = phase for this simplified 3ph calc
+  const pfCalc = I_active / Math.max(0.01, Ia);
+  const isLeading = (Ef > Vp);
+
+  state.Il = Il;
+  state.pf = Math.min(1.0, pfCalc);
+
+  // Overcurrent protection — motor-duty CB, running mode only
+  if (state.synced && Il > OC_TRIP && !state.ocTripped && !state.bypassOC) {
+    state.ocTripped = true;
+    state.running = false;
+    state.synced  = false;
+    state.lost    = true;
+    state.startPhase = 'lost';
+    addLog('🔴 OVERCURRENT TRIP: IL = ' + Il.toFixed(2) + 'A > ' + OC_TRIP.toFixed(2) + 'A (150% rated). CB operated!', 'err');
+    addLog('▶ Enable "Bypass OC Protection" switch to observe overcurrent behaviour.', 'warn');
+    document.getElementById('btnStop').disabled  = false;
+    document.getElementById('btnStart').disabled = false;
+    document.getElementById('ifSlider').disabled = true;
+    return;
+  }
+  state.pfAngle = Math.acos(Math.max(-1, Math.min(1, state.pf)));
+  state.power = Pe - losses;
+  state.Q = 3 * Vp * Math.abs(I_reactive);
+  state.S = 3 * Vp * Ia;
+  state.Ef = Ef;
+  state.delta = delta;
+  state.torqueDev = T_dev;
+  state.torqueLoad = T_load;
+  state.torquePullout = T_pullout;
+  state.isLeading = isLeading;
+  state.efficiency = load > 0.01 ? (loadPower / Pe * 100) : 0;
+
+  // Store V-curve point
+  const loadKey = roundLoad(load);
+  if (vcurveData[loadKey] !== undefined) {
+    vcurveData[loadKey].push({ If: If, Il: Il });
+    if (vcurveData[loadKey].length > 200) vcurveData[loadKey].shift();
+  }
+  if (state.vcurvePoints.length > 2000) state.vcurvePoints.shift();
+  state.vcurvePoints.push({ If, Il, load, pf: state.pf, isLeading });
+}
+
+function roundLoad(l) {
+  const opts = [0, 0.25, 0.5, 0.75, 1.0];
+  return opts.reduce((prev, curr) => Math.abs(curr - l) < Math.abs(prev - l) ? curr : prev);
+}
+
+// ============================================================
+// ANIMATION LOOP
+// ============================================================
+let lastT = 0;
+let rotorAngle = 0;
+let statorPhase = 0;
+
+function animate(ts) {
+  if (!startTime) startTime = ts;
+  const dt = Math.min((ts - lastT) / 1000, 0.05);
+  lastT = ts;
+  state.time += dt;
+
+  if (state.running && !state.lost) {
+    // Speed ramp-up
+    let targetSpeed;
+    if (!state.synced) {
+      // Induction mode — accelerate to ~95% sync speed
+      targetSpeed = 0.97 - state.load * 0.08; // slip under load
+      state.speed += (targetSpeed - state.speed) * dt * 0.4;
+      state.rpm = state.speed * SYNC_RPM;
+
+      if (state.speed > 0.93 && state.startPhase === 'starting') {
+        state.startPhase = 'near_sync';
+        addLog('⚡ Near synchronous speed! You can now apply field excitation.', 'warn');
+        document.getElementById('btnExcite').disabled = false;
+        // animation intentionally removed — button is enabled but not flashing
+      }
+    } else {
+      // Synchronous mode — normally locked at 1500 RPM
+      // With hunting simulation: model swing equation oscillations
+      if (state.huntingEnabled) {
+        // Damped oscillation model: d²δ/dt² + 2ζωn·dδ/dt + ωn²·δ = disturbance
+        // Natural frequency ~2Hz for typical sync motor, damping ratio ~0.1-0.3
+        const wn = 2 * Math.PI * 2.0;            // natural angular freq (2Hz)
+        const dampRatio = state.bypassPullout ? 0.05 : 0.18;  // less damping with bypass = wilder
+        const zeta2wn = 2 * dampRatio * wn;
+
+        // Restoring force proportional to δ offset; disturbance from load + excitation
+        const baseLoad   = state.load;
+        const excitFrac  = state.If / RATED_IF;
+        // Stability factor: low excitation + high load = more oscillation tendency
+        const instability = Math.max(0, (baseLoad / Math.max(0.1, excitFrac)) - 0.5);
+
+        // Drive oscillation if past stability margin, naturally damp otherwise
+        const driveForce = instability * wn * wn * 15;   // degrees
+
+        state.huntingVel += dt * (-zeta2wn * state.huntingVel
+                                  - wn * wn * state.huntingAmplitude
+                                  + driveForce);
+        state.huntingAmplitude += dt * state.huntingVel;
+
+        // Clamp amplitude to realistic range
+        state.huntingAmplitude = Math.max(-50, Math.min(50, state.huntingAmplitude));
+        state.deltaOffset = state.huntingAmplitude;
+
+        // Speed oscillates with δ oscillation (synchronising torque)
+        const speedPert = (state.huntingVel / (wn * 50)) * SYNC_RPM * 0.03;
+        state.rpm   = SYNC_RPM + speedPert * SYNC_RPM * 0.01;
+        state.speed = state.rpm / SYNC_RPM;
+      } else {
+        state.huntingAmplitude = 0;
+        state.deltaOffset = 0;
+        state.rpm   = SYNC_RPM;
+        state.speed = 1.0;
+      }
+    }
+
+    calcMotorPhysics();
+
+    // Animate rotor
+    const rps = state.rpm / 60;
+    rotorAngle += rps * 360 * dt;
+    statorPhase += dt * 50 * 360;
+    updateMotorSVG();
+  }
+
+  updateMeters();
+  updateGraphs();
+  updateEffectsPanel();
+  updateStatusBar();
+
+  // Keep animating only if running and not lost
+  if (state.running && !state.lost) {
+    animFrame = requestAnimationFrame(animate);
+  }
+}
+
+function updateMotorSVG() {
+  const g = document.getElementById('rotorGroup');
+  if (g) g.setAttribute('transform', `rotate(${rotorAngle % 360}, 100, 70)`);
+
+  const glow = document.getElementById('fieldGlow');
+  if (glow) {
+    if (state.excited && state.synced) {
+      const o = 0.3 + 0.3 * Math.sin(state.time * 4);
+      glow.setAttribute('opacity', o);
+    } else {
+      glow.setAttribute('opacity', 0);
+    }
+  }
+
+  const flash = document.getElementById('speedFlash');
+  if (flash) flash.setAttribute('opacity', state.speed > 0.7 ? '0.6' : '0');
+
+  const rLine1 = document.getElementById('rLine1');
+  const rLine2 = document.getElementById('rLine2');
+  if (rLine1) {
+    const col = state.excited ? '#ff6b35' : '#00d4ff';
+    rLine1.setAttribute('stroke', col);
+    rLine2.setAttribute('stroke', col);
+  }
+}
+
+// ============================================================
+// METERS & DISPLAYS
+// ============================================================
+function updateMeters() {
+  const Il = state.running ? state.Il : 0;
+  const If = state.If;
+  const V = state.running ? state.voltage : 0;
+  const P = state.running ? Math.max(0, state.power) : 0;
+  const rpm = state.rpm;
+  const pf = state.running && state.synced ? state.pf : (state.running ? state.pf : 0);
+
+  setText('mIL', Il.toFixed(2));
+  setText('mIF', If.toFixed(2));
+  setText('mVL', Math.round(V));
+  setText('mPW', Math.round(P));
+  setText('rpmDisp', Math.round(rpm) + ' RPM');
+
+  setWidth('barIL', Math.min(100, Il / (RATED_I * 1.5) * 100));
+  setWidth('barIF', Math.min(100, If / 3 * 100));
+  setWidth('barVL', Math.min(100, (V / 440) * 100));
+  setWidth('barPW', Math.min(100, P / 5000 * 100));
+
+  drawTacho(rpm);
+  drawPFMeter(pf, state.running && state.synced ? (state.isLeading ? 'LEAD' : 'LAG') : '—');
+
+  // OC meter in home view
+  const ilNow = state.running ? state.Il : 0;
+  setText('mIL2', ilNow.toFixed(2));
+  // Bar: 0–6.5A = 0–76%, 6.5–8.5A = 76–100%
+  // OC bar: scale 0 to 110% of OC_TRIP for headroom
+  const ocScale = OC_TRIP * 1.1;
+  const ocPct = Math.min(100, (ilNow / ocScale) * 100);
+  const barEl = document.getElementById('barIL2');
+  if (barEl) {
+    barEl.style.width = ocPct + '%';
+    if (!state.synced && state.running) {
+      // Starting inrush — show as informational cyan regardless of amplitude
+      barEl.style.background = 'linear-gradient(90deg,#00d4ff,#0088aa)';
+      barEl.style.boxShadow   = '0 0 6px #00d4ff';
+    } else if (ilNow < OC_WARN) {
+      barEl.style.background = 'linear-gradient(90deg,#00d4ff,#00aacc)';
+      barEl.style.boxShadow   = '0 0 8px #00d4ff';
+    } else if (ilNow < OC_TRIP) {
+      barEl.style.background = 'linear-gradient(90deg,#ffd700,#cc9900)';
+      barEl.style.boxShadow   = '0 0 10px #ffd700';
+    } else {
+      barEl.style.background = 'linear-gradient(90deg,#ff2222,#aa0000)';
+      barEl.style.boxShadow   = '0 0 14px #ff2222';
+    }
+  }
+  const mbox = document.getElementById('ocMeterBox');
+  const mval = document.getElementById('mIL2');
+  const ocsText = document.getElementById('ocStatusText');
+  if (mbox && mval) {
+    if (!state.running) {
+      mbox.style.borderTopColor = 'var(--accent)'; mval.style.color = 'var(--accent)';
+      if (ocsText) { ocsText.textContent = '—'; ocsText.style.color = '#5a7a9a'; }
+    } else if (!state.synced) {
+      // Starting mode — high inrush is normal, show as info not alarm
+      mbox.style.borderTopColor = 'var(--accent)'; mval.style.color = 'var(--accent)';
+      if (ocsText) { ocsText.textContent = T('oc_starting'); ocsText.style.color = '#00d4ff'; }
+    } else if (ilNow < OC_WARN) {
+      mbox.style.borderTopColor = 'var(--accent)'; mval.style.color = 'var(--accent)';
+      if (ocsText) { ocsText.textContent = T('oc_normal'); ocsText.style.color = '#5a7a9a'; }
+    } else if (ilNow < OC_TRIP) {
+      mbox.style.borderTopColor = '#ffd700'; mval.style.color = '#ffd700';
+      if (ocsText) { ocsText.textContent = T('oc_warn'); ocsText.style.color = '#ffd700'; }
+    } else {
+      mbox.style.borderTopColor = '#ff2222'; mval.style.color = '#ff2222';
+      if (ocsText) { ocsText.textContent = T('oc_trip'); ocsText.style.color = '#ff2222'; }
+    }
+  }
+  // OC alerts
+  showAlert('alertOC',     state.synced  && ilNow >= OC_WARN && ilNow < OC_TRIP && !state.ocTripped);
+  showAlert('alertOCTrip', state.ocTripped);
+
+  // Hunting alerts — active only when hunting simulation is ON
+  const huntAmp = Math.abs(state.huntingAmplitude || 0);
+  showAlert('alertHunting',       state.huntingEnabled && huntAmp > 5  && huntAmp <= 20 && state.synced);
+  showAlert('alertHuntingSevere', state.huntingEnabled && huntAmp > 20 && state.synced);
+
+  // Hunting indicator on tachometer area
+  const hi = document.getElementById('huntingIndicator');
+  if (hi) {
+    if (state.huntingEnabled && huntAmp > 3 && state.synced) {
+      hi.classList.add('show');
+      hi.classList.toggle('mild',   huntAmp <= 20);
+      hi.classList.toggle('severe', huntAmp  > 20);
+      hi.textContent = '🌀 HUNTING: ±' + huntAmp.toFixed(1) + '° | RPM: ' + Math.round(state.rpm);
+    } else {
+      hi.classList.remove('show','mild','severe');
+    }
+  }
+
+  const pfStr = state.running && state.synced ? state.pf.toFixed(3) : '0.000';
+  const pfType = state.running && state.synced ? (state.isLeading ? '(LEADING — OVER-EXCITED)' : '(LAGGING — UNDER-EXCITED)') : '—';
+  setText('pfDisp', pfStr);
+  setText('pfTypeDisp', pfType);
+}
+
+function updateStatusBar() {
+  const now = new Date();
+  setText('timeDisp', `SIM TIME: ${state.time.toFixed(1)}s | CLOCK: ${now.toHours()}:${now.toMinutes()}`);
+
+  setDot('dotPower', state.running ? 'dot-green' : 'dot-gray');
+  setDot('dotMotor', state.running ? (state.synced ? 'dot-green' : 'dot-yellow') : 'dot-gray');
+  setDot('dotExcite', state.excited ? 'dot-green' : 'dot-gray');
+  setDot('dotSync', state.synced ? 'dot-green' : (state.startPhase === 'near_sync' ? 'dot-yellow' : 'dot-gray'));
+
+  setText('ui_lblPower',       state.running ? T('status_supply') + ' ' + state.voltage + 'V' : T('status_supply') + ' OFF');
+  setText('ui_lblMotorStatus',   state.synced ? T('status_syncRunning') : (state.running ? T('status_inductionMode') : T('status_motorStopped')));
+  setText('ui_lblExciteStatus',  state.excited ? 'FIELD: ' + state.If.toFixed(2) + 'A' : T('status_fieldOff'));
+  setText('ui_lblSyncStatus',    state.synced ? T('status_syncLocked') : (state.startPhase === 'near_sync' ? T('status_nearSync') : T('status_syncDash')));
+
+  // Sync indicator
+  const si = document.getElementById('syncIndicator');
+  if (!state.running) { si.className = 'sync-indicator off'; si.textContent = T('syncOff'); }
+  else if (state.lost) { si.className = 'sync-indicator lost'; si.textContent = T('syncLost'); }
+  else if (state.synced) { si.className = 'sync-indicator synced'; si.textContent = T('syncLocked'); }
+  else if (state.startPhase === 'near_sync') { si.className = 'sync-indicator near'; si.textContent = T('syncNear'); }
+  else { si.className = 'sync-indicator off'; si.textContent = T('syncStarting'); }
+}
+
+Date.prototype.toHours = function() { return String(this.getHours()).padStart(2, '0'); };
+Date.prototype.toMinutes = function() { return String(this.getMinutes()).padStart(2, '0'); };
+
+function updateEffectsPanel() {
+  if (!state.synced) {
+    setText('eMode', state.startPhase === 'starting' ? T('mode_induction') : state.startPhase === 'near_sync' ? T('mode_nearSync') : state.lost ? T('mode_tripped') : T('mode_stopped'));
+    setText('eSpeed', Math.round(state.rpm) + ' RPM');
+    setText('eSyncPct', (state.speed * 100).toFixed(1) + '%');
+    const slip = state.synced ? 0 : (1 - state.speed) * 100;
+    setText('eSlip', slip.toFixed(1) + '%');
+    setText('eStartI', state.running ? state.Il.toFixed(2) + ' A' : '—');
+    return;
+  }
+
+  setText('eMode', T('mode_sync'));
+  setText('eSpeed', '1500 RPM (LOCKED)');
+  setText('eSyncPct', '100%');
+  setText('eSlip', T('slip_sync'));
+  setText('eStartI', state.Il.toFixed(2) + ' A');
+
+  setText('eTorqAngle', state.delta.toFixed(1) + '°');
+  setText('eEf', state.Ef.toFixed(1) + ' V');
+  const qSign = state.isLeading ? '-' : '+';
+  setText('eQ', qSign + (state.Q / 1000).toFixed(3) + ' kVAR');
+  setText('eS', (state.S / 1000).toFixed(3) + ' kVA');
+  setText('eEff', state.efficiency > 0 ? state.efficiency.toFixed(1) + '%' : '—');
+
+  // Torque tab
+  setText('tDev', state.torqueDev.toFixed(2) + ' N·m');
+  setText('tLoad', state.torqueLoad.toFixed(2) + ' N·m');
+  setText('tPullout', state.torquePullout.toFixed(2) + ' N·m');
+  const margin = ((state.torquePullout - state.torqueLoad) / state.torquePullout * 100);
+  setText('tMargin', margin.toFixed(1) + '%');
+  setEl('tMargin', el => el.className = 'effect-val ' + (margin > 50 ? 'good' : margin > 20 ? 'warn' : 'bad'));
+
+  const dp = Math.min(100, (state.delta / 90) * 100);
+
+  // ── Pull-out gauge needle colour: green/yellow/red flashing ──
+  const needle = document.getElementById('pulloutNeedle');
+  if (needle) {
+    needle.style.left = Math.max(2, Math.min(97, dp)) + '%';
+    // Remove all needle colour classes first
+    needle.classList.remove('needle-green', 'needle-yellow', 'needle-red');
+    if (state.delta < 45) {
+      needle.classList.add('needle-green');
+    } else if (state.delta < 75) {
+      needle.classList.add('needle-yellow');
+    } else {
+      needle.classList.add('needle-red');   // flashing red via CSS animation
+    }
+  }
+
+  // ── Load Angle Dial ──
+  drawLoadAngleDial(state.delta);
+
+  // ── Dial digital readout colour ──
+  const dro = document.getElementById('dialReadout');
+  if (dro) {
+    dro.textContent = state.delta.toFixed(1) + '°';
+    dro.className = 'dial-readout ' + (state.delta < 45 ? 'safe' : state.delta < 75 ? 'warn' : 'crit');
+  }
+  const dsl = document.getElementById('dialSubLabel');
+  if (dsl) {
+    if (state.delta < 45)      dsl.textContent = 'STABLE — Good operating zone';
+    else if (state.delta < 75) dsl.textContent = 'CAUTION — Reduce load or increase If';
+    else                       dsl.textContent = 'DANGER — Near pull-out limit!';
+  }
+
+  setText('deltaVal', state.delta.toFixed(1) + '°');
+
+  const stableKey = state.delta < 45 ? 'stability_stable' : state.delta < 75 ? 'stability_caution' : 'stability_crit';
+  setText('stabilityTxt', T(stableKey));
+  setEl('stabilityTxt', el => el.className = 'effect-val ' + (stableKey === 'stability_stable' ? 'good' : stableKey === 'stability_caution' ? 'warn' : 'bad'));
+
+  // Excitation state marker
+  const normIf = state.If / (RATED_IF * 2); // 0 to 1 across full range
+  const markerPct = Math.min(95, Math.max(5, normIf * 100));
+  document.getElementById('exciteMarker').style.left = markerPct + '%';
+
+  const excState = state.isLeading ? 'OVER-EXCITED (Leading PF — Capacitive)' : (Math.abs(state.pf - 1) < 0.02 ? 'NORMALLY EXCITED (Unity PF)' : 'UNDER-EXCITED (Lagging PF — Inductive)');
+  setText('exciteStateText', excState);
+
+  // Min excitation analysis
+  const minExcText = document.getElementById('minExciteText');
+  const minIfRequired = calculateMinIf(state.load);
+  minExcText.innerHTML = `
+    <b style="color:var(--accent)">Current Load: ${(state.load * 100).toFixed(0)}%</b><br>
+    Min. excitation required: <span style="color:var(--warn)">${minIfRequired.toFixed(2)} A</span><br>
+    Current excitation: <span style="color:${state.If >= minIfRequired ? 'var(--accent3)' : 'var(--warn)'}">${state.If.toFixed(2)} A</span><br><br>
+    ${state.If < minIfRequired + 0.3 ?
+      '<span style="color:var(--warn)">⚠ You cannot reduce excitation further without risk of pull-out!</span>' :
+      '<span style="color:var(--accent3)">✔ Safe margin from pull-out torque.</span>'}
+    <br><br>
+    <span style="color:var(--dim)">δ = ${state.delta.toFixed(1)}° (limit = 90°). Reducing If increases δ. More load → higher minimum If needed.</span>
+  `;
+
+  // Alerts
+  showAlert('alertPullout', state.delta > 75 && !state.lost);
+  showAlert('alertLost', state.lost);
+  // Show alerts with meaningful thresholds
+  const pfLow = state.pf < 0.80;
+  showAlert('alertUnder', state.synced && !state.isLeading && pfLow && !state.lost);
+  showAlert('alertNormal', state.synced && state.pf >= 0.95 && !state.isLeading && !state.lost);
+  showAlert('alertOver', state.synced && state.isLeading && !state.lost);
+}
+
+function calculateMinIf(load) {
+  // Minimum If such that sinδ < 1 (with some margin ~sinδ < 0.85)
+  // Pe * Xs / (3 * Vp * Ef) <= 0.85
+  // Ef_min = Pe * Xs / (3 * Vp * 0.85)
+  const ratedPower = Math.sqrt(3) * RATED_V * RATED_I * 0.87;
+  const loadPower = load * ratedPower + 80 + load * 120;
+  const Vp = RATED_V / Math.sqrt(3);
+  const Ef_min = (loadPower * Xs) / (3 * Vp * 0.85);
+  // Convert Ef_min to If
+  const If_min = Ef_min / (Vp / RATED_IF);
+  return Math.max(0.1, If_min);
+}
+
+// ============================================================
+// GRAPH DRAWING
+// ============================================================
+function updateGraphs() {
+  drawVcurve();
+  drawInvVcurve();
+  drawPhasor();
+}
+
+function drawVcurve() {
+  const canvas = document.getElementById('vcurveCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+  canvas.height = 180 * (window.devicePixelRatio || 1);
+  ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+  const W = canvas.offsetWidth, H = 180;
+  ctx.fillStyle = '#060b18';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  drawGrid(ctx, W, H, 10, 8);
+
+  // Axes labels
+  ctx.fillStyle = '#5a7a9a';
+  ctx.font = '10px Share Tech Mono';
+  ctx.fillText('Ia (A)', 6, 14);
+  ctx.fillText('If (A) →', W - 55, H - 6);
+
+  // Draw theoretical V-curves for each load
+  const loadConfigs = [
+    { load: 0, color: '#5a7a9a', label: 'No Load' },
+    { load: 0.25, color: '#00d4ff', label: '¼ Load' },
+    { load: 0.5, color: '#39ff14', label: '½ Load' },
+    { load: 0.75, color: '#ffd700', label: '¾ Load' },
+    { load: 1.0, color: '#ff6b35', label: 'Full Load' },
+  ];
+
+  loadConfigs.forEach(({ load, color, label }) => {
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.7;
+
+    for (let ifVal = 0.1; ifVal <= 3; ifVal += 0.05) {
+      const ratedPower = Math.sqrt(3) * RATED_V * RATED_I * 0.87;
+      const loadPower = load * ratedPower;
+      const losses = 80 + load * 120;
+      const Pe = loadPower + losses;
+      const Vp = RATED_V / Math.sqrt(3);
+      const Ef = ifVal * (Vp / RATED_IF) * (1 - 0.05 * (ifVal / RATED_IF));
+      const I_active = Pe / (3 * Vp);
+      const I_reactive = (Vp - Ef) / Xs;
+      const Ia = Math.sqrt(I_active * I_active + I_reactive * I_reactive);
+
+      const x = mapX(ifVal, 0, 3, 30, W - 20);
+      const y = mapY(Ia, 0, 15, H - 25, 20);
+
+      if (ifVal === 0.1) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // Label
+    const lx = W - 90;
+    ctx.fillStyle = color;
+    ctx.font = '9px Rajdhani';
+    ctx.fillText(label, lx, loadConfigs.indexOf(loadConfigs.find(c => c.load === load)) * 12 + 18);
+  });
+
+  // Current operating point
+  if (state.synced && state.If > 0) {
+    const x = mapX(state.If, 0, 3, 30, W - 20);
+    const y = mapY(state.Il, 0, 15, H - 25, 20);
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.strokeStyle = state.isLeading ? '#ff6b35' : '#00d4ff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Crosshairs
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 0.5;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(x, 20); ctx.lineTo(x, H - 25); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(30, y); ctx.lineTo(W - 20, y); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Axis lines
+  ctx.strokeStyle = '#1e3a5f';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(30, 15); ctx.lineTo(30, H - 25); ctx.lineTo(W - 20, H - 25); ctx.stroke();
+
+  // Normal excitation vertical line
+  const xNorm = mapX(RATED_IF, 0, 3, 30, W - 20);
+  ctx.strokeStyle = 'rgba(255,215,0,0.4)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(xNorm, 15); ctx.lineTo(xNorm, H - 25); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(255,215,0,0.7)';
+  ctx.font = '9px Share Tech Mono';
+  ctx.fillText('Normal', xNorm - 20, 14);
+}
+
+function drawInvVcurve() {
+  const canvas = document.getElementById('invvcurveCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+  canvas.height = 180 * (window.devicePixelRatio || 1);
+  ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+  const W = canvas.offsetWidth, H = 180;
+  ctx.fillStyle = '#060b18';
+  ctx.fillRect(0, 0, W, H);
+  drawGrid(ctx, W, H, 10, 8);
+
+  ctx.fillStyle = '#5a7a9a';
+  ctx.font = '10px Share Tech Mono';
+  ctx.fillText('PF', 6, 14);
+  ctx.fillText('If (A) →', W - 55, H - 6);
+
+  // LAG / LEAD labels
+  ctx.fillStyle = 'rgba(0,212,255,0.5)';
+  ctx.font = '9px Rajdhani';
+  ctx.fillText('◄ LAGGING', 35, H - 30);
+  ctx.fillStyle = 'rgba(255,107,53,0.5)';
+  ctx.fillText('LEADING ►', W - 80, H - 30);
+
+  const loadConfigs = [
+    { load: 0, color: '#5a7a9a' },
+    { load: 0.25, color: '#00d4ff' },
+    { load: 0.5, color: '#39ff14' },
+    { load: 0.75, color: '#ffd700' },
+    { load: 1.0, color: '#ff6b35' },
+  ];
+
+  loadConfigs.forEach(({ load, color }) => {
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.7;
+
+    for (let ifVal = 0.1; ifVal <= 3; ifVal += 0.05) {
+      const ratedPower = Math.sqrt(3) * RATED_V * RATED_I * 0.87;
+      const loadPower = load * ratedPower;
+      const losses = 80 + load * 120;
+      const Pe = loadPower + losses;
+      const Vp = RATED_V / Math.sqrt(3);
+      const Ef = ifVal * (Vp / RATED_IF) * (1 - 0.05 * (ifVal / RATED_IF));
+      const I_active = Pe / (3 * Vp);
+      const I_reactive = (Vp - Ef) / Xs;
+      const Ia = Math.sqrt(I_active * I_active + I_reactive * I_reactive);
+      const pfVal = Math.min(1.0, I_active / Math.max(0.01, Ia));
+
+      const x = mapX(ifVal, 0, 3, 30, W - 20);
+      const y = mapY(pfVal, 0, 1.05, H - 25, 20);
+
+      if (ifVal === 0.1) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  });
+
+  // Unity PF line
+  const yUnity = mapY(1.0, 0, 1.05, H - 25, 20);
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 0.8;
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(30, yUnity); ctx.lineTo(W - 20, yUnity); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '9px Share Tech Mono';
+  ctx.fillText('Unity PF', W - 80, yUnity - 4);
+
+  // Current point
+  if (state.synced && state.If > 0) {
+    const x = mapX(state.If, 0, 3, 30, W - 20);
+    const y = mapY(state.pf, 0, 1.05, H - 25, 20);
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.strokeStyle = state.isLeading ? '#ff6b35' : '#00d4ff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = '#1e3a5f';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(30, 15); ctx.lineTo(30, H - 25); ctx.lineTo(W - 20, H - 25); ctx.stroke();
+}
+
+function drawPhasor() {
+  const canvas = document.getElementById('phasorCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+  canvas.height = 180 * (window.devicePixelRatio || 1);
+  ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+  const W = canvas.offsetWidth, H = 180;
+  ctx.fillStyle = '#060b18';
+  ctx.fillRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H / 2;
+  const scale = 60;
+
+  // Grid circle guides
+  [0.5, 1.0].forEach(r => {
+    ctx.beginPath();
+    ctx.strokeStyle = '#1a2a40';
+    ctx.lineWidth = 0.5;
+    ctx.arc(cx, cy, r * scale, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+
+  // Axes
+  ctx.strokeStyle = '#1e3a5f';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.moveTo(cx - scale * 1.5, cy); ctx.lineTo(cx + scale * 1.5, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, cy - scale * 1.5); ctx.lineTo(cx, cy + scale * 1.5); ctx.stroke();
+
+  if (!state.synced || state.If === 0) {
+    ctx.fillStyle = '#5a7a9a';
+    ctx.font = '12px Rajdhani';
+    ctx.textAlign = 'center';
+    ctx.fillText('Apply field excitation to see phasor diagram', cx, cy + 4);
+    return;
+  }
+
+  // V (reference phasor, horizontal)
+  const Vp = RATED_V / Math.sqrt(3);
+  const vNorm = 1.0; // normalized
+  drawPhasorArrow(ctx, cx, cy, cx + vNorm * scale, cy, '#ffd700', 'V');
+
+  // Ef phasor (at angle -δ from V, since motor convention)
+  const delta_rad = state.delta * Math.PI / 180;
+  const efNorm = state.Ef / Vp;
+  const efX = cx + efNorm * scale * Math.cos(delta_rad);
+  const efY = cy + efNorm * scale * Math.sin(delta_rad);
+  drawPhasorArrow(ctx, cx, cy, efX, efY, '#ff6b35', 'Ef');
+
+  // Ia phasor
+  const theta = state.pfAngle * (state.isLeading ? -1 : 1);
+  const iaNorm = (state.Il / RATED_I) * 0.8;
+  const iaX = cx + iaNorm * scale * Math.cos(theta);
+  const iaY = cy + iaNorm * scale * Math.sin(theta);
+  drawPhasorArrow(ctx, cx, cy, iaX, iaY, '#00d4ff', 'Ia');
+
+  // Labels
+  ctx.fillStyle = '#5a7a9a';
+  ctx.font = '9px Share Tech Mono';
+  ctx.textAlign = 'left';
+  ctx.fillText(`δ = ${state.delta.toFixed(1)}°`, cx + 5, cy - 10);
+  ctx.fillText(`θ = ${(state.pfAngle * 180 / Math.PI).toFixed(1)}°`, cx + 5, cy + 20);
+  ctx.fillText(state.isLeading ? 'LEADING' : 'LAGGING', 8, 14);
+}
+
+function drawPhasorArrow(ctx, x1, y1, x2, y2, color, label) {
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+
+  // Arrowhead
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  const len = 8;
+  ctx.beginPath();
+  ctx.fillStyle = color;
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - len * Math.cos(angle - 0.4), y2 - len * Math.sin(angle - 0.4));
+  ctx.lineTo(x2 - len * Math.cos(angle + 0.4), y2 - len * Math.sin(angle + 0.4));
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = color;
+  ctx.font = 'bold 10px Share Tech Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText(label, x2 + 12 * Math.cos(angle), y2 + 12 * Math.sin(angle));
+}
+
+function drawGrid(ctx, W, H, cols, rows) {
+  ctx.strokeStyle = '#0d1f35';
+  ctx.lineWidth = 0.5;
+  for (let i = 1; i < cols; i++) {
+    const x = 30 + (W - 50) / cols * i;
+    ctx.beginPath(); ctx.moveTo(x, 15); ctx.lineTo(x, H - 25); ctx.stroke();
+  }
+  for (let i = 1; i < rows; i++) {
+    const y = 15 + (H - 40) / rows * i;
+    ctx.beginPath(); ctx.moveTo(30, y); ctx.lineTo(W - 20, y); ctx.stroke();
+  }
+}
+
+// ============================================================
+// TACHOMETER & PF METER
+// ============================================================
+function drawTacho(rpm) {
+  const canvas = document.getElementById('tachoCanvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const trect = canvas.getBoundingClientRect();
+  const rawW = (trect.width > 0 ? trect.width : 220);
+  canvas.width = rawW * dpr;
+  canvas.height = 110 * dpr;
+  ctx.scale(dpr, dpr);
+  const W = rawW, H = 110;
+  const cx = W / 2, cy = H - 15;
+  const r = Math.min(cx - 10, cy - 5) + 5;
+
+  // Arc background
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, Math.PI, 0, false);
+  ctx.lineWidth = 10;
+  ctx.strokeStyle = '#0d1f35';
+  ctx.stroke();
+
+  // Colored zones
+  const zones = [
+    { from: 0, to: 0.6, color: '#1a3a6a' },
+    { from: 0.6, to: 0.9, color: '#1a4a2a' },
+    { from: 0.9, to: 1.0, color: '#2a3a0a' },
+    { from: 1.0, to: 1.05, color: '#3a1a0a' },
+  ];
+  zones.forEach(z => {
+    const startA = Math.PI + z.from * Math.PI;
+    const endA = Math.PI + z.to * Math.PI;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, startA, endA, false);
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = z.color;
+    ctx.stroke();
+  });
+
+  // Tick marks
+  for (let i = 0; i <= 10; i++) {
+    const a = Math.PI + (i / 10) * Math.PI;
+    const inner = r - 14; const outer = r - 6;
+    ctx.beginPath();
+    ctx.moveTo(cx + inner * Math.cos(a), cy + inner * Math.sin(a));
+    ctx.lineTo(cx + outer * Math.cos(a), cy + outer * Math.sin(a));
+    ctx.strokeStyle = '#5a7a9a';
+    ctx.lineWidth = i % 5 === 0 ? 2 : 0.8;
+    ctx.stroke();
+    if (i % 5 === 0) {
+      const rpmLbl = i * 150;
+      const tx = cx + (r - 24) * Math.cos(a);
+      const ty = cy + (r - 24) * Math.sin(a);
+      ctx.fillStyle = '#5a7a9a';
+      ctx.font = '8px Share Tech Mono';
+      ctx.textAlign = 'center';
+      ctx.fillText(rpmLbl, tx, ty + 3);
+    }
+  }
+
+  // Needle
+  const angle = Math.PI + (Math.min(rpm, 1650) / 1500) * Math.PI;
+  const nLen = r - 16;
+  const nx = cx + nLen * Math.cos(angle);
+  const ny = cy + nLen * Math.sin(angle);
+
+  // Glow
+  ctx.shadowColor = '#39ff14';
+  ctx.shadowBlur = 8;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(nx, ny);
+  ctx.strokeStyle = '#39ff14';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Red zone marker
+  const syncA = Math.PI + (1500 / 1500) * Math.PI;
+  const sxInner = cx + (r - 14) * Math.cos(syncA);
+  const syInner = cy + (r - 14) * Math.sin(syncA);
+  ctx.beginPath();
+  ctx.arc(sxInner, syInner, 4, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffd700';
+  ctx.fill();
+
+  // Center hub
+  ctx.beginPath();
+  ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#1e3a5f';
+  ctx.fill();
+  ctx.strokeStyle = '#39ff14';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+}
+
+function drawPFMeter(pf, type) {
+  const canvas = document.getElementById('pfCanvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  // Use getBoundingClientRect for reliable width even before first layout paint
+  const rect = canvas.getBoundingClientRect();
+  const rawW = (rect.width > 0 ? rect.width : 220);
+  canvas.width = rawW * dpr;
+  canvas.height = 110 * dpr;
+  ctx.scale(dpr, dpr);
+  const W = rawW, H = 110;
+  const cx = W / 2, cy = H - 15;
+  const r = Math.min(cx - 10, cy - 5) + 5;
+
+  // Arc zones: LAG (0-0.5), UNITY (0.5), LEAD (0.5-1)
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, Math.PI, 0, false);
+  ctx.lineWidth = 10;
+  ctx.strokeStyle = '#0d1f35';
+  ctx.stroke();
+
+  // LAG zone (left half)
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, Math.PI, Math.PI * 1.5, false);
+  ctx.strokeStyle = 'rgba(0,212,255,0.2)';
+  ctx.lineWidth = 10;
+  ctx.stroke();
+
+  // UNITY zone (center)
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, Math.PI * 1.45, Math.PI * 1.55, false);
+  ctx.strokeStyle = 'rgba(57,255,20,0.5)';
+  ctx.lineWidth = 10;
+  ctx.stroke();
+
+  // LEAD zone (right half)
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, Math.PI * 1.5, 0, false);
+  ctx.strokeStyle = 'rgba(255,107,53,0.2)';
+  ctx.lineWidth = 10;
+  ctx.stroke();
+
+  // Ticks
+  for (let i = 0; i <= 10; i++) {
+    const a = Math.PI + (i / 10) * Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx + (r - 14) * Math.cos(a), cy + (r - 14) * Math.sin(a));
+    ctx.lineTo(cx + (r - 6) * Math.cos(a), cy + (r - 6) * Math.sin(a));
+    ctx.strokeStyle = '#5a7a9a';
+    ctx.lineWidth = i % 5 === 0 ? 2 : 0.8;
+    ctx.stroke();
+  }
+
+  // Labels
+  ctx.fillStyle = '#00d4ff';
+  ctx.font = '9px Share Tech Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('LAG', cx - r + 10, cy - 5);
+  ctx.fillStyle = '#39ff14';
+  ctx.fillText('1.0', cx, cy - r + 14);
+  ctx.fillStyle = '#ff6b35';
+  ctx.fillText('LEAD', cx + r - 10, cy - 5);
+
+  // Needle position on a half-circle arc:
+  //   Left  end  = Math.PI   → 0.0 LAG (pure inductive, worst)
+  //   Top   peak = 1.5*Math.PI → 1.0 unity PF  (the inverted-V peak)
+  //   Right end  = 2*Math.PI → 0.0 LEAD (pure capacitive, worst)
+  // So the full sweep = PI … 1.5PI (lag side) | 1.5PI … 2PI (lead side)
+  let needleAngle;
+  if (type === '—') {
+    // Motor off — park needle at far left (0.0 lag position)
+    needleAngle = Math.PI;
+  } else if (type === 'LAG') {
+    // Lagging PF:  pf 0→1 sweeps angle PI→1.5PI  (left to top)
+    needleAngle = Math.PI + pf * (Math.PI / 2);
+  } else {
+    // Leading PF:  pf 1→0 sweeps angle 1.5PI→2PI (top to right)
+    needleAngle = 1.5 * Math.PI + (1.0 - pf) * (Math.PI / 2);
+  }
+
+  const nLen = r - 16;
+  const nx = cx + nLen * Math.cos(needleAngle);
+  const ny = cy + nLen * Math.sin(needleAngle);
+
+  ctx.shadowColor = var_accent4();
+  ctx.shadowBlur = 8;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(nx, ny);
+  ctx.strokeStyle = '#ffd700';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#1e3a5f';
+  ctx.fill();
+  ctx.strokeStyle = '#ffd700';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+}
+
+function var_accent4() { return '#ffd700'; }
+
+// ============================================================
+// MOTOR CONTROL FUNCTIONS
+// ============================================================
+function startMotor() {
+  if (state.running) return;
+  state.running = true;
+  state.synced = false;
+  state.excited = false;
+  state.lost = false;
+  state.startPhase = 'starting';
+  state.rpm = 0;
+  state.speed = 0;
+  state.If = 0;
+
+  document.getElementById('btnStart').disabled = true;
+  document.getElementById('btnStop').disabled = false;
+  document.getElementById('ifSlider').disabled = true;
+  document.getElementById('btnExcite').disabled = true;
+  document.getElementById('ifSlider').value = 0;
+
+  addLog('▶ Motor started as induction motor (field OFF)', 'info');
+  addLog('⏳ Accelerating... watch tachometer', 'info');
+  addLog('⚠ Starting current = ' + (RATED_I * 5.5).toFixed(1) + 'A (5.5× rated)', 'warn');
+
+  lastT = performance.now();
+  animFrame = requestAnimationFrame(animate);
+}
+
+function applyExcitation() {
+  if (!state.running || state.synced) return;
+  if (state.rpm < 1300) {
+    addLog('⚠ Speed too low! Wait until near 1500 RPM', 'warn');
+    return;
+  }
+
+  state.excited = true;
+  state.lost = false;
+  state.startPhase = 'synced';
+
+  // Set initial If to rated
+  state.If = RATED_IF;
+  document.getElementById('ifSlider').value = RATED_IF;
+  document.getElementById('ifDisp').textContent = RATED_IF.toFixed(2) + ' A';
+  document.getElementById('ifSlider').disabled = false;
+
+  addLog('⚡ Field excitation applied! If = ' + RATED_IF + ' A', 'ok');
+
+  // Simulate pull-in
+  setTimeout(() => {
+    if (!state.running) return;
+    state.synced = true;
+    state.lost = false;
+    state.rpm = SYNC_RPM;
+    state.speed = 1.0;
+    addLog('✔ Motor pulled into synchronism! Speed locked at 1500 RPM', 'ok');
+    addLog('✔ Now in SYNCHRONOUS MOTOR mode', 'ok');
+    document.getElementById('btnExcite').disabled = true;
+    document.getElementById('btnExcite').style.animation = 'none';
+  }, 800);
+}
+
+function stopMotor() {
+  state.running = false;
+  state.synced = false;
+  state.excited = false;
+  state.lost = false;
+  state.ocTripped = false;
+  state.huntingAmplitude = 0;
+  state.huntingVel = 0;
+  state.deltaOffset = 0;
+  state._loggedPulloutEntry = false;
+  state.startPhase = 'stopped';
+  state.rpm = 0;
+  state.speed = 0;
+  state.Il = 0;
+  state.If = 0;
+  state.pf = 0;
+  state.power = 0;
+  state.delta = 0;
+
+  if (animFrame) cancelAnimationFrame(animFrame);
+
+  document.getElementById('btnStart').disabled = false;
+  document.getElementById('btnStop').disabled = true;
+  document.getElementById('btnExcite').disabled = true;
+  document.getElementById('ifSlider').disabled = true;
+  document.getElementById('ifSlider').value = 0;
+  document.getElementById('ifDisp').textContent = '0.00 A';
+
+  // Clear alerts
+  ['alertPullout','alertLost','alertUnder','alertNormal','alertOver','alertOC','alertOCTrip','alertHunting','alertHuntingSevere'].forEach(id => showAlert(id, false));
+
+  addLog('■ Motor stopped', 'warn');
+  updateMeters();
+  updateGraphs();
+  updateEffectsPanel();
+  updateStatusBar();
+}
+
+function setLoad(val) {
+  const prev = state.load;
+  state.load = val;
+
+  // Update buttons
+  ['0','25','50','75','100','OL'].forEach(k => {
+    document.getElementById('loadBtn' + k)?.classList.remove('active');
+  });
+  const map = { 0: '0', 0.25: '25', 0.5: '50', 0.75: '75', 1.0: '100', 1.2: 'OL' };
+  document.getElementById('loadBtn' + map[val])?.classList.add('active');
+
+  if (state.synced) {
+    const loadNames = { 0: 'No Load', 0.25: '¼ Load', 0.5: '½ Load', 0.75: '¾ Load', 1.0: 'Full Load', 1.2: 'OVERLOAD' };
+    addLog(`⚙ Load changed to ${loadNames[val]}`, val >= 1.0 ? 'warn' : 'info');
+    if (val === 1.2) addLog('⚠ OVERLOAD! Monitor torque angle closely!', 'warn');
+    if (val > prev && state.If < calculateMinIf(val)) {
+      addLog('⚠ Excitation may be insufficient for this load!', 'warn');
+    }
+  }
+}
+
+function updateControls() {
+  const voltVal = document.getElementById('voltSlider').value;
+  state.voltage = parseFloat(voltVal);
+  document.getElementById('voltDisp').textContent = voltVal + ' V';
+
+  const ifVal = parseFloat(document.getElementById('ifSlider').value);
+  state.If = ifVal;
+  document.getElementById('ifDisp').textContent = ifVal.toFixed(2) + ' A';
+
+  if (state.synced) {
+    const minIf = calculateMinIf(state.load);
+    if (ifVal < minIf - 0.1 && state.load > 0.1) {
+      // Will the motor lose sync?
+      // Already handled in physics
+    }
+  }
+}
+
+document.getElementById('voltSlider').oninput = updateControls;
+document.getElementById('ifSlider').oninput = updateControls;
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+function setWidth(id, pct) {
+  const el = document.getElementById(id);
+  if (el) el.style.width = Math.min(100, Math.max(0, pct)) + '%';
+}
+function setEl(id, fn) {
+  const el = document.getElementById(id);
+  if (el) fn(el);
+}
+function mapX(val, min, max, x0, x1) { return x0 + (val - min) / (max - min) * (x1 - x0); }
+function mapY(val, min, max, y0, y1) { return y0 + (val - min) / (max - min) * (y1 - y0); }
+function setDot(id, cls) {
+  const el = document.getElementById(id);
+  if (el) el.className = 'status-dot ' + cls;
+}
+function showAlert(id, show) {
+  const el = document.getElementById(id);
+  if (el) { if (show) el.classList.add('show'); else el.classList.remove('show'); }
+}
+
+let logLines = [];
+function addLog(msg, type='info') {
+  const colors = { info: 'msg-info', warn: 'msg-warn', err: 'msg-err', ok: 'msg-ok' };
+  const now = state.time.toFixed(1);
+  logLines.push(`<div class="msg-line ${colors[type]}">[${now}s] ${msg}</div>`);
+  if (logLines.length > 50) logLines.shift();
+  const box = document.getElementById('logBox');
+  if (box) {
+    box.innerHTML = logLines.join('');
+    box.scrollTop = box.scrollHeight;
+  }
+}
+
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+addLog('🔋 Simulator initialized. Press START to begin.', 'info');
+addLog('📋 Motor: 3-phase, 4-pole, 50Hz synchronous motor', 'info');
+addLog('📋 Rated: 415V / 6.5A / 1500 RPM', 'info');
+addLog('📋 Field: 220V DC / 1.5A rated', 'info');
+updateMeters();
+updateGraphs();
+updateEffectsPanel();
+updateStatusBar();
+
+// Periodic clock update
+setInterval(() => {
+  if (!state.running) setText('timeDisp', `CLOCK: ${new Date().toHours()}:${new Date().toMinutes()}`);
+}, 1000);
+
+// ============================================================
+// LOAD ANGLE (δ) DIAL — semicircular analogue gauge
+// Shows 0° (left) to 90° (right), colour zones, animated needle
+// ============================================================
+function drawLoadAngleDial(delta) {
+  const canvas = document.getElementById('loadAngleDial');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const rawW = rect.width > 0 ? rect.width : 240;
+  const rawH = 130;
+  canvas.width  = rawW * dpr;
+  canvas.height = rawH * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const W = rawW, H = rawH;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const cx = W / 2;
+  const cy = H - 14;          // pivot near bottom
+  const ro = Math.min(cx - 8, cy - 4);  // outer radius
+  const ri = ro - 18;         // inner radius (arc thickness)
+
+  // ── Background arc (dark) ──
+  ctx.beginPath();
+  ctx.arc(cx, cy, ro, Math.PI, 0, false);
+  ctx.lineWidth = 18;
+  ctx.strokeStyle = '#0a1020';
+  ctx.stroke();
+
+  // ── Colour gradient arc: green → yellow → red ──
+  // Draw in segments
+  const zones = [
+    { from: 0,  to: 45, color: '#1aaa00' },
+    { from: 45, to: 70, color: '#aaaa00' },
+    { from: 70, to: 85, color: '#cc4400' },
+    { from: 85, to: 90, color: '#dd0000' },
+  ];
+  zones.forEach(z => {
+    const aStart = Math.PI + (z.from / 90) * Math.PI;
+    const aEnd   = Math.PI + (z.to   / 90) * Math.PI;
+    ctx.beginPath();
+    ctx.arc(cx, cy, ro - 9, aStart, aEnd, false);
+    ctx.lineWidth = 16;
+    ctx.strokeStyle = z.color;
+    ctx.globalAlpha = 0.85;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  });
+
+  // ── Tick marks + labels ──
+  const ticks = [0, 15, 30, 45, 60, 75, 90];
+  ticks.forEach(t => {
+    const a = Math.PI + (t / 90) * Math.PI;
+    const isMajor = (t % 30 === 0);
+    const r1 = ro + 2;
+    const r2 = ro + (isMajor ? 12 : 7);
+    ctx.beginPath();
+    ctx.moveTo(cx + r1 * Math.cos(a), cy + r1 * Math.sin(a));
+    ctx.lineTo(cx + r2 * Math.cos(a), cy + r2 * Math.sin(a));
+    ctx.strokeStyle = isMajor ? '#8aa4c4' : '#3a5070';
+    ctx.lineWidth = isMajor ? 1.5 : 0.8;
+    ctx.stroke();
+
+    if (isMajor) {
+      const lx = cx + (ro + 18) * Math.cos(a);
+      const ly = cy + (ro + 18) * Math.sin(a);
+      ctx.fillStyle = t === 90 ? '#ff4444' : t >= 60 ? '#ffd700' : '#8aa4c4';
+      ctx.font = `bold 9px Share Tech Mono`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(t + '°', lx, ly);
+    }
+  });
+
+  // ── 90° red marker line ──
+  const a90 = Math.PI + Math.PI; // = 2PI = right edge
+  ctx.beginPath();
+  ctx.moveTo(cx + (ro - 20) * Math.cos(a90), cy + (ro - 20) * Math.sin(a90));
+  ctx.lineTo(cx + (ro + 4)  * Math.cos(a90), cy + (ro + 4)  * Math.sin(a90));
+  ctx.strokeStyle = '#ff0000';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // ── Needle ──
+  const clampedDelta = Math.max(0, Math.min(90, delta));
+  const needleAngle  = Math.PI + (clampedDelta / 90) * Math.PI;
+  const nLen = ro - 6;
+
+  // Needle colour matches zone
+  let nColor;
+  if (clampedDelta < 45)      nColor = '#39ff14';
+  else if (clampedDelta < 75) nColor = '#ffd700';
+  else                         nColor = '#ff2222';
+
+  // Needle shadow glow
+  ctx.shadowColor = nColor;
+  ctx.shadowBlur  = 10;
+
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + nLen * Math.cos(needleAngle), cy + nLen * Math.sin(needleAngle));
+  ctx.strokeStyle = nColor;
+  ctx.lineWidth   = 3;
+  ctx.lineCap     = 'round';
+  ctx.stroke();
+  ctx.shadowBlur  = 0;
+  ctx.lineCap     = 'butt';
+
+  // Arrowhead at needle tip
+  const tx = cx + nLen * Math.cos(needleAngle);
+  const ty = cy + nLen * Math.sin(needleAngle);
+  ctx.beginPath();
+  ctx.moveTo(tx, ty);
+  ctx.lineTo(tx - 8 * Math.cos(needleAngle - 0.3), ty - 8 * Math.sin(needleAngle - 0.3));
+  ctx.lineTo(tx - 8 * Math.cos(needleAngle + 0.3), ty - 8 * Math.sin(needleAngle + 0.3));
+  ctx.closePath();
+  ctx.fillStyle = nColor;
+  ctx.fill();
+
+  // ── Centre pivot circle ──
+  ctx.beginPath();
+  ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+  ctx.fillStyle   = '#1e3a5f';
+  ctx.fill();
+  ctx.strokeStyle = nColor;
+  ctx.lineWidth   = 2;
+  ctx.stroke();
+
+  // ── δ label inside arc ──
+  ctx.fillStyle = '#5a7a9a';
+  ctx.font = '10px Share Tech Mono';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('LOAD ANGLE δ', cx, cy - ro * 0.45);
+}
+
+// Handle resize
+window.addEventListener('resize', () => {
+  if (state.running) return;
+  updateGraphs();
+  drawTacho(0);
+  drawPFMeter(0, '—');
+});
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

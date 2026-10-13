@@ -1,0 +1,2731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number Systems</title>
+<meta name="section" content="Electronics">
+<meta name="section-order" content="3">
+<meta name="order" content="9">
+<meta name="description" content="Binary, octal, decimal and hexadecimal">
+
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Noto+Sans+Malayalam:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --card: #ffffff;
+    --primary: #1a3a5c;
+    --accent: #e07b00;
+    --accent2: #2a7a4b;
+    --accent3: #c0392b;
+    --accent4: #6c3483;
+    --text: #1a1a2e;
+    --muted: #666;
+    --border: #d0c8b8;
+    --highlight: #fff8e1;
+    --step-bg: #e8f4fd;
+    --step-border: #2980b9;
+    --binary: #1a3a5c;
+    --octal: #2a7a4b;
+    --decimal: #e07b00;
+    --hexa: #6c3483;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Baloo 2', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 22px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--primary);
+    color: white;
+    padding: 18px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-title {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 1px;
+  }
+
+  .header-sub {
+    font-size: 16px;
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+
+  .lang-select {
+    font-family: 'Baloo 2', 'Noto Sans Malayalam', 'Noto Sans Devanagari', sans-serif;
+    font-size: 20px;
+    padding: 8px 18px;
+    border-radius: 30px;
+    border: 2px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.15);
+    color: white;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .lang-select:hover { background: rgba(255,255,255,0.25); }
+  .lang-select option { background: #1a3a5c; color: white; }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex;
+    background: white;
+    border-bottom: 3px solid var(--border);
+    overflow-x: auto;
+    gap: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    position: sticky;
+    top: 80px;
+    z-index: 99;
+  }
+
+  .tab-btn {
+    font-family: 'Baloo 2', 'Noto Sans Malayalam', 'Noto Sans Devanagari', sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+    padding: 14px 28px;
+    border: none;
+    border-bottom: 4px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    color: var(--muted);
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .tab-btn:hover { color: var(--primary); background: #f0f0f0; }
+  .tab-btn.active { color: var(--primary); border-bottom: 4px solid var(--accent); font-weight: 800; }
+
+  .tab-dot {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* PAGES */
+  .page { display: none; padding: 30px 40px; max-width: 1100px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* SECTION CARD */
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px 36px;
+    margin-bottom: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border: 1px solid var(--border);
+  }
+
+  .card-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .card-title .icon {
+    font-size: 32px;
+  }
+
+  /* BIG CONCEPT BOX */
+  .concept-box {
+    background: var(--highlight);
+    border-left: 6px solid var(--accent);
+    border-radius: 10px;
+    padding: 18px 24px;
+    margin: 16px 0;
+    font-size: 21px;
+  }
+
+  /* ANALOGY BOX */
+  .analogy-box {
+    background: #e8f8ee;
+    border-left: 6px solid var(--accent2);
+    border-radius: 10px;
+    padding: 18px 24px;
+    margin: 16px 0;
+    font-size: 20px;
+  }
+
+  .analogy-box .label {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  /* STEP BOX */
+  .step-box {
+    background: var(--step-bg);
+    border: 2px solid var(--step-border);
+    border-radius: 12px;
+    padding: 18px 24px;
+    margin: 14px 0;
+    position: relative;
+  }
+
+  .step-num {
+    position: absolute;
+    top: -14px;
+    left: 20px;
+    background: var(--step-border);
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+    padding: 2px 14px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+
+  /* TABLE FOR NUMBER SYSTEM */
+  .ns-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 21px;
+    margin: 16px 0;
+  }
+
+  .ns-table th {
+    background: var(--primary);
+    color: white;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 20px;
+  }
+
+  .ns-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ns-table tr:nth-child(even) td { background: #f5f5f5; }
+  .ns-table tr:hover td { background: #fff3cd; }
+
+  /* VISUAL CALC */
+  /* ── CALCULATOR VISUAL ── */
+  .calc-visual {
+    font-family: 'Courier New', monospace;
+    font-size: 28px;
+    font-weight: bold;
+    background: #1a1a2e;
+    color: #f0f0f0;
+    padding: 24px 32px;
+    border-radius: 12px;
+    margin: 16px 0;
+    overflow-x: auto;
+    display: inline-block;
+    min-width: 320px;
+  }
+  /* Grid table where every column is the same fixed width */
+  .cv-table {
+    border-collapse: collapse;
+    line-height: 1;
+  }
+  .cv-table td {
+    width: 42px;          /* one digit cell */
+    text-align: center;
+    padding: 6px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 28px;
+    font-weight: bold;
+    vertical-align: middle;
+  }
+  .cv-label {            /* "Carry:", "+" etc. labels on left */
+    text-align: right;
+    padding-right: 12px;
+    font-size: 20px;
+    font-weight: 700;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .cv-op {               /* the + or − operator cell */
+    text-align: right;
+    padding-right: 6px;
+    font-size: 30px;
+    font-weight: 900;
+    vertical-align: middle;
+    width: 38px;
+  }
+  /* Row colour coding */
+  .row-carry   td { color: #ffd700; font-size: 22px; }
+  .row-borrow  td { color: #ff9d6a; font-size: 22px; }
+  .row-num1    td { color: #90caf9; }
+  .row-num2    td { color: #80deea; }
+  .row-sep     td { color: #888;    font-size: 18px; padding: 2px 0; letter-spacing:0; }
+  .row-result  td { color: #69f0ae; border-top: 2px solid #555; }
+  /* Highlighted cell when step-mode reveals a digit */
+  .cv-highlight { background: rgba(255,220,0,0.25); border-radius: 4px; }
+  .cv-current   { background: rgba(255,100,0,0.35); border-radius: 4px; outline: 2px solid #ffa040; }
+  /* Mode buttons */
+  .mode-btns { display:flex; gap:14px; flex-wrap:wrap; margin:14px 0 8px; }
+  .mode-btn {
+    font-family: inherit; font-size:20px; font-weight:700;
+    padding: 12px 28px; border-radius: 30px; border: 3px solid #1a3a5c;
+    background: white; color: #1a3a5c; cursor: pointer; transition: all .2s;
+  }
+  .mode-btn.active, .mode-btn:hover { background:#1a3a5c; color:white; }
+  /* Step navigator */
+  .step-nav { display:flex; gap:12px; align-items:center; margin:14px 0; flex-wrap:wrap; }
+  .step-nav-btn {
+    font-family:inherit; font-size:20px; font-weight:800;
+    padding:10px 24px; border-radius:10px; border:none;
+    background:#1a3a5c; color:white; cursor:pointer; transition:all .2s;
+  }
+  .step-nav-btn:hover { background:#2e5b8e; }
+  .step-nav-btn:disabled { background:#ccc; color:#888; cursor:default; }
+  .step-counter { font-size:20px; font-weight:700; color:#555; }
+
+  .calc-visual .row-label {
+    color: #aaa;
+    font-size: 18px;
+    font-weight: normal;
+  }
+
+  .calc-visual .carry-row { color: #ffd700; font-size: 24px; }
+  .calc-visual .num1 { color: #64b5f6; }
+  .calc-visual .num2 { color: #a5d6a7; }
+  .calc-visual .result { color: #ffcc80; border-top: 2px solid #666; padding-top: 6px; }
+  .calc-visual .op { color: #ef9a9a; }
+  .calc-visual .separator { color: #555; margin: 4px 0; }
+  .calc-visual .borrow { color: #ff6b6b; }
+
+  /* POSITION TABLE */
+  .pos-table {
+    display: flex;
+    gap: 4px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+
+  .pos-cell {
+    text-align: center;
+    min-width: 72px;
+  }
+
+  .pos-cell .pos-power {
+    background: var(--primary);
+    color: white;
+    font-size: 15px;
+    padding: 5px 8px;
+    border-radius: 6px 6px 0 0;
+    font-weight: 700;
+  }
+
+  .pos-cell .pos-value {
+    background: var(--accent);
+    color: white;
+    font-size: 22px;
+    padding: 6px 8px;
+    font-weight: 800;
+  }
+
+  .pos-cell .pos-digit {
+    background: white;
+    border: 2px solid var(--accent);
+    color: var(--text);
+    font-size: 26px;
+    padding: 8px 8px;
+    font-weight: 800;
+    border-radius: 0 0 6px 6px;
+  }
+
+  /* INTERACTIVE CALC */
+  .calc-container {
+    background: #f8f9fa;
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin: 20px 0;
+  }
+
+  .calc-inputs {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .calc-input {
+    font-family: 'Courier New', monospace;
+    font-size: 28px;
+    font-weight: bold;
+    width: 180px;
+    padding: 10px 16px;
+    border: 3px solid var(--border);
+    border-radius: 10px;
+    background: white;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .calc-input:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(224,123,0,0.2);
+  }
+
+  .op-badge {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent3);
+    width: 50px;
+    text-align: center;
+  }
+
+  .calc-btn {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    padding: 12px 36px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  }
+
+  .calc-btn:hover { background: var(--accent); transform: translateY(-2px); }
+  .calc-btn:active { transform: translateY(0); }
+
+  .op-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .op-toggle-btn {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 10px 28px;
+    border: 3px solid var(--border);
+    border-radius: 30px;
+    cursor: pointer;
+    background: white;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+
+  .op-toggle-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+
+  /* STEPS OUTPUT */
+  #steps-output {
+    margin-top: 20px;
+  }
+
+  .step-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin: 12px 0;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .step-circle {
+    min-width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    font-size: 20px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+
+  .step-content {
+    flex: 1;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 20px;
+    line-height: 1.6;
+  }
+
+  .step-content .mono {
+    font-family: 'Courier New', monospace;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary);
+    background: #f0f4ff;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .highlight-green { color: var(--accent2); font-weight: 800; }
+  .highlight-orange { color: var(--accent); font-weight: 800; }
+  .highlight-red { color: var(--accent3); font-weight: 800; }
+  .highlight-blue { color: #1565c0; font-weight: 800; }
+  .highlight-purple { color: var(--accent4); font-weight: 800; }
+
+  /* CONVERSION VISUAL */
+  .conv-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+    font-size: 22px;
+  }
+
+  .conv-box {
+    background: white;
+    border: 3px solid var(--primary);
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 26px;
+    font-weight: bold;
+  }
+
+  .conv-arrow {
+    font-size: 32px;
+    color: var(--accent);
+  }
+
+  /* COLORED BADGES */
+  .badge {
+    display: inline-block;
+    font-size: 15px;
+    font-weight: 800;
+    padding: 3px 12px;
+    border-radius: 20px;
+    margin-right: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .badge-bin { background: #bbdefb; color: #0d47a1; }
+  .badge-oct { background: #c8e6c9; color: #1b5e20; }
+  .badge-dec { background: #fff3e0; color: #e65100; }
+  .badge-hex { background: #e1bee7; color: #4a148c; }
+
+  /* IMPORTANT NOTE */
+  .note-box {
+    background: #fff8e1;
+    border: 2px dashed var(--accent);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 19px;
+    margin: 14px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .note-box .note-icon { font-size: 26px; margin-top: 2px; }
+
+  /* SECTION DIVIDER */
+  .divider {
+    border: none;
+    border-top: 2px dashed var(--border);
+    margin: 24px 0;
+  }
+
+  /* SUMMARY TABLE */
+  .summary-header {
+    background: linear-gradient(135deg, var(--primary), #2c5282);
+    color: white;
+    border-radius: 14px;
+    padding: 20px 30px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .summary-header h2 {
+    font-size: 30px;
+    font-weight: 800;
+  }
+
+  /* BIG NUMBER DISPLAY */
+  .big-num {
+    font-family: 'Courier New', monospace;
+    font-size: 42px;
+    font-weight: bold;
+    color: var(--primary);
+    background: white;
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 10px;
+    border: 3px solid var(--primary);
+    margin: 6px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    body { font-size: 18px; }
+    .page { padding: 16px 14px; }
+    .card { padding: 18px 14px; }
+    .calc-input { width: 130px; font-size: 22px; }
+  }
+
+  /* COLOR THEME PER SYSTEM */
+  .theme-binary .card-title { color: var(--binary); }
+  .theme-binary .step-circle { background: var(--binary); }
+  .theme-octal .card-title { color: var(--octal); }
+  .theme-octal .step-circle { background: var(--octal); }
+  .theme-decimal .card-title { color: var(--decimal); }
+  .theme-decimal .step-circle { background: var(--decimal); }
+  .theme-hexa .card-title { color: var(--hexa); }
+  .theme-hexa .step-circle { background: var(--hexa); }
+
+  .tab-binary { color: var(--binary) !important; }
+  .tab-octal { color: var(--octal) !important; }
+  .tab-decimal { color: var(--decimal) !important; }
+  .tab-hexa { color: var(--hexa) !important; }
+
+  .err-msg {
+    color: var(--accent3);
+    font-weight: 700;
+    font-size: 20px;
+    padding: 10px 0;
+  }
+
+  /* DIGIT HIGHLIGHT in calc */
+  .d-carry { color: #ffd700; font-size: 20px; }
+  .d-sum { color: #ffcc80; }
+  .d-digits { color: #90caf9; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title" id="hdr-title">⚡ Number Systems — Electrician Trainees</div>
+    <div class="header-sub" id="hdr-sub">Binary · Octal · Decimal · Hexadecimal</div>
+  </div>
+  <select class="lang-select" id="langSelect">
+    <option value="en">🇬🇧 English</option>
+    <option value="ml">🇮🇳 മലയാളം</option>
+    <option value="hi">🇮🇳 हिंदी</option>
+  </select>
+</div>
+
+<div class="nav-tabs" id="navTabs">
+  <button class="tab-btn active" data-page="intro">
+    <span class="tab-dot" style="background:#888"></span>
+    <span class="t">Overview</span>
+  </button>
+  <button class="tab-btn" data-page="binary">
+    <span class="tab-dot" style="background:var(--binary)"></span>
+    <span class="t" style="color:var(--binary)">Binary (Base-2)</span>
+  </button>
+  <button class="tab-btn" data-page="octal">
+    <span class="tab-dot" style="background:var(--octal)"></span>
+    <span class="t" style="color:var(--octal)">Octal (Base-8)</span>
+  </button>
+  <button class="tab-btn" data-page="decimal">
+    <span class="tab-dot" style="background:var(--decimal)"></span>
+    <span class="t" style="color:var(--decimal)">Decimal (Base-10)</span>
+  </button>
+  <button class="tab-btn" data-page="hexa">
+    <span class="tab-dot" style="background:var(--hexa)"></span>
+    <span class="t" style="color:var(--hexa)">Hexadecimal (Base-16)</span>
+  </button>
+  <button class="tab-btn" data-page="calc">
+    <span class="tab-dot" style="background:#c0392b"></span>
+    <span class="t">🧮 Calculator</span>
+  </button>
+  <button class="tab-btn" data-page="convert">
+    <span class="tab-dot" style="background:#16a085"></span>
+    <span class="t">🔄 Conversion</span>
+  </button>
+  <button class="tab-btn" data-page="bits">
+    <span class="tab-dot" style="background:#b7410e"></span>
+    <span class="t">💾 Bits, Bytes & Digital</span>
+  </button>
+</div>
+
+<!-- ===================== PAGE: INTRO ===================== -->
+<div class="page active" id="page-intro">
+
+  <div class="summary-header">
+    <h2 id="intro-h1">What are Number Systems? 🤔</h2>
+    <p id="intro-h2" style="font-size:20px;margin-top:8px;opacity:0.9">Before computers can understand anything, numbers must speak their language!</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">💡</span> <span id="intro-c1-title">The Big Idea</span></div>
+    <p id="intro-c1-body">We humans count using 10 digits (0 to 9). But computers use electricity — either ON or OFF. So computers use their own number systems. As an electrician, you will work with all these systems when reading PLC panels, microcontrollers, and digital display boards.</p>
+    <div class="analogy-box">
+      <div class="label" id="intro-analogy-label">Cricket Analogy 🏏</div>
+      <span id="intro-analogy-body">Think of runs on a scoreboard. In cricket, every run adds to the score. In binary, every bit adds to the digital value. Different systems are just different ways to count the same thing — like saying "fifteen" in English vs "പതിനഞ്ച്" in Malayalam — the value is the same!</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">📊</span> <span id="intro-c2-title">The Four Systems — Quick Look</span></div>
+    <table class="ns-table">
+      <thead>
+        <tr>
+          <th id="th1">System</th>
+          <th id="th2">Base</th>
+          <th id="th3">Digits Used</th>
+          <th id="th4">Used Where?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-dec">Decimal</span> <span id="dec-name">Decimal</span></td>
+          <td><strong>10</strong></td>
+          <td>0, 1, 2, 3, 4, 5, 6, 7, 8, 9</td>
+          <td id="dec-use">Daily life, money, measurement</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-bin">Binary</span> <span id="bin-name">Binary</span></td>
+          <td><strong>2</strong></td>
+          <td>0, 1</td>
+          <td id="bin-use">Computers, PLCs, digital circuits</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-oct">Octal</span> <span id="oct-name">Octal</span></td>
+          <td><strong>8</strong></td>
+          <td>0, 1, 2, 3, 4, 5, 6, 7</td>
+          <td id="oct-use">Old computers, file permissions</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-hex">Hexadecimal</span> <span id="hex-name">Hexadecimal</span></td>
+          <td><strong>16</strong></td>
+          <td>0–9, A, B, C, D, E, F</td>
+          <td id="hex-use">Memory addresses, color codes, error codes</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🔢</span> <span id="intro-c3-title">Same Value, Different Look!</span></div>
+    <p id="intro-c3-body">The number fifteen looks different in each system — but it represents the same quantity:</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;align-items:center;">
+      <div style="text-align:center">
+        <div class="big-num" style="border-color:var(--decimal);color:var(--decimal)">15</div>
+        <div><span class="badge badge-dec">Decimal</span></div>
+      </div>
+      <div style="font-size:32px;color:#aaa">=</div>
+      <div style="text-align:center">
+        <div class="big-num" style="border-color:var(--binary);color:var(--binary)">1111</div>
+        <div><span class="badge badge-bin">Binary</span></div>
+      </div>
+      <div style="font-size:32px;color:#aaa">=</div>
+      <div style="text-align:center">
+        <div class="big-num" style="border-color:var(--octal);color:var(--octal)">17</div>
+        <div><span class="badge badge-oct">Octal</span></div>
+      </div>
+      <div style="font-size:32px;color:#aaa">=</div>
+      <div style="text-align:center">
+        <div class="big-num" style="border-color:var(--hexa);color:var(--hexa)">F</div>
+        <div><span class="badge badge-hex">Hex</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">⚡</span> <span id="intro-c4-title">Why Electricians Need This</span></div>
+    <div id="intro-c4-body">
+      <div class="step-box">
+        <div class="step-num" id="why1-label">Reason 1</div>
+        <p style="margin-top:10px" id="why1">PLC (Programmable Logic Controller) panels use binary signals — each wire is either ON (1) or OFF (0).</p>
+      </div>
+      <div class="step-box" style="border-color:#2a7a4b;background:#e8f8ee;">
+        <div class="step-num" style="background:#2a7a4b" id="why2-label">Reason 2</div>
+        <p style="margin-top:10px" id="why2">Error codes on VFDs (Variable Frequency Drives) and digital meters are shown in hexadecimal.</p>
+      </div>
+      <div class="step-box" style="border-color:#6c3483;background:#f3e5f5;">
+        <div class="step-num" style="background:#6c3483" id="why3-label">Reason 3</div>
+        <p style="margin-top:10px" id="why3">Memory addresses and register values in microcontrollers are written in hex or binary.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE: BINARY ===================== -->
+<div class="page" id="page-binary">
+  <div class="summary-header" style="background:linear-gradient(135deg,var(--binary),#2c5fa1)">
+    <h2>🔵 Binary Number System (Base-2)</h2>
+    <p style="font-size:20px;margin-top:8px;opacity:0.9" id="bin-subtitle">Only two digits: 0 and 1 — just like a switch: OFF and ON!</p>
+  </div>
+
+  <div class="card theme-binary">
+    <div class="card-title"><span class="icon">💡</span> <span id="bin-c1-title">The Basic Idea</span></div>
+    <p id="bin-c1-body">Binary uses only two digits — 0 and 1. This matches exactly how electricity works: either current is flowing (1) or it is not (0). Every computer, PLC, and digital device works with binary at its heart.</p>
+    <div class="analogy-box">
+      <div class="label" id="bin-analogy-label">Switch Analogy 🔌</div>
+      <span id="bin-analogy-body">Imagine a row of light switches on a panel. Each switch is either ON (1) or OFF (0). The combination of ON/OFF switches gives you a number. 4 switches can give you 16 different combinations — that's 4-bit binary!</span>
+    </div>
+  </div>
+
+  <div class="card theme-binary">
+    <div class="card-title"><span class="icon">📍</span> <span id="bin-c2-title">Place Values in Binary</span></div>
+    <p id="bin-c2-body">Just like in decimal where each position is ×10, in binary each position is ×2. Going from right to left: 1, 2, 4, 8, 16, 32, 64, 128...</p>
+    <div class="pos-table" id="bin-place-table">
+      <!-- JS will fill this -->
+    </div>
+    <div class="concept-box" id="bin-place-rule">
+      ✅ Each position to the LEFT is <strong>double</strong> the previous one.
+    </div>
+  </div>
+
+  <div class="card theme-binary">
+    <div class="card-title"><span class="icon">🔄</span> <span id="bin-c3-title">Binary to Decimal — Step by Step</span></div>
+    <p id="bin-c3-body">To convert binary to decimal, multiply each digit by its place value, then add all results.</p>
+    <div style="margin:12px 0;font-size:20px" id="bin-conv-example-label">Example: Convert <span class="mono" style="font-family:monospace;font-weight:bold;color:var(--binary)">1011</span> (binary) to Decimal</div>
+    <div id="bin-conv-steps">
+      <div class="step-item">
+        <div class="step-circle">1</div>
+        <div class="step-content" id="bin-cs1">Write the digits with their positions from right to left (position 0, 1, 2, 3...)</div>
+      </div>
+      <div class="step-item">
+        <div class="step-circle">2</div>
+        <div class="step-content">
+          <span id="bin-cs2">Multiply each digit by 2 raised to its position power:</span><br><br>
+          <span class="mono">1 × 2³ = 1 × 8 = <span class="highlight-orange">8</span></span><br>
+          <span class="mono">0 × 2² = 0 × 4 = <span class="highlight-orange">0</span></span><br>
+          <span class="mono">1 × 2¹ = 1 × 2 = <span class="highlight-orange">2</span></span><br>
+          <span class="mono">1 × 2⁰ = 1 × 1 = <span class="highlight-orange">1</span></span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-circle">3</div>
+        <div class="step-content" id="bin-cs3">
+          Add all results: <span class="mono">8 + 0 + 2 + 1 = <span class="highlight-green">11</span></span><br>
+          So <strong>1011₂ = 11₁₀</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card theme-binary">
+    <div class="card-title"><span class="icon">➕</span> <span id="bin-add-title">Binary Addition — Rules</span></div>
+    <div class="concept-box" id="bin-add-rules">
+      <strong id="bin-add-rules-label">The 4 Golden Rules of Binary Addition:</strong><br><br>
+      <span class="mono">0 + 0 = 0</span><br>
+      <span class="mono">0 + 1 = 1</span><br>
+      <span class="mono">1 + 0 = 1</span><br>
+      <span class="mono">1 + 1 = 10</span> &nbsp;<span id="bin-carry-note">(write 0, carry 1 — just like 9+1=10 in decimal!)</span>
+    </div>
+
+    <p style="margin:12px 0;font-size:20px" id="bin-add-eg-label">Example: <strong>1011 + 0110</strong></p>
+    <div class="calc-visual">
+      <div class="carry-row">&nbsp;&nbsp;<span id="bin-add-carry-label">Carry:</span> &nbsp;1 1 0 0</div>
+      <div class="num1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 0 1 1</div>
+      <div class="num2"><span class="op">+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0 1 1 0</div>
+      <div class="separator">───────────────</div>
+      <div class="result">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 0 0 0 1</div>
+    </div>
+
+    <div id="bin-add-walkthrough">
+      <div class="step-item">
+        <div class="step-circle">1</div>
+        <div class="step-content" id="bin-add-s1">Rightmost column: 1 + 0 = <strong>1</strong>. Write 1, carry 0.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-circle">2</div>
+        <div class="step-content" id="bin-add-s2">Next column: 1 + 1 = <strong>10</strong>. Write 0, carry 1.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-circle">3</div>
+        <div class="step-content" id="bin-add-s3">Next column: 0 + 1 + carry 1 = <strong>10</strong>. Write 0, carry 1.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-circle">4</div>
+        <div class="step-content" id="bin-add-s4">Next column: 1 + 0 + carry 1 = <strong>10</strong>. Write 0, carry 1.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-circle">5</div>
+        <div class="step-content" id="bin-add-s5">Final carry: write <strong>1</strong>. Result = <span class="mono highlight-green">10001</span> = 17 in decimal ✅</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card theme-binary">
+    <div class="card-title"><span class="icon">➖</span> <span id="bin-sub-title">Binary Subtraction — Rules</span></div>
+    <div class="concept-box" id="bin-sub-rules">
+      <strong id="bin-sub-rules-label">The 4 Golden Rules of Binary Subtraction:</strong><br><br>
+      <span class="mono">0 − 0 = 0</span><br>
+      <span class="mono">1 − 0 = 1</span><br>
+      <span class="mono">1 − 1 = 0</span><br>
+      <span class="mono">0 − 1 = ?</span> &nbsp;<span id="bin-borrow-note">→ Borrow from the left! Becomes 10 − 1 = 1 (borrow 1)</span>
+    </div>
+
+    <p style="margin:12px 0;font-size:20px" id="bin-sub-eg-label">Example: <strong>1101 − 0101</strong></p>
+    <div class="calc-visual">
+      <div class="borrow">&nbsp;&nbsp;<span id="bin-sub-borrow-label">Borrow:</span> 0 0 0 0</div>
+      <div class="num1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 1 0 1</div>
+      <div class="num2"><span class="op">−</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0 1 0 1</div>
+      <div class="separator">───────────────</div>
+      <div class="result">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 0 0 0</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle">1</div>
+      <div class="step-content" id="bin-sub-s1">Rightmost: 1 − 1 = 0. Write 0.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle">2</div>
+      <div class="step-content" id="bin-sub-s2">Next: 0 − 0 = 0. Write 0.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle">3</div>
+      <div class="step-content" id="bin-sub-s3">Next: 1 − 1 = 0. Write 0.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle">4</div>
+      <div class="step-content" id="bin-sub-s4">Leftmost: 1 − 0 = 1. Write 1. Result = <span class="mono highlight-green">1000</span> = 8 in decimal ✅</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===================== PAGE: OCTAL ===================== -->
+<div class="page" id="page-octal">
+  <div class="summary-header" style="background:linear-gradient(135deg,var(--octal),#1a6b3a)">
+    <h2>🟢 Octal Number System (Base-8)</h2>
+    <p style="font-size:20px;margin-top:8px;opacity:0.9" id="oct-subtitle">Eight digits: 0 to 7. Three binary bits = one octal digit!</p>
+  </div>
+
+  <div class="card theme-octal">
+    <div class="card-title"><span class="icon">💡</span> <span id="oct-c1-title">The Basic Idea</span></div>
+    <p id="oct-c1-body">Octal uses digits 0 through 7. It was historically used in computers as a shorthand for binary — since 3 binary bits always make exactly 1 octal digit. You'll sometimes see octal in older electrical documentation and file permission codes.</p>
+    <div class="analogy-box" style="background:#e8f8ee;border-left-color:var(--octal)">
+      <div class="label" style="color:var(--octal)" id="oct-analogy-label">Market Analogy 🛒</div>
+      <span id="oct-analogy-body">Imagine a vegetable market where items are sold in packs of 8. When you reach 8 units, you move up to the next bundle. That's exactly how octal counts — every time you hit 8, you carry 1 to the next position!</span>
+    </div>
+  </div>
+
+  <div class="card theme-octal">
+    <div class="card-title"><span class="icon">📍</span> <span id="oct-c2-title">Place Values in Octal</span></div>
+    <p id="oct-c2-body">Each position from right to left: 1, 8, 64, 512... (powers of 8)</p>
+    <div class="pos-table" id="oct-place-table"></div>
+    <div class="concept-box" style="border-left-color:var(--octal)" id="oct-place-rule">
+      ✅ Each position to the LEFT is <strong>8 times</strong> the previous one.
+    </div>
+  </div>
+
+  <div class="card theme-octal">
+    <div class="card-title"><span class="icon">🔄</span> <span id="oct-c3-title">Octal to Decimal — Step by Step</span></div>
+    <p style="margin:12px 0;font-size:20px" id="oct-conv-example-label">Example: Convert <span class="mono" style="font-family:monospace;font-weight:bold;color:var(--octal)">157</span> (octal) to Decimal</p>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--octal)">1</div>
+      <div class="step-content" id="oct-cs1">Write each digit with its position (right to left: 0, 1, 2)</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--octal)">2</div>
+      <div class="step-content">
+        <span id="oct-cs2">Multiply each digit by 8 to the power of its position:</span><br><br>
+        <span class="mono">1 × 8² = 1 × 64 = <span class="highlight-orange">64</span></span><br>
+        <span class="mono">5 × 8¹ = 5 × 8 &nbsp;= <span class="highlight-orange">40</span></span><br>
+        <span class="mono">7 × 8⁰ = 7 × 1 &nbsp;= <span class="highlight-orange">7</span></span>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--octal)">3</div>
+      <div class="step-content" id="oct-cs3">
+        Add: <span class="mono">64 + 40 + 7 = <span class="highlight-green">111</span></span><br>
+        So <strong>157₈ = 111₁₀</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="card theme-octal">
+    <div class="card-title"><span class="icon">➕</span> <span id="oct-add-title">Octal Addition</span></div>
+    <div class="concept-box" style="border-left-color:var(--octal)" id="oct-add-rule">
+      When the sum of two digits is <strong>8 or more</strong>, carry 1 to the next position. Subtract 8 from the sum to get the digit to write down.
+    </div>
+    <p style="margin:12px 0;font-size:20px" id="oct-add-eg-label">Example: <strong>37₈ + 45₈</strong></p>
+    <div class="calc-visual">
+      <div class="carry-row">&nbsp;<span id="oct-carry-lbl">Carry:</span> &nbsp;1 0</div>
+      <div class="num1">&nbsp;&nbsp;&nbsp;&nbsp;3 7</div>
+      <div class="num2"><span class="op">+</span>&nbsp;&nbsp;&nbsp;4 5</div>
+      <div class="separator">────────</div>
+      <div class="result">&nbsp;&nbsp;&nbsp;1 0 4</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--octal)">1</div>
+      <div class="step-content" id="oct-add-s1">Units column: 7 + 5 = 12. Since 12 ≥ 8, write (12 − 8) = <strong>4</strong>, carry <strong>1</strong>.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--octal)">2</div>
+      <div class="step-content" id="oct-add-s2">Next column: 3 + 4 + carry 1 = 8. Since 8 ≥ 8, write (8 − 8) = <strong>0</strong>, carry <strong>1</strong>.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--octal)">3</div>
+      <div class="step-content" id="oct-add-s3">Final carry: write <strong>1</strong>. Result = <span class="mono highlight-green">104₈</span>. Check: 37₈=31, 45₈=37, 31+37=68, 104₈=68 ✅</div>
+    </div>
+  </div>
+
+  <div class="card theme-octal">
+    <div class="card-title"><span class="icon">➖</span> <span id="oct-sub-title">Octal Subtraction</span></div>
+    <div class="concept-box" style="border-left-color:var(--octal)" id="oct-sub-rule">
+      When you can't subtract (bottom digit > top digit), borrow 1 from the next position. That borrow is worth <strong>8</strong> in octal.
+    </div>
+    <p style="margin:12px 0;font-size:20px" id="oct-sub-eg-label">Example: <strong>52₈ − 17₈</strong></p>
+    <div class="calc-visual">
+      <div class="borrow">&nbsp;<span id="oct-borrow-lbl">Borrow:</span> 1 0</div>
+      <div class="num1">&nbsp;&nbsp;&nbsp;&nbsp;5 2</div>
+      <div class="num2"><span class="op">−</span>&nbsp;&nbsp;&nbsp;1 7</div>
+      <div class="separator">────────</div>
+      <div class="result">&nbsp;&nbsp;&nbsp;&nbsp;3 3</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--octal)">1</div>
+      <div class="step-content" id="oct-sub-s1">Units column: 2 − 7 is not possible. Borrow 1 from the 5. 2 becomes 2+8 = 10. So 10 − 7 = <strong>3</strong>.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--octal)">2</div>
+      <div class="step-content" id="oct-sub-s2">Next column: 5 − 1 (borrowed) − 1 = 3. Write <strong>3</strong>. Result = <span class="mono highlight-green">33₈</span> = 27₁₀ ✅</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE: DECIMAL ===================== -->
+<div class="page" id="page-decimal">
+  <div class="summary-header" style="background:linear-gradient(135deg,var(--decimal),#b35900)">
+    <h2>🟠 Decimal Number System (Base-10)</h2>
+    <p style="font-size:20px;margin-top:8px;opacity:0.9" id="dec-subtitle">The system we all know! Digits 0 to 9.</p>
+  </div>
+
+  <div class="card theme-decimal">
+    <div class="card-title"><span class="icon">💡</span> <span id="dec-c1-title">The Basic Idea</span></div>
+    <p id="dec-c1-body">Decimal is the system we use in daily life. It has 10 digits (0 to 9). After 9, we carry to the next position and start again from 0. This is the standard in all electrical measurements — volts, amperes, ohms, watts.</p>
+  </div>
+
+  <div class="card theme-decimal">
+    <div class="card-title"><span class="icon">📍</span> <span id="dec-c2-title">Place Values in Decimal</span></div>
+    <p id="dec-c2-body">Each position from right to left: 1, 10, 100, 1000... (powers of 10)</p>
+    <div class="pos-table" id="dec-place-table"></div>
+    <div class="concept-box" style="border-left-color:var(--decimal)" id="dec-place-rule">
+      ✅ Each position to the LEFT is <strong>10 times</strong> the previous one.
+    </div>
+
+    <p style="margin:16px 0 8px;font-size:20px" id="dec-expand-label">Example: What is <strong>3452</strong>?</p>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--decimal)">1</div>
+      <div class="step-content" id="dec-expand-s1">
+        <span class="mono">3 × 1000 = <span class="highlight-orange">3000</span></span><br>
+        <span class="mono">4 × 100  = <span class="highlight-orange">400</span></span><br>
+        <span class="mono">5 × 10   = <span class="highlight-orange">50</span></span><br>
+        <span class="mono">2 × 1    = <span class="highlight-orange">2</span></span>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--decimal)">2</div>
+      <div class="step-content" id="dec-expand-s2">Total: 3000 + 400 + 50 + 2 = <span class="mono highlight-green">3452</span></div>
+    </div>
+  </div>
+
+  <div class="card theme-decimal">
+    <div class="card-title"><span class="icon">➕</span> <span id="dec-add-title">Decimal Addition (Review)</span></div>
+    <p id="dec-add-body">You know this! But let's review it clearly so the same pattern makes sense in binary and hex.</p>
+    <p style="margin:12px 0;font-size:20px" id="dec-add-eg-label">Example: <strong>478 + 365</strong></p>
+    <div class="calc-visual">
+      <div class="carry-row">&nbsp;<span id="dec-carry-lbl">Carry:</span> 1 1 0</div>
+      <div class="num1">&nbsp;&nbsp;&nbsp;4 7 8</div>
+      <div class="num2"><span class="op">+</span>&nbsp;&nbsp;3 6 5</div>
+      <div class="separator">─────────</div>
+      <div class="result">&nbsp;&nbsp;&nbsp;8 4 3</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--decimal)">1</div>
+      <div class="step-content" id="dec-add-s1">Units: 8 + 5 = 13. Write <strong>3</strong>, carry <strong>1</strong>.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--decimal)">2</div>
+      <div class="step-content" id="dec-add-s2">Tens: 7 + 6 + carry 1 = 14. Write <strong>4</strong>, carry <strong>1</strong>.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--decimal)">3</div>
+      <div class="step-content" id="dec-add-s3">Hundreds: 4 + 3 + carry 1 = 8. Write <strong>8</strong>. Result = <span class="mono highlight-green">843</span> ✅</div>
+    </div>
+  </div>
+
+  <div class="card theme-decimal">
+    <div class="card-title"><span class="icon">➖</span> <span id="dec-sub-title">Decimal Subtraction (Review)</span></div>
+    <p style="margin:12px 0;font-size:20px" id="dec-sub-eg-label">Example: <strong>503 − 247</strong></p>
+    <div class="calc-visual">
+      <div class="borrow">&nbsp;<span id="dec-borrow-lbl">Borrow:</span> 0 1 1</div>
+      <div class="num1">&nbsp;&nbsp;&nbsp;5 0 3</div>
+      <div class="num2"><span class="op">−</span>&nbsp;&nbsp;2 4 7</div>
+      <div class="separator">─────────</div>
+      <div class="result">&nbsp;&nbsp;&nbsp;2 5 6</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--decimal)">1</div>
+      <div class="step-content" id="dec-sub-s1">Units: 3 − 7 not possible. Borrow from tens (0). But tens is 0, borrow from hundreds: 5 becomes 4, tens becomes 10, then borrow from tens: 10 becomes 9, units becomes 13. So 13 − 7 = <strong>6</strong>.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--decimal)">2</div>
+      <div class="step-content" id="dec-sub-s2">Tens (now 9): 9 − 4 = <strong>5</strong>.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--decimal)">3</div>
+      <div class="step-content" id="dec-sub-s3">Hundreds (now 4): 4 − 2 = <strong>2</strong>. Result = <span class="mono highlight-green">256</span> ✅</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE: HEXA ===================== -->
+<div class="page" id="page-hexa">
+  <div class="summary-header" style="background:linear-gradient(135deg,var(--hexa),#4a1060)">
+    <h2>🟣 Hexadecimal Number System (Base-16)</h2>
+    <p style="font-size:20px;margin-top:8px;opacity:0.9" id="hex-subtitle">Uses digits 0–9 AND letters A–F. Very common in digital electronics!</p>
+  </div>
+
+  <div class="card theme-hexa">
+    <div class="card-title"><span class="icon">💡</span> <span id="hex-c1-title">The Basic Idea</span></div>
+    <p id="hex-c1-body">Hexadecimal has 16 digits. Since we run out of normal digits after 9, we use letters: A=10, B=11, C=12, D=13, E=14, F=15. This system is extremely useful in electronics — error codes, memory addresses, and color codes all use hex.</p>
+    <div class="analogy-box" style="background:#f3e5f5;border-left-color:var(--hexa)">
+      <div class="label" style="color:var(--hexa)" id="hex-analogy-label">Practical Example ⚡</div>
+      <span id="hex-analogy-body">When your VFD shows error code "E:0x1A3F" — that's hexadecimal! The "0x" prefix means hex. Electricians need to decode these to find out which fault occurred in the drive.</span>
+    </div>
+
+    <table class="ns-table" style="margin-top:16px">
+      <thead>
+        <tr>
+          <th id="hex-th-dec">Decimal</th>
+          <th id="hex-th-hex">Hexadecimal</th>
+          <th id="hex-th-bin">Binary</th>
+          <th id="hex-th-dec2">Decimal</th>
+          <th id="hex-th-hex2">Hexadecimal</th>
+          <th id="hex-th-bin2">Binary</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>0</td><td style="font-weight:800;color:var(--hexa)">0</td><td>0000</td><td>8</td><td style="font-weight:800;color:var(--hexa)">8</td><td>1000</td></tr>
+        <tr><td>1</td><td style="font-weight:800;color:var(--hexa)">1</td><td>0001</td><td>9</td><td style="font-weight:800;color:var(--hexa)">9</td><td>1001</td></tr>
+        <tr><td>2</td><td style="font-weight:800;color:var(--hexa)">2</td><td>0010</td><td>10</td><td style="font-weight:800;color:var(--hexa)">A</td><td>1010</td></tr>
+        <tr><td>3</td><td style="font-weight:800;color:var(--hexa)">3</td><td>0011</td><td>11</td><td style="font-weight:800;color:var(--hexa)">B</td><td>1011</td></tr>
+        <tr><td>4</td><td style="font-weight:800;color:var(--hexa)">4</td><td>0100</td><td>12</td><td style="font-weight:800;color:var(--hexa)">C</td><td>1100</td></tr>
+        <tr><td>5</td><td style="font-weight:800;color:var(--hexa)">5</td><td>0101</td><td>13</td><td style="font-weight:800;color:var(--hexa)">D</td><td>1101</td></tr>
+        <tr><td>6</td><td style="font-weight:800;color:var(--hexa)">6</td><td>0110</td><td>14</td><td style="font-weight:800;color:var(--hexa)">E</td><td>1110</td></tr>
+        <tr><td>7</td><td style="font-weight:800;color:var(--hexa)">7</td><td>0111</td><td>15</td><td style="font-weight:800;color:var(--hexa)">F</td><td>1111</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card theme-hexa">
+    <div class="card-title"><span class="icon">📍</span> <span id="hex-c2-title">Place Values in Hexadecimal</span></div>
+    <p id="hex-c2-body">Each position from right to left: 1, 16, 256, 4096... (powers of 16)</p>
+    <div class="pos-table" id="hex-place-table"></div>
+    <div class="concept-box" style="border-left-color:var(--hexa)" id="hex-place-rule">
+      ✅ Each position to the LEFT is <strong>16 times</strong> the previous one.
+    </div>
+  </div>
+
+  <div class="card theme-hexa">
+    <div class="card-title"><span class="icon">🔄</span> <span id="hex-c3-title">Hex to Decimal — Step by Step</span></div>
+    <p style="margin:12px 0;font-size:20px" id="hex-conv-example-label">Example: Convert <span class="mono" style="font-family:monospace;font-weight:bold;color:var(--hexa)">2A3</span> (hex) to Decimal</p>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--hexa)">1</div>
+      <div class="step-content" id="hex-cs1">Replace letters with their decimal values: A = 10</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--hexa)">2</div>
+      <div class="step-content">
+        <span id="hex-cs2">Multiply each digit by 16 to the power of its position:</span><br><br>
+        <span class="mono">2 × 16² = 2 × 256 = <span class="highlight-purple">512</span></span><br>
+        <span class="mono">A(10) × 16¹ = 10 × 16 = <span class="highlight-purple">160</span></span><br>
+        <span class="mono">3 × 16⁰ = 3 × 1 = <span class="highlight-purple">3</span></span>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--hexa)">3</div>
+      <div class="step-content" id="hex-cs3">Add: 512 + 160 + 3 = <span class="mono highlight-green">675</span>. So <strong>2A3₁₆ = 675₁₀</strong> ✅</div>
+    </div>
+  </div>
+
+  <div class="card theme-hexa">
+    <div class="card-title"><span class="icon">➕</span> <span id="hex-add-title">Hex Addition</span></div>
+    <div class="concept-box" style="border-left-color:var(--hexa)" id="hex-add-rule">
+      Add the decimal values. If sum ≥ 16, carry 1 and write the remainder as a hex digit (use A–F if ≥ 10).
+    </div>
+    <p style="margin:12px 0;font-size:20px" id="hex-add-eg-label">Example: <strong>3B₁₆ + 2F₁₆</strong></p>
+    <div class="calc-visual">
+      <div class="carry-row">&nbsp;<span id="hex-carry-lbl">Carry:</span> 1 0</div>
+      <div class="num1">&nbsp;&nbsp;&nbsp;3 B</div>
+      <div class="num2"><span class="op">+</span>&nbsp;&nbsp;2 F</div>
+      <div class="separator">──────</div>
+      <div class="result">&nbsp;&nbsp;&nbsp;6 A</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--hexa)">1</div>
+      <div class="step-content" id="hex-add-s1">Units: B(11) + F(15) = 26. 26 ÷ 16 = 1 remainder 10. Write <strong>A</strong> (10), carry <strong>1</strong>.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--hexa)">2</div>
+      <div class="step-content" id="hex-add-s2">Next: 3 + 2 + carry 1 = 6. Write <strong>6</strong>. Result = <span class="mono highlight-green">6A₁₆</span> = 106₁₀ ✅</div>
+    </div>
+  </div>
+
+  <div class="card theme-hexa">
+    <div class="card-title"><span class="icon">➖</span> <span id="hex-sub-title">Hex Subtraction</span></div>
+    <div class="concept-box" style="border-left-color:var(--hexa)" id="hex-sub-rule">
+      When you can't subtract (bottom > top), borrow 1 from the next position. That borrow is worth <strong>16</strong> in hex.
+    </div>
+    <p style="margin:12px 0;font-size:20px" id="hex-sub-eg-label">Example: <strong>5C₁₆ − 2E₁₆</strong></p>
+    <div class="calc-visual">
+      <div class="borrow">&nbsp;<span id="hex-borrow-lbl">Borrow:</span> 1 0</div>
+      <div class="num1">&nbsp;&nbsp;&nbsp;5 C</div>
+      <div class="num2"><span class="op">−</span>&nbsp;&nbsp;2 E</div>
+      <div class="separator">──────</div>
+      <div class="result">&nbsp;&nbsp;&nbsp;2 E</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--hexa)">1</div>
+      <div class="step-content" id="hex-sub-s1">Units: C(12) − E(14) not possible. Borrow 1: C becomes 12+16=28. So 28 − 14 = 14 = <strong>E</strong>.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" style="background:var(--hexa)">2</div>
+      <div class="step-content" id="hex-sub-s2">Next: 5 − 1(borrowed) − 2 = 2. Write <strong>2</strong>. Result = <span class="mono highlight-green">2E₁₆</span> = 46₁₀ ✅</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE: CALCULATOR ===================== -->
+<div class="page" id="page-calc">
+  <div class="summary-header" style="background:linear-gradient(135deg,#c0392b,#922b21)">
+    <h2>🧮 Step-by-Step Calculator</h2>
+    <p style="font-size:20px;margin-top:8px;opacity:0.9" id="calc-subtitle">Enter any two numbers — see every step of the calculation!</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">⚙️</span> <span id="calc-settings-title">Choose System & Operation</span></div>
+
+    <div style="margin-bottom:18px">
+      <div style="font-size:20px;font-weight:700;margin-bottom:10px" id="calc-sys-label">Number System:</div>
+      <div class="op-toggle" id="sys-toggle">
+        <button class="op-toggle-btn active" data-sys="binary" id="sys-bin">Binary (2)</button>
+        <button class="op-toggle-btn" data-sys="octal" id="sys-oct">Octal (8)</button>
+        <button class="op-toggle-btn" data-sys="decimal" id="sys-dec">Decimal (10)</button>
+        <button class="op-toggle-btn" data-sys="hexa" id="sys-hex">Hexadecimal (16)</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:18px">
+      <div style="font-size:20px;font-weight:700;margin-bottom:10px" id="calc-op-label">Operation:</div>
+      <div class="op-toggle">
+        <button class="op-toggle-btn active" data-op="add" id="op-add-btn">➕ Addition</button>
+        <button class="op-toggle-btn" data-op="sub" id="op-sub-btn">➖ Subtraction</button>
+      </div>
+    </div>
+
+    <div class="calc-container">
+      <div class="calc-inputs">
+        <input type="text" class="calc-input" id="num1" placeholder="First number" >
+        <div class="op-badge" id="op-display">+</div>
+        <input type="text" class="calc-input" id="num2" placeholder="Second number" >
+        <button class="calc-btn" id="calcGoBtn" id="calc-go-btn">Calculate →</button>
+      </div>
+      <div id="calc-err" class="err-msg"></div>
+    </div>
+
+    <div class="mode-btns">
+      <button class="mode-btn active" id="mode-full-btn">⚡ Full Answer</button>
+      <button class="mode-btn" id="mode-step-btn">🐢 Step by Step</button>
+    </div>
+    <div id="steps-output"></div>
+  </div>
+</div>
+
+<!-- ===================== PAGE: CONVERSION ===================== -->
+<div class="page" id="page-convert">
+  <div class="summary-header" style="background:linear-gradient(135deg,#16a085,#0e6655)">
+    <h2>🔄 Number Conversion</h2>
+    <p style="font-size:20px;margin-top:8px;opacity:0.9" id="conv-subtitle">Convert any number between all four systems — step by step!</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">⚙️</span> <span id="conv-settings-title">Convert a Number</span></div>
+
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;margin-bottom:20px">
+      <div>
+        <div style="font-size:19px;font-weight:700;margin-bottom:8px" id="conv-from-label">From:</div>
+        <select id="conv-from" style="font-size:22px;padding:10px 18px;border:2px solid var(--border);border-radius:10px;background:white;">
+          <option value="2">Binary (Base-2)</option>
+          <option value="8">Octal (Base-8)</option>
+          <option value="10" selected>Decimal (Base-10)</option>
+          <option value="16">Hexadecimal (Base-16)</option>
+        </select>
+      </div>
+      <div style="font-size:32px;margin-top:24px">→</div>
+      <div>
+        <div style="font-size:19px;font-weight:700;margin-bottom:8px" id="conv-to-label">To:</div>
+        <select id="conv-to" style="font-size:22px;padding:10px 18px;border:2px solid var(--border);border-radius:10px;background:white;">
+          <option value="2">Binary (Base-2)</option>
+          <option value="8">Octal (Base-8)</option>
+          <option value="10">Decimal (Base-10)</option>
+          <option value="16" selected>Hexadecimal (Base-16)</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:19px;font-weight:700;margin-bottom:8px" id="conv-num-label">Number:</div>
+        <input type="text" id="conv-num" class="calc-input" style="width:220px" placeholder="Enter number" >
+      </div>
+      <button class="calc-btn" id="convGoBtn" style="margin-top:24px" id="conv-go-btn">Convert →</button>
+    </div>
+
+    <div id="conv-err" class="err-msg"></div>
+    <div id="conv-output"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> <span id="conv-table-title">Quick Conversion Table (0–20)</span></div>
+    <table class="ns-table">
+      <thead>
+        <tr>
+          <th>Decimal</th>
+          <th>Binary</th>
+          <th>Octal</th>
+          <th>Hexadecimal</th>
+        </tr>
+      </thead>
+      <tbody id="conv-table-body">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ===================== PAGE: BITS, BYTES & DIGITAL ===================== -->
+<div class="page" id="page-bits">
+
+  <div class="summary-header" style="background:linear-gradient(135deg,#7d3100,#b7410e)">
+    <h2>&#x1F4BE; Bit, Nibble, Byte &amp; Digital Systems</h2>
+    <p style="font-size:20px;margin-top:8px;opacity:0.9">How single switches become memory, processors, and everything digital!</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="color:#b7410e"><span class="icon">&#x1F535;</span> What is a BIT?</div>
+    <p>The word <strong>BIT</strong> comes from <strong>B</strong>inary dig<strong>IT</strong>. It is the <em>smallest possible unit of information</em> in the digital world. A bit holds only one of two values &mdash; <strong>0</strong> or <strong>1</strong> &mdash; exactly like a single light switch: OFF (0) or ON (1).</p>
+    <div class="analogy-box" style="background:#fff3e0;border-left-color:#e65100">
+      <div class="label" style="color:#e65100">&#x26A1; Electrician view</div>
+      In a digital circuit, a bit is a single signal wire. HIGH voltage (5V or 3.3V) = 1. LOW (0V) = 0. Every digital wire in a PLC, microcontroller, or computer carries exactly one bit.
+    </div>
+    <svg width="100%" viewBox="0 0 580 100" style="margin:16px 0;max-width:580px;display:block">
+      <rect x="10" y="10" width="110" height="55" rx="10" fill="#1a3a5c"/>
+      <text x="65" y="46" text-anchor="middle" fill="white" font-size="28" font-weight="bold" font-family="Courier New,monospace">0</text>
+      <text x="65" y="82" text-anchor="middle" fill="#666" font-size="14" font-family="Arial,sans-serif">OFF / LOW (0V)</text>
+      <text x="168" y="46" text-anchor="middle" fill="#777" font-size="22" font-weight="bold" font-family="Arial,sans-serif">OR</text>
+      <rect x="215" y="10" width="110" height="55" rx="10" fill="#2a7a4b"/>
+      <text x="270" y="46" text-anchor="middle" fill="white" font-size="28" font-weight="bold" font-family="Courier New,monospace">1</text>
+      <text x="270" y="82" text-anchor="middle" fill="#666" font-size="14" font-family="Arial,sans-serif">ON / HIGH (5V)</text>
+      <text x="355" y="35" fill="#333" font-size="16" font-family="Arial,sans-serif">&#x2192; 1 bit = 1 signal wire</text>
+      <text x="355" y="58" fill="#333" font-size="16" font-family="Arial,sans-serif">&#x2192; Only 2 states possible</text>
+    </svg>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="color:#6c3483"><span class="icon">&#x1F7E3;</span> What is a NIBBLE? (4 bits)</div>
+    <p>Group <strong>4 bits</strong> together and you get a <strong>nibble</strong>. A nibble holds values from 0 to 15 decimal &mdash; which is exactly 0 to F in hexadecimal. This is why <strong>one hex digit always equals exactly one nibble</strong>.</p>
+    <div class="concept-box" style="border-left-color:#6c3483">
+      1 nibble = 4 bits &nbsp;|&nbsp; Values: 0 to 15 &nbsp;|&nbsp; 0 to F in hex &nbsp;|&nbsp; 2&#x2074; = <strong>16 combinations</strong>
+    </div>
+    <svg width="100%" viewBox="0 0 540 115" style="margin:14px 0;max-width:540px;display:block">
+      <text x="10" y="26" fill="#6c3483" font-size="15" font-weight="bold" font-family="Arial,sans-serif">NIBBLE example: 1011</text>
+      <rect x="10" y="34" width="64" height="50" rx="8" fill="#e1bee7" stroke="#6c3483" stroke-width="2"/>
+      <text x="42" y="66" text-anchor="middle" fill="#4a148c" font-size="24" font-weight="bold" font-family="Courier New,monospace">1</text>
+      <text x="42" y="97" text-anchor="middle" fill="#888" font-size="13" font-family="Arial,sans-serif">bit 3</text>
+      <rect x="82" y="34" width="64" height="50" rx="8" fill="#e1bee7" stroke="#6c3483" stroke-width="2"/>
+      <text x="114" y="66" text-anchor="middle" fill="#4a148c" font-size="24" font-weight="bold" font-family="Courier New,monospace">0</text>
+      <text x="114" y="97" text-anchor="middle" fill="#888" font-size="13" font-family="Arial,sans-serif">bit 2</text>
+      <rect x="154" y="34" width="64" height="50" rx="8" fill="#e1bee7" stroke="#6c3483" stroke-width="2"/>
+      <text x="186" y="66" text-anchor="middle" fill="#4a148c" font-size="24" font-weight="bold" font-family="Courier New,monospace">1</text>
+      <text x="186" y="97" text-anchor="middle" fill="#888" font-size="13" font-family="Arial,sans-serif">bit 1</text>
+      <rect x="226" y="34" width="64" height="50" rx="8" fill="#e1bee7" stroke="#6c3483" stroke-width="2"/>
+      <text x="258" y="66" text-anchor="middle" fill="#4a148c" font-size="24" font-weight="bold" font-family="Courier New,monospace">1</text>
+      <text x="258" y="97" text-anchor="middle" fill="#888" font-size="13" font-family="Arial,sans-serif">bit 0</text>
+      <text x="308" y="67" fill="#555" font-size="24" font-family="Arial,sans-serif">&#x2192;</text>
+      <text x="345" y="56" fill="#4a148c" font-size="18" font-weight="bold" font-family="Courier New,monospace">= 11&#x2081;&#x2080;</text>
+      <text x="345" y="78" fill="#e07b00" font-size="18" font-weight="bold" font-family="Arial,sans-serif">= B&#x2081;&#x2086;</text>
+      <text x="345" y="100" fill="#888" font-size="13" font-family="Arial,sans-serif">One hex digit!</text>
+    </svg>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="color:#1565c0"><span class="icon">&#x1F537;</span> What is a BYTE? (8 bits)</div>
+    <p>A <strong>byte = 8 bits = 2 nibbles</strong>. It is the most commonly used unit in computing. Every character you type &mdash; a letter, a digit, a symbol &mdash; is stored as 1 byte. Range: <strong>0 to 255</strong> decimal (00 to FF hex).</p>
+    <div class="concept-box" style="border-left-color:#1565c0">
+      1 byte = 8 bits &nbsp;|&nbsp; Values: 0 to 255 &nbsp;|&nbsp; 00 to FF hex &nbsp;|&nbsp; 2&#x2078; = <strong>256 combinations</strong>
+    </div>
+    <svg width="100%" viewBox="0 0 700 125" style="margin:14px 0;max-width:700px;display:block">
+      <text x="10" y="20" fill="#1565c0" font-size="14" font-weight="bold" font-family="Arial,sans-serif">BYTE = 8 bits (example: 10110011 = B3&#x2081;&#x2086; = 179&#x2081;&#x2080;)</text>
+      <rect x="8" y="27" width="283" height="6" rx="3" fill="#ffcc80"/>
+      <text x="149" y="37" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold" font-family="Arial,sans-serif">Upper Nibble (High)</text>
+      <rect x="301" y="27" width="283" height="6" rx="3" fill="#b3e5fc"/>
+      <text x="442" y="37" text-anchor="middle" fill="#0277bd" font-size="11" font-weight="bold" font-family="Arial,sans-serif">Lower Nibble (Low)</text>
+      <rect x="8" y="42" width="63" height="50" rx="7" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+      <text x="39" y="74" text-anchor="middle" fill="#bf360c" font-size="22" font-weight="bold" font-family="Courier New,monospace">1</text>
+      <text x="39" y="105" text-anchor="middle" fill="#888" font-size="11" font-family="Arial,sans-serif">7 MSB</text>
+      <rect x="79" y="42" width="63" height="50" rx="7" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+      <text x="110" y="74" text-anchor="middle" fill="#bf360c" font-size="22" font-weight="bold" font-family="Courier New,monospace">0</text>
+      <text x="110" y="105" text-anchor="middle" fill="#888" font-size="11" font-family="Arial,sans-serif">bit 6</text>
+      <rect x="150" y="42" width="63" height="50" rx="7" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+      <text x="181" y="74" text-anchor="middle" fill="#bf360c" font-size="22" font-weight="bold" font-family="Courier New,monospace">1</text>
+      <text x="181" y="105" text-anchor="middle" fill="#888" font-size="11" font-family="Arial,sans-serif">bit 5</text>
+      <rect x="221" y="42" width="63" height="50" rx="7" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+      <text x="252" y="74" text-anchor="middle" fill="#bf360c" font-size="22" font-weight="bold" font-family="Courier New,monospace">1</text>
+      <text x="252" y="105" text-anchor="middle" fill="#888" font-size="11" font-family="Arial,sans-serif">bit 4</text>
+      <rect x="301" y="42" width="63" height="50" rx="7" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+      <text x="332" y="74" text-anchor="middle" fill="#0d47a1" font-size="22" font-weight="bold" font-family="Courier New,monospace">0</text>
+      <text x="332" y="105" text-anchor="middle" fill="#888" font-size="11" font-family="Arial,sans-serif">bit 3</text>
+      <rect x="372" y="42" width="63" height="50" rx="7" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+      <text x="403" y="74" text-anchor="middle" fill="#0d47a1" font-size="22" font-weight="bold" font-family="Courier New,monospace">0</text>
+      <text x="403" y="105" text-anchor="middle" fill="#888" font-size="11" font-family="Arial,sans-serif">bit 2</text>
+      <rect x="443" y="42" width="63" height="50" rx="7" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+      <text x="474" y="74" text-anchor="middle" fill="#0d47a1" font-size="22" font-weight="bold" font-family="Courier New,monospace">1</text>
+      <text x="474" y="105" text-anchor="middle" fill="#888" font-size="11" font-family="Arial,sans-serif">bit 1</text>
+      <rect x="514" y="42" width="63" height="50" rx="7" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+      <text x="545" y="74" text-anchor="middle" fill="#0d47a1" font-size="22" font-weight="bold" font-family="Courier New,monospace">1</text>
+      <text x="545" y="105" text-anchor="middle" fill="#888" font-size="11" font-family="Arial,sans-serif">0 LSB</text>
+      <text x="592" y="62" fill="#1565c0" font-size="15" font-weight="bold" font-family="Courier New,monospace">= B3&#x2081;&#x2086;</text>
+      <text x="592" y="82" fill="#e07b00" font-size="14" font-weight="bold" font-family="Arial,sans-serif">= 179&#x2081;&#x2080;</text>
+    </svg>
+    <div class="note-box">
+      <span class="note-icon">&#x1F4A1;</span>
+      <span>The leftmost bit (bit 7) = <strong>MSB (Most Significant Bit)</strong>. The rightmost (bit 0) = <strong>LSB (Least Significant Bit)</strong>. In PLC work, always check whether a register is MSB-first or LSB-first!</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="color:#2a7a4b"><span class="icon">&#x1F4E6;</span> Word, Double Word, Quad Word</div>
+    <p>As we group more bits, we get larger data units. Here is the standard grouping used in PLCs and processors:</p>
+    <table class="ns-table" style="margin-top:14px">
+      <thead><tr><th>Name</th><th>Bits</th><th>Bytes</th><th>Max Decimal Value</th><th>Hex Range</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Bit</strong></td><td>1</td><td>1/8</td><td>1</td><td>0 &ndash; 1</td></tr>
+        <tr><td><strong>Nibble</strong></td><td>4</td><td>1/2</td><td>15</td><td>0 &ndash; F</td></tr>
+        <tr><td><strong>Byte</strong></td><td>8</td><td>1</td><td>255</td><td>00 &ndash; FF</td></tr>
+        <tr><td><strong>Word</strong></td><td>16</td><td>2</td><td>65,535</td><td>0000 &ndash; FFFF</td></tr>
+        <tr><td><strong>Double Word (DWORD)</strong></td><td>32</td><td>4</td><td>4,294,967,295</td><td>00000000 &ndash; FFFFFFFF</td></tr>
+        <tr><td><strong>Quad Word (QWORD)</strong></td><td>64</td><td>8</td><td>~18.4 &times; 10&#x00B9;&#x2078;</td><td>16 hex digits</td></tr>
+      </tbody>
+    </table>
+    <div class="analogy-box" style="background:#e8f8ee;border-left-color:#2a7a4b">
+      <div class="label" style="color:#2a7a4b">PLC Register Example</div>
+      In a Siemens PLC, an analog sensor output (like PT100 temperature) is stored as a 16-bit WORD. That gives values 0 to 65535 &mdash; enough for 0.0&deg;C to 6553.5&deg;C with one decimal resolution!
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="color:#b7410e"><span class="icon">&#x2699;&#xFE0F;</span> 8-bit, 16-bit, 32-bit, 64-bit Systems</div>
+    <p>When we say a processor is &ldquo;32-bit,&rdquo; we mean it processes <strong>32 bits in one single operation</strong>. More bits = more data processed at once = more powerful. This also directly controls how much memory the processor can address.</p>
+    <table class="ns-table" style="margin-top:14px">
+      <thead><tr><th>System</th><th>Data Width</th><th>Max RAM</th><th>Max Value</th><th>Used In</th></tr></thead>
+      <tbody>
+        <tr><td><strong>8-bit</strong></td><td>8 bits (1 byte)</td><td>256 bytes</td><td>255</td><td>8051, AVR, simple sensors</td></tr>
+        <tr><td><strong>16-bit</strong></td><td>16 bits (2 bytes)</td><td>64 KB</td><td>65,535</td><td>Arduino Mega, older PLCs</td></tr>
+        <tr><td><strong>32-bit</strong></td><td>32 bits (4 bytes)</td><td>4 GB</td><td>~4.29 billion</td><td>Modern PLCs, ARM Cortex, RPi</td></tr>
+        <tr><td><strong>64-bit</strong></td><td>64 bits (8 bytes)</td><td>16 Exabytes</td><td>~18.4 &times; 10&#x00B9;&#x2078;</td><td>PCs, servers, advanced controllers</td></tr>
+      </tbody>
+    </table>
+    <div class="note-box">
+      <span class="note-icon">&#x26A0;&#xFE0F;</span>
+      <span>A 32-bit processor can address only <strong>4 GB of RAM maximum</strong>. This is why older 32-bit Windows PCs cannot use more than 4 GB even if 8 GB is physically installed. 64-bit processors removed this ceiling entirely.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="color:#1565c0"><span class="icon">&#x1F5FA;&#xFE0F;</span> What is a Memory Address?</div>
+    <p>Imagine RAM as a very long street with millions of houses. Each house holds exactly <strong>1 byte (8 bits)</strong>. Every house has a unique number &mdash; that is its <strong>memory address</strong>. The processor sends an address on the <em>address bus</em>, then reads or writes data through the <em>data bus</em>.</p>
+    <svg width="100%" viewBox="0 0 730 395" style="margin:18px 0;max-width:730px;display:block;border:2px solid #d0c8b8;border-radius:12px;background:#fafafa">
+      <text x="20" y="26" fill="#1a3a5c" font-size="15" font-weight="bold" font-family="Arial,sans-serif">Memory (RAM) Layout</text>
+      <rect x="15" y="38" width="126" height="78" rx="10" fill="#1a3a5c"/>
+      <text x="78" y="72" text-anchor="middle" fill="white" font-size="14" font-weight="bold" font-family="Arial,sans-serif">CPU</text>
+      <text x="78" y="90" text-anchor="middle" fill="white" font-size="13" font-family="Arial,sans-serif">Processor</text>
+      <text x="78" y="108" text-anchor="middle" fill="#aad4f5" font-size="11" font-family="Arial,sans-serif">(32/64-bit)</text>
+      <line x1="141" y1="64" x2="205" y2="64" stroke="#e07b00" stroke-width="3"/>
+      <polygon points="203,58 215,64 203,70" fill="#e07b00"/>
+      <text x="143" y="58" fill="#e07b00" font-size="11" font-weight="bold" font-family="Arial,sans-serif">Address Bus</text>
+      <text x="143" y="80" fill="#888" font-size="10" font-family="Arial,sans-serif">(which address?)</text>
+      <line x1="141" y1="98" x2="205" y2="98" stroke="#2a7a4b" stroke-width="3"/>
+      <polygon points="203,92 215,98 203,104" fill="#2a7a4b"/>
+      <text x="143" y="115" fill="#2a7a4b" font-size="11" font-weight="bold" font-family="Arial,sans-serif">Data Bus</text>
+      <text x="143" y="130" fill="#888" font-size="10" font-family="Arial,sans-serif">(read/write data)</text>
+      <rect x="210" y="38" width="500" height="330" rx="10" fill="white" stroke="#1a3a5c" stroke-width="2"/>
+      <text x="460" y="62" text-anchor="middle" fill="#1a3a5c" font-size="14" font-weight="bold" font-family="Arial,sans-serif">MEMORY (RAM)</text>
+      <text x="223" y="86" fill="#888" font-size="11" font-weight="bold" font-family="Arial,sans-serif">Address (Hex)</text>
+      <text x="355" y="86" fill="#888" font-size="11" font-weight="bold" font-family="Arial,sans-serif">8 bits stored (1 byte)</text>
+      <text x="650" y="86" fill="#888" font-size="11" font-weight="bold" font-family="Arial,sans-serif">Dec</text>
+      <line x1="215" y1="92" x2="708" y2="92" stroke="#ccc" stroke-width="1"/>
+      <rect x="215" y="96" width="490" height="28" fill="#fff8e1"/>
+      <text x="265" y="115" text-anchor="middle" fill="#b7410e" font-size="13" font-weight="bold" font-family="Courier New,monospace">0x0000</text>
+      <text x="490" y="115" text-anchor="middle" fill="#0d47a1" font-size="13" font-weight="bold" font-family="Courier New,monospace">1 0 1 1  0 0 1 1</text>
+      <text x="665" y="115" text-anchor="middle" fill="#555" font-size="12" font-family="Arial,sans-serif">179</text>
+      <rect x="215" y="124" width="490" height="28" fill="white"/>
+      <text x="265" y="143" text-anchor="middle" fill="#b7410e" font-size="13" font-weight="bold" font-family="Courier New,monospace">0x0001</text>
+      <text x="490" y="143" text-anchor="middle" fill="#0d47a1" font-size="13" font-weight="bold" font-family="Courier New,monospace">0 1 0 0  1 1 1 0</text>
+      <text x="665" y="143" text-anchor="middle" fill="#555" font-size="12" font-family="Arial,sans-serif">78</text>
+      <rect x="215" y="152" width="490" height="28" fill="#e8f4fd"/>
+      <text x="265" y="171" text-anchor="middle" fill="#b7410e" font-size="13" font-weight="bold" font-family="Courier New,monospace">0x0002</text>
+      <text x="490" y="171" text-anchor="middle" fill="#1b5e20" font-size="13" font-weight="bold" font-family="Courier New,monospace">1 1 0 0  0 0 0 1</text>
+      <text x="665" y="171" text-anchor="middle" fill="#555" font-size="12" font-family="Arial,sans-serif">193</text>
+      <rect x="215" y="180" width="490" height="28" fill="white"/>
+      <text x="265" y="199" text-anchor="middle" fill="#b7410e" font-size="13" font-weight="bold" font-family="Courier New,monospace">0x0003</text>
+      <text x="490" y="199" text-anchor="middle" fill="#0d47a1" font-size="13" font-weight="bold" font-family="Courier New,monospace">0 0 1 1  0 1 0 1</text>
+      <text x="665" y="199" text-anchor="middle" fill="#555" font-size="12" font-family="Arial,sans-serif">53</text>
+      <rect x="215" y="208" width="490" height="28" fill="#fff8e1"/>
+      <text x="265" y="227" text-anchor="middle" fill="#b7410e" font-size="13" font-weight="bold" font-family="Courier New,monospace">0x0004</text>
+      <text x="490" y="227" text-anchor="middle" fill="#0d47a1" font-size="13" font-weight="bold" font-family="Courier New,monospace">1 0 0 0  0 0 1 0</text>
+      <text x="665" y="227" text-anchor="middle" fill="#555" font-size="12" font-family="Arial,sans-serif">130</text>
+      <text x="460" y="266" text-anchor="middle" fill="#bbb" font-size="18" font-family="Arial,sans-serif">. . . . thousands more rows . . . .</text>
+      <rect x="215" y="280" width="490" height="27" fill="white"/>
+      <text x="265" y="298" text-anchor="middle" fill="#b7410e" font-size="13" font-weight="bold" font-family="Courier New,monospace">0xFFFE</text>
+      <text x="490" y="298" text-anchor="middle" fill="#0d47a1" font-size="13" font-weight="bold" font-family="Courier New,monospace">1 1 1 1  1 1 1 1</text>
+      <text x="665" y="298" text-anchor="middle" fill="#555" font-size="12" font-family="Arial,sans-serif">255</text>
+      <rect x="215" y="307" width="490" height="27" fill="#ffebee"/>
+      <text x="265" y="325" text-anchor="middle" fill="#b7410e" font-size="13" font-weight="bold" font-family="Courier New,monospace">0xFFFF</text>
+      <text x="490" y="325" text-anchor="middle" fill="#4a148c" font-size="13" font-weight="bold" font-family="Courier New,monospace">0 1 0 1  1 0 1 0</text>
+      <text x="665" y="325" text-anchor="middle" fill="#555" font-size="12" font-family="Arial,sans-serif">90</text>
+      <text x="460" y="358" text-anchor="middle" fill="#888" font-size="11" font-family="Arial,sans-serif">Each row = 1 address = 1 byte (8 bits) of storage</text>
+    </svg>
+    <div class="step-box" style="border-color:#1565c0;background:#e3f2fd">
+      <div class="step-num" style="background:#1565c0">Key Point</div>
+      <p style="margin-top:12px">Addresses are written in <strong>hexadecimal</strong> (0x0000, 0x0001...) because hex is compact &mdash; a 32-bit address needs only 8 hex digits, but 10 decimal digits or 32 binary digits. That is why &ldquo;0x&rdquo; appears everywhere in electronics documentation!</p>
+    </div>
+    <div style="margin-top:16px">
+      <div class="step-item"><div class="step-circle" style="background:#1565c0">1</div><div class="step-content">CPU puts an <strong>address</strong> on the address bus (e.g. 0x0002) &mdash; like calling out a house number.</div></div>
+      <div class="step-item"><div class="step-circle" style="background:#1565c0">2</div><div class="step-content">Memory finds that address and puts the stored <strong>data</strong> on the data bus. CPU reads it (READ).</div></div>
+      <div class="step-item"><div class="step-circle" style="background:#1565c0">3</div><div class="step-content">For <strong>WRITE</strong>: CPU sends address + new data. Memory stores it at that address.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="color:#6c3483"><span class="icon">&#x1F522;</span> Why 32-bit = Only 4 GB of Memory?</div>
+    <div class="step-item"><div class="step-circle" style="background:#6c3483">1</div><div class="step-content">2&#xB3;&#xB2; = <strong>4,294,967,296</strong> unique addresses. Each address holds <strong>1 byte</strong>.</div></div>
+    <div class="step-item"><div class="step-circle" style="background:#6c3483">2</div><div class="step-content">4,294,967,296 &divide; 1024 = <strong>4,194,304 KB</strong> &divide; 1024 = <strong>4,096 MB</strong> &divide; 1024 = <strong>4 GB</strong> maximum</div></div>
+    <div class="step-item"><div class="step-circle" style="background:#6c3483">3</div><div class="step-content">64-bit: 2&#x2076;&#x2074; = ~18.4 &times; 10&#x00B9;&#x2078; addresses = <strong>16 Exabytes</strong> &mdash; far beyond any current need!</div></div>
+    <svg width="100%" viewBox="0 0 660 130" style="margin:16px 0;max-width:660px;display:block">
+      <text x="10" y="20" fill="#333" font-size="13" font-weight="bold" font-family="Arial,sans-serif">32-bit Address Space (simplified):</text>
+      <rect x="10" y="28" width="620" height="46" rx="8" fill="#e1bee7" stroke="#6c3483" stroke-width="2"/>
+      <rect x="10" y="28" width="150" height="46" rx="8" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+      <text x="85" y="53" text-anchor="middle" fill="#c62828" font-size="12" font-weight="bold" font-family="Arial,sans-serif">OS / System</text>
+      <text x="85" y="69" text-anchor="middle" fill="#c62828" font-size="11" font-family="Arial,sans-serif">(reserved)</text>
+      <rect x="160" y="28" width="335" height="46" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+      <text x="327" y="53" text-anchor="middle" fill="#1b5e20" font-size="12" font-weight="bold" font-family="Arial,sans-serif">Application / User Programs</text>
+      <text x="327" y="68" text-anchor="middle" fill="#1b5e20" font-size="11" font-family="Arial,sans-serif">(your code lives here)</text>
+      <rect x="495" y="28" width="135" height="46" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+      <text x="562" y="53" text-anchor="middle" fill="#0d47a1" font-size="12" font-weight="bold" font-family="Arial,sans-serif">Hardware</text>
+      <text x="562" y="68" text-anchor="middle" fill="#0d47a1" font-size="11" font-family="Arial,sans-serif">Registers</text>
+      <text x="10" y="96" fill="#b7410e" font-size="11" font-family="Courier New,monospace">0x00000000</text>
+      <text x="550" y="96" fill="#b7410e" font-size="11" font-family="Courier New,monospace">0xFFFFFFFF</text>
+      <text x="330" y="120" text-anchor="middle" fill="#888" font-size="12" font-family="Arial,sans-serif">Total = 4 GB addressable space in a 32-bit system</text>
+    </svg>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="color:#1a3a5c"><span class="icon">&#x1F4CC;</span> Quick Reference &mdash; Remember These!</div>
+    <table class="ns-table">
+      <thead><tr><th>Term</th><th>Meaning</th><th>Size</th><th>Remember It As</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Bit</strong></td><td>Binary Digit</td><td>1 (0 or 1)</td><td>One switch ON or OFF</td></tr>
+        <tr><td><strong>Nibble</strong></td><td>Half a byte</td><td>4 bits</td><td>One hex digit (0&ndash;F)</td></tr>
+        <tr><td><strong>Byte</strong></td><td>8 bits</td><td>8 bits</td><td>One letter / character</td></tr>
+        <tr><td><strong>KB</strong></td><td>Kilobyte</td><td>1024 bytes</td><td>~1000 characters of text</td></tr>
+        <tr><td><strong>MB</strong></td><td>Megabyte</td><td>1024 KB</td><td>~1 million characters</td></tr>
+        <tr><td><strong>GB</strong></td><td>Gigabyte</td><td>1024 MB</td><td>~1 billion characters</td></tr>
+        <tr><td><strong>MSB</strong></td><td>Most Significant Bit</td><td>Leftmost bit</td><td>Highest value position</td></tr>
+        <tr><td><strong>LSB</strong></td><td>Least Significant Bit</td><td>Rightmost bit</td><td>Lowest value position</td></tr>
+        <tr><td><strong>0x prefix</strong></td><td>Means: hex number</td><td>&mdash;</td><td>&ldquo;This number is in Hex!&rdquo;</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+
+// ========== LANGUAGE DATA ==========
+const T = {
+  en: {
+    "hdr-title": "⚡ Number Systems — Electrician Trainees",
+    "hdr-sub": "Binary · Octal · Decimal · Hexadecimal",
+    "intro-h1": "What are Number Systems? 🤔",
+    "intro-h2": "Before computers can understand anything, numbers must speak their language!",
+    "intro-c1-title": "The Big Idea",
+    "intro-c1-body": "We humans count using 10 digits (0 to 9). But computers use electricity — either ON or OFF. So computers use their own number systems. As an electrician, you will work with all these systems when reading PLC panels, microcontrollers, and digital display boards.",
+    "intro-analogy-label": "Cricket Analogy 🏏",
+    "intro-analogy-body": "Think of runs on a scoreboard. In cricket, every run adds to the score. In binary, every bit adds to the digital value. Different systems are just different ways to count the same thing — like saying 'fifteen' in English vs 'പതിനഞ്ച്' in Malayalam — the value is the same!",
+    "intro-c2-title": "The Four Systems — Quick Look",
+    "th1":"System","th2":"Base","th3":"Digits Used","th4":"Used Where?",
+    "dec-name":"Decimal","bin-name":"Binary","oct-name":"Octal","hex-name":"Hexadecimal",
+    "dec-use":"Daily life, money, measurement",
+    "bin-use":"Computers, PLCs, digital circuits",
+    "oct-use":"Old computers, file permissions",
+    "hex-use":"Memory addresses, color codes, error codes",
+    "intro-c3-title": "Same Value, Different Look!",
+    "intro-c3-body": "The number fifteen looks different in each system — but it represents the same quantity:",
+    "intro-c4-title": "Why Electricians Need This",
+    "why1-label":"Reason 1","why2-label":"Reason 2","why3-label":"Reason 3",
+    "why1":"PLC (Programmable Logic Controller) panels use binary signals — each wire is either ON (1) or OFF (0).",
+    "why2":"Error codes on VFDs (Variable Frequency Drives) and digital meters are shown in hexadecimal.",
+    "why3":"Memory addresses and register values in microcontrollers are written in hex or binary.",
+    // Binary page
+    "bin-subtitle":"Only two digits: 0 and 1 — just like a switch: OFF and ON!",
+    "bin-c1-title":"The Basic Idea",
+    "bin-c1-body":"Binary uses only two digits — 0 and 1. This matches exactly how electricity works: either current is flowing (1) or it is not (0). Every computer, PLC, and digital device works with binary at its heart.",
+    "bin-analogy-label":"Switch Analogy 🔌",
+    "bin-analogy-body":"Imagine a row of light switches on a panel. Each switch is either ON (1) or OFF (0). The combination of ON/OFF switches gives you a number. 4 switches can give you 16 different combinations — that's 4-bit binary!",
+    "bin-c2-title":"Place Values in Binary",
+    "bin-c2-body":"Just like in decimal where each position is ×10, in binary each position is ×2. Going from right to left: 1, 2, 4, 8, 16, 32, 64, 128...",
+    "bin-place-rule":"✅ Each position to the LEFT is <strong>double</strong> the previous one.",
+    "bin-c3-title":"Binary to Decimal — Step by Step",
+    "bin-c3-body":"To convert binary to decimal, multiply each digit by its place value, then add all results.",
+    "bin-conv-example-label":'Example: Convert <span class="mono" style="font-family:monospace;font-weight:bold;color:var(--binary)">1011</span> (binary) to Decimal',
+    "bin-cs1":"Write the digits with their positions from right to left (position 0, 1, 2, 3...)",
+    "bin-cs2":"Multiply each digit by 2 raised to its position power:",
+    "bin-cs3":'Add all results: <span class="mono">8 + 0 + 2 + 1 = <span class="highlight-green">11</span></span><br>So <strong>1011₂ = 11₁₀</strong>',
+    "bin-add-title":"Binary Addition — Rules",
+    "bin-add-rules-label":"The 4 Golden Rules of Binary Addition:",
+    "bin-carry-note":"(write 0, carry 1 — just like 9+1=10 in decimal!)",
+    "bin-add-eg-label":"Example: <strong>1011 + 0110</strong>",
+    "bin-add-carry-label":"Carry:",
+    "bin-add-s1":"Rightmost column: 1 + 0 = <strong>1</strong>. Write 1, carry 0.",
+    "bin-add-s2":"Next column: 1 + 1 = <strong>10</strong>. Write 0, carry 1.",
+    "bin-add-s3":"Next column: 0 + 1 + carry 1 = <strong>10</strong>. Write 0, carry 1.",
+    "bin-add-s4":"Next column: 1 + 0 + carry 1 = <strong>10</strong>. Write 0, carry 1.",
+    "bin-add-s5":'Final carry: write <strong>1</strong>. Result = <span class="mono highlight-green">10001</span> = 17 in decimal ✅',
+    "bin-sub-title":"Binary Subtraction — Rules",
+    "bin-sub-rules-label":"The 4 Golden Rules of Binary Subtraction:",
+    "bin-borrow-note":"→ Borrow from the left! Becomes 10 − 1 = 1 (borrow 1)",
+    "bin-sub-eg-label":"Example: <strong>1101 − 0101</strong>",
+    "bin-sub-borrow-label":"Borrow:",
+    "bin-sub-s1":"Rightmost: 1 − 1 = 0. Write 0.",
+    "bin-sub-s2":"Next: 0 − 0 = 0. Write 0.",
+    "bin-sub-s3":"Next: 1 − 1 = 0. Write 0.",
+    "bin-sub-s4":'Leftmost: 1 − 0 = 1. Write 1. Result = <span class="mono highlight-green">1000</span> = 8 in decimal ✅',
+    // Octal
+    "oct-subtitle":"Eight digits: 0 to 7. Three binary bits = one octal digit!",
+    "oct-c1-title":"The Basic Idea",
+    "oct-c1-body":"Octal uses digits 0 through 7. It was historically used in computers as a shorthand for binary — since 3 binary bits always make exactly 1 octal digit. You'll sometimes see octal in older electrical documentation and file permission codes.",
+    "oct-analogy-label":"Market Analogy 🛒",
+    "oct-analogy-body":"Imagine a vegetable market where items are sold in packs of 8. When you reach 8 units, you move up to the next bundle. That's exactly how octal counts — every time you hit 8, you carry 1 to the next position!",
+    "oct-c2-title":"Place Values in Octal",
+    "oct-c2-body":"Each position from right to left: 1, 8, 64, 512... (powers of 8)",
+    "oct-place-rule":"✅ Each position to the LEFT is <strong>8 times</strong> the previous one.",
+    "oct-c3-title":"Octal to Decimal — Step by Step",
+    "oct-conv-example-label":'Example: Convert <span class="mono" style="font-family:monospace;font-weight:bold;color:var(--octal)">157</span> (octal) to Decimal',
+    "oct-cs1":"Write each digit with its position (right to left: 0, 1, 2)",
+    "oct-cs2":"Multiply each digit by 8 to the power of its position:",
+    "oct-cs3":'Add: <span class="mono">64 + 40 + 7 = <span class="highlight-green">111</span></span><br>So <strong>157₈ = 111₁₀</strong>',
+    "oct-add-title":"Octal Addition",
+    "oct-add-rule":'When the sum of two digits is <strong>8 or more</strong>, carry 1 to the next position. Subtract 8 from the sum to get the digit to write down.',
+    "oct-add-eg-label":"Example: <strong>37₈ + 45₈</strong>",
+    "oct-carry-lbl":"Carry:",
+    "oct-add-s1":"Units column: 7 + 5 = 12. Since 12 ≥ 8, write (12 − 8) = <strong>4</strong>, carry <strong>1</strong>.",
+    "oct-add-s2":"Next column: 3 + 4 + carry 1 = 8. Since 8 ≥ 8, write (8 − 8) = <strong>0</strong>, carry <strong>1</strong>.",
+    "oct-add-s3":'Final carry: write <strong>1</strong>. Result = <span class="mono highlight-green">104₈</span>. Check: 37₈=31, 45₈=37, 31+37=68, 104₈=68 ✅',
+    "oct-sub-title":"Octal Subtraction",
+    "oct-sub-rule":'When you can\'t subtract (bottom digit > top digit), borrow 1 from the next position. That borrow is worth <strong>8</strong> in octal.',
+    "oct-sub-eg-label":"Example: <strong>52₈ − 17₈</strong>",
+    "oct-borrow-lbl":"Borrow:",
+    "oct-sub-s1":"Units column: 2 − 7 is not possible. Borrow 1 from the 5. 2 becomes 2+8 = 10. So 10 − 7 = <strong>3</strong>.",
+    "oct-sub-s2":'Next column: 5 − 1 (borrowed) − 1 = 3. Write <strong>3</strong>. Result = <span class="mono highlight-green">33₈</span> = 27₁₀ ✅',
+    // Decimal
+    "dec-subtitle":"The system we all know! Digits 0 to 9.",
+    "dec-c1-title":"The Basic Idea",
+    "dec-c1-body":"Decimal is the system we use in daily life. It has 10 digits (0 to 9). After 9, we carry to the next position and start again from 0. This is the standard in all electrical measurements — volts, amperes, ohms, watts.",
+    "dec-c2-title":"Place Values in Decimal",
+    "dec-c2-body":"Each position from right to left: 1, 10, 100, 1000... (powers of 10)",
+    "dec-place-rule":"✅ Each position to the LEFT is <strong>10 times</strong> the previous one.",
+    "dec-expand-label":"Example: What is <strong>3452</strong>?",
+    "dec-expand-s1":'<span class="mono">3 × 1000 = <span class="highlight-orange">3000</span></span><br><span class="mono">4 × 100  = <span class="highlight-orange">400</span></span><br><span class="mono">5 × 10   = <span class="highlight-orange">50</span></span><br><span class="mono">2 × 1    = <span class="highlight-orange">2</span></span>',
+    "dec-expand-s2":'Total: 3000 + 400 + 50 + 2 = <span class="mono highlight-green">3452</span>',
+    "dec-add-title":"Decimal Addition (Review)",
+    "dec-add-body":"You know this! But let's review it clearly so the same pattern makes sense in binary and hex.",
+    "dec-add-eg-label":"Example: <strong>478 + 365</strong>",
+    "dec-carry-lbl":"Carry:",
+    "dec-add-s1":"Units: 8 + 5 = 13. Write <strong>3</strong>, carry <strong>1</strong>.",
+    "dec-add-s2":"Tens: 7 + 6 + carry 1 = 14. Write <strong>4</strong>, carry <strong>1</strong>.",
+    "dec-add-s3":'Hundreds: 4 + 3 + carry 1 = 8. Write <strong>8</strong>. Result = <span class="mono highlight-green">843</span> ✅',
+    "dec-sub-title":"Decimal Subtraction (Review)",
+    "dec-sub-eg-label":"Example: <strong>503 − 247</strong>",
+    "dec-borrow-lbl":"Borrow:",
+    "dec-sub-s1":"Units: 3 − 7 not possible. Borrow from tens (0). But tens is 0, borrow from hundreds: 5 becomes 4, tens becomes 10, then borrow from tens: 10 becomes 9, units becomes 13. So 13 − 7 = <strong>6</strong>.",
+    "dec-sub-s2":"Tens (now 9): 9 − 4 = <strong>5</strong>.",
+    "dec-sub-s3":'Hundreds (now 4): 4 − 2 = <strong>2</strong>. Result = <span class="mono highlight-green">256</span> ✅',
+    // Hex
+    "hex-subtitle":"Uses digits 0–9 AND letters A–F. Very common in digital electronics!",
+    "hex-c1-title":"The Basic Idea",
+    "hex-c1-body":"Hexadecimal has 16 digits. Since we run out of normal digits after 9, we use letters: A=10, B=11, C=12, D=13, E=14, F=15. This system is extremely useful in electronics — error codes, memory addresses, and color codes all use hex.",
+    "hex-analogy-label":"Practical Example ⚡",
+    "hex-analogy-body":'When your VFD shows error code "E:0x1A3F" — that\'s hexadecimal! The "0x" prefix means hex. Electricians need to decode these to find out which fault occurred in the drive.',
+    "hex-th-dec":"Decimal","hex-th-hex":"Hexadecimal","hex-th-bin":"Binary",
+    "hex-th-dec2":"Decimal","hex-th-hex2":"Hexadecimal","hex-th-bin2":"Binary",
+    "hex-c2-title":"Place Values in Hexadecimal",
+    "hex-c2-body":"Each position from right to left: 1, 16, 256, 4096... (powers of 16)",
+    "hex-place-rule":"✅ Each position to the LEFT is <strong>16 times</strong> the previous one.",
+    "hex-c3-title":"Hex to Decimal — Step by Step",
+    "hex-conv-example-label":'Example: Convert <span class="mono" style="font-family:monospace;font-weight:bold;color:var(--hexa)">2A3</span> (hex) to Decimal',
+    "hex-cs1":"Replace letters with their decimal values: A = 10",
+    "hex-cs2":"Multiply each digit by 16 to the power of its position:",
+    "hex-cs3":'Add: 512 + 160 + 3 = <span class="mono highlight-green">675</span>. So <strong>2A3₁₆ = 675₁₀</strong> ✅',
+    "hex-add-title":"Hex Addition",
+    "hex-add-rule":"Add the decimal values. If sum ≥ 16, carry 1 and write the remainder as a hex digit (use A–F if ≥ 10).",
+    "hex-add-eg-label":"Example: <strong>3B₁₆ + 2F₁₆</strong>",
+    "hex-carry-lbl":"Carry:",
+    "hex-add-s1":"Units: B(11) + F(15) = 26. 26 ÷ 16 = 1 remainder 10. Write <strong>A</strong> (10), carry <strong>1</strong>.",
+    "hex-add-s2":'Next: 3 + 2 + carry 1 = 6. Write <strong>6</strong>. Result = <span class="mono highlight-green">6A₁₆</span> = 106₁₀ ✅',
+    "hex-sub-title":"Hex Subtraction",
+    "hex-sub-rule":"When you can't subtract (bottom > top), borrow 1 from the next position. That borrow is worth <strong>16</strong> in hex.",
+    "hex-sub-eg-label":"Example: <strong>5C₁₆ − 2E₁₆</strong>",
+    "hex-borrow-lbl":"Borrow:",
+    "hex-sub-s1":"Units: C(12) − E(14) not possible. Borrow 1: C becomes 12+16=28. So 28 − 14 = 14 = <strong>E</strong>.",
+    "hex-sub-s2":'Next: 5 − 1(borrowed) − 2 = 2. Write <strong>2</strong>. Result = <span class="mono highlight-green">2E₁₆</span> = 46₁₀ ✅',
+    // Calculator
+    "calc-subtitle":"Enter any two numbers — see every step of the calculation!",
+    "calc-settings-title":"Choose System & Operation",
+    "calc-sys-label":"Number System:",
+    "calc-op-label":"Operation:",
+    "sys-bin":"Binary (2)","sys-oct":"Octal (8)","sys-dec":"Decimal (10)","sys-hex":"Hexadecimal (16)",
+    "op-add-btn":"➕ Addition","op-sub-btn":"➖ Subtraction",
+    "calc-go-btn":"Calculate →",
+    // Conversion
+    "conv-subtitle":"Convert any number between all four systems — step by step!",
+    "conv-settings-title":"Convert a Number",
+    "conv-from-label":"From:","conv-to-label":"To:","conv-num-label":"Number:",
+    "conv-go-btn":"Convert →",
+    "conv-table-title":"Quick Conversion Table (0–20)",
+  },
+  ml: {
+    "hdr-title": "⚡ നമ്പർ സിസ്റ്റം — ഇലക്ട്രീഷ്യൻ ട്രെയിനി",
+    "hdr-sub": "ബൈനറി · ഒക്ടൽ · ഡെസിമൽ · ഹെക്സാഡെസിമൽ",
+    "intro-h1": "നമ്പർ സിസ്റ്റം എന്നാൽ എന്ത്? 🤔",
+    "intro-h2": "കമ്പ്യൂട്ടറിന് കണക്കു മനസ്സിലാക്കാൻ അതിന്റേതായ ഭാഷ വേണം!",
+    "intro-c1-title": "പ്രധാന ആശയം",
+    "intro-c1-body": "നമ്മൾ 0 മുതൽ 9 വരെ 10 അക്കങ്ങൾ ഉപയോഗിക്കുന്നു. പക്ഷേ കമ്പ്യൂട്ടർ ഇലക്ട്രിക്കൽ ഓൺ/ഓഫ് സിഗ്നൽ ഉപയോഗിക്കുന്നു. ഒരു ഇലക്ട്രീഷ്യൻ എന്ന നിലയിൽ, PLC പാനൽ, മൈക്രോകൺട്രോളർ, ഡിജിറ്റൽ മീറ്റർ — ഇവയിൽ ഇത്തരം സിസ്റ്റങ്ങൾ കാണാം.",
+    "intro-analogy-label": "ക്രിക്കറ്റ് ഉദാഹരണം 🏏",
+    "intro-analogy-body": "ക്രിക്കറ്റ് സ്കോർബോർഡ് ഓർക്കൂ. ഓരോ റണ്ണും സ്കോറിൽ ചേർക്കുന്നു. ബൈനറിയിൽ ഓരോ ബിറ്റും ഡിജിറ്റൽ വേല്യൂ കൂട്ടുന്നു. 'fifteen' ഇംഗ്ലീഷിലും 'പതിനഞ്ച്' മലയാളത്തിലും ഒരേ മൂല്യം!",
+    "intro-c2-title": "നാല് സിസ്റ്റങ്ങൾ — ഒറ്റനോട്ടം",
+    "th1":"സിസ്റ്റം","th2":"ബേസ്","th3":"ഉപയോഗിക്കുന്ന അക്കങ്ങൾ","th4":"എവിടെ ഉപയോഗിക്കും?",
+    "dec-name":"ഡെസിമൽ","bin-name":"ബൈനറി","oct-name":"ഒക്ടൽ","hex-name":"ഹെക്സ",
+    "dec-use":"ദൈനംദിന ജീവിതം, പണം, അളവ്",
+    "bin-use":"കമ്പ്യൂട്ടർ, PLC, ഡിജിറ്റൽ സർക്യൂട്ട്",
+    "oct-use":"പഴയ കമ്പ്യൂട്ടർ, ഫയൽ പെർമിഷൻ",
+    "hex-use":"മെമ്മറി അഡ്രസ്, കളർ കോഡ്, എറർ കോഡ്",
+    "intro-c3-title": "ഒരേ മൂല്യം, വ്യത്യസ്ത രൂപം!",
+    "intro-c3-body": "പതിനഞ്ച് (15) നാല് സിസ്റ്റങ്ങളിൽ ഇങ്ങനെ കാണപ്പെടും — പക്ഷേ മൂല്യം ഒന്നേ ഉള്ളൂ:",
+    "intro-c4-title": "ഇലക്ട്രീഷ്യൻ ഇത് പഠിക്കേണ്ടത് എന്തുകൊണ്ട്?",
+    "why1-label":"കാരണം 1","why2-label":"കാരണം 2","why3-label":"കാരണം 3",
+    "why1":"PLC പാനലിൽ ഓരോ വയറും ON (1) അല്ലെങ്കിൽ OFF (0) ആണ് — ഇതാണ് ബൈനറി.",
+    "why2":"VFD-യിൽ (Variable Frequency Drive) എറർ കോഡ് ഹെക്സാഡെസിമൽ ആകും.",
+    "why3":"മൈക്രോകൺട്രോളറിൽ മെമ്മറി അഡ്രസ് ഹെക്സ് അല്ലെങ്കിൽ ബൈനറിയിൽ ആണ്.",
+    "bin-subtitle":"രണ്ടേ അക്കം: 0 ഉം 1 ഉം — ഓഫ്, ഓൺ പോലെ!",
+    "bin-c1-title":"പ്രധാന ആശയം",
+    "bin-c1-body":"ബൈനറിയിൽ 0, 1 മാത്രമേ ഉള്ളൂ. ഇത് ഇലക്ട്രിക്കൽ സിഗ്നൽ പോലെ — current ഉണ്ടോ (1) ഇല്ലേ (0). ഓരോ കമ്പ്യൂട്ടറും PLC-ഉം ഡിജിറ്റൽ ഉപകരണവും ഈ ബൈനറി ഭാഷ ഉപയോഗിക്കുന്നു.",
+    "bin-analogy-label":"സ്വിച്ച് ഉദാഹരണം 🔌",
+    "bin-analogy-body":"ഒരു പാനലിലെ ലൈറ്റ് സ്വിച്ചുകൾ ഓർക്കൂ. ഓരോ സ്വിച്ചും ON (1) അല്ലെങ്കിൽ OFF (0). 4 സ്വിച്ചുകൾ 16 വ്യത്യസ്ത കോമ്പിനേഷൻ ഉണ്ടാക്കും — അതാണ് 4-ബിറ്റ് ബൈനറി!",
+    "bin-c2-title":"ബൈനറിയിലെ സ്ഥാനമൂല്യം",
+    "bin-c2-body":"ഡെസിമൽ ×10 ആണെങ്കിൽ, ബൈനറി ×2 ആണ്. വലതുനിന്ന് ഇടത്തേക്ക്: 1, 2, 4, 8, 16, 32...",
+    "bin-place-rule":"✅ ഇടത്തേ ഓരോ സ്ഥാനവും മുൻ സ്ഥാനത്തിന്റെ <strong>ഇരട്ടി</strong> ആണ്.",
+    "bin-c3-title":"ബൈനറി → ഡെസിമൽ — ഘട്ടം ഘട്ടമായി",
+    "bin-c3-body":"ഓരോ അക്കത്തെ അതിന്റെ സ്ഥാനമൂല്യം കൊണ്ട് ഗുണിക്കുക, ശേഷം കൂട്ടുക.",
+    "bin-conv-example-label":'ഉദാഹരണം: <span class="mono" style="font-family:monospace;font-weight:bold;color:var(--binary)">1011</span> (ബൈനറി) → ഡെസിമൽ',
+    "bin-cs1":"അക്കങ്ങൾ വലതുനിന്ന് ഇടത്തോട്ട് 0, 1, 2, 3 സ്ഥാനങ്ങളിൽ എഴുതുക",
+    "bin-cs2":"ഓരോ അക്കത്തെ 2-ന്റെ ആ പൊടൻ ഉപയോഗിച്ച് ഗുണിക്കുക:",
+    "bin-cs3":'കൂട്ടുക: <span class="mono">8 + 0 + 2 + 1 = <span class="highlight-green">11</span></span><br>അതായത് <strong>1011₂ = 11₁₀</strong>',
+    "bin-add-title":"ബൈനറി കൂട്ടൽ — നിയമങ്ങൾ",
+    "bin-add-rules-label":"ബൈനറി കൂട്ടലിന്റെ 4 നിയമങ്ങൾ:",
+    "bin-carry-note":"(0 എഴുതുക, 1 കൊണ്ടുപോക — ഡെസിമലിൽ 9+1=10 പോലെ!)",
+    "bin-add-eg-label":"ഉദാഹരണം: <strong>1011 + 0110</strong>",
+    "bin-add-carry-label":"കൊണ്ടുപോകൽ:",
+    "bin-add-s1":"ഏറ്റവും വലത്: 1 + 0 = <strong>1</strong>. 1 എഴുതുക, 0 കൊണ്ടുപോക.",
+    "bin-add-s2":"അടുത്ത കോളം: 1 + 1 = <strong>10</strong>. 0 എഴുതുക, 1 കൊണ്ടുപോക.",
+    "bin-add-s3":"അടുത്ത കോളം: 0 + 1 + കൊ. 1 = <strong>10</strong>. 0 എഴുതുക, 1 കൊണ്ടുപോക.",
+    "bin-add-s4":"അടുത്ത കോളം: 1 + 0 + കൊ. 1 = <strong>10</strong>. 0 എഴുതുക, 1 കൊണ്ടുപോക.",
+    "bin-add-s5":'അവസാന കൊ: <strong>1</strong> എഴുതുക. ഉത്തരം = <span class="mono highlight-green">10001</span> = ഡെസിമൽ 17 ✅',
+    "bin-sub-title":"ബൈനറി കുറക്കൽ — നിയമങ്ങൾ",
+    "bin-sub-rules-label":"ബൈനറി കുറക്കലിന്റെ 4 നിയമങ്ങൾ:",
+    "bin-borrow-note":"→ ഇടതുനിന്ന് കടം വാങ്ങുക! 10 − 1 = 1 ആകും",
+    "bin-sub-eg-label":"ഉദാഹരണം: <strong>1101 − 0101</strong>",
+    "bin-sub-borrow-label":"കടം:",
+    "bin-sub-s1":"ഏറ്റവും വലത്: 1 − 1 = 0. 0 എഴുതുക.",
+    "bin-sub-s2":"അടുത്ത: 0 − 0 = 0. 0 എഴുതുക.",
+    "bin-sub-s3":"അടുത്ത: 1 − 1 = 0. 0 എഴുതുക.",
+    "bin-sub-s4":'ഏറ്റവും ഇടത്ത്: 1 − 0 = 1. 1 എഴുതുക. ഉത്തരം = <span class="mono highlight-green">1000</span> = ഡെസിമൽ 8 ✅',
+    "oct-subtitle":"8 അക്കങ്ങൾ: 0 മുതൽ 7 വരെ. 3 ബൈനറി ബിറ്റ് = 1 ഒക്ടൽ അക്കം!",
+    "oct-c1-title":"പ്രധാന ആശയം",
+    "oct-c1-body":"ഒക്ടൽ 0 മുതൽ 7 വരെ അക്കങ്ങൾ ഉപയോഗിക്കുന്നു. 3 ബൈനറി ബിറ്റ് ഒരു ഒക്ടൽ അക്കമാകും. പഴയ ഇലക്ട്രിക്കൽ ഡോക്യുമെന്റേഷനിൽ ഇത് കാണും.",
+    "oct-analogy-label":"ചന്ത ഉദാഹരണം 🛒",
+    "oct-analogy-body":"8 ഇൻ ഒരു ബണ്ടിൽ വിൽക്കുന്ന പച്ചക്കറി ചന്ത ഓർക്കൂ. 8 ആകുമ്പോൾ അടുത്ത ബണ്ടിലിലേക്ക് കൊണ്ടുപോകുന്നു — ഒക്ടൽ ഇങ്ങനെ തന്നെ പ്രവർത്തിക്കുന്നു!",
+    "oct-c2-title":"ഒക്ടൽ സ്ഥാനമൂല്യം",
+    "oct-c2-body":"വലതുനിന്ന് ഇടത്തോട്ട്: 1, 8, 64, 512... (8-ന്റെ powers)",
+    "oct-place-rule":"✅ ഇടത്തേ ഓരോ സ്ഥാനവും <strong>8 മടങ്ങ്</strong> ആണ്.",
+    "oct-c3-title":"ഒക്ടൽ → ഡെസിമൽ — ഘട്ടം ഘട്ടമായി",
+    "oct-conv-example-label":'ഉദാഹരണം: <span class="mono" style="font-family:monospace;font-weight:bold;color:var(--octal)">157</span> (ഒക്ടൽ) → ഡെസിമൽ',
+    "oct-cs1":"അക്കങ്ങൾ 0, 1, 2 സ്ഥാനത്ത് എഴുതുക (വലത്തുനിന്ന്)",
+    "oct-cs2":"ഓരോ അക്കത്തെ 8-ന്റെ ആ power ഉപയോഗിച്ച് ഗുണിക്കുക:",
+    "oct-cs3":'കൂട്ടുക: <span class="mono">64 + 40 + 7 = <span class="highlight-green">111</span></span><br>അതായത് <strong>157₈ = 111₁₀</strong>',
+    "oct-add-title":"ഒക്ടൽ കൂട്ടൽ",
+    "oct-add-rule":'രണ്ട് അക്കങ്ങളുടെ തുക <strong>8 അല്ലെങ്കിൽ അതിൽ കൂടുതൽ</strong> ആയാൽ, 1 കൊണ്ടുപോക, ബാക്കി എഴുതുക.',
+    "oct-add-eg-label":"ഉദാഹരണം: <strong>37₈ + 45₈</strong>",
+    "oct-carry-lbl":"കൊണ്ടുപോകൽ:",
+    "oct-add-s1":"ഒറ്റ കോളം: 7 + 5 = 12. 12 ≥ 8, (12−8)=<strong>4</strong> എഴുതുക, 1 കൊണ്ടുപോക.",
+    "oct-add-s2":"അടുത്ത: 3 + 4 + 1 = 8. 8 ≥ 8, (8−8)=<strong>0</strong> എഴുതുക, 1 കൊണ്ടുപോക.",
+    "oct-add-s3":'കൊ: <strong>1</strong> എഴുതുക. ഉത്തരം = <span class="mono highlight-green">104₈</span> ✅',
+    "oct-sub-title":"ഒക്ടൽ കുറക്കൽ",
+    "oct-sub-rule":'കുറക്കാൻ കഴിയില്ലെങ്കിൽ, ഇടതുനിന്ന് 1 കടം വാങ്ങുക. ആ കടം ഒക്ടലിൽ <strong>8</strong> ആണ്.',
+    "oct-sub-eg-label":"ഉദാഹരണം: <strong>52₈ − 17₈</strong>",
+    "oct-borrow-lbl":"കടം:",
+    "oct-sub-s1":"ഒറ്റ കോളം: 2 − 7 ആകില്ല. 5-ൽ നിന്ന് 1 കടം. 2 = 2+8=10. 10−7=<strong>3</strong>.",
+    "oct-sub-s2":'അടുത്ത: 5−1(കടം)−1=3. <strong>3</strong> എഴുതുക. ഉത്തരം = <span class="mono highlight-green">33₈</span> = 27₁₀ ✅',
+    "dec-subtitle":"നമുക്ക് അറിയാവുന്ന സിസ്റ്റം! 0 മുതൽ 9 വരെ.",
+    "dec-c1-title":"പ്രധാന ആശയം",
+    "dec-c1-body":"ഡെസിമൽ ദൈനംദിന ജീവിതത്തിൽ ഉപയോഗിക്കുന്നത്. 0 മുതൽ 9 വരെ 10 അക്കങ്ങൾ. ഇലക്ട്രിക്കൽ അളവ് — വോൾട്ട്, ആംപിയർ, ഓം, വാട്ട് — എല്ലാം ഡെസിമൽ.",
+    "dec-c2-title":"ഡെസിമൽ സ്ഥാനമൂല്യം",
+    "dec-c2-body":"വലതുനിന്ന് ഇടത്തോട്ട്: 1, 10, 100, 1000... (10-ന്റെ powers)",
+    "dec-place-rule":"✅ ഇടത്തേ ഓരോ സ്ഥാനവും <strong>10 മടങ്ങ്</strong> ആണ്.",
+    "dec-expand-label":"ഉദാഹരണം: <strong>3452</strong> എന്നത് എന്ത്?",
+    "dec-expand-s1":'<span class="mono">3 × 1000 = <span class="highlight-orange">3000</span></span><br><span class="mono">4 × 100 = <span class="highlight-orange">400</span></span><br><span class="mono">5 × 10 = <span class="highlight-orange">50</span></span><br><span class="mono">2 × 1 = <span class="highlight-orange">2</span></span>',
+    "dec-expand-s2":'ആകെ: 3000+400+50+2 = <span class="mono highlight-green">3452</span>',
+    "dec-add-title":"ഡെസിമൽ കൂട്ടൽ (ഒരു ഓർമ്മ)",
+    "dec-add-body":"ഇത് നിങ്ങൾക്ക് അറിയാം! ബൈനറി, ഹെക്സ് ഇതേ pattern-ൽ ആണ് — ഒന്ന് ഓർക്കാം.",
+    "dec-add-eg-label":"ഉദാഹരണം: <strong>478 + 365</strong>",
+    "dec-carry-lbl":"കൊണ്ടുപോകൽ:",
+    "dec-add-s1":"ഒറ്റ: 8+5=13. <strong>3</strong> എഴുതുക, 1 കൊ.",
+    "dec-add-s2":"പത്ത്: 7+6+1=14. <strong>4</strong> എഴുതുക, 1 കൊ.",
+    "dec-add-s3":'നൂറ്: 4+3+1=8. <strong>8</strong> എഴുതുക. ഉത്തരം = <span class="mono highlight-green">843</span> ✅',
+    "dec-sub-title":"ഡെസിമൽ കുറക്കൽ (ഒരു ഓർമ്മ)",
+    "dec-sub-eg-label":"ഉദാഹരണം: <strong>503 − 247</strong>",
+    "dec-borrow-lbl":"കടം:",
+    "dec-sub-s1":"ഒറ്റ: 3−7 ആകില്ല. കടം: നൂറ് 5→4, പത്ത് 0→10→9, ഒറ്റ 3→13. 13−7=<strong>6</strong>.",
+    "dec-sub-s2":"പത്ത് (9 ആയി): 9−4=<strong>5</strong>.",
+    "dec-sub-s3":'നൂറ് (4 ആയി): 4−2=<strong>2</strong>. ഉത്തരം = <span class="mono highlight-green">256</span> ✅',
+    "hex-subtitle":"0–9 ഉം A–F ഉം — ഡിജിറ്റൽ ഇലക്ട്രോണിക്സിൽ ഏറ്റവും കൂടുതൽ ഉപയോഗിക്കുന്നത്!",
+    "hex-c1-title":"പ്രധാന ആശയം",
+    "hex-c1-body":"ഹെക്സ്: 0 മുതൽ F വരെ 16 'അക്കങ്ങൾ'. 9-ന് ശേഷം A(10), B(11), C(12), D(13), E(14), F(15) ഉപയോഗിക്കും. VFD എറർ കോഡ്, മെമ്മറി അഡ്രസ്, കളർ കോഡ് — ഇവ ഹെക്സ്.",
+    "hex-analogy-label":"പ്രായോഗിക ഉദാഹരണം ⚡",
+    "hex-analogy-body":'VFD-ൽ "E:0x1A3F" കണ്ടിട്ടുണ്ടോ? "0x" means hex! ഈ എറർ കോഡ് decode ചെയ്യാൻ ഇലക്ട്രീഷ്യൻ ഹെക്സ് അറിഞ്ഞിരിക്കണം.',
+    "hex-th-dec":"ഡെസിമൽ","hex-th-hex":"ഹെക്സ്","hex-th-bin":"ബൈനറി",
+    "hex-th-dec2":"ഡെസിമൽ","hex-th-hex2":"ഹെക്സ്","hex-th-bin2":"ബൈനറി",
+    "hex-c2-title":"ഹെക്സ് സ്ഥാനമൂല്യം",
+    "hex-c2-body":"വലതുനിന്ന് ഇടത്തോട്ട്: 1, 16, 256, 4096... (16-ന്റെ powers)",
+    "hex-place-rule":"✅ ഇടത്തേ ഓരോ സ്ഥാനവും <strong>16 മടങ്ങ്</strong> ആണ്.",
+    "hex-c3-title":"ഹെക്സ് → ഡെസിമൽ — ഘട്ടം ഘട്ടമായി",
+    "hex-conv-example-label":'ഉദാഹരണം: <span class="mono" style="font-family:monospace;font-weight:bold;color:var(--hexa)">2A3</span> (ഹെക്സ്) → ഡെസിമൽ',
+    "hex-cs1":"അക്ഷരങ്ങളെ ഡെസിമൽ ആക്കുക: A = 10",
+    "hex-cs2":"ഓരോ അക്കത്തെ 16-ന്റെ power ഉപയോഗിച്ച് ഗുണിക്കുക:",
+    "hex-cs3":'കൂട്ടുക: 512+160+3 = <span class="mono highlight-green">675</span>. <strong>2A3₁₆ = 675₁₀</strong> ✅',
+    "hex-add-title":"ഹെക്സ് കൂട്ടൽ",
+    "hex-add-rule":"തുക 16 അല്ലെങ്കിൽ കൂടുതൽ ആയാൽ, 1 കൊ, ബാക്കി ഹെക്സ് അക്കമായി (A–F) എഴുതുക.",
+    "hex-add-eg-label":"ഉദാഹരണം: <strong>3B₁₆ + 2F₁₆</strong>",
+    "hex-carry-lbl":"കൊണ്ടുപോകൽ:",
+    "hex-add-s1":"ഒറ്റ: B(11)+F(15)=26. 26÷16=1 ബാക്കി 10. <strong>A</strong> (10) എഴുതുക, 1 കൊ.",
+    "hex-add-s2":'അടുത്ത: 3+2+1=6. <strong>6</strong> എഴുതുക. ഉത്തരം = <span class="mono highlight-green">6A₁₆</span> = 106₁₀ ✅',
+    "hex-sub-title":"ഹെക്സ് കുറക്കൽ",
+    "hex-sub-rule":"കുറക്കാൻ കഴിയില്ലെങ്കിൽ ഇടതുനിന്ന് 1 കടം. ഹെക്സിൽ ഈ കടം <strong>16</strong> ആണ്.",
+    "hex-sub-eg-label":"ഉദാഹരണം: <strong>5C₁₆ − 2E₁₆</strong>",
+    "hex-borrow-lbl":"കടം:",
+    "hex-sub-s1":"ഒറ്റ: C(12)−E(14) ആകില്ല. കടം: C=12+16=28. 28−14=14=<strong>E</strong>.",
+    "hex-sub-s2":'അടുത്ത: 5−1(കടം)−2=2. <strong>2</strong> എഴുതുക. ഉത്തരം = <span class="mono highlight-green">2E₁₆</span> = 46₁₀ ✅',
+    "calc-subtitle":"ഏത് രണ്ട് നമ്പർ ടൈപ്പ് ചെയ്‌താലും — ഓരോ ഘട്ടവും കാണും!",
+    "calc-settings-title":"സിസ്റ്റവും ഓപ്പറേഷനും തിരഞ്ഞെടുക്കൂ",
+    "calc-sys-label":"നമ്പർ സിസ്റ്റം:",
+    "calc-op-label":"ഓപ്പറേഷൻ:",
+    "sys-bin":"ബൈനറി (2)","sys-oct":"ഒക്ടൽ (8)","sys-dec":"ഡെസിമൽ (10)","sys-hex":"ഹെക്സ് (16)",
+    "op-add-btn":"➕ കൂട്ടൽ","op-sub-btn":"➖ കുറക്കൽ",
+    "calc-go-btn":"കണക്ക് കൂട്ടൂ →",
+    "conv-subtitle":"ഏത് നമ്പറും ഏത് സിസ്റ്റത്തിലേക്കും — ഓരോ ഘട്ടവും കാണൂ!",
+    "conv-settings-title":"നമ്പർ മാറ്റൂ",
+    "conv-from-label":"ഇതിൽ നിന്ന്:","conv-to-label":"ഇതിലേക്ക്:","conv-num-label":"നമ്പർ:",
+    "conv-go-btn":"മാറ്റൂ →",
+    "conv-table-title":"ദ്രുത ടേബിൾ (0–20)",
+  },
+  hi: {
+    "hdr-title": "⚡ नंबर सिस्टम — इलेक्ट्रीशियन ट्रेनी",
+    "hdr-sub": "बाइनरी · ऑक्टल · डेसिमल · हेक्साडेसिमल",
+    "intro-h1": "नंबर सिस्टम क्या होता है? 🤔",
+    "intro-h2": "कंप्यूटर को समझने के लिए नंबर को उसकी भाषा में बोलना होगा!",
+    "intro-c1-title": "मुख्य बात",
+    "intro-c1-body": "हम लोग 0 से 9 तक 10 अंक इस्तेमाल करते हैं। लेकिन कंप्यूटर बिजली से चलता है — ON या OFF। इसलिए कंप्यूटर का अपना नंबर सिस्टम है। इलेक्ट्रीशियन के तौर पर, PLC पैनल, माइक्रोकंट्रोलर, डिजिटल मीटर में ये सिस्टम मिलेंगे।",
+    "intro-analogy-label": "क्रिकेट का उदाहरण 🏏",
+    "intro-analogy-body": "स्कोरबोर्ड सोचो। हर रन स्कोर में जुड़ता है। बाइनरी में हर बिट value बढ़ाती है। 'fifteen' अंग्रेजी में और 'पंद्रह' हिंदी में — value एक ही है!",
+    "intro-c2-title": "चार सिस्टम — एक नजर",
+    "th1":"सिस्टम","th2":"बेस","th3":"अंक","th4":"कहाँ इस्तेमाल?",
+    "dec-name":"डेसिमल","bin-name":"बाइनरी","oct-name":"ऑक्टल","hex-name":"हेक्साडेसिमल",
+    "dec-use":"रोजमर्रा, पैसा, माप",
+    "bin-use":"कंप्यूटर, PLC, डिजिटल सर्किट",
+    "oct-use":"पुराने कंप्यूटर, फाइल परमिशन",
+    "hex-use":"मेमोरी एड्रेस, कलर कोड, एरर कोड",
+    "intro-c3-title": "एक ही value, अलग-अलग रूप!",
+    "intro-c3-body": "पंद्रह (15) चारों सिस्टम में ऐसा दिखता है — लेकिन value एक ही है:",
+    "intro-c4-title": "इलेक्ट्रीशियन को यह क्यों चाहिए?",
+    "why1-label":"वजह 1","why2-label":"वजह 2","why3-label":"वजह 3",
+    "why1":"PLC पैनल में हर वायर ON (1) या OFF (0) है — यही बाइनरी है।",
+    "why2":"VFD में एरर कोड हेक्साडेसिमल में होता है।",
+    "why3":"माइक्रोकंट्रोलर में मेमोरी एड्रेस हेक्स या बाइनरी में लिखे होते हैं।",
+    "bin-subtitle":"सिर्फ दो अंक: 0 और 1 — बिल्कुल स्विच की तरह: OFF और ON!",
+    "bin-c1-title":"मुख्य बात",
+    "bin-c1-body":"बाइनरी में सिर्फ 0 और 1 होते हैं। यह बिजली जैसे ही काम करता है — करंट है (1) या नहीं (0)। हर कंप्यूटर, PLC, डिजिटल डिवाइस बाइनरी इस्तेमाल करता है।",
+    "bin-analogy-label":"स्विच का उदाहरण 🔌",
+    "bin-analogy-body":"पैनल पर लाइट स्विच की कतार सोचो। हर स्विच ON (1) या OFF (0)। 4 स्विच से 16 कॉम्बिनेशन — यही 4-बिट बाइनरी है!",
+    "bin-c2-title":"बाइनरी में स्थान मूल्य",
+    "bin-c2-body":"डेसिमल में हर पोजीशन ×10 है, बाइनरी में ×2 है। दाएं से बाएं: 1, 2, 4, 8, 16, 32...",
+    "bin-place-rule":"✅ बाईं तरफ हर जगह पिछली जगह से <strong>दोगुनी</strong> होती है।",
+    "bin-c3-title":"बाइनरी → डेसिमल — step by step",
+    "bin-c3-body":"हर अंक को उसके स्थान मूल्य से गुणा करो, फिर सब जोड़ो।",
+    "bin-conv-example-label":'उदाहरण: <span class="mono" style="font-family:monospace;font-weight:bold;color:var(--binary)">1011</span> (बाइनरी) → डेसिमल',
+    "bin-cs1":"दाएं से बाएं अंकों को 0, 1, 2, 3 पोजीशन पर लिखो",
+    "bin-cs2":"हर अंक को 2 की उस power से गुणा करो:",
+    "bin-cs3":'जोड़ो: <span class="mono">8+0+2+1=<span class="highlight-green">11</span></span><br>यानी <strong>1011₂ = 11₁₀</strong>',
+    "bin-add-title":"बाइनरी जोड़ — नियम",
+    "bin-add-rules-label":"बाइनरी जोड़ के 4 नियम:",
+    "bin-carry-note":"(0 लिखो, 1 carry करो — जैसे डेसिमल में 9+1=10!)",
+    "bin-add-eg-label":"उदाहरण: <strong>1011 + 0110</strong>",
+    "bin-add-carry-label":"Carry:",
+    "bin-add-s1":"सबसे दाएं: 1+0=<strong>1</strong>. 1 लिखो, carry 0.",
+    "bin-add-s2":"अगला: 1+1=<strong>10</strong>. 0 लिखो, carry 1.",
+    "bin-add-s3":"अगला: 0+1+carry 1=<strong>10</strong>. 0 लिखो, carry 1.",
+    "bin-add-s4":"अगला: 1+0+carry 1=<strong>10</strong>. 0 लिखो, carry 1.",
+    "bin-add-s5":'आखिरी carry: <strong>1</strong> लिखो। जवाब = <span class="mono highlight-green">10001</span> = 17 डेसिमल ✅',
+    "bin-sub-title":"बाइनरी घटाव — नियम",
+    "bin-sub-rules-label":"बाइनरी घटाव के 4 नियम:",
+    "bin-borrow-note":"→ बाईं से उधार लो! 10−1=1 होता है",
+    "bin-sub-eg-label":"उदाहरण: <strong>1101 − 0101</strong>",
+    "bin-sub-borrow-label":"उधार:",
+    "bin-sub-s1":"सबसे दाएं: 1−1=0. 0 लिखो।",
+    "bin-sub-s2":"अगला: 0−0=0. 0 लिखो।",
+    "bin-sub-s3":"अगला: 1−1=0. 0 लिखो।",
+    "bin-sub-s4":'सबसे बाएं: 1−0=1. 1 लिखो। जवाब = <span class="mono highlight-green">1000</span> = 8 डेसिमल ✅',
+    "oct-subtitle":"8 अंक: 0 से 7 तक। 3 बाइनरी बिट = 1 ऑक्टल अंक!",
+    "oct-c1-title":"मुख्य बात",
+    "oct-c1-body":"ऑक्टल में 0 से 7 तक अंक होते हैं। 3 बाइनरी बिट = 1 ऑक्टल अंक। पुराने इलेक्ट्रिकल डॉक्यूमेंट में दिखता है।",
+    "oct-analogy-label":"सब्जी मंडी का उदाहरण 🛒",
+    "oct-analogy-body":"8 के बंडल में सब्जी बेचने वाली मंडी सोचो। 8 पूरे हों तो अगले बंडल में जाते हैं — ऑक्टल ऐसे ही काम करता है!",
+    "oct-c2-title":"ऑक्टल में स्थान मूल्य",
+    "oct-c2-body":"दाएं से बाएं: 1, 8, 64, 512... (8 की powers)",
+    "oct-place-rule":"✅ बाईं तरफ हर जगह <strong>8 गुना</strong> होती है।",
+    "oct-c3-title":"ऑक्टल → डेसिमल — step by step",
+    "oct-conv-example-label":'उदाहरण: <span class="mono" style="font-family:monospace;font-weight:bold;color:var(--octal)">157</span> (ऑक्टल) → डेसिमल',
+    "oct-cs1":"अंकों को 0, 1, 2 पोजीशन पर लिखो (दाएं से)",
+    "oct-cs2":"हर अंक को 8 की उस power से गुणा करो:",
+    "oct-cs3":'जोड़ो: <span class="mono">64+40+7=<span class="highlight-green">111</span></span><br>यानी <strong>157₈=111₁₀</strong>',
+    "oct-add-title":"ऑक्टल जोड़",
+    "oct-add-rule":'जब दो अंकों का जोड़ <strong>8 या उससे ज्यादा</strong> हो, 1 carry करो, बाकी लिखो।',
+    "oct-add-eg-label":"उदाहरण: <strong>37₈ + 45₈</strong>",
+    "oct-carry-lbl":"Carry:",
+    "oct-add-s1":"इकाई: 7+5=12. 12≥8, (12−8)=<strong>4</strong> लिखो, 1 carry.",
+    "oct-add-s2":"अगला: 3+4+1=8. 8≥8, (8−8)=<strong>0</strong> लिखो, 1 carry.",
+    "oct-add-s3":'carry: <strong>1</strong> लिखो। जवाब = <span class="mono highlight-green">104₈</span> ✅',
+    "oct-sub-title":"ऑक्टल घटाव",
+    "oct-sub-rule":'घटा न सको तो बाईं से 1 उधार लो। ऑक्टल में वो उधार <strong>8</strong> है।',
+    "oct-sub-eg-label":"उदाहरण: <strong>52₈ − 17₈</strong>",
+    "oct-borrow-lbl":"उधार:",
+    "oct-sub-s1":"इकाई: 2−7 नहीं होगा। 5 से उधार: 2=2+8=10. 10−7=<strong>3</strong>.",
+    "oct-sub-s2":'अगला: 5−1(उधार)−1=3. <strong>3</strong> लिखो। जवाब = <span class="mono highlight-green">33₈</span>=27₁₀ ✅',
+    "dec-subtitle":"वो सिस्टम जो हम जानते हैं! 0 से 9 तक।",
+    "dec-c1-title":"मुख्य बात",
+    "dec-c1-body":"डेसिमल रोज़ाना की ज़िंदगी में काम आता है। 0 से 9 तक 10 अंक। इलेक्ट्रिकल माप — वोल्ट, एम्पीयर, ओम, वाट — सब डेसिमल में।",
+    "dec-c2-title":"डेसिमल में स्थान मूल्य",
+    "dec-c2-body":"दाएं से बाएं: 1, 10, 100, 1000... (10 की powers)",
+    "dec-place-rule":"✅ बाईं तरफ हर जगह <strong>10 गुना</strong> होती है।",
+    "dec-expand-label":"उदाहरण: <strong>3452</strong> क्या है?",
+    "dec-expand-s1":'<span class="mono">3×1000=<span class="highlight-orange">3000</span></span><br><span class="mono">4×100=<span class="highlight-orange">400</span></span><br><span class="mono">5×10=<span class="highlight-orange">50</span></span><br><span class="mono">2×1=<span class="highlight-orange">2</span></span>',
+    "dec-expand-s2":'जोड़: 3000+400+50+2=<span class="mono highlight-green">3452</span>',
+    "dec-add-title":"डेसिमल जोड़ (दोहराई)",
+    "dec-add-body":"यह आप जानते हो! लेकिन यही pattern बाइनरी और हेक्स में भी है।",
+    "dec-add-eg-label":"उदाहरण: <strong>478 + 365</strong>",
+    "dec-carry-lbl":"Carry:",
+    "dec-add-s1":"इकाई: 8+5=13. <strong>3</strong> लिखो, 1 carry.",
+    "dec-add-s2":"दहाई: 7+6+1=14. <strong>4</strong> लिखो, 1 carry.",
+    "dec-add-s3":'सैकड़ा: 4+3+1=8. <strong>8</strong> लिखो। जवाब=<span class="mono highlight-green">843</span> ✅',
+    "dec-sub-title":"डेसिमल घटाव (दोहराई)",
+    "dec-sub-eg-label":"उदाहरण: <strong>503 − 247</strong>",
+    "dec-borrow-lbl":"उधार:",
+    "dec-sub-s1":"इकाई: 3−7 नहीं होगा। सैकड़े से उधार: 5→4, दहाई 0→10→9, इकाई 3→13. 13−7=<strong>6</strong>.",
+    "dec-sub-s2":"दहाई (9): 9−4=<strong>5</strong>.",
+    "dec-sub-s3":'सैकड़ा (4): 4−2=<strong>2</strong>। जवाब=<span class="mono highlight-green">256</span> ✅',
+    "hex-subtitle":"0–9 और A–F — डिजिटल इलेक्ट्रॉनिक्स में सबसे ज्यादा!",
+    "hex-c1-title":"मुख्य बात",
+    "hex-c1-body":"हेक्स में 16 'अंक' हैं। 9 के बाद: A=10, B=11, C=12, D=13, E=14, F=15। VFD एरर कोड, मेमोरी एड्रेस, कलर कोड — सब हेक्स में।",
+    "hex-analogy-label":"व्यावहारिक उदाहरण ⚡",
+    "hex-analogy-body":'VFD में "E:0x1A3F" देखा है? "0x" यानी hex! यह एरर कोड decode करने के लिए हेक्स समझना जरूरी है।',
+    "hex-th-dec":"डेसिमल","hex-th-hex":"हेक्स","hex-th-bin":"बाइनरी",
+    "hex-th-dec2":"डेसिमल","hex-th-hex2":"हेक्स","hex-th-bin2":"बाइनरी",
+    "hex-c2-title":"हेक्स में स्थान मूल्य",
+    "hex-c2-body":"दाएं से बाएं: 1, 16, 256, 4096... (16 की powers)",
+    "hex-place-rule":"✅ बाईं तरफ हर जगह <strong>16 गुना</strong> होती है।",
+    "hex-c3-title":"हेक्स → डेसिमल — step by step",
+    "hex-conv-example-label":'उदाहरण: <span class="mono" style="font-family:monospace;font-weight:bold;color:var(--hexa)">2A3</span> (हेक्स) → डेसिमल',
+    "hex-cs1":"अक्षरों को डेसिमल में बदलो: A=10",
+    "hex-cs2":"हर अंक को 16 की उस power से गुणा करो:",
+    "hex-cs3":'जोड़: 512+160+3=<span class="mono highlight-green">675</span>। <strong>2A3₁₆=675₁₀</strong> ✅',
+    "hex-add-title":"हेक्स जोड़",
+    "hex-add-rule":"जोड़ 16 या ज्यादा हो तो 1 carry, बाकी हेक्स अंक (A–F) में लिखो।",
+    "hex-add-eg-label":"उदाहरण: <strong>3B₁₆ + 2F₁₆</strong>",
+    "hex-carry-lbl":"Carry:",
+    "hex-add-s1":"इकाई: B(11)+F(15)=26. 26÷16=1 बाकी 10. <strong>A</strong> लिखो, 1 carry.",
+    "hex-add-s2":'अगला: 3+2+1=6. <strong>6</strong> लिखो। जवाब=<span class="mono highlight-green">6A₁₆</span>=106₁₀ ✅',
+    "hex-sub-title":"हेक्स घटाव",
+    "hex-sub-rule":"घटा न सको तो बाईं से 1 उधार। हेक्स में वो उधार <strong>16</strong> है।",
+    "hex-sub-eg-label":"उदाहरण: <strong>5C₁₆ − 2E₁₆</strong>",
+    "hex-borrow-lbl":"उधार:",
+    "hex-sub-s1":"इकाई: C(12)−E(14) नहीं होगा। उधार: C=12+16=28. 28−14=14=<strong>E</strong>.",
+    "hex-sub-s2":'अगला: 5−1(उधार)−2=2. <strong>2</strong> लिखो। जवाब=<span class="mono highlight-green">2E₁₆</span>=46₁₀ ✅',
+    "calc-subtitle":"कोई भी दो नंबर डालो — हर step देखो!",
+    "calc-settings-title":"सिस्टम और ऑपरेशन चुनो",
+    "calc-sys-label":"नंबर सिस्टम:",
+    "calc-op-label":"ऑपरेशन:",
+    "sys-bin":"बाइनरी (2)","sys-oct":"ऑक्टल (8)","sys-dec":"डेसिमल (10)","sys-hex":"हेक्स (16)",
+    "op-add-btn":"➕ जोड़","op-sub-btn":"➖ घटाव",
+    "calc-go-btn":"हिसाब करो →",
+    "conv-subtitle":"कोई भी नंबर किसी भी सिस्टम में बदलो — हर step देखो!",
+    "conv-settings-title":"नंबर बदलो",
+    "conv-from-label":"इससे:","conv-to-label":"इसमें:","conv-num-label":"नंबर:",
+    "conv-go-btn":"बदलो →",
+    "conv-table-title":"जल्दी टेबल (0–20)",
+  }
+};
+
+let currentLang = 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  const t = T[lang];
+  // Apply font for Malayalam/Hindi
+  if (lang === 'ml') {
+    document.body.style.fontFamily = "'Noto Sans Malayalam', 'Baloo 2', sans-serif";
+  } else if (lang === 'hi') {
+    document.body.style.fontFamily = "'Noto Sans Devanagari', 'Baloo 2', sans-serif";
+  } else {
+    document.body.style.fontFamily = "'Baloo 2', sans-serif";
+  }
+  for (const [id, val] of Object.entries(t)) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = val;
+  }
+}
+
+// ========== NAVIGATION ==========
+function showPage(name) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(function(p) {
+    p.style.display = 'none';
+    p.classList.remove('active');
+  });
+  // Deactivate all tabs
+  document.querySelectorAll('.tab-btn').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  // Show target page
+  var page = document.getElementById('page-' + name);
+  if (page) {
+    page.style.display = 'block';
+    page.classList.add('active');
+  }
+  // Activate matching tab
+  var matchBtn = document.querySelector('.tab-btn[data-page="' + name + '"]');
+  if (matchBtn) matchBtn.classList.add('active');
+}
+
+// Attach click listeners via event delegation on the nav bar
+document.addEventListener('DOMContentLoaded', function() {
+  var nav = document.getElementById('navTabs');
+  if (nav) {
+    nav.addEventListener('click', function(e) {
+      // Walk up from clicked element to find the tab-btn
+      var el = e.target;
+      while (el && el !== nav) {
+        if (el.classList && el.classList.contains('tab-btn')) {
+          var pageName = el.getAttribute('data-page');
+          if (pageName) showPage(pageName);
+          return;
+        }
+        el = el.parentElement;
+      }
+    });
+  }
+  // Language select listener
+  var langSel = document.getElementById('langSelect');
+  if (langSel) {
+    langSel.addEventListener('change', function() {
+      setLang(this.value);
+    });
+  }
+  initCalcModes();
+  // System toggle buttons
+  document.querySelectorAll('[data-sys]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      setSystem(this.getAttribute('data-sys'));
+    });
+  });
+  // Op toggle buttons
+  document.querySelectorAll('[data-op]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      setOp(this.getAttribute('data-op'));
+    });
+  });
+  // Calculator go button
+  var calcBtn = document.getElementById('calcGoBtn');
+  if (calcBtn) calcBtn.addEventListener('click', doCalc);
+  // Conversion go button
+  var convBtn = document.getElementById('convGoBtn');
+  if (convBtn) convBtn.addEventListener('click', doConvert);
+  // Input change clear handlers
+  var n1 = document.getElementById('num1');
+  var n2 = document.getElementById('num2');
+  if (n1) n1.addEventListener('input', clearResult);
+  if (n2) n2.addEventListener('input', clearResult);
+  var cn = document.getElementById('conv-num');
+  var cf = document.getElementById('conv-from');
+  var ct = document.getElementById('conv-to');
+  if (cn) cn.addEventListener('input', clearConv);
+  if (cf) cf.addEventListener('change', clearConv);
+  if (ct) ct.addEventListener('change', clearConv);
+});
+
+// ========== PLACE VALUE TABLES ==========
+function makePlaceTable(containerId, base, digits, colors) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  let html = '';
+  for (let i = digits - 1; i >= 0; i--) {
+    const pv = Math.pow(base, i);
+    html += `<div class="pos-cell">
+      <div class="pos-power" style="background:${colors[0]}">pos ${i}</div>
+      <div class="pos-value" style="background:${colors[1]}">${base}^${i}</div>
+      <div class="pos-digit">${pv}</div>
+    </div>`;
+  }
+  c.innerHTML = html;
+}
+
+makePlaceTable('bin-place-table', 2, 8, ['#1a3a5c','#2c5fa1']);
+makePlaceTable('oct-place-table', 8, 5, ['#1b5e20','#2e7d32']);
+makePlaceTable('dec-place-table', 10, 5, ['#e65100','#ef6c00']);
+makePlaceTable('hex-place-table', 16, 5, ['#4a148c','#7b1fa2']);
+
+// ========== FILL CONVERSION TABLE ==========
+(function fillConvTable() {
+  const tb = document.getElementById('conv-table-body');
+  if (!tb) return;
+  let html = '';
+  for (let i = 0; i <= 20; i++) {
+    html += `<tr>
+      <td>${i}</td>
+      <td style="font-family:monospace;font-weight:800;color:var(--binary)">${i.toString(2)}</td>
+      <td style="font-family:monospace;font-weight:800;color:var(--octal)">${i.toString(8)}</td>
+      <td style="font-family:monospace;font-weight:800;color:var(--hexa)">${i.toString(16).toUpperCase()}</td>
+    </tr>`;
+  }
+  tb.innerHTML = html;
+})();
+
+// ========== CALCULATOR ==========
+let curSystem = 'binary';
+let curOp = 'add';
+const sysBase = {binary:2, octal:8, decimal:10, hexa:16};
+
+function setSystem(sys) {
+  curSystem = sys;
+  document.querySelectorAll('[data-sys]').forEach(function(b) { b.classList.remove('active'); });
+  var btn = document.querySelector('[data-sys="' + sys + '"]');
+  if (btn) btn.classList.add('active');
+  clearResult();
+  var hints = {binary:'e.g. 1011', octal:'e.g. 57', decimal:'e.g. 123', hexa:'e.g. 2A3'};
+  var n1 = document.getElementById('num1');
+  var n2 = document.getElementById('num2');
+  if (n1) n1.placeholder = hints[sys];
+  if (n2) n2.placeholder = hints[sys];
+}
+
+function setOp(op) {
+  curOp = op;
+  document.querySelectorAll('[data-op]').forEach(function(b) { b.classList.remove('active'); });
+  var btn = document.querySelector('[data-op="' + op + '"]');
+  if (btn) btn.classList.add('active');
+  var disp = document.getElementById('op-display');
+  if (disp) disp.textContent = op === 'add' ? '+' : '−';
+  clearResult();
+}
+
+function clearResult() {
+  document.getElementById('steps-output').innerHTML = '';
+  document.getElementById('calc-err').textContent = '';
+}
+
+function isValidForBase(str, base) {
+  const valid = '0123456789ABCDEF'.slice(0, base);
+  return str.split('').every(c => valid.includes(c.toUpperCase()));
+}
+
+function doCalc() {
+  clearResult();
+  const raw1 = document.getElementById('num1').value.trim().toUpperCase();
+  const raw2 = document.getElementById('num2').value.trim().toUpperCase();
+  const base = sysBase[curSystem];
+
+  if (!raw1 || !raw2) { document.getElementById('calc-err').textContent = '⚠️ Please enter both numbers!'; return; }
+  if (!isValidForBase(raw1, base) || !isValidForBase(raw2, base)) {
+    document.getElementById('calc-err').textContent = `⚠️ Invalid digits for ${curSystem} (base-${base})!`; return;
+  }
+
+  const n1 = parseInt(raw1, base);
+  const n2 = parseInt(raw2, base);
+
+  if (curOp === 'sub' && n1 < n2) {
+    document.getElementById('calc-err').textContent = '⚠️ First number must be ≥ second for subtraction (to avoid negative result)!';
+    return;
+  }
+
+  if (curOp === 'add') showAddSteps(raw1, raw2, base, n1, n2);
+  else showSubSteps(raw1, raw2, base, n1, n2);
+}
+
+function pad(a, b) {
+  const len = Math.max(a.length, b.length);
+  return [a.padStart(len,'0'), b.padStart(len,'0')];
+}
+
+function digitVal(c) { return '0123456789ABCDEF'.indexOf(c.toUpperCase()); }
+function digitChar(v) { return '0123456789ABCDEF'[v]; }
+
+
+// ═══════════════════════════════════════════════════════
+//  CALCULATOR — ALIGNED TABLE RENDERER + STEP MODE
+// ═══════════════════════════════════════════════════════
+
+// Current step-mode state
+let _stepMode   = false;   // true = step-by-step, false = full answer
+let _stepData   = null;    // holds all computed step info
+let _stepIndex  = 0;       // which column we're currently showing
+
+// Mode toggle wiring (called from DOMContentLoaded)
+function initCalcModes() {
+  document.getElementById('mode-full-btn').addEventListener('click', function() {
+    _stepMode = false;
+    this.classList.add('active');
+    document.getElementById('mode-step-btn').classList.remove('active');
+  });
+  document.getElementById('mode-step-btn').addEventListener('click', function() {
+    _stepMode = true;
+    this.classList.add('active');
+    document.getElementById('mode-full-btn').classList.remove('active');
+  });
+}
+
+// ── Build a perfectly-aligned column table ──────────────────────────────────
+// Each "column" gets exactly one <td>.  The label column (carry/op/blank) sits
+// to the left as a separate wider td.  This guarantees pixel-perfect alignment
+// regardless of number length.
+function buildTable(opts) {
+  // opts = { carries[], borrows[], a (padded str), b (padded str),
+  //          op ('+' or '−'), result (padded str),
+  //          revealUpTo (-1 = all, 0..n = columns revealed so far, right→left),
+  //          currentCol (-1 = none highlighted) }
+  const len         = opts.a.length;
+  const revealUpTo  = (opts.revealUpTo === undefined) ? -1 : opts.revealUpTo;
+  const currentCol  = (opts.currentCol === undefined) ? -1  : opts.currentCol;
+
+  // Helper: is column i (0=leftmost) revealed?
+  // Columns are processed right→left, so column index from right = len-1-i
+  function revealed(i) {
+    if (revealUpTo < 0) return true;           // full mode: all visible
+    const colFromRight = len - 1 - i;
+    return colFromRight < revealUpTo;
+  }
+  function isCurrent(i) {
+    if (currentCol < 0) return false;
+    return (len - 1 - i) === currentCol;
+  }
+
+  // Digit cells for a row
+  function digitRow(cls, label, digits, showAll) {
+    let row = `<tr class="${cls}">`;
+    row += `<td class="cv-label">${label}</td>`;
+    // op column (blank for most rows)
+    row += `<td class="cv-op"></td>`;
+    for (let i = 0; i < digits.length; i++) {
+      const show   = showAll || revealed(i);
+      const curr   = isCurrent(i);
+      const cls2   = curr ? 'cv-current' : (show && !showAll ? 'cv-highlight' : '');
+      row += `<td class="${cls2}">${show ? digits[i] : '·'}</td>`;
+    }
+    row += '</tr>';
+    return row;
+  }
+
+  let html = `<div class="calc-visual"><table class="cv-table">`;
+
+  // ── carry row ──
+  if (opts.carries) {
+    let carryDigits = [];
+    for (let i = 0; i < len; i++) {
+      // carries[i] corresponds to column (len-1-i) from left
+      const colFromRight = len - 1 - i;
+      const c = opts.carries[colFromRight];
+      // show carry above the column it will be USED in (the next column left)
+      carryDigits.push(c > 0 ? String(c) : ' ');
+    }
+    // carry is used one column left, so shift display left by 1
+    let shiftedCarry = [' ', ...carryDigits.slice(0, len-1)];
+    let rowHtml = `<tr class="row-carry"><td class="cv-label">Carry→</td><td class="cv-op"></td>`;
+    for (let i = 0; i < len; i++) {
+      const colFromRight = len - 1 - i;
+      const show = revealUpTo < 0 ? true : colFromRight < revealUpTo - 1;
+      rowHtml += `<td>${show ? shiftedCarry[i] : ' '}</td>`;
+    }
+    rowHtml += '</tr>';
+    html += rowHtml;
+  }
+
+  // ── borrow row ──
+  if (opts.borrows) {
+    let borrowDigits = [];
+    for (let i = 0; i < len; i++) {
+      const colFromRight = len - 1 - i;
+      borrowDigits.push(opts.borrows[colFromRight] ? '←1' : '  ');
+    }
+    let rowHtml = `<tr class="row-borrow"><td class="cv-label">Borrow</td><td class="cv-op"></td>`;
+    for (let i = 0; i < len; i++) {
+      const colFromRight = len - 1 - i;
+      const show = revealUpTo < 0 ? true : colFromRight < revealUpTo - 1;
+      rowHtml += `<td style="font-size:16px">${show ? borrowDigits[i] : '  '}</td>`;
+    }
+    rowHtml += '</tr>';
+    html += rowHtml;
+  }
+
+  // ── num1 ──
+  let rowNum1 = `<tr class="row-num1"><td class="cv-label"></td><td class="cv-op"></td>`;
+  for (let i = 0; i < len; i++) rowNum1 += `<td>${opts.a[i]}</td>`;
+  rowNum1 += '</tr>';
+  html += rowNum1;
+
+  // ── num2 with operator ──
+  let rowNum2 = `<tr class="row-num2"><td class="cv-label"></td><td class="cv-op">${opts.op}</td>`;
+  for (let i = 0; i < len; i++) rowNum2 += `<td>${opts.b[i]}</td>`;
+  rowNum2 += '</tr>';
+  html += rowNum2;
+
+  // ── separator ──
+  let sepRow = `<tr class="row-sep"><td class="cv-label"></td><td class="cv-op"></td>`;
+  for (let i = 0; i < len; i++) sepRow += `<td>─</td>`;
+  sepRow += '</tr>';
+  html += sepRow;
+
+  // ── result row ──
+  let rowRes = `<tr class="row-result"><td class="cv-label"></td><td class="cv-op"></td>`;
+  for (let i = 0; i < len; i++) {
+    const show = revealUpTo < 0 ? true : (len-1-i) < revealUpTo;
+    const curr = isCurrent(i);
+    const cls2 = curr ? 'cv-current' : '';
+    rowRes += `<td class="${cls2}">${show ? opts.result[i] : '·'}</td>`;
+  }
+  rowRes += '</tr>';
+  html += rowRes;
+
+  html += `</table></div>`;
+  return html;
+}
+
+// ── Compute all addition step data ─────────────────────────────────────────
+function computeAddSteps(raw1, raw2, base) {
+  let [a, b] = [raw1, raw2];
+  const len = Math.max(a.length, b.length);
+  a = a.padStart(len, '0');
+  b = b.padStart(len, '0');
+
+  let carry = 0;
+  let resultDigits = [];
+  let steps = [];
+  let carries = new Array(len).fill(0);  // carries[i] = carry OUT of column i (from right)
+
+  for (let i = len - 1; i >= 0; i--) {
+    const dA  = digitVal(a[i]);
+    const dB  = digitVal(b[i]);
+    const sum = dA + dB + carry;
+    const write    = sum % base;
+    const newCarry = Math.floor(sum / base);
+    carries[i] = newCarry;
+    resultDigits.unshift(digitChar(write));
+    steps.push({ col: i, dA, dB, carry, sum, write, newCarry });
+    carry = newCarry;
+  }
+
+  let resultStr = resultDigits.join('');
+  if (carry > 0) {
+    resultStr = digitChar(carry) + resultStr;
+    a = ' ' + a;
+    b = ' ' + b;
+    carries.unshift(0);
+    // rebuild carries array to match padded length
+  }
+  const padLen = resultStr.length;
+  const aPad = a.padStart(padLen, ' ');
+  const bPad = b.padStart(padLen, ' ');
+  const resPad = resultStr.padStart(padLen, '0');
+
+  // Rebuild carries for padded length
+  const carriesPad = new Array(padLen).fill(0);
+  for (let i = 0; i < carries.length; i++) {
+    carriesPad[padLen - carries.length + i] = carries[i];
+  }
+
+  return { a: aPad, b: bPad, result: resPad, carries: carriesPad, steps,
+           base, raw1, raw2, op: '+', finalCarry: carry };
+}
+
+// ── Compute all subtraction step data ──────────────────────────────────────
+function computeSubSteps(raw1, raw2, base) {
+  const len = Math.max(raw1.length, raw2.length);
+  const a = raw1.padStart(len, '0');
+  const b = raw2.padStart(len, '0');
+  let arr = a.split('').map(digitVal);
+  let resultDigits = [];
+  let steps = [];
+  let borrows = new Array(len).fill(false);
+
+  for (let i = len - 1; i >= 0; i--) {
+    const dB = digitVal(b[i]);
+    const origA = arr[i];   // snapshot BEFORE this column's borrow (reflects chain borrows from right)
+    let dA = arr[i];
+    let borrowed = false;
+    if (dA < dB) {
+      let j = i - 1;
+      while (j >= 0 && arr[j] === 0) { arr[j] = base - 1; j--; }
+      if (j >= 0) arr[j] -= 1;
+      dA += base;
+      arr[i] = dA;          // store post-borrow so left columns see reduced value
+      borrowed = true;
+      borrows[i] = true;
+    }
+    const diff = dA - dB;
+    resultDigits.unshift(digitChar(diff));
+    steps.push({ col: i, origA, dA, dB, diff, borrowed });
+  }
+
+  const rawResult = resultDigits.join('').replace(/^0+/, '') || '0';
+  const resPad = rawResult.padStart(len, '0');
+
+  return { a, b, result: resPad, borrows, steps, base, raw1, raw2, op: '−' };
+}
+
+// ── Render the explanation steps list (common for both modes) ───────────────
+function renderStepsList(data, upTo) {
+  // upTo: how many steps to show (-1 = all)
+  const showAll = upTo < 0;
+  const stepsToShow = showAll ? data.steps : data.steps.slice(0, upTo);
+  let html = '';
+
+  stepsToShow.forEach((s, idx) => {
+    // Column number from right: s.col is array index from left (0=leftmost)
+    // So column from right = (total cols) - 1 - s.col + 1 = total - s.col
+    const colNum = data.steps.length - s.col;
+    const colLabel = `Column ${colNum} from right`;
+
+    if (data.op === '+') {
+      // Addition step explanation
+      const carryIn   = s.carry > 0 ? ` + carry <strong style="color:#ffd700">${s.carry}</strong>` : '';
+      const carried   = s.sum >= data.base;
+      const sumLine   = `<span class="mono">${digitChar(s.dA)} + ${digitChar(s.dB)}${carryIn} = <strong>${s.sum}</strong></span>`;
+      let writeExp;
+      if (carried) {
+        writeExp = `<span style="color:#ffa040">${s.sum} ≥ ${data.base} → divide: ${s.sum} ÷ ${data.base} = ${s.newCarry} remainder ${s.write}</span><br>`
+          + `→ Write <strong style="color:#69f0ae">${digitChar(s.write)}</strong>, carry <strong style="color:#ffd700">${s.newCarry}</strong> to next column`;
+      } else {
+        writeExp = `→ Write <strong style="color:#69f0ae">${digitChar(s.write)}</strong>`;
+      }
+      html += `<div class="step-item">
+        <div class="step-circle">${idx+1}</div>
+        <div class="step-content">
+          <strong>${colLabel}:</strong> ${sumLine}<br>
+          ${writeExp}
+        </div>
+      </div>`;
+
+    } else {
+      // Subtraction step explanation — show logic clearly
+      if (s.borrowed) {
+        // Step 1: show the problem (origA < dB so can't subtract)
+        // Step 2: show the borrow (origA + base = dA)
+        // Step 3: show the actual subtraction (dA - dB = diff)
+        html += `<div class="step-item">
+          <div class="step-circle">${idx+1}</div>
+          <div class="step-content">
+            <strong>${colLabel}:</strong>
+            <span class="mono">${s.origA} − ${s.dB}</span>
+            <span style="color:#ff9d6a"> ← can't subtract (${s.origA} &lt; ${s.dB})!</span><br>
+            <span style="color:#ffa040">🔄 Borrow 1 from left column (worth ${data.base} here):</span><br>
+            <span class="mono">${s.origA} + ${data.base} = <strong>${s.dA}</strong></span>
+            &nbsp;(this digit becomes <strong>${s.dA}</strong>)<br>
+            Now: <span class="mono"><strong>${s.dA}</strong> − ${s.dB} = <strong style="color:#69f0ae">${digitChar(s.diff)}</strong></span>
+            → Write <strong style="color:#69f0ae">${digitChar(s.diff)}</strong>
+          </div>
+        </div>`;
+      } else {
+        html += `<div class="step-item">
+          <div class="step-circle">${idx+1}</div>
+          <div class="step-content">
+            <strong>${colLabel}:</strong>
+            <span class="mono">${s.dA} − ${s.dB} = <strong style="color:#69f0ae">${digitChar(s.diff)}</strong></span>
+            → Write <strong style="color:#69f0ae">${digitChar(s.diff)}</strong>
+          </div>
+        </div>`;
+      }
+    }
+  });
+  return html;
+}
+
+// ── FULL MODE render ────────────────────────────────────────────────────────
+function renderFull(data) {
+  const base = data.base;
+  let html = `<div style="font-size:20px;font-weight:700;color:var(--primary);margin-bottom:12px">
+    📋 ${data.raw1}<sub>${base}</sub> ${data.op} ${data.raw2}<sub>${base}</sub> = ?
+  </div>`;
+
+  html += buildTable({ ...data, revealUpTo: -1, currentCol: -1 });
+  html += renderStepsList(data, -1);
+
+  const res    = parseInt(data.result.replace(/^0+/,'') || '0', base);
+  const n1     = parseInt(data.raw1, base);
+  const n2     = parseInt(data.raw2, base);
+  const decRes = data.op === '+' ? n1 + n2 : n1 - n2;
+  const cleanResult = data.result.replace(/^0+/, '') || '0';
+
+  html += `<div class="concept-box" style="margin-top:16px">
+    ✅ <strong>${data.raw1}<sub>${base}</sub> ${data.op} ${data.raw2}<sub>${base}</sub>
+    = <span style="color:var(--accent2)">${cleanResult}<sub>${base}</sub></span></strong><br>
+    Decimal check: ${n1} ${data.op} ${n2} = ${decRes} ✓
+  </div>`;
+
+  document.getElementById('steps-output').innerHTML = html;
+}
+
+// ── STEP MODE render ────────────────────────────────────────────────────────
+function renderStep(data, stepIdx) {
+  // stepIdx: 0 = show numbers only, 1..n = reveal column by column (right to left)
+  const base = data.base;
+  const totalSteps = data.steps.length;
+  const done = stepIdx > totalSteps;
+
+  // revealUpTo: how many columns (from right) are revealed
+  // stepIdx 0 → nothing revealed, stepIdx 1 → rightmost column done, etc.
+  const revealUpTo = stepIdx;           // columns 0..(revealUpTo-1) from right revealed
+  const currentCol = (stepIdx > 0 && stepIdx <= totalSteps)
+    ? totalSteps - stepIdx              // index from LEFT of the current column
+    : -1;
+
+  let html = `<div style="font-size:20px;font-weight:700;color:var(--primary);margin-bottom:12px">
+    📋 ${data.raw1}<sub>${base}</sub> ${data.op} ${data.raw2}<sub>${base}</sub> = ?
+  </div>`;
+
+  html += buildTable({ ...data, revealUpTo, currentCol: done ? -1 : currentCol });
+
+  // Navigation controls
+  const prevDis = stepIdx === 0 ? 'disabled' : '';
+  const nextDis = done ? 'disabled' : '';
+  html += `<div class="step-nav">
+    <button class="step-nav-btn" id="prev-step" ${prevDis}>◀ Prev</button>
+    <span class="step-counter">Step ${stepIdx} / ${totalSteps}</span>
+    <button class="step-nav-btn" id="next-step" ${nextDis}>Next ▶</button>
+  </div>`;
+
+  // Show explanation for current step only
+  if (stepIdx > 0 && stepIdx <= totalSteps) {
+    html += renderStepsList(data, stepIdx);
+  } else if (done) {
+    const cleanResult = data.result.replace(/^0+/, '') || '0';
+    const n1  = parseInt(data.raw1, base);
+    const n2  = parseInt(data.raw2, base);
+    const dec = data.op === '+' ? n1 + n2 : n1 - n2;
+    html += `<div class="concept-box" style="margin-top:16px">
+      ✅ <strong>${data.raw1}<sub>${base}</sub> ${data.op} ${data.raw2}<sub>${base}</sub>
+      = <span style="color:var(--accent2)">${cleanResult}<sub>${base}</sub></span></strong><br>
+      Decimal check: ${n1} ${data.op} ${n2} = ${dec} ✓
+    </div>`;
+  } else {
+    html += `<div class="note-box" style="margin-top:12px">
+      <span class="note-icon">👆</span>
+      <span>Press <strong>Next ▶</strong> to start solving column by column — right to left!</span>
+    </div>`;
+  }
+
+  document.getElementById('steps-output').innerHTML = html;
+
+  // Wire nav buttons
+  const nb = document.getElementById('next-step');
+  const pb = document.getElementById('prev-step');
+  if (nb) nb.addEventListener('click', function() {
+    _stepIndex++;
+    renderStep(_stepData, _stepIndex);
+  });
+  if (pb) pb.addEventListener('click', function() {
+    _stepIndex--;
+    renderStep(_stepData, _stepIndex);
+  });
+}
+
+// ── Main doCalc dispatcher ──────────────────────────────────────────────────
+function showAddSteps(raw1, raw2, base, n1, n2) {
+  _stepData  = computeAddSteps(raw1, raw2, base);
+  _stepIndex = 0;
+  if (_stepMode) renderStep(_stepData, 0);
+  else           renderFull(_stepData);
+}
+
+function showSubSteps(raw1, raw2, base, n1, n2) {
+  _stepData  = computeSubSteps(raw1, raw2, base);
+  _stepIndex = 0;
+  if (_stepMode) renderStep(_stepData, 0);
+  else           renderFull(_stepData);
+}
+
+// ========== CONVERSION ==========
+// ========== CONVERSION ==========
+function clearConv() {
+  document.getElementById('conv-output').innerHTML = '';
+  document.getElementById('conv-err').textContent = '';
+}
+
+function doConvert() {
+  clearConv();
+  const fromBase = parseInt(document.getElementById('conv-from').value);
+  const toBase = parseInt(document.getElementById('conv-to').value);
+  const numStr = document.getElementById('conv-num').value.trim().toUpperCase();
+
+  if (!numStr) { document.getElementById('conv-err').textContent = '⚠️ Enter a number!'; return; }
+  if (!isValidForBase(numStr, fromBase)) {
+    document.getElementById('conv-err').textContent = `⚠️ Invalid number for base-${fromBase}!`; return;
+  }
+
+  const decVal = parseInt(numStr, fromBase);
+  const result = decVal.toString(toBase).toUpperCase();
+
+  const baseNames = {2:'Binary', 8:'Octal', 10:'Decimal', 16:'Hexadecimal'};
+
+  let html = `<div class="conv-row">
+    <div class="conv-box" style="border-color:var(--primary)">${numStr}<sub>${fromBase}</sub></div>
+    <div class="conv-arrow">→</div>
+    <div class="conv-box" style="border-color:var(--accent2);color:var(--accent2)">${result}<sub>${toBase}</sub></div>
+  </div>`;
+
+  // Steps: first convert to decimal (if not from decimal), then to target
+  html += `<div style="margin-top:16px">`;
+
+  if (fromBase !== 10) {
+    html += `<div class="step-item">
+      <div class="step-circle">1</div>
+      <div class="step-content">
+        <strong>Step 1: Convert ${baseNames[fromBase]} → Decimal</strong><br><br>`;
+    const digits = numStr.split('');
+    const len = digits.length;
+    let parts = [];
+    digits.forEach((d, i) => {
+      const pos = len - 1 - i;
+      const dv = digitVal(d);
+      const pv = Math.pow(fromBase, pos);
+      parts.push(`<span class="mono">${d} × ${fromBase}<sup>${pos}</sup> = ${dv} × ${pv} = <span class="highlight-orange">${dv*pv}</span></span>`);
+    });
+    html += parts.join('<br>');
+    html += `<br><br>Total = <span class="mono highlight-green">${decVal}</span></div></div>`;
+  }
+
+  if (toBase !== 10) {
+    const stepNum = fromBase !== 10 ? 2 : 1;
+    html += `<div class="step-item">
+      <div class="step-circle">${stepNum}</div>
+      <div class="step-content">
+        <strong>Step ${stepNum}: Convert Decimal (${decVal}) → ${baseNames[toBase]}</strong><br>
+        <span style="font-size:18px;color:var(--muted)">Divide by ${toBase}, collect remainders from bottom to top:</span><br><br>`;
+    let n = decVal;
+    let divSteps = [];
+    if (n === 0) divSteps.push({q:0, r:0});
+    while (n > 0) {
+      divSteps.push({q: Math.floor(n/toBase), r: n % toBase});
+      n = Math.floor(n/toBase);
+    }
+    divSteps.forEach(s => {
+      html += `<span class="mono">${s.q * toBase + s.r} ÷ ${toBase} = ${s.q}, remainder <span class="highlight-red">${digitChar(s.r)}</span></span><br>`;
+    });
+    html += `<br>Read remainders bottom to top: <span class="mono highlight-green">${result}</span>`;
+    html += `</div></div>`;
+  }
+
+  if (fromBase === 10 && toBase === 10) {
+    html += `<div class="concept-box">The number is already in decimal: <strong>${numStr}</strong></div>`;
+  }
+
+  html += `</div>`;
+  html += `<div class="concept-box" style="margin-top:16px">
+    ✅ <strong>${numStr}<sub>${fromBase}</sub> = ${result}<sub>${toBase}</sub></strong>
+    (decimal value: ${decVal})
+  </div>`;
+
+  document.getElementById('conv-output').innerHTML = html;
+}
+
+// Nav tab localization
+function updateTabLabels() {
+  const labels = {
+    en: ['Overview','Binary (Base-2)','Octal (Base-8)','Decimal (Base-10)','Hexadecimal (Base-16)','🧮 Calculator','🔄 Conversion'],
+    ml: ['ആமുഖം','ബൈനറി (Base-2)','ഒക്ടൽ (Base-8)','ഡെസിമൽ (Base-10)','ഹെക്സ (Base-16)','🧮 കാൽക്കുലേറ്റർ','🔄 മാറ്റൽ'],
+    hi: ['परिचय','बाइनरी (Base-2)','ऑक्टल (Base-8)','डेसिमल (Base-10)','हेक्स (Base-16)','🧮 कैलकुलेटर','🔄 बदलाव']
+  };
+  const tabs = document.querySelectorAll('.tab-btn .t');
+  const lbls = labels[currentLang];
+  tabs.forEach((t,i) => { if (lbls[i]) t.textContent = lbls[i]; });
+}
+
+const origSetLang = setLang;
+window.setLang = function(lang) {
+  origSetLang(lang);
+  updateTabLabels();
+};
+
+// ========== INIT: ensure only intro is visible on load ==========
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.page').forEach(function(p) {
+    p.style.display = 'none';
+    p.classList.remove('active');
+  });
+  var intro = document.getElementById('page-intro');
+  if (intro) { intro.style.display = 'block'; intro.classList.add('active'); }
+  var firstTab = document.querySelector('.tab-btn[data-page="intro"]');
+  if (firstTab) firstTab.classList.add('active');
+});
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cathode Ray Oscilloscope</title>
+<meta name="section" content="Electronics">
+<meta name="section-order" content="3">
+<meta name="order" content="3">
+<meta name="description" content="Scientific SM203G CRO – annotated guide">
+
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans+Malayalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#06090f;color:#dde8ff;font-family:'Rajdhani',sans-serif;min-height:100vh;padding:14px;}
+body.hi{font-family:'Noto Sans Devanagari',sans-serif;}
+body.ml{font-family:'Noto Sans Malayalam',sans-serif;}
+
+.lang-bar{display:flex;justify-content:center;gap:10px;margin-bottom:12px;}
+.lang-btn{background:rgba(10,22,50,0.9);border:1.5px solid #1a4060;border-radius:8px;color:#5a88b0;font-size:.9rem;font-weight:700;padding:7px 22px;cursor:pointer;transition:all .2s;}
+.lang-btn[data-lang="hi"]{font-family:'Noto Sans Devanagari',sans-serif;}
+.lang-btn[data-lang="ml"]{font-family:'Noto Sans Malayalam',sans-serif;}
+.lang-btn:hover,.lang-btn.active{border-color:#00e5ff;color:#00e5ff;background:rgba(0,229,255,.1);box-shadow:0 0 10px rgba(0,229,255,.2);}
+
+h1{text-align:center;font-size:1.55rem;font-weight:700;letter-spacing:2px;color:#00e5ff;margin-bottom:3px;font-family:'Share Tech Mono',monospace;}
+.subtitle{text-align:center;font-size:.85rem;color:#4a6a8a;margin-bottom:14px;letter-spacing:1px;}
+
+.t{display:none;}
+body.en .t.en,body.hi .t.hi,body.ml .t.ml{display:inline;}
+
+.main-layout{display:flex;gap:14px;max-width:1320px;margin:0 auto;align-items:flex-start;}
+.img-side{position:relative;flex:0 0 64%;max-width:64%;}
+.cro-img{width:100%;display:block;border-radius:10px;border:2px solid #1a3555;filter:brightness(.92) contrast(1.05);}
+
+.dot{position:absolute;width:20px;height:20px;border-radius:50%;background:var(--c);border:2px solid #fff;color:#000;font-family:'Share Tech Mono',monospace;font-size:.55rem;font-weight:900;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 0 7px var(--c);z-index:10;transform:translate(-50%,-50%);}
+.dot:hover,.dot.active{transform:translate(-50%,-50%) scale(1.45);box-shadow:0 0 18px var(--c);z-index:20;}
+
+.sidebar{flex:1;display:flex;flex-direction:column;gap:5px;max-height:660px;overflow-y:auto;padding-right:4px;}
+.sidebar::-webkit-scrollbar{width:4px;}
+.sidebar::-webkit-scrollbar-thumb{background:#1a4060;border-radius:4px;}
+
+.card{background:rgba(8,18,40,.95);border:1.5px solid var(--c);border-radius:8px;padding:7px 10px;display:flex;gap:8px;align-items:flex-start;cursor:pointer;transition:background .15s,box-shadow .15s;}
+.card:hover,.card.active{background:rgba(0,0,0,.55);box-shadow:0 0 14px var(--c);}
+.card-num{font-family:'Share Tech Mono',monospace;font-size:.9rem;font-weight:700;color:var(--c);min-width:22px;flex-shrink:0;margin-top:1px;}
+.card-title{font-size:.75rem;font-weight:700;color:var(--c);margin-bottom:2px;font-family:'Share Tech Mono',monospace;text-transform:uppercase;letter-spacing:.4px;}
+.card-desc{font-size:.73rem;color:#9ab8d8;line-height:1.42;}
+body.hi .card-desc,body.ml .card-desc{font-size:.71rem;line-height:1.52;}
+
+/* zone badges */
+.zone{display:inline-block;font-size:.58rem;font-family:'Share Tech Mono',monospace;padding:1px 5px;border-radius:3px;margin-bottom:3px;letter-spacing:.5px;background:rgba(255,255,255,.07);border:1px solid var(--c);color:var(--c);}
+
+.legend-section{max-width:1320px;margin:16px auto 0;}
+.legend-title-bar{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:#2a5070;letter-spacing:3px;text-transform:uppercase;margin-bottom:9px;text-align:center;}
+.legend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:7px;}
+.legend-card{background:rgba(8,18,40,.9);border:1px solid var(--c);border-radius:8px;padding:8px 11px;display:flex;gap:9px;align-items:flex-start;}
+.legend-num{font-family:'Share Tech Mono',monospace;font-size:.9rem;font-weight:700;color:var(--c);min-width:22px;flex-shrink:0;}
+.ltitle{font-weight:700;font-size:.78rem;color:var(--c);margin-bottom:2px;}
+.legend-content p{font-size:.73rem;color:#8aa8c8;line-height:1.48;}
+
+footer{text-align:center;margin-top:20px;font-family:'Share Tech Mono',monospace;font-size:.62rem;color:#1a3050;letter-spacing:3px;}
+
+/* 27 colours */
+.c1{--c:#ff4d6d;}.c2{--c:#00e5ff;}.c3{--c:#39ff7e;}.c4{--c:#ffb800;}
+.c5{--c:#22d4ff;}.c6{--c:#b5ff3c;}.c7{--c:#ff6eb4;}.c8{--c:#c77dff;}
+.c9{--c:#00ffcc;}.c10{--c:#ff7a2f;}.c11{--c:#4da6ff;}.c12{--c:#ffb800;}
+.c13{--c:#ff4d6d;}.c14{--c:#00e5ff;}.c15{--c:#39ff7e;}.c16{--c:#c77dff;}
+.c17{--c:#ff6eb4;}.c18{--c:#00ffcc;}.c19{--c:#ff7a2f;}.c20{--c:#4da6ff;}
+.c21{--c:#b5ff3c;}.c22{--c:#ff4d6d;}.c23{--c:#ffe066;}.c24{--c:#a0ffef;}
+.c25{--c:#ff9de2;}.c26{--c:#7efff5;}.c27{--c:#ffd6a5;}
+</style>
+</head>
+<body class="en">
+
+<div class="lang-bar">
+  <button class="lang-btn active" data-lang="en">🇬🇧 English</button>
+  <button class="lang-btn" data-lang="hi">🇮🇳 हिंदी</button>
+  <button class="lang-btn" data-lang="ml">🇮🇳 മലയാളം</button>
+</div>
+
+<h1>Scientific SM203G — 30 MHz Oscilloscope</h1>
+<p class="subtitle">
+  <span class="t en">Complete 27-Control Annotated Reference — Click any dot or card to highlight</span>
+  <span class="t hi">सम्पूर्ण 27-नियंत्रण संदर्भ — किसी भी डॉट या कार्ड पर क्लिक करें</span>
+  <span class="t ml">സമ്പൂർണ്ണ 27-കൺട്രോൾ റഫറൻസ് — ഏതെങ്കിലും ഡോട്ടിലോ കാർഡിലോ ക്ലിക്ക് ചെയ്യുക</span>
+</p>
+
+<div class="main-layout">
+  <div class="img-side">
+    <img class="cro-img" src="https://lh3.googleusercontent.com/d/1db1C5D8dU1cwPsFc-c5Bp4ChI5QdWvLU" alt="CRO SM203G" id="cro-img">
+
+    <!-- ═══ BOTTOM-LEFT STRIP ═══ -->
+    <!-- ① INTENS -->
+    <div class="dot c1"  data-id="1"  style="left:6.5%;top:88%;">1</div>
+    <!-- ② FOCUS -->
+    <div class="dot c2"  data-id="2"  style="left:14.5%;top:88%;">2</div>
+    <!-- ③ X-MAG -->
+    <div class="dot c3"  data-id="3"  style="left:22%;top:88%;">3</div>
+    <!-- ④ CAL (0.2V/2V) -->
+    <div class="dot c4"  data-id="4"  style="left:29%;top:88%;">4</div>
+    <!-- ⑤ OVER / SCAN -->
+    <div class="dot c5"  data-id="5"  style="left:35%;top:88%;">5</div>
+    <!-- ⑥ COMPONENT / TESTER -->
+    <div class="dot c6"  data-id="6"  style="left:44%;top:88%;">6</div>
+
+    <!-- ═══ TOP PANEL ═══ -->
+    <!-- ⑦ POWER -->
+    <div class="dot c7"  data-id="7"  style="left:55%;top:13%;">7</div>
+    <!-- ⑧ X-Y -->
+    <div class="dot c8"  data-id="8"  style="left:61%;top:10%;">8</div>
+    <!-- ⑨ TR (TV trigger) -->
+    <div class="dot c9"  data-id="9"  style="left:66%;top:10%;">9</div>
+    <!-- ⑩ TV SEP -->
+    <div class="dot c10" data-id="10" style="left:69%;top:20%;">10</div>
+    <!-- ⑪ X-POS -->
+    <div class="dot c11" data-id="11" style="left:61%;top:30%;">11</div>
+    <!-- ⑫ TIME/DIV -->
+    <div class="dot c12" data-id="12" style="left:80%;top:20%;">12</div>
+    <!-- ⑬ AT/NORM -->
+    <div class="dot c13" data-id="13" style="left:92%;top:10%;">13</div>
+    <!-- ⑭ LEVEL -->
+    <div class="dot c14" data-id="14" style="left:91%;top:25%;">14</div>
+    <!-- ⑮ TRIG INP -->
+    <div class="dot c15" data-id="15" style="left:96%;top:36%;">15</div>
+    <!-- ⑯ HOLD OFF -->
+    <div class="dot c16" data-id="16" style="left:61%;top:43%;">16</div>
+    <!-- ⑰ TRIG COUPLING (AC/DC/HF/LF) -->
+    <div class="dot c17" data-id="17" style="left:68%;top:38%;">17</div>
+    <!-- ⑱ +/- ALT EXT -->
+    <div class="dot c18" data-id="18" style="left:75%;top:46%;">18</div>
+
+    <!-- ═══ BOTTOM PANEL ═══ -->
+    <!-- ⑲ Y-POS I -->
+    <div class="dot c19" data-id="19" style="left:55%;top:57%;">19</div>
+    <!-- ⑳ INVERT CH1 -->
+    <div class="dot c20" data-id="20" style="left:56%;top:70%;">20</div>
+    <!-- ㉑ GD/AC switch CH1 -->
+    <div class="dot c21" data-id="21" style="left:57%;top:80%;">21</div>
+    <!-- ㉒ VOLTS/DIV CH1 -->
+    <div class="dot c22" data-id="22" style="left:65%;top:63%;">22</div>
+    <!-- ㉓ VAR GAIN/CAL -->
+    <div class="dot c23" data-id="23" style="left:74%;top:58%;">23</div>
+    <!-- ㉔ VOLTS/DIV CH2 -->
+    <div class="dot c24" data-id="24" style="left:84%;top:63%;">24</div>
+    <!-- ㉕ CH I/II / DUAL / ADD / CHOP -->
+    <div class="dot c25" data-id="25" style="left:75%;top:80%;">25</div>
+    <!-- ㉖ Y-POS II -->
+    <div class="dot c26" data-id="26" style="left:93%;top:57%;">26</div>
+    <!-- ㉗ INVERT CH2 / AC GD -->
+    <div class="dot c27" data-id="27" style="left:93%;top:70%;">27</div>
+  </div>
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <div class="sidebar" id="sidebar">
+
+    <!-- 1 -->
+    <div class="card c1" data-id="1">
+      <div class="card-num">①</div>
+      <div>
+        <div class="zone">BOTTOM STRIP</div>
+        <div class="card-title">INTENS (Intensity)</div>
+        <div class="card-desc">
+          <span class="t en">Controls the brightness of the trace on the CRT phosphor screen. Rotate clockwise to increase brightness. ⚠️ Never leave at maximum with a stationary dot — it burns the phosphor coating permanently.</span>
+          <span class="t hi">CRT स्क्रीन पर ट्रेस की चमक नियंत्रित करता है। दक्षिणावर्त = अधिक चमक। ⚠️ स्थिर बिंदु पर अधिकतम न छोड़ें — फॉस्फर कोटिंग जल जाती है।</span>
+          <span class="t ml">CRT ഫോസ്ഫർ സ്ക്രീനിലെ ട്രേസ് തെളിച്ചം നിയന്ത്രിക്കുന്നു. ⚠️ ഒരു സ്ഥിര ബിന്ദുവിൽ പരമാവധിയിൽ വിടരുത് — ഫോസ്ഫർ കോട്ടിംഗ് കരിയും.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="card c2" data-id="2">
+      <div class="card-num">②</div>
+      <div>
+        <div class="zone">BOTTOM STRIP</div>
+        <div class="card-title">FOCUS</div>
+        <div class="card-desc">
+          <span class="t en">Adjusts sharpness and clarity of the trace line. Always adjust FOCUS after setting INTENSITY. Rotate until the trace appears as the thinnest, sharpest possible line. Affects display quality significantly.</span>
+          <span class="t hi">ट्रेस रेखा की तीक्ष्णता और स्पष्टता। INTENSITY सेट करने के बाद FOCUS समायोजित करें। ट्रेस पतली और स्पष्ट रेखा दिखने तक घुमाएँ।</span>
+          <span class="t ml">ട്രേസ് ലൈൻ മൂർച്ചയും വ്യക്തതയും. INTENSITY സജ്ജമാക്കിയ ശേഷം FOCUS ക്രമീകരിക്കുക. ട്രേസ് നേർത്ത, വ്യക്തമായ ലൈൻ ആകുന്നതുവരെ തിരിക്കുക.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="card c3" data-id="3">
+      <div class="card-num">③</div>
+      <div>
+        <div class="zone">BOTTOM STRIP</div>
+        <div class="card-title">X-MAG (×10 Magnifier)</div>
+        <div class="card-desc">
+          <span class="t en">Horizontally magnifies the displayed waveform by 10×. Effectively divides the TIME/DIV setting by 10. Useful for examining fine detail in a waveform — e.g. rise time, glitches, narrow pulses.</span>
+          <span class="t hi">वेवफॉर्म को क्षैतिज रूप से 10× बड़ा करता है। TIME/DIV को 10 से विभाजित करता है। वेवफॉर्म के सूक्ष्म विवरण जैसे राइज टाइम, ग्लिच देखने के लिए।</span>
+          <span class="t ml">ദൃശ്യ തരംഗരൂപം തിരശ്ചീനമായി 10× വലുതാക്കുന്നു. TIME/DIV-നെ 10 കൊണ്ട് ഹരിക്കുന്നു. റൈസ് ടൈം, ഗ്ലിച്ചുകൾ കാണാൻ ഉപയോഗിക്കുന്നു.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="card c4" data-id="4">
+      <div class="card-num">④</div>
+      <div>
+        <div class="zone">BOTTOM STRIP</div>
+        <div class="card-title">CAL (0.2V / 2V)</div>
+        <div class="card-desc">
+          <span class="t en">Built-in calibration signal output. Outputs a precise square wave at 0.2V or 2V (1kHz). Use to calibrate and compensate probe frequency response. Connect probe tip to CAL output and adjust probe trimmer until waveform is flat-topped square.</span>
+          <span class="t hi">अंतर्निर्मित कैलिब्रेशन सिग्नल। 0.2V या 2V (1kHz) पर सटीक स्क्वायर वेव। प्रोब फ्रीक्वेंसी प्रतिक्रिया कैलिब्रेट करने के लिए। प्रोब टिप को CAL से जोड़ें और ट्रिमर समायोजित करें।</span>
+          <span class="t ml">ബിൽറ്റ്-ഇൻ കാലിബ്രേഷൻ സിഗ്നൽ. 0.2V അല്ലെങ്കിൽ 2V (1kHz) കൃത്യമായ സ്ക്വയർ വേവ്. പ്രോബ് ഫ്രീക്വൻസി റെസ്‌പോൺസ് കാലിബ്രേറ്റ് ചെയ്യാൻ ഉപയോഗിക്കുന്നു.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="card c5" data-id="5">
+      <div class="card-num">⑤</div>
+      <div>
+        <div class="zone">BOTTOM STRIP</div>
+        <div class="card-title">OVER / SCAN</div>
+        <div class="card-desc">
+          <span class="t en">OVER: Overwrite mode — new trace overwrites old trace without erasing (storage-like). SCAN: Scrolls the trace slowly across the screen from left to right — useful for very low frequency signals (like audio envelopes or slow process signals).</span>
+          <span class="t hi">OVER: नई ट्रेस पुरानी को मिटाए बिना ओवरराइट करती है। SCAN: ट्रेस को बाएँ से दाएँ धीरे-धीरे स्क्रॉल करता है — बहुत कम आवृत्ति वाले सिग्नल के लिए।</span>
+          <span class="t ml">OVER: പഴയ ട്രേസ് മായ്ക്കാതെ പുതിയത് ഓവർറൈറ്റ് ചെയ്യുന്നു. SCAN: ട്രേസ് ഇടത്തുനിന്ന് വലത്തേക്ക് പതുക്കെ സ്ക്രോൾ ചെയ്യുന്നു — വളരെ കുറഞ്ഞ ഫ്രീക്വൻസി സിഗ്നലുകൾക്ക്.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="card c6" data-id="6">
+      <div class="card-num">⑥</div>
+      <div>
+        <div class="zone">BOTTOM STRIP</div>
+        <div class="card-title">COMPONENT TESTER</div>
+        <div class="card-desc">
+          <span class="t en">Built-in component curve tracer. Connect a component (resistor, capacitor, diode, transistor, LED) across the test terminals. The CRO switches to X-Y mode and displays the characteristic I-V curve on screen — allows quick go/no-go testing of components without a separate tester.</span>
+          <span class="t hi">अंतर्निर्मित घटक वक्र ट्रेसर। टेस्ट टर्मिनल पर घटक (रेज़िस्टर, कैपेसिटर, डायोड, ट्रांजिस्टर) जोड़ें। CRO X-Y मोड में I-V वक्र दिखाता है — अलग परीक्षक बिना त्वरित परीक्षण।</span>
+          <span class="t ml">ബിൽറ്റ്-ഇൻ കോംപോണന്റ് കർവ് ട്രേസർ. ടെസ്റ്റ് ടെർമിനലിൽ ഘടകം (റെസിസ്റ്റർ, കപ്പാസിറ്റർ, ഡയോഡ്, ട്രാൻസിസ്റ്റർ) ബന്ധിപ്പിക്കുക. CRO X-Y മോഡിൽ I-V കർവ് കാണിക്കുന്നു.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="card c7" data-id="7">
+      <div class="card-num">⑦</div>
+      <div>
+        <div class="zone">TOP PANEL</div>
+        <div class="card-title">POWER on/off</div>
+        <div class="card-desc">
+          <span class="t en">Main power switch. Red illuminated button. Press to toggle CRO ON/OFF. Allow 2–3 minutes warm-up time after switching on for accurate measurements.</span>
+          <span class="t hi">मुख्य पावर स्विच। लाल रोशनी वाला बटन। CRO ON/OFF करने के लिए दबाएँ। सटीक माप के लिए चालू करने के बाद 2-3 मिनट वार्म-अप समय दें।</span>
+          <span class="t ml">പ്രധാന പവർ സ്വിച്ച്. ചുവന്ന ബട്ടൺ. കൃത്യമായ അളവിനായി ON ആക്കിയ ശേഷം 2-3 മിനിറ്റ് വാം-അപ്പ് സമയം നൽകുക.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="card c8" data-id="8">
+      <div class="card-num">⑧</div>
+      <div>
+        <div class="zone">TOP PANEL</div>
+        <div class="card-title">X-Y MODE</div>
+        <div class="card-desc">
+          <span class="t en">Switches to X-Y display mode. CH1 signal drives the horizontal (X) axis, CH2 drives the vertical (Y) axis. Used for: Lissajous figures (phase/frequency comparison), transistor curve tracing, impedance plots, frequency ratio measurement.</span>
+          <span class="t hi">X-Y डिस्प्ले मोड। CH1 = क्षैतिज (X), CH2 = ऊर्ध्वाधर (Y)। लिसाजू आकृति, ट्रांजिस्टर वक्र, इम्पीडेंस प्लॉट, आवृत्ति अनुपात माप के लिए।</span>
+          <span class="t ml">X-Y ഡിസ്‌പ്ലേ മോഡ്. CH1 = X-അക്ഷം, CH2 = Y-അക്ഷം. ലിസ്സജൂ ഫിഗർ, ട്രാൻസിസ്റ്റർ കർവ്, ഇംപഡൻസ് പ്ലോട്ട്, ഫ്രീക്വൻസി അനുപാതം.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="card c9" data-id="9">
+      <div class="card-num">⑨</div>
+      <div>
+        <div class="zone">TOP PANEL</div>
+        <div class="card-title">TR (TV Trigger)</div>
+        <div class="card-desc">
+          <span class="t en">Activates TV trigger mode. Enables the TV SEP (separator) circuit to extract sync pulses from composite video signals. Must be pressed before TV:H or TV:V sync triggering will work.</span>
+          <span class="t hi">TV ट्रिगर मोड सक्रिय करता है। TV SEP सर्किट को कम्पोजिट वीडियो से सिंक पल्स निकालने में सक्षम बनाता है। TV:H या TV:V सिंक ट्रिगर से पहले दबाएँ।</span>
+          <span class="t ml">TV ട്രിഗർ മോഡ് സക്രിയമാക്കുന്നു. TV SEP സർക്യൂട്ട് കമ്പോസിറ്റ് വീഡിയോയിൽ നിന്ന് സിങ്ക് പൾസ് വേർതിരിക്കുന്നു.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="card c10" data-id="10">
+      <div class="card-num">⑩</div>
+      <div>
+        <div class="zone">TOP PANEL</div>
+        <div class="card-title">TV SEP (OFF / TV:H / TV:V)</div>
+        <div class="card-desc">
+          <span class="t en">TV Sync Separator. OFF = disabled. TV:H = triggers on each horizontal line sync pulse (15.625 kHz for PAL) — shows single TV line. TV:V = triggers on vertical field sync (50 Hz PAL / 60 Hz NTSC) — shows full TV frame.</span>
+          <span class="t hi">TV सिंक सेपरेटर। OFF = बंद। TV:H = प्रत्येक क्षैतिज लाइन सिंक पल्स पर ट्रिगर — एक TV लाइन दिखाता है। TV:V = वर्टिकल फील्ड सिंक पर — पूरा TV फ्रेम।</span>
+          <span class="t ml">TV:H = ഓരോ ഹൊറിസോൺടൽ ലൈൻ സിങ്ക് പൾസിൽ ട്രിഗർ — ഒരു TV ലൈൻ. TV:V = വെർട്ടിക്കൽ ഫീൽഡ് സിങ്കിൽ — പൂർണ്ണ TV ഫ്രെയിം.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11 -->
+    <div class="card c11" data-id="11">
+      <div class="card-num">⑪</div>
+      <div>
+        <div class="zone">TOP PANEL</div>
+        <div class="card-title">X-POS (Horizontal Position)</div>
+        <div class="card-desc">
+          <span class="t en">Shifts the entire waveform left or right on the screen. Use to: align the start of a waveform to the left grid line, centre a feature of interest, or position for measurement of time intervals.</span>
+          <span class="t hi">पूरे वेवफॉर्म को बाएँ या दाएँ खिसकाता है। वेवफॉर्म की शुरुआत को बाईं ग्रिड लाइन पर संरेखित करें या समय अंतराल माप के लिए।</span>
+          <span class="t ml">മൊത്തം തരംഗരൂപം ഇടത്തോ വലത്തോ നീക്കുന്നു. തരംഗരൂപ ആരംഭം ഗ്രിഡ് ലൈനിൽ ക്രമീകരിക്കാൻ, സമയ അളവിനായി ഉപയോഗിക്കുന്നു.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12 -->
+    <div class="card c12" data-id="12">
+      <div class="card-num">⑫</div>
+      <div>
+        <div class="zone">TOP PANEL</div>
+        <div class="card-title">TIME / DIV</div>
+        <div class="card-desc">
+          <span class="t en">Sets the horizontal time scale — how much time each grid division represents. Range: ms (slow signals) → µs (fast signals). Clockwise = faster sweep. To measure period: count divisions × TIME/DIV value = period. Frequency = 1 ÷ period.</span>
+          <span class="t hi">क्षैतिज समय स्केल — प्रत्येक ग्रिड खाने का समय। रेंज: ms → µs। CW = तेज़। आवर्तकाल = खाने × TIME/DIV। आवृत्ति = 1 ÷ आवर्तकाल।</span>
+          <span class="t ml">തിരശ്ചീന സമയ സ്കെയിൽ — ഓരോ ഗ്രിഡ് ഡിവിഷനും എത്ര സമയം. ms → µs. ആവൃത്തി = 1 ÷ (ഡിവിഷനുകൾ × TIME/DIV).</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 13 -->
+    <div class="card c13" data-id="13">
+      <div class="card-num">⑬</div>
+      <div>
+        <div class="zone">TOP PANEL</div>
+        <div class="card-title">AT / NORM</div>
+        <div class="card-desc">
+          <span class="t en">AT (Auto Trigger): Timebase runs continuously — trace always visible even without a trigger. Best for initial setup. NORM (Normal): Trace only appears when a valid trigger event occurs — no trace if no signal. Gives more stable display for repetitive signals.</span>
+          <span class="t hi">AT: टाइमबेस लगातार चलती है — बिना ट्रिगर के भी ट्रेस दिखती है। शुरुआती सेटअप के लिए बेस्ट। NORM: वैध ट्रिगर होने पर ही ट्रेस — दोहराव वाले सिग्नल के लिए स्थिर डिस्प्ले।</span>
+          <span class="t ml">AT: ട്രിഗർ ഇല്ലാതെയും ട്രേസ് കാണാം. ആരംഭ സജ്ജീകരണത്തിന് നല്ലത്. NORM: സാധുവായ ട്രിഗർ ഉണ്ടാകുമ്പോൾ മാത്രം ട്രേസ് — ആവർത്തന സിഗ്നലുകൾക്ക് സ്ഥിരം.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 14 -->
+    <div class="card c14" data-id="14">
+      <div class="card-num">⑭</div>
+      <div>
+        <div class="zone">TOP PANEL</div>
+        <div class="card-title">LEVEL (Trigger Level)</div>
+        <div class="card-desc">
+          <span class="t en">Sets the exact voltage point on the signal waveform at which the trigger fires. Rotate to set threshold. If a waveform is rolling/unstable, adjust LEVEL until it locks. Combined with +/− slope, determines trigger point precisely.</span>
+          <span class="t hi">सिग्नल वेवफॉर्म पर ट्रिगर होने का सटीक वोल्टेज बिंदु। अस्थिर/घूमती ट्रेस को स्थिर करने के लिए LEVEL घुमाएँ। +/− स्लोप के साथ मिलकर ट्रिगर बिंदु निर्धारित करता है।</span>
+          <span class="t ml">ട്രിഗർ ഫയർ ആകുന്ന കൃത്യ വോൾട്ടേജ് പോയിന്റ്. ഉരുളുന്ന/അസ്ഥിര ട്രേസ് ലോക്ക് ചെയ്യാൻ LEVEL തിരിക്കുക. +/− സ്ലോപ്പ് ചേർന്ന് ട്രിഗർ പോയിന്റ് കൃത്യമാക്കുന്നു.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 15 -->
+    <div class="card c15" data-id="15">
+      <div class="card-num">⑮</div>
+      <div>
+        <div class="zone">TOP PANEL</div>
+        <div class="card-title">TRIG INP (External Trigger)</div>
+        <div class="card-desc">
+          <span class="t en">BNC connector for external trigger input. Max 100Vp. When EXT is selected, the CRO triggers from this input instead of from CH1 or CH2. Useful when you need to sync to a clock or reference signal not being displayed.</span>
+          <span class="t hi">बाहरी ट्रिगर के लिए BNC कनेक्टर। 100Vp अधिकतम। EXT चयन पर, CH1/CH2 की बजाय इस इनपुट से ट्रिगर। डिस्प्ले न हो रहे क्लॉक/रेफरेंस सिग्नल से सिंक के लिए।</span>
+          <span class="t ml">ബാഹ്യ ട്രിഗർ BNC ഇൻപുട്ട്. 100Vp. EXT തിരഞ്ഞെടുക്കുമ്പോൾ CH1/CH2-ന് പകരം ഈ ഇൻപുട്ടിൽ നിന്ന് ട്രിഗർ. ക്ലോക്ക് സിഗ്നലുമായി സിങ്ക് ചെയ്യാൻ.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 16 -->
+    <div class="card c16" data-id="16">
+      <div class="card-num">⑯</div>
+      <div>
+        <div class="zone">TOP PANEL</div>
+        <div class="card-title">HOLD OFF</div>
+        <div class="card-desc">
+          <span class="t en">Adds a dead time after each trigger event before the next trigger is accepted. Used to stabilise complex, non-repetitive, or burst waveforms that keep jumping. Rotate clockwise to increase holdoff time until the display locks stable.</span>
+          <span class="t hi">प्रत्येक ट्रिगर के बाद अगला ट्रिगर स्वीकार करने से पहले विराम समय जोड़ता है। जटिल या बर्स्ट वेवफॉर्म स्थिर करने के लिए। CW घुमाएँ जब तक डिस्प्ले स्थिर न हो।</span>
+          <span class="t ml">ഓരോ ട്രിഗർ ശേഷവും അടുത്ത ട്രിഗർ സ്വീകരിക്കുന്നതിന് മുമ്പ് ഒരു ഇടവേള. സങ്കീർണ്ണ/ബർസ്റ്റ് തരംഗരൂപങ്ങൾ ലോക്ക് ചെയ്യാൻ CW തിരിക്കുക.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 17 -->
+    <div class="card c17" data-id="17">
+      <div class="card-num">⑰</div>
+      <div>
+        <div class="zone">TOP PANEL</div>
+        <div class="card-title">TRIG COUPLING (AC/DC/HF/LF)</div>
+        <div class="card-desc">
+          <span class="t en">AC: Blocks DC from the trigger — use for AC signals with DC offset. DC: Full signal triggers — use for very low frequency or DC-level triggering. HF (High Frequency): Adds HF rejection filter — rejects noise above ~50kHz, useful for noisy signals. LF (Low Frequency): Adds LF rejection — rejects below ~50Hz, useful for triggering on high-freq content.</span>
+          <span class="t hi">AC: ट्रिगर से DC ब्लॉक। DC: पूरा सिग्नल ट्रिगर — बहुत कम आवृत्ति के लिए। HF: ~50kHz से ऊपर का शोर अस्वीकार — शोरगुल सिग्नल के लिए। LF: ~50Hz से नीचे अस्वीकार — उच्च आवृत्ति सामग्री पर ट्रिगर।</span>
+          <span class="t ml">AC: DC തടയുന്നു. DC: മുഴുവൻ സിഗ്നൽ. HF: ~50kHz-ന് മുകളിലുള്ള നോയ്‌സ് നിരസിക്കുന്നു. LF: ~50Hz-ന് താഴെ നിരസിക്കുന്നു.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 18 -->
+    <div class="card c18" data-id="18">
+      <div class="card-num">⑱</div>
+      <div>
+        <div class="zone">TOP PANEL</div>
+        <div class="card-title">+/− SLOPE, ALT, EXT</div>
+        <div class="card-desc">
+          <span class="t en">+/−: Selects trigger edge. + = trigger fires on rising edge. − = trigger fires on falling edge. ALT: Alternates trigger source between CH1 and CH2 — each channel triggers on its own signal. EXT: Routes triggering to the external TRIG INP BNC connector.</span>
+          <span class="t hi">+/−: ट्रिगर एज। + = राइजिंग एज, − = फॉलिंग एज। ALT: CH1 और CH2 के बीच ट्रिगर स्रोत बारी-बारी। EXT: ट्रिगर को बाहरी TRIG INP BNC पर भेजता है।</span>
+          <span class="t ml">+/−: ട്രിഗർ അരിക്. + = ഉയരുന്നത്, − = താഴുന്നത്. ALT: CH1, CH2 മാറ്റി ട്രിഗർ. EXT: ബാഹ്യ TRIG INP-ലേക്ക്.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 19 -->
+    <div class="card c19" data-id="19">
+      <div class="card-num">⑲</div>
+      <div>
+        <div class="zone">BOTTOM PANEL — CH1</div>
+        <div class="card-title">Y-POS I (CH1 Vertical Position)</div>
+        <div class="card-desc">
+          <span class="t en">Moves Channel 1 trace up or down on the screen. Use to: set the 0V ground reference line, separate CH1 and CH2 traces in DUAL mode, or position the trace for easier measurement reading.</span>
+          <span class="t hi">CH1 ट्रेस को ऊपर या नीचे खिसकाता है। 0V ग्राउंड रेफरेंस लाइन सेट करें, DUAL मोड में CH1/CH2 अलग करें।</span>
+          <span class="t ml">CH1 ട്രേസ് മുകളിലേക്കോ താഴേക്കോ നീക്കുന്നു. 0V ഗ്രൗണ്ട് റഫറൻസ് ലൈൻ സജ്ജമാക്കാൻ, DUAL-ൽ CH1/CH2 വേർതിരിക്കാൻ.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 20 -->
+    <div class="card c20" data-id="20">
+      <div class="card-num">⑳</div>
+      <div>
+        <div class="zone">BOTTOM PANEL — CH1</div>
+        <div class="card-title">INVERT CH1</div>
+        <div class="card-desc">
+          <span class="t en">Electronically inverts (flips 180°) the CH1 signal. Applications: When combined with ADD mode, performs CH1 − CH2 differential measurement — extremely useful for measuring voltage across a component in a live circuit.</span>
+          <span class="t hi">CH1 सिग्नल को इलेक्ट्रॉनिक रूप से 180° पलटता है। ADD मोड के साथ: CH1 − CH2 डिफरेंशियल माप — चालू सर्किट में घटक पर वोल्टेज मापने के लिए।</span>
+          <span class="t ml">CH1 സിഗ്നൽ ഇലക്ട്രോണിക്കായി 180° മറിക്കുന്നു. ADD മോഡ് ചേർത്ത്: CH1 − CH2 ഡിഫറൻഷ്യൽ — ലൈവ് സർക്യൂട്ടിൽ ഘടകത്തിന് കുറുകെ വോൾട്ടേജ് അളക്കാൻ.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 21 -->
+    <div class="card c21" data-id="21">
+      <div class="card-num">㉑</div>
+      <div>
+        <div class="zone">BOTTOM PANEL — CH1</div>
+        <div class="card-title">GD / AC Coupling (CH1)</div>
+        <div class="card-desc">
+          <span class="t en">GD (Ground): Disconnects the input and grounds the amplifier — displays the 0V reference line. Use to mark exactly where ground is before measuring. AC: Blocks the DC component — shows only the AC portion of the signal. Use for signals riding on a DC level.</span>
+          <span class="t hi">GD: इनपुट डिसकनेक्ट, एम्पलीफायर ग्राउंड — 0V रेफरेंस लाइन दिखाता है। माप से पहले ग्राउंड स्थिति मार्क करें। AC: DC घटक ब्लॉक — केवल AC भाग दिखाता है।</span>
+          <span class="t ml">GD: ഇൻപുട്ട് വിച്ഛേദിക്കുന്നു — 0V റഫറൻസ് ലൈൻ. അളക്കുന്നതിന് മുമ്പ് ഗ്രൗണ്ട് അടയാളപ്പെടുത്തുക. AC: DC ഭാഗം തടഞ്ഞ് AC മാത്രം.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 22 -->
+    <div class="card c22" data-id="22">
+      <div class="card-num">㉒</div>
+      <div>
+        <div class="zone">BOTTOM PANEL — CH1</div>
+        <div class="card-title">VOLTS / DIV — CH1</div>
+        <div class="card-desc">
+          <span class="t en">Sets the vertical voltage sensitivity for CH1. Each grid division = this many volts. Range typically 5mV/div to 20V/div. To measure voltage: count peak-to-peak divisions × VOLTS/DIV = Vpp. Clockwise = less sensitive (fits larger signals). CCW = more sensitive (enlarges small signals).</span>
+          <span class="t hi">CH1 की ऊर्ध्वाधर वोल्टेज संवेदनशीलता। प्रत्येक ग्रिड खाना = इतने वोल्ट। वोल्टेज माप: शिखर-से-शिखर खाने × VOLTS/DIV = Vpp। CW = कम संवेदनशील, CCW = अधिक।</span>
+          <span class="t ml">CH1-ന്റെ വോൾട്ടേജ് സ്കെയിൽ. ഓരോ ഗ്രിഡ് = ഇത്ര വോൾട്ട്. Vpp = ശിഖര-ശിഖര ഡിവിഷനുകൾ × VOLTS/DIV. CW = കുറഞ്ഞ സംവേദനക്ഷമത.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 23 -->
+    <div class="card c23" data-id="23">
+      <div class="card-num">㉓</div>
+      <div>
+        <div class="zone">BOTTOM PANEL — CENTRE</div>
+        <div class="card-title">VAR GAIN / CAL</div>
+        <div class="card-desc">
+          <span class="t en">Variable Gain control shared between channels. CAL (fully clockwise) = calibrated position — VOLTS/DIV readings are accurate. Turning away from CAL varies the gain continuously but readings become uncalibrated. ⚠️ Always return to CAL for voltage measurements.</span>
+          <span class="t hi">चैनलों के बीच साझा वेरिएबल गेन। CAL (पूर्ण CW) = कैलिब्रेटेड — VOLTS/DIV रीडिंग सटीक। CAL से हटने पर गेन बदलता है, रीडिंग अनुमानित। ⚠️ वोल्टेज माप के लिए CAL पर रखें।</span>
+          <span class="t ml">ചാനലുകൾ പങ്കിടുന്ന വേരിയബിൾ ഗെയ്ൻ. CAL = കൃത്യമായ VOLTS/DIV. CAL-ൽ നിന്ന് മാറ്റിയാൽ ഗെയ്ൻ മാറും, അളവ് ഏകദേശം. ⚠️ വോൾട്ടേജ് അളക്കാൻ CAL-ൽ തന്നെ.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 24 -->
+    <div class="card c24" data-id="24">
+      <div class="card-num">㉔</div>
+      <div>
+        <div class="zone">BOTTOM PANEL — CH2</div>
+        <div class="card-title">VOLTS / DIV — CH2</div>
+        <div class="card-desc">
+          <span class="t en">Sets the vertical voltage sensitivity for CH2. Works completely independently from CH1 VOLTS/DIV. Allows different scales on each channel simultaneously — e.g. CH1 at 1V/div showing a large signal while CH2 at 50mV/div shows a small signal.</span>
+          <span class="t hi">CH2 की ऊर्ध्वाधर वोल्टेज संवेदनशीलता। CH1 से पूरी तरह स्वतंत्र। एक साथ अलग स्केल — जैसे CH1 = 1V/div बड़ा सिग्नल, CH2 = 50mV/div छोटा सिग्नल।</span>
+          <span class="t ml">CH2-ന്റെ വോൾട്ടേജ് സ്കെയിൽ. CH1-ൽ നിന്ന് പൂർണ്ണ സ്വതന്ത്രം. ഒരേ സമയം വ്യത്യസ്ത സ്കെയിലുകൾ — CH1 = 1V/div, CH2 = 50mV/div.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 25 -->
+    <div class="card c25" data-id="25">
+      <div class="card-num">㉕</div>
+      <div>
+        <div class="zone">BOTTOM PANEL — CENTRE</div>
+        <div class="card-title">CH I / CH II / DUAL / ADD / CHOP</div>
+        <div class="card-desc">
+          <span class="t en">CH I: Display CH1 only. CH II: Display CH2 only. DUAL: Display both channels simultaneously. ADD: Algebraically adds CH1 + CH2 (use with INVERT for subtraction). CHOP: In DUAL mode, rapidly switches between CH1 and CH2 at ~500kHz — better for slow signals. (ALT mode switches per sweep — better for fast signals.)</span>
+          <span class="t hi">CH I: केवल CH1। CH II: केवल CH2। DUAL: दोनों एक साथ। ADD: CH1+CH2 बीजगणितीय योग (INVERT के साथ घटाव)। CHOP: DUAL में ~500kHz पर तेज़ स्विचिंग — धीमे सिग्नल के लिए बेहतर।</span>
+          <span class="t ml">CH I: CH1 മാത്രം. CH II: CH2 മാത്രം. DUAL: രണ്ടും. ADD: CH1+CH2 (INVERT ചേർത്ത് കുറക്കൽ). CHOP: ~500kHz-ൽ വേഗത്തിൽ സ്വിച്ച് — മന്ദ സിഗ്നലുകൾക്ക്.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 26 -->
+    <div class="card c26" data-id="26">
+      <div class="card-num">㉖</div>
+      <div>
+        <div class="zone">BOTTOM PANEL — CH2</div>
+        <div class="card-title">Y-POS II (CH2 Vertical Position)</div>
+        <div class="card-desc">
+          <span class="t en">Moves Channel 2 trace up or down independently from CH1. In DUAL mode, use to separate the two traces vertically so they don't overlap. Also used to set the 0V reference for CH2 independently.</span>
+          <span class="t hi">CH2 ट्रेस को CH1 से स्वतंत्र रूप से ऊपर/नीचे खिसकाता है। DUAL मोड में दोनों ट्रेस अलग करें। CH2 का 0V संदर्भ स्वतंत्र रूप से सेट करें।</span>
+          <span class="t ml">CH2 ട്രേസ് CH1-ൽ നിന്ന് സ്വതന്ത്രമായി നീക്കുന്നു. DUAL-ൽ ട്രേസുകൾ ഓവർലാപ്പ് ആകാതെ വേർതിരിക്കാൻ. CH2-ന്റെ 0V സ്വതന്ത്രമായി ക്രമീകരിക്കുക.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 27 -->
+    <div class="card c27" data-id="27">
+      <div class="card-num">㉗</div>
+      <div>
+        <div class="zone">BOTTOM PANEL — CH2</div>
+        <div class="card-title">INVERT CH2 / AC / GD</div>
+        <div class="card-desc">
+          <span class="t en">INVERT: Flips CH2 signal 180°. With ADD mode = differential CH1 − CH2. AC: Input coupling — blocks DC, shows only AC component of CH2. GD (Ground): Disconnects CH2 input and grounds amplifier — displays 0V reference for CH2. DC (switch position): Full signal including DC offset.</span>
+          <span class="t hi">INVERT: CH2 को 180° पलटता है। ADD के साथ = CH1−CH2 डिफरेंशियल। AC: DC ब्लॉक, केवल AC दिखाता है। GD: CH2 इनपुट डिसकनेक्ट — 0V रेफरेंस। DC: DC ऑफसेट सहित पूरा सिग्नल।</span>
+          <span class="t ml">INVERT: CH2 180° മറിക്കുന്നു. ADD = CH1−CH2. AC: DC തടഞ്ഞ് AC മാത്രം. GD: CH2 ഇൻപുട്ട് വിച്ഛേദിച്ച് 0V ലൈൻ. DC: ഓഫ്‌സെറ്റ് ഉൾപ്പെടെ.</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end sidebar -->
+</div><!-- end main-layout -->
+
+<!-- LEGEND -->
+<div class="legend-section">
+  <div class="legend-title-bar">
+    <span class="t en">── Complete 27-Control Quick Reference ──</span>
+    <span class="t hi">── सम्पूर्ण 27-नियंत्रण त्वरित संदर्भ ──</span>
+    <span class="t ml">── 27 കൺട്രോൾ ദ്രുത റഫറൻസ് ──</span>
+  </div>
+  <div class="legend-grid">
+    <div class="legend-card c1"><div class="legend-num">①</div><div class="legend-content"><div class="ltitle">INTENS</div><p><span class="t en">Trace brightness. Don't leave at max — burns phosphor.</span><span class="t hi">ट्रेस चमक। अधिकतम पर न छोड़ें।</span><span class="t ml">ട്രേസ് തെളിച്ചം. Max-ൽ വിടരുത്.</span></p></div></div>
+    <div class="legend-card c2"><div class="legend-num">②</div><div class="legend-content"><div class="ltitle">FOCUS</div><p><span class="t en">Trace sharpness. Adjust after INTENSITY.</span><span class="t hi">ट्रेस तीक्ष्णता। INTENSITY के बाद समायोजित करें।</span><span class="t ml">ട്രേസ് മൂർച്ച. INTENSITY ശേഷം.</span></p></div></div>
+    <div class="legend-card c3"><div class="legend-num">③</div><div class="legend-content"><div class="ltitle">X-MAG (×10)</div><p><span class="t en">10× horizontal magnification. Divides TIME/DIV by 10.</span><span class="t hi">10× क्षैतिज आवर्धन। TIME/DIV को 10 से विभाजित।</span><span class="t ml">10× തിരശ്ചീന വലുതാക്കൽ.</span></p></div></div>
+    <div class="legend-card c4"><div class="legend-num">④</div><div class="legend-content"><div class="ltitle">CAL (0.2V/2V)</div><p><span class="t en">Calibration square wave output. Use to compensate probe.</span><span class="t hi">कैलिब्रेशन स्क्वायर वेव। प्रोब क्षतिपूर्ति के लिए।</span><span class="t ml">കാലിബ്രേഷൻ സ്ക്വയർ വേവ്. പ്രോബ് ക്രമീകരണം.</span></p></div></div>
+    <div class="legend-card c5"><div class="legend-num">⑤</div><div class="legend-content"><div class="ltitle">OVER / SCAN</div><p><span class="t en">OVER = overwrite mode. SCAN = slow scroll for low-freq signals.</span><span class="t hi">OVER = ओवरराइट। SCAN = कम आवृत्ति के लिए धीमी स्क्रॉल।</span><span class="t ml">OVER = ഓവർറൈറ്റ്. SCAN = മന്ദ സ്ക്രോൾ.</span></p></div></div>
+    <div class="legend-card c6"><div class="legend-num">⑥</div><div class="legend-content"><div class="ltitle">COMPONENT TESTER</div><p><span class="t en">I-V curve tracer. Test R, C, diode, transistor without power.</span><span class="t hi">I-V वक्र ट्रेसर। बिना पावर R, C, डायोड, ट्रांजिस्टर परीक्षण।</span><span class="t ml">I-V കർവ് ട്രേസർ. R, C, ഡയോഡ്, ട്രാൻസിസ്റ്റർ ടെസ്റ്റ്.</span></p></div></div>
+    <div class="legend-card c7"><div class="legend-num">⑦</div><div class="legend-content"><div class="ltitle">POWER</div><p><span class="t en">Main ON/OFF. Allow 2–3 min warm-up.</span><span class="t hi">मुख्य ON/OFF। 2-3 मिनट वार्म-अप दें।</span><span class="t ml">ON/OFF. 2-3 മിനിറ്റ് വാം-അപ്പ്.</span></p></div></div>
+    <div class="legend-card c8"><div class="legend-num">⑧</div><div class="legend-content"><div class="ltitle">X-Y MODE</div><p><span class="t en">CH1=X axis, CH2=Y axis. Lissajous, phase, curve tracing.</span><span class="t hi">CH1=X, CH2=Y। लिसाजू, फेज़, वक्र ट्रेसिंग।</span><span class="t ml">CH1=X, CH2=Y. ലിസ്സജൂ, ഫേസ്.</span></p></div></div>
+    <div class="legend-card c9"><div class="legend-num">⑨</div><div class="legend-content"><div class="ltitle">TR (TV Trigger)</div><p><span class="t en">Activates TV sync separator circuit for TV signal triggering.</span><span class="t hi">TV सिंक सेपरेटर सर्किट सक्रिय करता है।</span><span class="t ml">TV സിങ്ക് സെപ്പറേറ്റർ സർക്യൂട്ട് സക്രിയമാക്കുന്നു.</span></p></div></div>
+    <div class="legend-card c10"><div class="legend-num">⑩</div><div class="legend-content"><div class="ltitle">TV SEP</div><p><span class="t en">OFF/TV:H/TV:V. H = horizontal sync, V = vertical field sync.</span><span class="t hi">TV:H = क्षैतिज सिंक, TV:V = वर्टिकल फील्ड सिंक।</span><span class="t ml">TV:H = H സിങ്ക്, TV:V = V ഫീൽഡ് സിങ്ക്.</span></p></div></div>
+    <div class="legend-card c11"><div class="legend-num">⑪</div><div class="legend-content"><div class="ltitle">X-POS</div><p><span class="t en">Horizontal waveform position (left/right).</span><span class="t hi">क्षैतिज वेवफॉर्म स्थिति (बाएँ/दाएँ)।</span><span class="t ml">തിരശ്ചീന ട്രേസ് സ്ഥാനം.</span></p></div></div>
+    <div class="legend-card c12"><div class="legend-num">⑫</div><div class="legend-content"><div class="ltitle">TIME / DIV</div><p><span class="t en">Time per division. Frequency = 1 ÷ (divisions × TIME/DIV).</span><span class="t hi">प्रति खाने समय। आवृत्ति = 1 ÷ (खाने × TIME/DIV)।</span><span class="t ml">ഡിവിഷൻ സമയം. f = 1 ÷ (div × T/D).</span></p></div></div>
+    <div class="legend-card c13"><div class="legend-num">⑬</div><div class="legend-content"><div class="ltitle">AT / NORM</div><p><span class="t en">AT = always trace. NORM = trace on trigger only.</span><span class="t hi">AT = हमेशा ट्रेस। NORM = ट्रिगर होने पर।</span><span class="t ml">AT = എപ്പോഴും. NORM = ട്രിഗർ ആകുമ്പോൾ.</span></p></div></div>
+    <div class="legend-card c14"><div class="legend-num">⑭</div><div class="legend-content"><div class="ltitle">LEVEL</div><p><span class="t en">Trigger threshold voltage. Rotate to lock unstable trace.</span><span class="t hi">ट्रिगर सीमा वोल्टेज। अस्थिर ट्रेस लॉक करें।</span><span class="t ml">ട്രിഗർ പരിധി വോൾട്ടേജ്. ട്രേസ് ലോക്ക്.</span></p></div></div>
+    <div class="legend-card c15"><div class="legend-num">⑮</div><div class="legend-content"><div class="ltitle">TRIG INP</div><p><span class="t en">External trigger BNC. 100Vp max. Use with EXT mode.</span><span class="t hi">बाहरी ट्रिगर BNC। 100Vp अधिकतम। EXT मोड के साथ।</span><span class="t ml">ബാഹ്യ ട്രിഗർ BNC. EXT മോഡ്.</span></p></div></div>
+    <div class="legend-card c16"><div class="legend-num">⑯</div><div class="legend-content"><div class="ltitle">HOLD OFF</div><p><span class="t en">Dead time between triggers. Stabilises complex waveforms.</span><span class="t hi">ट्रिगर के बीच विराम। जटिल वेवफॉर्म स्थिर करें।</span><span class="t ml">ട്രിഗർ ഇടവേള. സങ്കീർണ്ണ സിഗ്നൽ ലോക്ക്.</span></p></div></div>
+    <div class="legend-card c17"><div class="legend-num">⑰</div><div class="legend-content"><div class="ltitle">TRIG COUPLING</div><p><span class="t en">AC/DC/HF/LF. HF rejects noise above 50kHz. LF rejects below 50Hz.</span><span class="t hi">AC/DC/HF/LF। HF: 50kHz से ऊपर शोर अस्वीकार।</span><span class="t ml">AC/DC/HF/LF. HF: 50kHz-ന് മുകളിൽ നോയ്‌സ് നിരസം.</span></p></div></div>
+    <div class="legend-card c18"><div class="legend-num">⑱</div><div class="legend-content"><div class="ltitle">+/− SLOPE, ALT, EXT</div><p><span class="t en">+= rising edge. −= falling. ALT= alternate channels. EXT= external trigger.</span><span class="t hi">+= राइजिंग। −= फॉलिंग। ALT= बारी-बारी। EXT= बाहरी।</span><span class="t ml">+= ഉയരുന്ന. −= താഴുന്ന. ALT. EXT.</span></p></div></div>
+    <div class="legend-card c19"><div class="legend-num">⑲</div><div class="legend-content"><div class="ltitle">Y-POS I</div><p><span class="t en">CH1 vertical position. Set 0V reference or separate traces.</span><span class="t hi">CH1 ऊर्ध्वाधर स्थिति। 0V रेफरेंस या ट्रेस अलग करें।</span><span class="t ml">CH1 ലംബ സ്ഥാനം. 0V ക്രമീകരണം.</span></p></div></div>
+    <div class="legend-card c20"><div class="legend-num">⑳</div><div class="legend-content"><div class="ltitle">INVERT CH1</div><p><span class="t en">Flips CH1 180°. With ADD = CH1−CH2 differential.</span><span class="t hi">CH1 180° पलटें। ADD = CH1−CH2 डिफरेंशियल।</span><span class="t ml">CH1 180°. ADD = ഡിഫറൻഷ്യൽ.</span></p></div></div>
+    <div class="legend-card c21"><div class="legend-num">㉑</div><div class="legend-content"><div class="ltitle">GD / AC — CH1</div><p><span class="t en">GD = 0V ref line. AC = AC only (blocks DC).</span><span class="t hi">GD = 0V रेखा। AC = केवल AC (DC ब्लॉक)।</span><span class="t ml">GD = 0V ലൈൻ. AC = AC മാത്രം.</span></p></div></div>
+    <div class="legend-card c22"><div class="legend-num">㉒</div><div class="legend-content"><div class="ltitle">VOLTS/DIV CH1</div><p><span class="t en">Voltage/div for CH1. Vpp = divisions × VOLTS/DIV.</span><span class="t hi">CH1 वोल्टेज/खाना। Vpp = खाने × VOLTS/DIV।</span><span class="t ml">CH1 V/div. Vpp = div × V/D.</span></p></div></div>
+    <div class="legend-card c23"><div class="legend-num">㉓</div><div class="legend-content"><div class="ltitle">VAR GAIN / CAL</div><p><span class="t en">CAL = calibrated. Off-CAL = gain varies, readings approximate.</span><span class="t hi">CAL = कैलिब्रेटेड। CAL से हटने पर अनुमानित।</span><span class="t ml">CAL = കൃത്യം. Off-CAL = ഏകദേശം.</span></p></div></div>
+    <div class="legend-card c24"><div class="legend-num">㉔</div><div class="legend-content"><div class="ltitle">VOLTS/DIV CH2</div><p><span class="t en">Voltage/div for CH2. Independent from CH1.</span><span class="t hi">CH2 वोल्टेज/खाना। CH1 से स्वतंत्र।</span><span class="t ml">CH2 V/div. CH1-ൽ നിന്ന് സ്വതന്ത്രം.</span></p></div></div>
+    <div class="legend-card c25"><div class="legend-num">㉕</div><div class="legend-content"><div class="ltitle">CH I/II/DUAL/ADD/CHOP</div><p><span class="t en">CHOP = fast switch ~500kHz for slow signals. ALT = per-sweep for fast signals.</span><span class="t hi">CHOP = ~500kHz तेज़ स्विच धीमे सिग्नल के लिए।</span><span class="t ml">CHOP = ~500kHz സ്വിച്ച്. ALT = സ്വീപ്പ് ഓരോന്നിനും.</span></p></div></div>
+    <div class="legend-card c26"><div class="legend-num">㉖</div><div class="legend-content"><div class="ltitle">Y-POS II</div><p><span class="t en">CH2 vertical position. Independent from CH1.</span><span class="t hi">CH2 ऊर्ध्वाधर स्थिति। CH1 से स्वतंत्र।</span><span class="t ml">CH2 ലംബ സ്ഥാനം. സ്വതന്ത്രം.</span></p></div></div>
+    <div class="legend-card c27"><div class="legend-num">㉗</div><div class="legend-content"><div class="ltitle">INVERT CH2 / AC / GD</div><p><span class="t en">INVERT: CH2 flips 180°. AC: DC blocked. GD: 0V ref. DC: full signal.</span><span class="t hi">INVERT: CH2 180°। AC: DC ब्लॉक। GD: 0V। DC: पूरा सिग्नल।</span><span class="t ml">INVERT: 180°. AC: DC തടഞ്ഞ്. GD: 0V. DC: മുഴുവൻ.</span></p></div></div>
+  </div>
+</div>
+
+<footer>SCIENTIFIC SM203G · 30 MHz DUAL CHANNEL CRO · COMPLETE 27-CONTROL REFERENCE</footer>
+
+<script>
+document.querySelectorAll('.lang-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.body.className=btn.dataset.lang;
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+const dots=document.querySelectorAll('.dot');
+const cards=document.querySelectorAll('.card');
+function highlight(id){
+  dots.forEach(d=>d.classList.toggle('active',d.dataset.id===String(id)));
+  cards.forEach(c=>{
+    const m=c.dataset.id===String(id);
+    c.classList.toggle('active',m);
+    if(m)c.scrollIntoView({block:'nearest',behavior:'smooth'});
+  });
+}
+dots.forEach(d=>d.addEventListener('click',e=>{e.stopPropagation();highlight(d.dataset.id);}));
+cards.forEach(c=>c.addEventListener('click',()=>highlight(c.dataset.id)));
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capacitor Charging</title>
+<meta name="section" content="Electronics">
+<meta name="section-order" content="3">
+<meta name="order" content="2">
+<meta name="description" content="RC charging and discharging trainer">
+
+<!-- Google Fonts loaded as a <link> so a failure never blocks the CSS -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=Cousine&display=swap">
+<style>
+/* ── Root Variables ─────────────────────────────── */
+:root{
+  --bg:#F4F7FA; --panel:#FFFFFF; --border:#CFD8E3;
+  --accent:#0A5C8A; --accent2:#D97706; --accent3:#1A7F4B;
+  --danger:#B91C1C; --text:#1E2A3A; --muted:#5A6880;
+  --head:#0A5C8A; --radius:9px;
+  --ff:'Source Sans 3',Segoe UI,Arial,sans-serif;
+  --ffh:'Rajdhani','Arial Black',Arial,sans-serif;
+  --ffm:'Cousine','Courier New',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);font-size:15px;min-height:100vh}
+
+/* ── Language visibility ────────────────────────── */
+/* All lang spans hidden by default; body class reveals the right set */
+.en,.hi,.ml{display:none}
+body.L-en .en{display:inline}
+body.L-hi .hi{display:inline}
+body.L-ml .ml{display:inline}
+.Ben,.Bhi,.Bml{display:none}
+body.L-en .Ben{display:block}
+body.L-hi .Bhi{display:block}
+body.L-ml .Bml{display:block}
+
+/* ── Header ─────────────────────────────────────── */
+header{background:var(--head);color:#fff;padding:13px 22px;display:flex;
+  align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  box-shadow:0 3px 10px rgba(0,0,0,.25)}
+header h1{font-family:var(--ffh);font-size:1.6rem;letter-spacing:.3px}
+header p{font-size:.88rem;opacity:.82;margin-top:2px}
+.lbwrap{display:flex;gap:7px}
+.lb{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);
+  color:#fff;border-radius:6px;padding:5px 15px;font-size:.95rem;
+  font-weight:700;cursor:pointer;transition:background .2s}
+.lb.on,.lb:hover{background:rgba(255,255,255,.35)}
+
+/* ── Nav tabs ───────────────────────────────────── */
+.tabs{display:flex;background:#DFE8F0;border-bottom:2.5px solid var(--border);
+  overflow-x:auto;padding:0 10px;gap:3px}
+.tb{background:#CEDFED;border:none;border-bottom:3px solid transparent;
+  padding:11px 20px;font-size:.98rem;font-weight:700;color:var(--muted);
+  cursor:pointer;white-space:nowrap;font-family:var(--ffh);
+  border-radius:7px 7px 0 0;margin-top:5px;transition:all .2s}
+.tb.on{background:var(--panel);color:var(--accent);border-bottom-color:var(--accent)}
+.tb:hover:not(.on){background:#B8D2E2;color:var(--accent)}
+
+/* ── Pages ──────────────────────────────────────── */
+.pg{display:none;padding:20px 22px 70px}
+.pg.on{display:block}
+
+/* ── Cards ──────────────────────────────────────── */
+.card{background:var(--panel);border:1.5px solid var(--border);
+  border-radius:var(--radius);box-shadow:0 2px 12px rgba(10,92,138,.1);
+  padding:18px 22px;margin-bottom:20px}
+.ctitle{font-family:var(--ffh);font-size:1.3rem;font-weight:700;
+  color:var(--accent);border-bottom:2px solid var(--border);
+  padding-bottom:8px;margin-bottom:14px;display:flex;align-items:center;gap:9px}
+
+/* ── Info boxes ─────────────────────────────────── */
+.ib{border-radius:8px;padding:12px 16px;margin-bottom:12px;
+  font-size:.97rem;line-height:1.55;border-left:5px solid}
+.ib.bl{background:#E9F2FB;border-color:var(--accent)}
+.ib.or{background:#FEF3C7;border-color:var(--accent2)}
+.ib.gr{background:#ECFDF5;border-color:var(--accent3)}
+.ib.rd{background:#FEE2E2;border-color:var(--danger)}
+
+/* ── Grid for cap cards ─────────────────────────── */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.cc{border:2px solid var(--border);border-radius:var(--radius);
+  background:#FAFCFF;padding:14px 12px;cursor:pointer;
+  transition:all .2s;text-align:center}
+.cc:hover,.cc.sel{border-color:var(--accent);background:#E5F2FB;
+  box-shadow:0 3px 14px rgba(10,92,138,.2)}
+.cc .cname{font-family:var(--ffh);font-size:1.05rem;font-weight:700;color:var(--accent);margin-top:8px}
+.cc .cval{font-size:.85rem;color:var(--muted);margin-top:3px}
+
+/* ── Simulator controls ──────────────────────────── */
+.sc2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:620px){.sc2{grid-template-columns:1fr}}
+.cg label{display:block;font-weight:700;font-size:.93rem;color:var(--accent);margin-bottom:5px}
+.cg select,.cg input[type=range]{width:100%;padding:7px 10px;border-radius:7px;
+  border:1.5px solid var(--border);font-size:.97rem;font-family:var(--ff);
+  background:#F7FAFC;color:var(--text);cursor:pointer}
+.rv{font-family:var(--ffm);font-size:1.05rem;font-weight:700;color:var(--accent2);margin-left:8px}
+
+/* ── Sim buttons ─────────────────────────────────── */
+.sbr{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.sb{padding:10px 24px;border-radius:7px;border:none;font-size:1rem;
+  font-weight:700;cursor:pointer;transition:all .18s;font-family:var(--ffh)}
+.sb.ch{background:var(--accent2);color:#fff}
+.sb.dc{background:var(--danger);color:#fff}
+.sb.rs{background:#CBD5E1;color:var(--text)}
+.sb:disabled{opacity:.4;cursor:not-allowed}
+.sb:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px)}
+
+/* ── Live meters ─────────────────────────────────── */
+.mr3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:500px){.mr3{grid-template-columns:1fr}}
+.mb{background:#EEF5FB;border:2px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center}
+.mb .ml2{font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.mb .mv{font-family:var(--ffm);font-size:1.9rem;font-weight:700;color:var(--accent);margin-top:2px}
+.mb .mu{font-size:.9rem;color:var(--muted)}
+
+/* ── Tables ──────────────────────────────────────── */
+.tw{overflow-x:auto}
+table.dt{width:100%;border-collapse:collapse;font-size:.94rem}
+table.dt th{background:var(--accent);color:#fff;padding:9px 11px;
+  font-family:var(--ffh);font-size:.98rem;font-weight:700;text-align:center;
+  border:1px solid rgba(255,255,255,.25)}
+table.dt td{padding:8px 11px;border:1px solid var(--border);text-align:center;
+  font-family:var(--ffm);font-size:.9rem}
+table.dt tr:nth-child(even) td{background:#F0F5FA}
+table.dt tr.CH td{border-left:4px solid var(--accent2)}
+table.dt tr.FC td{border-left:4px solid var(--accent3)}
+table.dt tr.DC td{border-left:4px solid var(--danger)}
+.tbn{margin-top:9px;padding:7px 18px;border-radius:7px;border:none;
+  background:var(--accent3);color:#fff;font-size:.93rem;font-weight:700;cursor:pointer}
+
+/* ── Ohmmeter page ───────────────────────────────── */
+.og{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:620px){.og{grid-template-columns:1fr}}
+.ocb{width:100%;padding:10px 18px;border-radius:7px;border:2px solid var(--border);
+  background:#EEF5FB;font-size:.97rem;font-weight:700;cursor:pointer;
+  transition:all .2s;font-family:var(--ffh);text-align:left;margin-bottom:8px}
+.ocb.on{border-color:var(--accent);background:#D5E9F7;color:var(--accent)}
+.orb{margin-top:14px;padding:15px 18px;border-radius:var(--radius);
+  border:2px solid var(--border);font-size:1rem;font-weight:600;text-align:center;display:none}
+.orb.gd{background:#ECFDF5;border-color:var(--accent3);color:#065F46}
+.orb.op{background:#FEFCE8;border-color:#CA8A04;color:#78350F}
+.orb.sh{background:#FEE2E2;border-color:var(--danger);color:var(--danger)}
+.orb.lk{background:#FEF3C7;border-color:var(--accent2);color:#92400E}
+
+/* ── Theory tabs ─────────────────────────────────── */
+.ttabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.ttb{padding:9px 22px;border-radius:7px;border:2px solid var(--border);
+  background:#EEF5FB;font-size:.97rem;font-weight:700;cursor:pointer;
+  font-family:var(--ffh);transition:all .2s}
+.ttb.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tc{display:none}.tc.on{display:block}
+.t2c{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:620px){.t2c{grid-template-columns:1fr}}
+
+/* ── Feature rows ────────────────────────────────── */
+.fr{display:flex;align-items:flex-start;gap:11px;margin-bottom:10px;
+  background:#F4F8FB;border-radius:7px;padding:9px 13px}
+.fi{font-size:1.4rem;min-width:32px;text-align:center}
+.ft{font-size:.97rem;line-height:1.45}
+.ft strong{color:var(--accent)}
+
+/* ── Section heading ─────────────────────────────── */
+.sh{font-family:var(--ffh);font-size:1.1rem;font-weight:700;color:var(--accent);
+  margin:14px 0 8px;display:flex;align-items:center;gap:7px}
+.sh::before{content:'';display:inline-block;width:4px;height:16px;
+  background:var(--accent2);border-radius:3px;flex-shrink:0}
+
+/* ── Canvas wrapper ──────────────────────────────── */
+.cw{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;margin-bottom:14px}
+canvas{display:block;width:100%}
+
+/* ── Step list ───────────────────────────────────── */
+ol.sl{list-style:none;counter-reset:s;padding:0}
+ol.sl li{counter-increment:s;display:flex;gap:11px;align-items:flex-start;
+  margin-bottom:9px;font-size:.97rem}
+ol.sl li::before{content:counter(s);background:var(--accent);color:#fff;
+  border-radius:50%;min-width:26px;height:26px;display:flex;align-items:center;
+  justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0}
+
+/* ── Comparison table ────────────────────────────── */
+table.ct{width:100%;border-collapse:collapse;font-size:.93rem;margin-top:12px}
+table.ct th{background:var(--accent);color:#fff;padding:9px 13px;font-family:var(--ffh);font-size:1rem}
+table.ct td{padding:8px 13px;border:1px solid var(--border)}
+table.ct tr:nth-child(even) td{background:#EEF5FB}
+
+/* ── Status bar ──────────────────────────────────── */
+#statusBar{position:fixed;bottom:0;left:0;right:0;background:var(--head);
+  color:#fff;padding:6px 18px;font-size:.93rem;display:flex;align-items:center;
+  gap:14px;z-index:200}
+.led{width:11px;height:11px;border-radius:50%;background:#22C55E;flex-shrink:0}
+.led.or{background:var(--accent2)}
+.led.rd{background:var(--danger)}
+
+/* ── Key-value label inside card ─────────────────── */
+.kp{display:flex;gap:6px;margin-bottom:7px;font-size:.97rem}
+.kp strong{color:var(--accent);min-width:80px}
+
+/* ── 5-meter grid (3 top + 2 bottom) ────────────── */
+.mr5{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:6px}
+.mr2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:500px){.mr5,.mr2{grid-template-columns:1fr}}
+/* percent meter gets a coloured accent */
+.mb.pct .mv{color:#7C3AED}
+.mb.egy .mv{color:#065F46}
+
+/* ── τ % reference table ─────────────────────────── */
+.tau-ref{width:100%;border-collapse:collapse;font-size:.93rem;margin-top:10px}
+.tau-ref th{background:var(--accent);color:#fff;padding:8px 10px;text-align:center;font-family:var(--ffh)}
+.tau-ref td{padding:7px 10px;border:1px solid var(--border);text-align:center;font-family:var(--ffm)}
+.tau-ref tr:nth-child(even) td{background:#EEF5FB}
+.tau-ref .hi63{background:#FEF3C7!important;font-weight:700;color:#92400E}
+
+/* ── Formula box ─────────────────────────────────── */
+.fbox{font-family:var(--ffm);font-size:1rem;font-weight:700;color:#1E3A5F;
+  background:#E0EEF8;border-radius:7px;padding:10px 18px;text-align:center;margin:10px 0}
+
+/* ── Code decoder widget ─────────────────────────── */
+.dec-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.dec-input{font-family:var(--ffm);font-size:1.6rem;font-weight:700;width:100px;
+  padding:8px 12px;border:2px solid var(--accent);border-radius:8px;text-align:center;
+  color:var(--accent);background:#F0F7FF;letter-spacing:4px}
+.dec-btn{padding:10px 24px;border-radius:8px;border:none;background:var(--accent);
+  color:#fff;font-size:1rem;font-weight:700;cursor:pointer;font-family:var(--ffh)}
+.dec-btn:hover{filter:brightness(1.1)}
+.dec-result{display:none;margin-top:4px}
+.dec-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;font-size:.97rem}
+.dec-num{background:var(--accent);color:#fff;border-radius:50%;min-width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0}
+.dec-vals{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:12px}
+.dec-val{background:#EEF5FB;border:1.5px solid var(--border);border-radius:8px;
+  padding:10px 14px;text-align:center}
+.dec-val .dv-unit{font-size:.8rem;color:var(--muted);font-weight:700;text-transform:uppercase}
+.dec-val .dv-num{font-family:var(--ffm);font-size:1.3rem;font-weight:700;color:var(--accent);margin-top:3px}
+</style>
+</head>
+
+<body class="L-en">
+<!-- ═══════════════ HEADER ═════════════════════ -->
+<header>
+  <div>
+    <h1>⚡ <span class="en">Capacitor Experiment — Exercise 27</span>
+           <span class="hi">संधारित्र प्रयोग — व्यायाम 27</span>
+           <span class="ml">കപ്പാസിറ്റർ പ്രയോഗം — Exercise 27</span></h1>
+    <p><span class="en">CITS Electrician | Identification · Charge/Discharge · Ohmmeter Test · Theory</span>
+       <span class="hi">CITS इलेक्ट्रीशियन | पहचान · चार्ज/डिस्चार्ज · ओममीटर परीक्षण · सिद्धांत</span>
+       <span class="ml">CITS Electrician | തിരിച്ചറിയൽ · ചാർജ്/ഡിസ്‌ചാർജ് · ഓംമീറ്റർ ടെസ്റ്റ് · സിദ്ധാന്തം</span></p>
+  </div>
+  <div class="lbwrap">
+    <button class="lb on" onclick="setLang('en',this)">English</button>
+    <button class="lb"    onclick="setLang('hi',this)">हिंदी</button>
+    <button class="lb"    onclick="setLang('ml',this)">മലയാളം</button>
+  </div>
+</header>
+
+<!-- ═══════════════ NAV TABS ════════════════════ -->
+<div class="tabs">
+  <button class="tb on" onclick="goPage('p1',this)">🔍 <span class="en">Identification</span><span class="hi">पहचान</span><span class="ml">തിരിച്ചറിയൽ</span></button>
+  <button class="tb"    onclick="goPage('p2',this)">📈 <span class="en">Charge / Discharge</span><span class="hi">चार्ज / डिस्चार्ज</span><span class="ml">ചാർജ് / ഡിസ്‌ചാർജ്</span></button>
+  <button class="tb"    onclick="goPage('p3',this)">🧪 <span class="en">Ohmmeter Test</span><span class="hi">ओममीटर परीक्षण</span><span class="ml">ഓംമീറ്റർ ടെസ്റ്റ്</span></button>
+  <button class="tb"    onclick="goPage('p4',this)">📖 <span class="en">Ohmmeter Theory</span><span class="hi">ओममीटर सिद्धांत</span><span class="ml">ഓംമീറ്റർ സിദ്ധാന്തം</span></button>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 1 — IDENTIFICATION
+═════════════════════════════════════════════ -->
+<div id="p1" class="pg on">
+  <div class="card">
+    <div class="ctitle">🔍 <span class="en">Task 1 — Identify the Type of Capacitor</span>
+                            <span class="hi">कार्य 1 — संधारित्र का प्रकार पहचानें</span>
+                            <span class="ml">ടാസ്ക് 1 — കപ്പാസിറ്ററിന്റെ തരം തിരിച്ചറിയുക</span></div>
+    <div class="ib bl">
+      <span class="en">Click each capacitor card to see full details. The instructor will provide physical samples — use these to identify them.</span>
+      <span class="hi">प्रत्येक संधारित्र कार्ड पर क्लिक करें — विस्तृत विवरण देखें।</span>
+      <span class="ml">ഓരോ card-ലും click ചെയ്ത് details കാണുക.</span>
+    </div>
+    <div class="cgrid" id="cgrid"></div>
+  </div>
+
+  <div class="card" id="capDet" style="display:none">
+    <div class="ctitle" id="capDetTitle"></div>
+    <div id="capDetBody"></div>
+  </div>
+
+  <!-- ── Capacitor Code Decoder ─────────────────────────────────────────── -->
+  <div class="card">
+    <div class="ctitle">🔢 <span class="en">Capacitor Code Decoder — Read Any Marking</span>
+                            <span class="hi">संधारित्र कोड डिकोडर</span>
+                            <span class="ml">Capacitor Code Decoder</span></div>
+
+    <!-- 3-digit EIA code -->
+    <div class="sh">
+      <span class="en">3-Digit EIA / IEC Code (e.g. 104, 473, 102)</span>
+      <span class="hi">3-अंकीय EIA कोड (जैसे 104, 473, 102)</span>
+      <span class="ml">3-Digit Code (ഉദാ: 104, 473, 102)</span>
+    </div>
+    <div class="ib bl" style="font-size:.95rem">
+      <span class="en"><strong>Rule:</strong> First 2 digits = significant figures. Third digit = number of zeros to add. Answer is always in <strong>pico-Farads (pF)</strong>.<br>
+      Example: <code>104</code> → 10 followed by 4 zeros = 100,000 pF = 0.1 µF.</span>
+      <span class="hi"><strong>नियम:</strong> पहले 2 अंक = महत्त्वपूर्ण अंक। तीसरा अंक = जोड़े जाने वाले शून्य की संख्या। उत्तर हमेशा <strong>पिको-फैराड (pF)</strong> में।<br>
+      उदाहरण: <code>104</code> → 10 के बाद 4 शून्य = 100,000 pF = 0.1 µF।</span>
+      <span class="ml"><strong>Rule:</strong> ആദ്യ 2 digits = significant figures. 3rd digit = zeros count. ഉത്തരം <strong>pF</strong>-ൽ.<br>
+      ഉദാ: <code>104</code> → 10, 4 zeros = 100,000 pF = 0.1 µF.</span>
+    </div>
+
+    <div class="dec-wrap">
+      <input class="dec-input" id="codeIn" maxlength="4" placeholder="104" oninput="this.value=this.value.toUpperCase()">
+      <button class="dec-btn" onclick="decodeCapCode()">▶ <span class="en">Decode</span><span class="hi">डिकोड करें</span><span class="ml">Decode</span></button>
+    </div>
+    <div class="dec-result" id="decResult"></div>
+
+    <!-- Common codes quick-reference table -->
+    <div class="sh" style="margin-top:18px">
+      <span class="en">Quick Reference — Common Codes</span>
+      <span class="hi">त्वरित संदर्भ — सामान्य कोड</span>
+      <span class="ml">Quick Reference</span>
+    </div>
+    <div class="tw">
+      <table class="dt" style="font-size:.9rem">
+        <thead><tr>
+          <th><span class="en">Code</span><span class="hi">कोड</span><span class="ml">Code</span></th>
+          <th>pF</th><th>nF</th><th>µF</th>
+          <th><span class="en">Typical Use</span><span class="hi">सामान्य उपयोग</span><span class="ml">Use</span></th>
+        </tr></thead>
+        <tbody>
+          <tr><td><strong>101</strong></td><td>100</td><td>0.1</td><td>—</td><td><span class="en">RF bypass</span><span class="hi">RF बायपास</span><span class="ml">RF bypass</span></td></tr>
+          <tr><td><strong>102</strong></td><td>1,000</td><td>1</td><td>0.001</td><td><span class="en">Decoupling</span><span class="hi">डीकपलिंग</span><span class="ml">Decoupling</span></td></tr>
+          <tr><td><strong>103</strong></td><td>10,000</td><td>10</td><td>0.01</td><td><span class="en">Filtering</span><span class="hi">फ़िल्टरिंग</span><span class="ml">Filtering</span></td></tr>
+          <tr style="background:#FEF9E7"><td><strong>104</strong></td><td>100,000</td><td>100</td><td><strong>0.1</strong></td><td><span class="en">555 timer, general</span><span class="hi">555 टाइमर, सामान्य</span><span class="ml">555 timer</span></td></tr>
+          <tr><td><strong>105</strong></td><td>1,000,000</td><td>1000</td><td><strong>1.0</strong></td><td><span class="en">Coupling, bypass</span><span class="hi">कपलिंग</span><span class="ml">Coupling</span></td></tr>
+          <tr><td><strong>222</strong></td><td>2,200</td><td>2.2</td><td>0.0022</td><td><span class="en">Timing circuit</span><span class="hi">टाइमिंग</span><span class="ml">Timing</span></td></tr>
+          <tr><td><strong>473</strong></td><td>47,000</td><td>47</td><td>0.047</td><td><span class="en">Audio coupling</span><span class="hi">ऑडियो कपलिंग</span><span class="ml">Audio coupling</span></td></tr>
+          <tr><td><strong>683</strong></td><td>68,000</td><td>68</td><td>0.068</td><td><span class="en">Power supply</span><span class="hi">बिजली आपूर्ति</span><span class="ml">Power supply</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Letter code for SMD / 2-digit + letter -->
+    <div class="sh" style="margin-top:16px">
+      <span class="en">SMD / Letter Code (e.g. R47, 4R7, 1n0)</span>
+      <span class="hi">SMD लेटर कोड</span>
+      <span class="ml">SMD Letter Code</span>
+    </div>
+    <div class="ib or" style="font-size:.93rem">
+      <span class="en"><strong>"R" means decimal point in µF:</strong> <code>R47</code> = 0.47 µF; <code>4R7</code> = 4.7 µF.<br>
+      <strong>Letter = unit prefix:</strong> <code>n</code> = nanofarad, <code>p</code> = picofarad, <code>u</code> or <code>µ</code> = microfarad.<br>
+      So <code>1n0</code> = 1.0 nF = 1000 pF; <code>4p7</code> = 4.7 pF.</span>
+      <span class="hi"><strong>"R" = µF में दशमलव बिंदु:</strong> <code>R47</code> = 0.47 µF; <code>4R7</code> = 4.7 µF।<br>
+      <strong>अक्षर = इकाई उपसर्ग:</strong> <code>n</code> = nF, <code>p</code> = pF, <code>u/µ</code> = µF।</span>
+      <span class="ml"><strong>"R" = µF-ൽ decimal point:</strong> <code>R47</code> = 0.47 µF; <code>4R7</code> = 4.7 µF.<br>
+      <code>n</code> = nF, <code>p</code> = pF, <code>u/µ</code> = µF.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">📋 <span class="en">Table 1 — Capacitor Identification Record</span>
+                            <span class="hi">तालिका 1 — संधारित्र पहचान रिकॉर्ड</span>
+                            <span class="ml">പട്ടിക 1 — കപ്പാസിറ്ടർ തിരിച്ചറിയൽ</span></div>
+    <div class="tw">
+      <table class="dt">
+        <thead><tr>
+          <th>S.No.</th>
+          <th><span class="en">Type</span><span class="hi">प्रकार</span><span class="ml">തരം</span></th>
+          <th><span class="en">Capacitance Range</span><span class="hi">धारिता परास</span><span class="ml">Capacitance</span></th>
+          <th><span class="en">Voltage Rating</span><span class="hi">वोल्टेज रेटिंग</span><span class="ml">Voltage</span></th>
+          <th><span class="en">Polarity</span><span class="hi">ध्रुवता</span><span class="ml">Polarity</span></th>
+          <th><span class="en">Marking Style</span><span class="hi">अंकन शैली</span><span class="ml">Marking</span></th>
+        </tr></thead>
+        <tbody id="idTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── CAPACITOR CODE DECODER ─────────────────────────────────────────── -->
+  <div class="card">
+    <div class="ctitle">🔢 <span class="en">Capacitor Marking Decoder</span><span class="hi">संधारित्र अंकन डिकोडर</span><span class="ml">Capacitor Code Decoder</span></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;flex-wrap:wrap">
+
+      <!-- Left: 3-digit code decoder -->
+      <div>
+        <div class="sh"><span class="en">3-Digit Code (Mylar / Ceramic / SMD)</span><span class="hi">3-अंकीय कोड (मायलर / सिरेमिक / SMD)</span><span class="ml">3-Digit Code</span></div>
+        <div class="ib bl" style="font-size:.95rem">
+          <span class="en">The first two digits are the capacitance value in picofarads (pF). The third digit is the <strong>multiplier</strong> — it tells you how many zeros to add. So <strong>104</strong> means 10 × 10⁴ = 100,000 pF = 100 nF = 0.1 µF. The letter suffix (e.g. J, K, M) is the <strong>tolerance</strong>.</span>
+          <span class="hi">पहले दो अंक pF में मान हैं। तीसरा अंक <strong>गुणक</strong> है (शून्यों की संख्या)। इसलिए <strong>104</strong> = 10 × 10⁴ = 100,000 pF = 0.1 µF। अक्षर प्रत्यय (J, K, M) <strong>सहनशीलता</strong> है।</span>
+          <span class="ml">ആദ്യ 2 digit pF-ൽ value. 3-ാം digit <strong>multiplier</strong> (zero-കളുടെ എണ്ണം). <strong>104</strong> = 10 × 10⁴ = 0.1 µF. Letter suffix = tolerance.</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;margin:12px 0">
+          <input id="codeIn" type="text" placeholder="e.g. 104" maxlength="6"
+            style="font-size:1.5rem;font-family:Courier New,monospace;font-weight:700;
+                   width:120px;padding:8px 12px;border:2px solid var(--border);
+                   border-radius:8px;text-align:center;color:var(--accent)"
+            oninput="decodeCapCode()" />
+          <div style="flex:1">
+            <div id="codeResult" style="font-size:1.1rem;font-weight:700;color:var(--accent3);line-height:1.6"></div>
+          </div>
+        </div>
+        <!-- Worked examples table -->
+        <table class="dt" style="font-size:.88rem">
+          <thead><tr>
+            <th><span class="en">Marking</span><span class="hi">अंकन</span><span class="ml">Code</span></th>
+            <th>= pF</th><th>= nF</th><th>= µF</th>
+            <th><span class="en">Common use</span><span class="hi">सामान्य उपयोग</span><span class="ml">Use</span></th>
+          </tr></thead>
+          <tbody>
+            <tr><td><strong>100</strong></td><td>10 pF</td><td>0.01 nF</td><td>—</td><td><span class="en">Mica, RF filter</span><span class="hi">माइका, RF फ़िल्टर</span><span class="ml">Mica</span></td></tr>
+            <tr><td><strong>101</strong></td><td>100 pF</td><td>0.1 nF</td><td>—</td><td><span class="en">Bypass cap</span><span class="hi">बायपास कैप</span><span class="ml">Bypass</span></td></tr>
+            <tr><td><strong>102</strong></td><td>1000 pF</td><td>1 nF</td><td>—</td><td><span class="en">Decoupling</span><span class="hi">डीकपलिंग</span><span class="ml">Decoupling</span></td></tr>
+            <tr><td><strong>103</strong></td><td>10,000 pF</td><td>10 nF</td><td>0.01 µF</td><td><span class="en">Timer, filter</span><span class="hi">टाइमर, फ़िल्टर</span><span class="ml">Timer</span></td></tr>
+            <tr style="background:#FFF9E0"><td><strong>104</strong></td><td>100,000 pF</td><td>100 nF</td><td><strong>0.1 µF</strong></td><td><span class="en">Very common coupling</span><span class="hi">बहुत सामान्य कपलिंग</span><span class="ml">Common coupling</span></td></tr>
+            <tr><td><strong>105</strong></td><td>1,000,000 pF</td><td>1000 nF</td><td><strong>1 µF</strong></td><td><span class="en">Power supply filter</span><span class="hi">बिजली आपूर्ति फ़िल्टर</span><span class="ml">PSU filter</span></td></tr>
+            <tr><td><strong>224</strong></td><td>220,000 pF</td><td>220 nF</td><td>0.22 µF</td><td><span class="en">Motor run</span><span class="hi">मोटर रन</span><span class="ml">Motor</span></td></tr>
+            <tr><td><strong>474</strong></td><td>470,000 pF</td><td>470 nF</td><td>0.47 µF</td><td><span class="en">Audio filter</span><span class="hi">ऑडियो फ़िल्टर</span><span class="ml">Audio</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Right: Tolerance codes + polarity + voltage suffix -->
+      <div>
+        <div class="sh"><span class="en">Tolerance Letter Codes</span><span class="hi">सहनशीलता अक्षर कोड</span><span class="ml">Tolerance Codes</span></div>
+        <table class="dt" style="font-size:.9rem;margin-bottom:14px">
+          <thead><tr>
+            <th><span class="en">Letter</span><span class="hi">अक्षर</span><span class="ml">Letter</span></th>
+            <th><span class="en">Tolerance</span><span class="hi">सहनशीलता</span><span class="ml">Tolerance</span></th>
+            <th><span class="en">Typical cap type</span><span class="hi">सामान्य प्रकार</span><span class="ml">Type</span></th>
+          </tr></thead>
+          <tbody>
+            <tr><td><strong>B</strong></td><td>±0.1 pF</td><td><span class="en">Mica precision</span><span class="hi">माइका (सटीक)</span><span class="ml">Mica precision</span></td></tr>
+            <tr><td><strong>C</strong></td><td>±0.25 pF</td><td>Mica</td></tr>
+            <tr><td><strong>D</strong></td><td>±0.5 pF / ±0.5%</td><td>Mica / Ceramic</td></tr>
+            <tr><td><strong>F</strong></td><td>±1%</td><td>Film</td></tr>
+            <tr><td><strong>J</strong></td><td>±5%</td><td><span class="en">Common film/ceramic</span><span class="hi">सामान्य फ़िल्म/सिरेमिक</span><span class="ml">Film/Ceramic</span></td></tr>
+            <tr style="background:#FFF9E0"><td><strong>K</strong></td><td>±10%</td><td><span class="en">Most common (Mylar)</span><span class="hi">सबसे सामान्य (मायलर)</span><span class="ml">Most common</span></td></tr>
+            <tr><td><strong>M</strong></td><td>±20%</td><td><span class="en">Electrolytic</span><span class="hi">विद्युत अपघटनी</span><span class="ml">Electrolytic</span></td></tr>
+            <tr><td><strong>Z</strong></td><td>+80% / −20%</td><td><span class="en">Electrolytic (lowest grade)</span><span class="hi">इलेक्ट्रोलाइटिक (सबसे कम ग्रेड)</span><span class="ml">Electrolytic</span></td></tr>
+          </tbody>
+        </table>
+        <div class="sh"><span class="en">Reading a Full Marking — Example: "104K 50V"</span><span class="hi">पूर्ण अंकन पढ़ना — उदाहरण: "104K 50V"</span><span class="ml">Full Marking Example</span></div>
+        <div style="background:#F0F4FA;border-radius:8px;padding:12px 14px;font-size:.95rem;line-height:1.6">
+          <code style="font-size:1.2rem;font-weight:700;color:#0A5C8A;background:#E0EEF8;padding:2px 10px;border-radius:5px">104K 50V</code>
+          <br><br>
+          <span class="en">
+            <strong>10</strong> = first two digits (significant figures) &nbsp;→&nbsp; 10<br>
+            <strong>4</strong> = multiplier digit &nbsp;→&nbsp; add 4 zeros &nbsp;→&nbsp; 100,000 pF<br>
+            <strong>K</strong> = tolerance &nbsp;→&nbsp; ±10%<br>
+            <strong>50V</strong> = maximum working voltage &nbsp;→&nbsp; 50 Volts DC<br>
+            <strong>Final reading: 0.1 µF ±10%, 50V</strong>
+          </span>
+          <span class="hi">
+            <strong>10</strong> = पहले दो अंक → 10<br>
+            <strong>4</strong> = गुणक → 4 शून्य जोड़ें → 100,000 pF<br>
+            <strong>K</strong> = सहनशीलता → ±10%<br>
+            <strong>50V</strong> = अधिकतम कार्य वोल्टेज<br>
+            <strong>अंतिम: 0.1 µF ±10%, 50V</strong>
+          </span>
+          <span class="ml">
+            <strong>10</strong> = ആദ്യ 2 digits → 10<br>
+            <strong>4</strong> = multiplier → 4 zeros → 100,000 pF<br>
+            <strong>K</strong> = tolerance → ±10%<br>
+            <strong>50V</strong> = max working voltage<br>
+            <strong>Final: 0.1 µF ±10%, 50V</strong>
+          </span>
+        </div>
+        <div class="ib or" style="margin-top:12px;font-size:.9rem">
+          <strong>⚠️ <span class="en">Caution:</span><span class="hi">सावधानी:</span><span class="ml">ശ്രദ്ധ:</span></strong>
+          <span class="en"> The multiplier digit 9 is special — it means ×0.1 (not ×10⁹). So <strong>339</strong> = 33 × 0.1 = 3.3 pF, used in very high-frequency circuits.</span>
+          <span class="hi"> गुणक अंक 9 विशेष है — इसका मतलब ×0.1 है। इसलिए <strong>339</strong> = 33 × 0.1 = 3.3 pF।</span>
+          <span class="ml"> Multiplier digit 9 special ആണ് — ×0.1 അർഥം. <strong>339</strong> = 3.3 pF.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page 1 -->
+
+<!-- ════════════════════════════════════════════
+     PAGE 2 — CHARGE / DISCHARGE SIM
+═════════════════════════════════════════════ -->
+<div id="p2" class="pg">
+  <div class="card">
+    <div class="ctitle">⚙️ <span class="en">Select R and C Values</span>
+                            <span class="hi">R और C के मान चुनें</span>
+                            <span class="ml">R, C മൂല്യങ്ങൾ തിരഞ്ഞെടുക്കുക</span></div>
+    <div class="sc2">
+      <div class="cg">
+        <label>🔋 <span class="en">Supply Voltage (Vs)</span><span class="hi">आपूर्ति वोल्टेज</span><span class="ml">Supply Voltage</span></label>
+        <select id="sVs"><option value="6">6 V</option><option value="9">9 V</option>
+          <option value="12" selected>12 V</option><option value="24">24 V</option></select>
+      </div>
+      <div class="cg">
+        <label>🔷 <span class="en">Capacitor (C)</span><span class="hi">संधारित्र</span><span class="ml">Capacitor</span></label>
+        <select id="sC">
+          <option value="1e-4">100 µF — Electrolytic</option>
+          <option value="4.7e-4">470 µF — Electrolytic</option>
+          <option value="1e-3" selected>1000 µF — Electrolytic</option>
+          <option value="2.2e-3">2200 µF — Electrolytic</option>
+          <option value="1e-6">1 µF — Mylar</option>
+          <option value="4.7e-6">4.7 µF — Tantalum</option>
+          <option value="1e-10">100 pF — Mica</option>
+        </select>
+      </div>
+      <div class="cg">
+        <label>🟤 <span class="en">Resistance (R)</span><span class="hi">प्रतिरोध</span><span class="ml">Resistance</span></label>
+        <select id="sR">
+          <option value="100">100 Ω</option><option value="470">470 Ω</option>
+          <option value="1000" selected>1 kΩ</option><option value="4700">4.7 kΩ</option>
+          <option value="10000">10 kΩ</option><option value="47000">47 kΩ</option>
+          <option value="100000">100 kΩ</option>
+        </select>
+      </div>
+      <div class="cg">
+        <label>⏱ <span class="en">Animation Speed</span><span class="hi">एनीमेशन गति</span><span class="ml">Speed</span></label>
+        <input type="range" id="spd" min="1" max="10" value="5" oninput="document.getElementById('spdv').textContent=this.value+'×'">
+        <span class="rv" id="spdv">5×</span>
+      </div>
+    </div>
+    <div class="ib or" id="tauBox">τ = RC = <strong id="tauV">—</strong> &nbsp;|&nbsp; 5τ = <strong id="tau5V">—</strong>
+      &nbsp;(<span class="en">Fully charged in ~5τ</span><span class="hi">~5τ में पूर्ण चार्ज</span><span class="ml">~5τ-ൽ Fully charged</span>)</div>
+    <div class="sbr">
+      <button class="sb ch" id="btnC" onclick="doCharge()">▶ <span class="en">Start Charging</span><span class="hi">चार्ज शुरू</span><span class="ml">ചാർജ് തുടങ്ങുക</span></button>
+      <button class="sb dc" id="btnD" onclick="doDischarge()" disabled>⬇ <span class="en">Discharge</span><span class="hi">डिस्चार्ज</span><span class="ml">Discharge</span></button>
+      <button class="sb rs" onclick="doReset()">↺ <span class="en">Reset</span><span class="hi">रीसेट</span><span class="ml">Reset</span></button>
+    </div>
+  </div>
+
+  <!-- Circuit diagram -->
+  <div class="card">
+    <div class="ctitle">🔌 <span class="en">Circuit Diagram</span><span class="hi">परिपथ आरेख</span><span class="ml">Circuit Diagram</span></div>
+    <div style="overflow-x:auto;background:#FAFCFF;border:1.5px solid var(--border);border-radius:var(--radius);padding:12px">
+      <!--
+        CIRCUIT LAYOUT (top wire y=45, bottom wire y=215)
+        ┌──S1──[A]──[R]────S2(common)──S2pos1──────────────┐
+        |                         |                         |
+       Vs                    S2pos2(↓ discharge           [C] (plates at y=115,y=130)
+        |                    return wire to bottom)         |
+        └─────────────────────────────────────────────────--┘
+        Voltmeter V shown with dashed lines across C plates.
+      -->
+      <svg id="cktSvg" viewBox="0 0 710 245" width="710" style="max-width:100%;display:block;margin:0 auto">
+
+        <!-- ── BATTERY (left side, x=55) ── -->
+        <line x1="55" y1="45" x2="55" y2="215" stroke="#444" stroke-width="2"/>
+        <!-- 4 cell pairs -->
+        <line x1="41" y1="75"  x2="69" y2="75"  stroke="#0A5C8A" stroke-width="5"/>
+        <line x1="46" y1="88"  x2="64" y2="88"  stroke="#0A5C8A" stroke-width="2"/>
+        <line x1="41" y1="102" x2="69" y2="102" stroke="#0A5C8A" stroke-width="5"/>
+        <line x1="46" y1="115" x2="64" y2="115" stroke="#0A5C8A" stroke-width="2"/>
+        <text x="78" y="100" font-size="14" fill="#0A5C8A" font-weight="bold">Vs</text>
+        <text x="60"  y="72"  font-size="12" fill="#333">+</text>
+        <text x="60"  y="122" font-size="12" fill="#333">−</text>
+
+        <!-- ── OUTER RECTANGLE WIRES ── -->
+        <!-- Top wire: battery+ → S1 → A → R → S2 common -->
+        <line x1="55"  y1="45" x2="490" y2="45" stroke="#444" stroke-width="2"/>
+        <!-- Bottom wire: battery− → discharge return → capacitor bottom -->
+        <line x1="55"  y1="215" x2="645" y2="215" stroke="#444" stroke-width="2"/>
+        <!-- Right wire: top right corner down to capacitor top plate -->
+        <line x1="645" y1="45"  x2="645" y2="110" stroke="#444" stroke-width="2"/>
+        <!-- Right wire: capacitor bottom plate down to bottom rail -->
+        <line x1="645" y1="130" x2="645" y2="215" stroke="#444" stroke-width="2"/>
+
+        <!-- ── SWITCH S1 (x=130 to 175, y=45) ── -->
+        <circle cx="130" cy="45" r="4" fill="#555"/>
+        <circle cx="175" cy="45" r="4" fill="#555"/>
+        <!-- arm: open state (angled up ~25°) closed = arm goes to (175,45) -->
+        <line id="sw1" x1="130" y1="45" x2="167" y2="33" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+        <text x="140" y="30" font-size="12" fill="#444" font-weight="600">S1</text>
+
+        <!-- ── WIRE: S1 right contact → Ammeter left ── -->
+        <line x1="175" y1="45" x2="238" y2="45" stroke="#444" stroke-width="2"/>
+
+        <!-- ── AMMETER (cx=260, cy=45, r=20) ── -->
+        <circle cx="260" cy="45" r="20" fill="#FFFCE0" stroke="#D97706" stroke-width="2.5"/>
+        <text x="260" y="50" text-anchor="middle" font-size="13" fill="#D97706" font-weight="bold">A</text>
+        <text x="260" y="17" text-anchor="middle" font-size="10" fill="#888">mA</text>
+        <line x1="280" y1="45" x2="310" y2="45" stroke="#444" stroke-width="2"/>
+
+        <!-- ── RESISTOR R (x=310 to 400, y=45) ── -->
+        <rect x="310" y="32" width="90" height="26" rx="5" fill="#FFF0D0" stroke="#8B4513" stroke-width="2"/>
+        <text x="355" y="48" text-anchor="middle" font-size="13" fill="#8B4513" font-weight="bold">R</text>
+        <text x="355" y="28" text-anchor="middle" font-size="11" fill="#666" id="rLbl">1 kΩ</text>
+        <line x1="400" y1="45" x2="440" y2="45" stroke="#444" stroke-width="2"/>
+
+        <!-- ── S2 TWO-WAY SWITCH ──────────────────────────────
+             Common pivot : (490, 45)  — on the wire from R
+             Pos1 contact  : (545, 45)  — same y, continues right → capacitor top
+             Pos2 contact  : (545,100)  — below, wire drops to bottom rail
+             Switch arm shows pos1 (charging) by default.
+        ──────────────────────────────────────────────────── -->
+        <!-- Common pivot dot (filled) -->
+        <circle cx="490" cy="45" r="5" fill="#444"/>
+        <!-- Pos1 contact dot -->
+        <circle cx="545" cy="45" r="4.5" fill="#1A7F4B"/>
+        <!-- Pos2 contact dot -->
+        <circle cx="545" cy="100" r="4.5" fill="#B91C1C"/>
+        <!-- Thin guide line connecting the two contacts (shows the contact rail) -->
+        <line x1="545" y1="45" x2="545" y2="100" stroke="#CCC" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <!-- Switch arm (default = pos1 charging: horizontal) -->
+        <line id="sw2" x1="490" y1="45" x2="541" y2="46" stroke="#444" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Labels -->
+        <text x="493" y="32" font-size="12" fill="#444" font-weight="600">S2</text>
+        <text x="552" y="42" font-size="10" fill="#1A7F4B" font-weight="700">pos1 →</text>
+        <text x="552" y="104" font-size="10" fill="#B91C1C" font-weight="700">pos2</text>
+
+        <!-- ── WIRE: S2 pos1 → right corner ── -->
+        <line x1="545" y1="45" x2="645" y2="45" stroke="#444" stroke-width="2"/>
+
+        <!-- ── DISCHARGE RETURN WIRE: S2 pos2 → bottom rail ──
+             When S2 is at pos2 the capacitor discharges:
+             C(+) top → top rail → S2 pivot → arm → pos2 → this wire ↓ → bottom rail → C(−)
+        ── -->
+        <line x1="545" y1="100" x2="545" y2="215" stroke="#B03070" stroke-width="1.5" stroke-dasharray="7,4"/>
+        <!-- small junction dot where discharge wire meets bottom rail -->
+        <circle cx="545" cy="215" r="4" fill="#B03070"/>
+        <text x="550" y="190" font-size="9" fill="#B03070" font-style="italic">discharge</text>
+        <text x="550" y="202" font-size="9" fill="#B03070" font-style="italic">path</text>
+
+        <!-- ── CAPACITOR (right side, x=645) ──
+             Top plate at y=110, bottom plate at y=130
+             Labels to the right
+        ── -->
+        <!-- Top plate -->
+        <line x1="622" y1="110" x2="668" y2="110" stroke="#0A5C8A" stroke-width="6"/>
+        <!-- Bottom plate -->
+        <line x1="622" y1="130" x2="668" y2="130" stroke="#0A5C8A" stroke-width="6"/>
+        <!-- Capacitor symbol "C" label -->
+        <text x="675" y="117" font-size="13" fill="#0A5C8A" font-weight="bold">C</text>
+        <!-- Value label (x1) -->
+        <text x="675" y="130" font-size="11" fill="#555" id="cLbl">1000µF</text>
+        <!-- Voltage rating label (x2) — added as requested -->
+        <text x="675" y="143" font-size="10" fill="#888" id="vLbl">25 V</text>
+
+        <!-- ── VOLTMETER V (measures across capacitor) ──
+             Connects with dashed lines:
+             Top node  = junction of right wire and cap top plate  (645, 110)
+             Bottom node = junction of right wire and cap bot plate (645, 130)
+             Circle placed at x=598, y=158 with tidy dashed leads.
+        ── -->
+        <circle cx="598" cy="165" r="21" fill="#ECFDF5" stroke="#1A7F4B" stroke-width="2.5"/>
+        <text x="598" y="170" text-anchor="middle" font-size="13" fill="#1A7F4B" font-weight="bold">V</text>
+        <!-- Top lead: circle top → junction at right-wire, cap top -->
+        <line x1="598" y1="144" x2="598" y2="110" stroke="#1A7F4B" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <line x1="598" y1="110" x2="622" y2="110" stroke="#1A7F4B" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <!-- Bottom lead: circle bottom → junction at right-wire, cap bottom -->
+        <line x1="598" y1="186" x2="598" y2="215" stroke="#1A7F4B" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <line x1="598" y1="215" x2="622" y2="215" stroke="#1A7F4B" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <!-- "Vc" label -->
+        <text x="624" y="160" font-size="11" fill="#1A7F4B" font-weight="600">Vc</text>
+
+        <!-- ── CURRENT FLOW ARROW (animated, on top wire) ── -->
+        <polygon id="arr" points="110,45 95,38 95,52" fill="#D97706" opacity="0"/>
+
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── Live meters (5 boxes: top row 3, bottom row 2) ── -->
+  <div class="mr5">
+    <div class="mb">
+      <div class="ml2">Vc — <span class="en">Cap Voltage</span><span class="hi">संधारित्र V</span><span class="ml">Cap V</span></div>
+      <div class="mv" id="mVc">0.00</div><div class="mu">V</div>
+    </div>
+    <div class="mb">
+      <div class="ml2">I — <span class="en">Current</span><span class="hi">धारा</span><span class="ml">Current</span></div>
+      <div class="mv" id="mI">0.00</div><div class="mu">mA</div>
+    </div>
+    <div class="mb">
+      <div class="ml2">Vr — <span class="en">Resistor V</span><span class="hi">प्रतिरोधक V</span><span class="ml">Resistor V</span></div>
+      <div class="mv" id="mVr">0.00</div><div class="mu">V</div>
+    </div>
+  </div>
+  <div class="mr2">
+    <div class="mb pct">
+      <div class="ml2">% <span class="en">Charged</span><span class="hi">चार्ज</span><span class="ml">Charged</span></div>
+      <div class="mv" id="mPct">0.0</div><div class="mu">%</div>
+    </div>
+    <div class="mb egy">
+      <div class="ml2">E = ½CV² <span class="en">(Energy stored)</span><span class="hi">(संग्रहीत ऊर्जा)</span><span class="ml">(Energy stored)</span></div>
+      <div class="mv" id="mEgy">0.00</div><div class="mu" id="mEgyU">µJ</div>
+    </div>
+  </div>
+
+  <!-- ── τ Quick Reference card ────────────────────────────────────────── -->
+  <div class="card">
+    <div class="ctitle">📐 <span class="en">Time Constant (τ) Quick Reference</span>
+                            <span class="hi">समय स्थिरांक (τ) त्वरित संदर्भ</span>
+                            <span class="ml">Time Constant (τ) Reference</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;flex-wrap:wrap">
+      <div>
+        <div class="sh"><span class="en">Charging Milestones</span><span class="hi">चार्जिंग मील के पत्थर</span><span class="ml">Charging Milestones</span></div>
+        <table class="tau-ref">
+          <thead><tr>
+            <th><span class="en">Time</span><span class="hi">समय</span><span class="ml">Time</span></th>
+            <th>Vc / Vs (%)</th>
+            <th>Vc = <span id="tauVsRef">12</span> V × …</th>
+          </tr></thead>
+          <tbody>
+            <tr class="hi63"><td>1τ</td><td>63.2 %</td><td id="r1t">7.58 V</td></tr>
+            <tr><td>2τ</td><td>86.5 %</td><td id="r2t">10.38 V</td></tr>
+            <tr><td>3τ</td><td>95.0 %</td><td id="r3t">11.40 V</td></tr>
+            <tr><td>4τ</td><td>98.2 %</td><td id="r4t">11.78 V</td></tr>
+            <tr><td>5τ</td><td>99.3 %</td><td id="r5t">11.92 V</td></tr>
+          </tbody>
+        </table>
+        <div class="ib or" style="margin-top:10px;font-size:.9rem">
+          <strong><span class="en">Key rule:</span><span class="hi">मुख्य नियम:</span><span class="ml">Key rule:</span></strong>
+          <span class="en"> At exactly 1τ the capacitor is always <strong>63.2%</strong> charged — regardless of R, C or Vs values. This is the most important number to memorise.</span>
+          <span class="hi"> ठीक 1τ पर संधारित्र हमेशा <strong>63.2%</strong> चार्ज होता है — R, C या Vs के मान से स्वतंत्र।</span>
+          <span class="ml"> 1τ-ൽ capacitor എല്ലായ്‌പ്പോഴും <strong>63.2%</strong> charged ആകുന്നു — R, C, Vs values-ൽ നിന്ന് independent.</span>
+        </div>
+      </div>
+      <div>
+        <div class="sh"><span class="en">Key Formulas</span><span class="hi">मुख्य सूत्र</span><span class="ml">Formulas</span></div>
+        <div class="fbox">τ = R × C</div>
+        <div class="fbox">Vc(charge) = Vs × (1 − e<sup>−t/τ</sup>)</div>
+        <div class="fbox">Vc(discharge) = V₀ × e<sup>−t/τ</sup></div>
+        <div class="fbox">E = ½ × C × Vc²</div>
+        <div class="fbox">Q = C × Vc</div>
+        <div class="ib gr" style="font-size:.9rem;margin-top:10px">
+          <span class="en"><strong>e = 2.718</strong> (Euler's number). The letter <em>e</em> here is the mathematical constant, not a voltage. The negative exponent (−t/τ) means the value decays — the larger t gets relative to τ, the closer to zero the term becomes.</span>
+          <span class="hi"><strong>e = 2.718</strong> (यूलर की संख्या)। यहाँ <em>e</em> गणितीय स्थिरांक है, वोल्टेज नहीं।</span>
+          <span class="ml"><strong>e = 2.718</strong> (Euler's number). ഇവിടെ <em>e</em> mathematical constant ആണ്, voltage അല്ല.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Graph ─────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="ctitle">📊 <span class="en">Voltage / Current vs Time — with % Charge markers</span><span class="hi">वोल्टेज / धारा बनाम समय — % चार्ज मार्कर सहित</span><span class="ml">Voltage vs Time — % markers</span></div>
+    <div class="cw"><canvas id="gCanvas" height="300"></canvas></div>
+    <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:.93rem;margin-top:6px">
+      <span style="color:#D97706">■ Vc <span class="en">(Capacitor voltage)</span><span class="hi">(संधारित्र वोल्टेज)</span><span class="ml">(Cap voltage)</span></span>
+      <span style="color:#0A5C8A">■ Vr <span class="en">(Resistor voltage)</span><span class="hi">(प्रतिरोधक वोल्टेज)</span><span class="ml">(Resistor V)</span></span>
+      <span style="color:#B91C1C">- - I <span class="en">(Current, scaled)</span><span class="hi">(धारा, स्केल्ड)</span><span class="ml">(Current)</span></span>
+      <span style="color:#7C3AED">┊ nτ <span class="en">markers with % charge</span><span class="hi">मार्कर % चार्ज सहित</span><span class="ml">% markers</span></span>
+    </div>
+  </div>
+
+  <!-- Observation table -->
+  <div class="card">
+    <div class="ctitle">📋 <span class="en">Observation Table</span><span class="hi">अवलोकन तालिका</span><span class="ml">നിരീക്ഷണ പട്ടിക</span></div>
+    <div class="tw">
+      <table class="dt">
+        <thead><tr>
+          <th>#</th>
+          <th><span class="en">Phase</span><span class="hi">चरण</span><span class="ml">ഘട്ടം</span></th>
+          <th><span class="en">Time (s)</span><span class="hi">समय (s)</span><span class="ml">Time</span></th>
+          <th>Vc (V)</th><th>Vr (V)</th><th>I (mA)</th>
+          <th style="color:#7C3AED">% <span class="en">Charged</span><span class="hi">चार्ज</span><span class="ml">Charged</span></th>
+          <th style="color:#065F46">E = ½CV²</th>
+          <th><span class="en">Remark</span><span class="hi">टिप्पणी</span><span class="ml">ശ്രദ്ധ</span></th>
+        </tr></thead>
+        <tbody id="obsTb"></tbody>
+      </table>
+    </div>
+    <button class="tbn" onclick="clearObs()">🗑 <span class="en">Clear Table</span><span class="hi">तालिका साफ</span><span class="ml">Clear</span></button>
+  </div>
+
+  <!-- Conclusions -->
+  <div class="card">
+    <div class="ctitle">📝 <span class="en">Conclusions</span><span class="hi">निष्कर्ष</span><span class="ml">നിഗമനം</span></div>
+    <div class="ib or"><strong><span class="en">Charging:</span><span class="hi">चार्जिंग:</span><span class="ml">ചാർജ്ജ്:</span></strong>
+      <span class="en"> Vc rises exponentially (Vc = Vs(1−e^−t/τ)). Current and Vr decrease. Rate depends on τ = RC.</span>
+      <span class="hi"> Vc घातांकीय रूप से बढ़ता है। धारा और Vr घटते हैं। दर τ = RC पर निर्भर।</span>
+      <span class="ml"> Vc exponential-ആയി ഉയരുന്നു. Current, Vr കുറയുന്നു. τ = RC.</span></div>
+    <div class="ib gr"><strong><span class="en">Fully Charged (at ~5τ):</span><span class="hi">पूर्ण चार्ज (~5τ पर):</span><span class="ml">Fully Charged:</span></strong>
+      <span class="en"> Vc = Vs. Current = 0. Vr = 0. Capacitor acts as open circuit in DC steady state.</span>
+      <span class="hi"> Vc = Vs. धारा = 0. संधारित्र खुले परिपथ जैसा।</span>
+      <span class="ml"> Vc = Vs. Current = 0. Capacitor open circuit-ആകുന്നു.</span></div>
+    <div class="ib rd"><strong><span class="en">Discharging:</span><span class="hi">डिस्चार्जिंग:</span><span class="ml">Discharge:</span></strong>
+      <span class="en"> Vc falls exponentially (Vc = V₀·e^−t/τ). Discharge current flows opposite to charge current. Both reach zero in ~5τ.</span>
+      <span class="hi"> Vc घातांकीय रूप से घटता है। डिस्चार्ज धारा विपरीत दिशा में।</span>
+      <span class="ml"> Vc exponential-ആയി കുറയുന്നു. Discharge current opposite direction-ൽ.</span></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 3 — OHMMETER TEST
+═════════════════════════════════════════════ -->
+<div id="p3" class="pg">
+  <div class="card">
+    <div class="ctitle">🧪 <span class="en">Task 3 — Testing Capacitor with Ohmmeter</span>
+                            <span class="hi">कार्य 3 — ओममीटर से संधारित्र परीक्षण</span>
+                            <span class="ml">ടാസ്ക് 3 — ഓംമീറ്റർ ഉപയോഗിച്ച് Test</span></div>
+    <div class="ib bl">
+      <span class="en">Select the condition of the capacitor, click Test, and observe the needle behavior on the simulated ohmmeter.</span>
+      <span class="hi">संधारित्र की स्थिति चुनें, टेस्ट करें और सुई का व्यवहार देखें।</span>
+      <span class="ml">Capacitor-ന്റെ condition തിരഞ്ഞെടുക്കുക, Test ക്ലിക്ക് ചെയ്ത് needle നിരീക്ഷിക്കുക.</span>
+    </div>
+
+    <div class="og">
+      <div>
+        <div class="sh"><span class="en">Select Condition</span><span class="hi">स्थिति चुनें</span><span class="ml">Condition</span></div>
+        <button class="ocb on" onclick="setCond('good',this)">✅ <span class="en">Good Capacitor</span><span class="hi">अच्छा संधारित्र</span><span class="ml">Good</span></button>
+        <button class="ocb" onclick="setCond('open',this)">⭕ <span class="en">Open (Broken)</span><span class="hi">खुला (टूटा)</span><span class="ml">Open</span></button>
+        <button class="ocb" onclick="setCond('short',this)">⚡ <span class="en">Short Circuit</span><span class="hi">शॉर्ट सर्किट</span><span class="ml">Short Circuit</span></button>
+        <button class="ocb" onclick="setCond('leak',this)">💧 <span class="en">Leaky</span><span class="hi">रिसाव (लीकी)</span><span class="ml">Leaky</span></button>
+        <button class="sb ch" style="width:100%;margin-top:12px" onclick="runTest()">▶ <span class="en">Run Ohmmeter Test</span><span class="hi">परीक्षण करें</span><span class="ml">Test നടത്തുക</span></button>
+        <div class="orb" id="orb"></div>
+
+        <div class="sh" style="margin-top:20px"><span class="en">NIMI Reference Table</span><span class="hi">NIMI संदर्भ तालिका</span><span class="ml">Reference Table</span></div>
+        <table class="dt" style="font-size:.9rem">
+          <thead><tr>
+            <th><span class="en">Meter Reading</span><span class="hi">मीटर रीडिंग</span><span class="ml">Reading</span></th>
+            <th><span class="en">Condition</span><span class="hi">स्थिति</span><span class="ml">Condition</span></th>
+          </tr></thead>
+          <tbody>
+            <tr><td><span class="en">Shows some resistance</span><span class="hi">कुछ प्रतिरोध</span><span class="ml">Some resistance</span></td><td>⚠️ <span class="en">Leakage</span><span class="hi">रिसाव</span><span class="ml">Leakage</span></td></tr>
+            <tr><td><span class="en">No deflection (∞)</span><span class="hi">कोई विक्षेप नहीं</span><span class="ml">No deflection</span></td><td>⭕ <span class="en">Open</span><span class="hi">खुला</span><span class="ml">Open</span></td></tr>
+            <tr><td><span class="en">Deflects then returns</span><span class="hi">विक्षेपित → लौटता</span><span class="ml">Deflects &amp; returns</span></td><td>✅ <span class="en">Good</span><span class="hi">अच्छा</span><span class="ml">Good</span></td></tr>
+            <tr><td><span class="en">Stays at 0 Ω</span><span class="hi">0 Ω पर रहता</span><span class="ml">Stays at 0Ω</span></td><td>⚡ <span class="en">Short</span><span class="hi">शॉर्ट</span><span class="ml">Short</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="sh"><span class="en">Ohmmeter Display</span><span class="hi">ओममीटर डिस्प्ले</span><span class="ml">Display</span></div>
+        <div style="display:flex;justify-content:center;align-items:center;min-height:300px">
+          <svg id="oSvg" viewBox="0 0 320 300" width="300" style="max-width:100%">
+            <!-- Body -->
+            <rect x="10" y="10" width="300" height="280" rx="16" fill="#F8FAFB" stroke="#0A5C8A" stroke-width="3"/>
+            <rect x="22" y="20" width="276" height="130" rx="8" fill="#FFFEF8" stroke="#CCC" stroke-width="1"/>
+            <!-- Scale arc -->
+            <path d="M 45 148 A 115 115 0 0 1 275 148" fill="none" stroke="#DDE" stroke-width="18"/>
+            <!-- ∞ mark -->
+            <text x="42" y="155" font-size="13" fill="#333" text-anchor="middle">∞</text>
+            <!-- 0 mark -->
+            <text x="278" y="155" font-size="13" fill="#333" text-anchor="middle">0</text>
+            <!-- Mid marks -->
+            <text x="100" y="42" font-size="10" fill="#555" text-anchor="middle">100k</text>
+            <text x="148" y="28" font-size="10" fill="#555" text-anchor="middle">10k</text>
+            <text x="200" y="34" font-size="10" fill="#555" text-anchor="middle">1k</text>
+            <text x="240" y="58" font-size="10" fill="#555" text-anchor="middle">100</text>
+            <!-- Tick lines drawn via JS -->
+            <g id="oTicks"></g>
+            <!-- Pivot -->
+            <circle cx="160" cy="148" r="5" fill="#333"/>
+            <!-- Needle group: rotate around pivot 160,148 -->
+            <g id="oNeedle" transform="rotate(-80,160,148)">
+              <line x1="160" y1="148" x2="160" y2="38" stroke="#B91C1C" stroke-width="2.5" stroke-linecap="round"/>
+              <polygon points="160,33 155,48 165,48" fill="#B91C1C"/>
+            </g>
+            <!-- Labels -->
+            <text x="160" y="180" text-anchor="middle" font-size="13" font-weight="bold" fill="#0A5C8A" font-family="Rajdhani,Arial">OHMMETER</text>
+            <text x="160" y="194" text-anchor="middle" font-size="10" fill="#888">× 1 kΩ</text>
+            <text id="oMsg" x="160" y="215" text-anchor="middle" font-size="11" fill="#1A7F4B" font-weight="bold"></text>
+            <!-- Terminals -->
+            <rect x="110" y="228" width="38" height="22" rx="5" fill="#B91C1C"/>
+            <text x="129" y="243" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">−</text>
+            <rect x="172" y="228" width="38" height="22" rx="5" fill="#111"/>
+            <text x="191" y="243" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">+</text>
+            <text x="129" y="262" text-anchor="middle" font-size="10" fill="#666">COM</text>
+            <text x="191" y="262" text-anchor="middle" font-size="10" fill="#666">Ω</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 4 — OHMMETER THEORY
+═════════════════════════════════════════════ -->
+<div id="p4" class="pg">
+  <div class="card">
+    <div class="ctitle">📖 <span class="en">Ohmmeter — Construction &amp; Operation</span>
+                            <span class="hi">ओममीटर — संरचना और संचालन</span>
+                            <span class="ml">ഓംമീറ്റർ — നിർമ്മാണം &amp; പ്രവർത്തനം</span></div>
+
+    <div class="ib bl" style="margin-bottom:14px">
+      <strong><span class="en">What is an Ohmmeter?</span><span class="hi">ओममीटर क्या है?</span><span class="ml">ഓംമീറ്റർ എന്ത്?</span></strong>
+      <span class="en"> An instrument that measures resistance directly in ohms (Ω). It contains an internal battery that passes current through the unknown resistor. Key point: the ohmmeter scale is <em>non-linear and right-to-left</em> — 0 Ω is on the right, ∞ is on the left.</span>
+      <span class="hi"> ओम (Ω) में प्रतिरोध सीधे मापने वाला यंत्र। इसमें आंतरिक बैटरी होती है। स्केल अरेखीय और उल्टा है — दाईं तरफ 0Ω, बाईं तरफ ∞।</span>
+      <span class="ml"> Resistance നേരിട്ട് Ohm-ൽ അളക്കുന്ന ഉപകരണം. Internal battery ഉണ്ട്. Scale non-linear, right-to-left — right = 0Ω, left = ∞.</span>
+    </div>
+
+    <div class="ttabs">
+      <button class="ttb on" onclick="showT('ts',this)">🔗 <span class="en">Series Ohmmeter</span><span class="hi">श्रेणी ओममीटर</span><span class="ml">Series</span></button>
+      <button class="ttb"    onclick="showT('tsh',this)">⚡ <span class="en">Shunt Ohmmeter</span><span class="hi">शंट ओममीटर</span><span class="ml">Shunt</span></button>
+      <button class="ttb"    onclick="showT('tcmp',this)">⚖ <span class="en">Comparison</span><span class="hi">तुलना</span><span class="ml">താരതമ്യം</span></button>
+    </div>
+
+    <!-- SERIES -->
+    <div class="tc on" id="ts">
+      <div class="t2c">
+        <div>
+          <div class="sh"><span class="en">Components</span><span class="hi">घटक</span><span class="ml">ഘടകങ്ങൾ</span></div>
+          <div class="fr"><div class="fi">🔋</div><div class="ft"><strong><span class="en">Battery (E):</span><span class="hi">बैटरी (E):</span><span class="ml">Battery (E):</span></strong>
+            <span class="en"> Provides test current. Typically 1.5 V. The meter is powered by this — never measure a live circuit.</span>
+            <span class="hi"> परीक्षण धारा। आमतौर पर 1.5V। लाइव परिपथ में कभी न मापें।</span>
+            <span class="ml"> Test current. 1.5V. Live circuit-ൽ അളക്കരുത്.</span></div></div>
+          <div class="fr"><div class="fi">〰️</div><div class="ft"><strong><span class="en">Galvanometer (G):</span><span class="hi">गैल्वेनोमीटर (G):</span><span class="ml">Galvanometer (G):</span></strong>
+            <span class="en"> Sensitive current detector. Needle deflects in proportion to current flowing through it.</span>
+            <span class="hi"> संवेदनशील धारा संकेतक। सुई धारा के अनुपात में विक्षेपित होती है।</span>
+            <span class="ml"> Sensitive current indicator. Current-ന് proportion-ൽ needle deflect.</span></div></div>
+          <div class="fr"><div class="fi">🔲</div><div class="ft"><strong><span class="en">Series Resistor (R₁):</span><span class="hi">श्रेणी प्रतिरोधक (R₁):</span><span class="ml">R₁:</span></strong>
+            <span class="en"> Fixed resistor to limit maximum current and protect the galvanometer from damage.</span>
+            <span class="hi"> अधिकतम धारा सीमित करने और गैल्वेनोमीटर सुरक्षा के लिए।</span>
+            <span class="ml"> Maximum current limit. Galvanometer protection.</span></div></div>
+          <div class="fr"><div class="fi">🎛</div><div class="ft"><strong><span class="en">Zero Adjust (Rz):</span><span class="hi">शून्य समायोजन (Rz):</span><span class="ml">Zero Adjust (Rz):</span></strong>
+            <span class="en"> Variable resistor. Before each use, short the test leads and adjust Rz until the needle reads exactly 0 Ω. This corrects for battery aging.</span>
+            <span class="hi"> उपयोग से पहले लीड शॉर्ट करके सुई को 0Ω पर सेट करें — बैटरी क्षय की भरपाई।</span>
+            <span class="ml"> Leads short ചെയ്ത് needle 0Ω-ൽ set ചെയ്യുക. Battery ageing compensate.</span></div></div>
+          <div class="fr"><div class="fi">🔌</div><div class="ft"><strong><span class="en">Test Terminals (P, Q):</span><span class="hi">परीक्षण टर्मिनल (P, Q):</span><span class="ml">P, Q terminals:</span></strong>
+            <span class="en"> Unknown resistance Rx is connected here in series with the rest of the circuit.</span>
+            <span class="hi"> अज्ञात प्रतिरोध Rx यहाँ जोड़ा जाता है।</span>
+            <span class="ml"> Rx ഇവിടെ ബന്ധിക്കുന്നു.</span></div></div>
+        </div>
+        <div>
+          <!-- Series ohmmeter circuit SVG -->
+          <svg viewBox="0 0 300 250" style="width:100%;max-width:300px;display:block;margin:0 auto;background:#FAFCFF;border:1px solid #DDE;border-radius:8px;padding:8px">
+            <!-- Battery -->
+            <rect x="15" y="95" width="36" height="60" rx="4" fill="#FEF9E7" stroke="#D97706" stroke-width="2"/>
+            <line x1="24" y1="110" x2="42" y2="110" stroke="#0A5C8A" stroke-width="3"/><line x1="28" y1="121" x2="38" y2="121" stroke="#0A5C8A" stroke-width="1.5"/>
+            <line x1="24" y1="133" x2="42" y2="133" stroke="#0A5C8A" stroke-width="3"/><line x1="28" y1="144" x2="38" y2="144" stroke="#0A5C8A" stroke-width="1.5"/>
+            <text x="33" y="90" text-anchor="middle" font-size="11" fill="#666">E</text>
+            <!-- wires -->
+            <line x1="33" y1="95" x2="33" y2="45" stroke="#333" stroke-width="2"/>
+            <line x1="33" y1="45" x2="270" y2="45" stroke="#333" stroke-width="2"/>
+            <line x1="33" y1="155" x2="33" y2="205" stroke="#333" stroke-width="2"/>
+            <line x1="33" y1="205" x2="270" y2="205" stroke="#333" stroke-width="2"/>
+            <!-- R1 -->
+            <rect x="60" y="33" width="48" height="24" rx="4" fill="#FFF0D0" stroke="#8B4513" stroke-width="2"/>
+            <text x="84" y="49" text-anchor="middle" font-size="12" fill="#8B4513" font-weight="bold">R₁</text>
+            <!-- Rz -->
+            <rect x="128" y="33" width="48" height="24" rx="4" fill="#ECFDF5" stroke="#1A7F4B" stroke-width="2"/>
+            <text x="152" y="46" text-anchor="middle" font-size="11" fill="#1A7F4B" font-weight="bold">Rz</text>
+            <text x="152" y="58" text-anchor="middle" font-size="9" fill="#888">zero adj</text>
+            <!-- G -->
+            <circle cx="230" cy="125" r="24" fill="#E9F2FB" stroke="#0A5C8A" stroke-width="2"/>
+            <text x="230" y="121" text-anchor="middle" font-size="11" fill="#0A5C8A" font-weight="bold">G</text>
+            <text x="230" y="135" text-anchor="middle" font-size="9" fill="#666">galv</text>
+            <line x1="230" y1="45" x2="230" y2="101" stroke="#333" stroke-width="2"/>
+            <line x1="230" y1="149" x2="230" y2="205" stroke="#333" stroke-width="2"/>
+            <!-- Terminals + Rx -->
+            <circle cx="265" cy="205" r="5" fill="#B91C1C"/>
+            <circle cx="265" cy="45" r="5" fill="#333"/>
+            <text x="260" y="222" font-size="10" fill="#B91C1C">P</text>
+            <text x="260" y="38" font-size="10" fill="#333">Q</text>
+            <rect x="240" y="155" width="50" height="24" rx="4" fill="#FEE2E2" stroke="#B91C1C" stroke-width="2" stroke-dasharray="5,3"/>
+            <text x="265" y="170" text-anchor="middle" font-size="11" fill="#B91C1C" font-weight="bold">Rx</text>
+            <text x="265" y="148" text-anchor="middle" font-size="9" fill="#888">Unknown</text>
+            <line x1="265" y1="155" x2="265" y2="149" stroke="#B91C1C" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <line x1="265" y1="179" x2="265" y2="205" stroke="#B91C1C" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <!-- Current arrow -->
+            <polygon points="80,45 68,39 68,51" fill="#D97706"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="sh" style="margin-top:16px"><span class="en">How It Works — Step by Step</span><span class="hi">यह कैसे काम करता है</span><span class="ml">പ്രവർത്തനം</span></div>
+      <ol class="sl">
+        <li><span class="en">Short the test leads P and Q together. Adjust Rz until the needle reads exactly <strong>0 Ω</strong> (full deflection, right side). This is called <strong>zero-ohm adjustment</strong> and compensates for battery wear.</span>
+            <span class="hi">P और Q को शॉर्ट करें। Rz को तब तक घुमाएं जब तक सुई <strong>0Ω</strong> न दिखाए। इसे <strong>शून्य ओम समायोजन</strong> कहते हैं।</span>
+            <span class="ml">P, Q short ചെയ്യുക. Rz adjust ചെയ്ത് needle <strong>0Ω</strong> കാണിക്കുന്നത് വരെ. ഇതാണ് zero-ohm adjustment.</span></li>
+        <li><span class="en">Connect unknown resistance Rx between terminals P and Q.</span>
+            <span class="hi">अज्ञात प्रतिरोध Rx को P और Q टर्मिनलों के बीच जोड़ें।</span>
+            <span class="ml">Rx, P-Q terminals-ൽ ബന്ധിക്കുക.</span></li>
+        <li><span class="en">The battery drives a current: <strong>I = E ÷ (R₁ + Rz + Rx)</strong>. Larger Rx → smaller current → less deflection → needle reads higher ohm value.</span>
+            <span class="hi">बैटरी धारा चलाती है: I = E ÷ (R₁ + Rz + Rx)। बड़ा Rx → कम धारा → कम विक्षेप → अधिक ओम।</span>
+            <span class="ml">I = E ÷ (R₁ + Rz + Rx). Rx വലുത് → Current കുറവ് → Deflection കുറവ് → കൂടുതൽ ohms.</span></li>
+        <li><span class="en">When leads are open (Rx = ∞): I = 0, needle stays at ∞ (left). When shorted (Rx = 0): I = maximum, needle at 0 Ω (right).</span>
+            <span class="hi">खुले लीड (Rx=∞): I=0, सुई ∞ पर। शॉर्ट (Rx=0): I अधिकतम, सुई 0Ω पर।</span>
+            <span class="ml">Open (Rx=∞): I=0 → ∞. Short (Rx=0): I=max → 0Ω.</span></li>
+        <li><span class="en">Read the resistance value directly from the ohm scale on the meter face.</span>
+            <span class="hi">मीटर फेस पर ओम स्केल से प्रतिरोध पढ़ें।</span>
+            <span class="ml">Meter-ൽ ohm scale-ൽ നിന്ന് resistance വായിക്കുക.</span></li>
+      </ol>
+      <div class="ib or">
+        <strong>⚠️ <span class="en">Important:</span><span class="hi">महत्त्वपूर्ण:</span><span class="ml">പ്രധാനം:</span></strong>
+        <span class="en"> Always zero-adjust before each measurement. Never measure resistance on a live (powered) circuit — the internal battery and the external supply will conflict and damage the meter.</span>
+        <span class="hi"> प्रत्येक माप से पहले शून्य समायोजन करें। लाइव परिपथ में कभी न मापें।</span>
+        <span class="ml"> ഓരോ measurement-ഉം zero adjust ചെയ്യുക. Live circuit-ൽ resistance അളക്കരുത്.</span>
+      </div>
+    </div>
+
+    <!-- SHUNT -->
+    <div class="tc" id="tsh">
+      <div class="t2c">
+        <div>
+          <div class="sh"><span class="en">Key Difference from Series Type</span><span class="hi">श्रेणी प्रकार से मुख्य अंतर</span><span class="ml">Series-ൽ നിന്ന് വ്യത്യാസം</span></div>
+          <div class="ib gr">
+            <span class="en">In the <strong>series ohmmeter</strong>, Rx is in series with the galvanometer — current through G depends on Rx. In the <strong>shunt ohmmeter</strong>, Rx is placed <em>in parallel (shunt) with G</em>. When Rx is small, it bypasses most current away from G → low deflection = low resistance. When Rx is large, most current flows through G → high deflection. This gives a scale in the <em>same direction</em> as voltmeter/ammeter (low on left, high on right).</span>
+            <span class="hi">शंट ओममीटर में Rx को G के <strong>समानांतर</strong> रखा जाता है। छोटा Rx → G को कम धारा → कम विक्षेप। बड़ा Rx → G को अधिक धारा → अधिक विक्षेप। स्केल वोल्टमीटर जैसी दिशा में।</span>
+            <span class="ml">Shunt ohmmeter-ൽ Rx, G-ക്ക് parallel-ൽ. Rx ചെറുത് → G-ൽ കുറഞ്ഞ current → low deflection. Scale direction voltmeter-ന്റേത് പോലെ.</span>
+          </div>
+          <div class="fr"><div class="fi">📏</div><div class="ft"><strong><span class="en">Best for measuring:</span><span class="hi">मापने के लिए सर्वश्रेष्ठ:</span><span class="ml">Best for:</span></strong>
+            <span class="en"> Low resistance values (a few ohms to a few hundred ohms). The series ohmmeter is better suited for medium to high resistance.</span>
+            <span class="hi"> कम प्रतिरोध (कुछ ओम से कुछ सौ ओम)। श्रेणी प्रकार मध्यम-उच्च प्रतिरोध के लिए बेहतर।</span>
+            <span class="ml"> Low resistance. Series type medium-high-ന് better.</span></div></div>
+          <div class="fr"><div class="fi">🔄</div><div class="ft"><strong><span class="en">Zero Adjust:</span><span class="hi">शून्य समायोजन:</span><span class="ml">Zero Adjust:</span></strong>
+            <span class="en"> With leads <em>open</em> (not shorted), adjust for full deflection = 0 Ω. Opposite of the series type where you short the leads.</span>
+            <span class="hi"> लीड खुले रखकर पूर्ण विक्षेप = 0Ω पर सेट करें। श्रेणी प्रकार के विपरीत।</span>
+            <span class="ml"> Leads open-ൽ full deflection = 0Ω set ചെയ്യുക. Series-ന് opposite.</span></div></div>
+        </div>
+        <div>
+          <!-- Shunt circuit SVG -->
+          <svg viewBox="0 0 300 250" style="width:100%;max-width:300px;display:block;margin:0 auto;background:#FAFCFF;border:1px solid #DDE;border-radius:8px;padding:8px">
+            <rect x="15" y="95" width="36" height="60" rx="4" fill="#FEF9E7" stroke="#D97706" stroke-width="2"/>
+            <line x1="24" y1="110" x2="42" y2="110" stroke="#0A5C8A" stroke-width="3"/><line x1="28" y1="121" x2="38" y2="121" stroke="#0A5C8A" stroke-width="1.5"/>
+            <line x1="24" y1="133" x2="42" y2="133" stroke="#0A5C8A" stroke-width="3"/><line x1="28" y1="144" x2="38" y2="144" stroke="#0A5C8A" stroke-width="1.5"/>
+            <text x="33" y="90" text-anchor="middle" font-size="11" fill="#666">E</text>
+            <line x1="33" y1="95" x2="33" y2="45" stroke="#333" stroke-width="2"/>
+            <line x1="33" y1="45" x2="270" y2="45" stroke="#333" stroke-width="2"/>
+            <line x1="33" y1="155" x2="33" y2="205" stroke="#333" stroke-width="2"/>
+            <line x1="33" y1="205" x2="270" y2="205" stroke="#333" stroke-width="2"/>
+            <line x1="270" y1="45" x2="270" y2="205" stroke="#333" stroke-width="2"/>
+            <!-- R1 top -->
+            <rect x="60" y="33" width="48" height="24" rx="4" fill="#FFF0D0" stroke="#8B4513" stroke-width="2"/>
+            <text x="84" y="49" text-anchor="middle" font-size="12" fill="#8B4513" font-weight="bold">R₁</text>
+            <!-- G in series -->
+            <circle cx="175" cy="125" r="24" fill="#E9F2FB" stroke="#0A5C8A" stroke-width="2"/>
+            <text x="175" y="121" text-anchor="middle" font-size="11" fill="#0A5C8A" font-weight="bold">G</text>
+            <text x="175" y="135" text-anchor="middle" font-size="9" fill="#666">series</text>
+            <line x1="175" y1="45" x2="175" y2="101" stroke="#333" stroke-width="2"/>
+            <line x1="175" y1="149" x2="175" y2="205" stroke="#333" stroke-width="2"/>
+            <!-- Rx parallel to G -->
+            <rect x="222" y="105" width="42" height="40" rx="4" fill="#FEE2E2" stroke="#B91C1C" stroke-width="2" stroke-dasharray="5,3"/>
+            <text x="243" y="128" text-anchor="middle" font-size="11" fill="#B91C1C" font-weight="bold">Rx</text>
+            <text x="243" y="97" text-anchor="middle" font-size="9" fill="#B91C1C">‖ to G</text>
+            <line x1="243" y1="105" x2="243" y2="45" stroke="#B91C1C" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <line x1="243" y1="145" x2="243" y2="205" stroke="#B91C1C" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polygon points="84,45 72,39 72,51" fill="#D97706"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARISON -->
+    <div class="tc" id="tcmp">
+      <table class="ct">
+        <thead><tr>
+          <th><span class="en">Feature</span><span class="hi">विशेषता</span><span class="ml">ഗുണം</span></th>
+          <th><span class="en">Series Ohmmeter</span><span class="hi">श्रेणी ओममीटर</span><span class="ml">Series</span></th>
+          <th><span class="en">Shunt Ohmmeter</span><span class="hi">शंट ओममीटर</span><span class="ml">Shunt</span></th>
+        </tr></thead>
+        <tbody>
+          <tr><td><span class="en">Rx position</span><span class="hi">Rx स्थिति</span><span class="ml">Rx position</span></td>
+              <td><span class="en">Series with battery &amp; G</span><span class="hi">बैटरी और G के साथ श्रेणी</span><span class="ml">Battery, G-ൽ series</span></td>
+              <td><span class="en">Parallel (shunt) with G</span><span class="hi">G के समानांतर</span><span class="ml">G-ൽ parallel</span></td></tr>
+          <tr><td><span class="en">Scale direction</span><span class="hi">स्केल दिशा</span><span class="ml">Scale direction</span></td>
+              <td><span class="en">Reversed: 0 right, ∞ left</span><span class="hi">उल्टा: दाईं 0, बाईं ∞</span><span class="ml">Reversed</span></td>
+              <td><span class="en">Normal: 0 left, ∞ right</span><span class="hi">सामान्य: बाईं 0, दाईं ∞</span><span class="ml">Normal</span></td></tr>
+          <tr><td><span class="en">Best for</span><span class="hi">सर्वश्रेष्ठ</span><span class="ml">Best for</span></td>
+              <td><span class="en">Medium to high resistance</span><span class="hi">मध्यम से उच्च प्रतिरोध</span><span class="ml">Medium–high R</span></td>
+              <td><span class="en">Low resistance</span><span class="hi">कम प्रतिरोध</span><span class="ml">Low R</span></td></tr>
+          <tr><td><span class="en">Zero adjust method</span><span class="hi">शून्य समायोजन</span><span class="ml">Zero adjust</span></td>
+              <td><span class="en">Short the leads</span><span class="hi">लीड शॉर्ट करें</span><span class="ml">Leads short</span></td>
+              <td><span class="en">Open the leads</span><span class="hi">लीड खुला रखें</span><span class="ml">Leads open</span></td></tr>
+          <tr><td><span class="en">Use in multimeters</span><span class="hi">मल्टीमीटर में</span><span class="ml">Multimeter-ൽ</span></td>
+              <td>✅ <span class="en">Very common</span><span class="hi">बहुत सामान्य</span><span class="ml">Common</span></td>
+              <td><span class="en">Rare</span><span class="hi">दुर्लभ</span><span class="ml">Rare</span></td></tr>
+          <tr><td><span class="en">Capacitor testing</span><span class="hi">संधारित्र परीक्षण</span><span class="ml">Capacitor test</span></td>
+              <td><span class="en">✅ Suitable — needle kick &amp; return</span><span class="hi">✅ उपयुक्त — सुई किक &amp; वापस</span><span class="ml">✅ Suitable</span></td>
+              <td><span class="en">❌ Not suitable</span><span class="hi">❌ उपयुक्त नहीं</span><span class="ml">❌ Unsuitable</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="ib bl" style="margin-top:16px">
+        <strong><span class="en">Why does a good capacitor cause "needle kick then return"?</span>
+                <span class="hi">अच्छा संधारित्र सुई को किक क्यों करता है?</span>
+                <span class="ml">Good capacitor-ൽ needle kick ആകുന്നത് എന്തുകൊണ്ട്?</span></strong><br>
+        <span class="en">When the ohmmeter probes touch a discharged capacitor, the meter's internal battery begins charging it. During this brief charging period a transient current flows → the needle deflects. Once the capacitor is fully charged to the battery voltage, no more current can flow (DC steady state = open circuit) → the needle returns to ∞. This confirms that the capacitor can hold charge — it is healthy. A shorted capacitor presents zero resistance always, so the needle stays at 0. An open capacitor never allows any current, so the needle never moves.</span>
+        <span class="hi">जब ओममीटर जांच संधारित्र से छूती है, आंतरिक बैटरी उसे चार्ज करना शुरू करती है। इस दौरान धारा बहती है → सुई विक्षेपित होती है। पूर्ण चार्ज होने पर धारा = 0 → सुई ∞ पर लौटती है। यह पुष्टि करता है कि संधारित्र चार्ज रख सकता है — स्वस्थ है।</span>
+        <span class="ml">Ohmmeter probes, discharged capacitor-ൽ touch ചെയ്യുമ്പോൾ internal battery അതിനെ charge ചെയ്യുന്നു. Charging സമയത്ത് transient current → needle deflect. Fully charged ആകുമ്പോൾ current = 0 → needle ∞-ൽ return. ഇത് capacitor healthy ആണ് എന്ന് confirm ചെയ്യുന്നു.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Status bar -->
+<div id="statusBar"><div class="led" id="sLed"></div><span id="sMsg">Ready</span></div>
+
+<script>
+// ── CAPACITOR DATA ─────────────────────────────────────────────────────
+const CAPS = [
+  { name:'Electrolytic', hi:'विद्युत अपघटनी', ml:'Electrolytic',
+    range:'1 µF – 100,000 µF', volt:'6 V – 450 V', polar:true,
+    marking:'Printed: e.g. 1000µF 25V  |  + leg is longer',
+    desc:'Largest capacitance values. Has + and − markings — polarity MUST be observed. Cylindrical aluminium case. Used in power supplies, audio amplifiers, motor run circuits.',
+    descHi:'सबसे बड़े धारिता मान। + और − अंकन — ध्रुवता ज़रूरी। बेलनाकार एल्युमिनियम। बिजली आपूर्ति, ऑडियो में उपयोग।',
+    descMl:'ഏറ്റവും വലിയ capacitance. + − marking — polarity mandatory. Cylindrical Al case. Power supply, audio-ൽ ഉപയോഗം.',
+    color:'#1A7F4B', shape:'cyl' },
+  { name:'Mica', hi:'अभ्रक', ml:'Mica',
+    range:'1 pF – 10,000 pF', volt:'100 V – 1000 V', polar:false,
+    marking:'Colour code or printed value in pF',
+    desc:'Very accurate, stable, and low-loss. Flat silver appearance. Excellent temperature stability. Used in RF tuning circuits, oscillators, transmitters.',
+    descHi:'बहुत सटीक, स्थिर। सपाट चांदी जैसा। RF ट्यूनिंग सर्किट में।',
+    descMl:'Accurate, stable, low-loss. Flat silver. RF tuning, oscillators-ൽ.',
+    color:'#0A5C8A', shape:'flat' },
+  { name:'Paper', hi:'कागज़', ml:'Paper',
+    range:'0.001 µF – 2 µF', volt:'50 V – 600 V', polar:false,
+    marking:'Printed value in µF and voltage',
+    desc:'Rolled paper dielectric with foil plates. Cylindrical body. Used in AC motor start/run circuits, power factor correction. Being replaced by Mylar in modern designs.',
+    descHi:'कागज़ डाइइलेक्ट्रिक। बेलनाकार। मोटर स्टार्ट, AC परिपथों में।',
+    descMl:'Rolled paper dielectric. Motor start circuits-ൽ.',
+    color:'#D97706', shape:'cyl' },
+  { name:'Mylar / Polyester', hi:'मायलर / पॉलिएस्टर', ml:'Mylar / Polyester',
+    range:'0.001 µF – 10 µF', volt:'50 V – 400 V', polar:false,
+    marking:'3-digit code: 104 = 100,000 pF = 0.1 µF  |  Last digit = no. of zeros',
+    desc:'Rectangular yellow or orange body. Good stability and reliability. Most common general-purpose capacitor. Used in timing circuits (555 timer), coupling, bypass.',
+    descHi:'आयताकार पीला/नारंगी। टाइमिंग, कपलिंग में सबसे आम।',
+    descMl:'Yellow/orange rectangle. 555 timer, coupling, bypass circuits-ൽ.',
+    color:'#B91C1C', shape:'rect' },
+  { name:'Tantalum', hi:'टैंटलम', ml:'Tantalum',
+    range:'0.1 µF – 100 µF', volt:'6 V – 35 V', polar:true,
+    marking:'Printed: value + voltage  |  + mark on body',
+    desc:'Teardrop or SMD shape. Very stable, good high-frequency performance. Polarity (+) marked on body. Used in audio circuits, mobile phones, computers. NEVER reverse polarity — they explode.',
+    descHi:'बूँद/SMD आकार। ध्रुवता (+) अंकित। कभी उलटें नहीं — विस्फोट होता है।',
+    descMl:'Teardrop/SMD. + marking. Polarity reverse ചെയ്താൽ explode ആകും.',
+    color:'#78350F', shape:'drop' },
+  { name:'Variable Air / Mica', hi:'परिवर्तनीय वायु / अभ्रक', ml:'Variable Air / Mica',
+    range:'10 pF – 500 pF', volt:'High (kV range)', polar:false,
+    marking:'No markings — measure with LCR meter',
+    desc:'Rotating metal plates with air or mica dielectric. Capacitance changes by turning a shaft. Used in radio tuner circuits, oscillators to select frequency. The shaft rotation changes the overlap area of the plates.',
+    descHi:'घूमने वाली धातु प्लेट। शाफ़्ट घुमाने से धारिता बदलती है। रेडियो ट्यूनर में।',
+    descMl:'Rotating plates. Shaft ചലിപ്പിക്കുമ്പോൾ capacitance മാറുന്നു. Radio tuner-ൽ.',
+    color:'#475569', shape:'var' },
+];
+
+// ── Draw simple capacitor SVG shapes ──────────────────────────────────
+function capSVG(shape, color) {
+  const s=68;
+  const hs=s/2;
+  switch(shape) {
+    case 'cyl':
+      return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
+        <ellipse cx="${hs}" cy="14" rx="${hs-4}" ry="10" fill="${color}"/>
+        <rect x="4" y="14" width="${s-8}" height="${s-26}" fill="${color}"/>
+        <ellipse cx="${hs}" cy="${s-12}" rx="${hs-4}" ry="10" fill="${color}" opacity=".75"/>
+        <text x="${hs}" y="${hs+5}" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">C</text></svg>`;
+    case 'flat':
+      return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
+        <rect x="8" y="12" width="${s-16}" height="${s-18}" rx="4" fill="${color}"/>
+        <text x="${hs}" y="30" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">MICA</text>
+        <line x1="${hs}" y1="34" x2="${hs}" y2="${s-6}" stroke="#fff" stroke-width="2"/></svg>`;
+    case 'rect':
+      return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
+        <rect x="6" y="8" width="${s-12}" height="${s-12}" rx="6" fill="${color}"/>
+        <text x="${hs}" y="26" text-anchor="middle" fill="#fff" font-size="9">104</text>
+        <line x1="${hs}" y1="30" x2="${hs}" y2="${s-6}" stroke="#fff" stroke-width="2"/></svg>`;
+    case 'drop':
+      return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
+        <ellipse cx="${hs}" cy="${hs+6}" rx="22" ry="26" fill="${color}"/>
+        <path d="M${hs} 8Q${hs+16} ${hs-4} ${hs} ${hs-14}" fill="${color}"/>
+        <text x="${hs}" y="${hs+10}" text-anchor="middle" fill="#fff" font-size="11">+</text></svg>`;
+    case 'var':
+      return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">
+        <rect x="4" y="8" width="${s-8}" height="${s-12}" rx="4" fill="#E5E7EB" stroke="${color}" stroke-width="2"/>
+        <line x1="12" y1="26" x2="${s-12}" y2="26" stroke="${color}" stroke-width="3"/>
+        <line x1="12" y1="37" x2="${s-12}" y2="37" stroke="#AAA" stroke-width="3"/>
+        <line x1="12" y1="48" x2="${s-12}" y2="48" stroke="${color}" stroke-width="3"/>
+        <text x="${hs}" y="${s-2}" text-anchor="middle" fill="${color}" font-size="9">VAR</text></svg>`;
+    default:
+      return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}"><rect x="5" y="5" width="${s-10}" height="${s-10}" rx="6" fill="${color}"/></svg>`;
+  }
+}
+
+// ── Build Page 1 ────────────────────────────────────────────────────────
+function buildPage1() {
+  const grid = document.getElementById('cgrid');
+  const tbody = document.getElementById('idTbody');
+  if (!grid || !tbody) return;
+  grid.innerHTML = '';
+  tbody.innerHTML = '';
+
+  CAPS.forEach((c, i) => {
+    // card
+    const div = document.createElement('div');
+    div.className = 'cc';
+    div.innerHTML = `${capSVG(c.shape,c.color)}
+      <div class="cname">${c.name}</div>
+      <div class="cval">${c.range}</div>`;
+    div.onclick = () => showCapDetail(c, div);
+    grid.appendChild(div);
+
+    // table row
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td>
+      <td><span class="en">${c.name}</span><span class="hi">${c.hi}</span><span class="ml">${c.ml}</span></td>
+      <td>${c.range}</td><td>${c.volt}</td>
+      <td>${c.polar ? '✅ Yes' : '❌ No'}</td>
+      <td style="font-size:.82rem">${c.marking}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function showCapDetail(c, el) {
+  document.querySelectorAll('.cc').forEach(x => x.classList.remove('sel'));
+  el.classList.add('sel');
+  const det = document.getElementById('capDet');
+  det.style.display = 'block';
+  document.getElementById('capDetTitle').innerHTML =
+    capSVG(c.shape,c.color) + ' ' + c.name;
+  document.getElementById('capDetBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:12px">
+      <div class="ib bl"><strong>Capacitance:</strong><br>${c.range}</div>
+      <div class="ib or"><strong>Voltage:</strong><br>${c.volt}</div>
+      <div class="ib gr"><strong>Polarity:</strong><br>${c.polar ? '✅ Polarised — observe + and −' : '❌ Non-polarised'}</div>
+      <div class="ib bl"><strong>Marking:</strong><br>${c.marking}</div>
+    </div>
+    <div class="ib gr">
+      <strong>Description:</strong><br>
+      <span class="en">${c.desc}</span>
+      <span class="hi">${c.descHi}</span>
+      <span class="ml">${c.descMl}</span>
+    </div>`;
+  det.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+// ── Sim helpers ─────────────────────────────────────────────────────────
+function getP() {
+  return {
+    Vs: +document.getElementById('sVs').value,
+    C:  +document.getElementById('sC').value,
+    R:  +document.getElementById('sR').value,
+    spd:+document.getElementById('spd').value,
+  };
+}
+function fmtT(t)  { return t >= 1 ? t.toFixed(2)+'s' : (t*1000).toFixed(1)+'ms'; }
+function fmtR(r)  { return r>=1e6?(r/1e6).toFixed(1)+'MΩ':r>=1e3?(r/1e3).toFixed(1)+'kΩ':r+'Ω'; }
+function fmtC(c)  { return c>=1e-3?(c*1e6).toFixed(0)+'µF':c>=1e-6?(c*1e6).toFixed(1)+'µF':c>=1e-9?(c*1e9).toFixed(0)+'nF':(c*1e12).toFixed(0)+'pF'; }
+function updTau() {
+  const {Vs,C,R} = getP();
+  const tau = R*C;
+  document.getElementById('tauV').textContent  = fmtT(tau);
+  document.getElementById('tau5V').textContent = fmtT(5*tau);
+  const rLbl = document.getElementById('rLbl');
+  const cLbl = document.getElementById('cLbl');
+  const vLbl = document.getElementById('vLbl');
+  if (rLbl) rLbl.textContent = fmtR(R);
+  if (cLbl) cLbl.textContent = fmtC(C);
+  // Show representative working voltage beside capacitor symbol
+  if (vLbl) {
+    const vMap = {
+      '0.0001':'50V','0.00047':'35V','0.001':'25V','0.0022':'16V',
+      '0.000001':'100V','0.0000047':'35V','0.00000001':'400V'
+    };
+    vLbl.textContent = vMap[String(C)] || '—';
+  }
+}
+
+// ── Simulation state ─────────────────────────────────────────────────────
+let SIM = { state:'idle', Vc:0, t:0, timer:null, obs:[], pts:[] };
+const DT = 0.04;
+
+function doReset() {
+  clearInterval(SIM.timer);
+  SIM = { state:'idle', Vc:0, t:0, timer:null, obs:SIM.obs, pts:[] };
+  setMeters(0,0,0);
+  document.getElementById('btnC').disabled = false;
+  document.getElementById('btnD').disabled = true;
+  setArr(0);
+  setSw1(false);
+  setSw2(1);   // return to pos1 (charging position) on reset
+  drawGraph([]);
+  setStatus('idle','Ready / Reset');
+}
+
+function doCharge() {
+  doReset();
+  const {Vs,C,R,spd} = getP();
+  const tau = R*C;
+  SIM.state = 'charging';
+  SIM.pts = [];
+  document.getElementById('btnC').disabled = true;
+  setSw1(true);
+  setSw2(1);   // S2 → pos1 (charging path)
+  setStatus('or','Charging…');
+
+  const ms = Math.max(16, Math.round(30/spd));
+  SIM.timer = setInterval(() => {
+    SIM.t += DT;
+    SIM.Vc = Vs * (1 - Math.exp(-SIM.t / tau));
+    const Vr = Vs - SIM.Vc;
+    const I  = Vr / R * 1000;
+    setMeters(SIM.Vc, I, Vr);
+    SIM.pts.push({ t:SIM.t, vc:SIM.Vc, vr:Vr, i:I, ph:'C' });
+    drawGraph(SIM.pts);
+    setArr(I / (Vs/R*1000));
+
+    if (needsObs(SIM.t, tau)) addObs(SIM.t, SIM.Vc, Vr, I, 'Charging','CH');
+
+    if (SIM.t >= 5*tau) {
+      clearInterval(SIM.timer);
+      SIM.Vc = Vs; setMeters(Vs,0,0); setArr(0);
+      SIM.pts.push({ t:SIM.t, vc:Vs, vr:0, i:0, ph:'F' });
+      drawGraph(SIM.pts);
+      addObs(SIM.t, Vs, 0, 0, 'Fully Charged','FC');
+      SIM.state = 'charged';
+      document.getElementById('btnD').disabled = false;
+      setStatus('idle','Fully Charged — Vc = Vs');
+    }
+  }, ms);
+}
+
+function doDischarge() {
+  if (SIM.state !== 'charged') return;
+  clearInterval(SIM.timer);
+  const {Vs,C,R,spd} = getP();
+  const tau = R*C;
+  const V0 = SIM.Vc;
+  let dT = 0;
+  SIM.state = 'discharging';
+  document.getElementById('btnD').disabled = true;
+  setSw1(false);
+  setSw2(2);   // S2 → pos2 (discharge path through bottom rail)
+  setStatus('rd','Discharging…');
+
+  const ms = Math.max(16, Math.round(30/spd));
+  SIM.timer = setInterval(() => {
+    dT += DT;
+    SIM.Vc = V0 * Math.exp(-dT / tau);
+    const Vr = SIM.Vc;
+    const I  = SIM.Vc / R * 1000;
+    setMeters(SIM.Vc, I, Vr);
+    SIM.pts.push({ t: SIM.t + dT, vc: SIM.Vc, vr: Vr, i: I, ph:'D' });
+    drawGraph(SIM.pts);
+    setArr(I / (V0/R*1000));
+
+    if (needsObs(dT, tau)) addObs(SIM.t+dT, SIM.Vc, Vr, I, 'Discharging','DC');
+
+    if (dT >= 5*tau) {
+      clearInterval(SIM.timer);
+      SIM.Vc = 0; setMeters(0,0,0); setArr(0);
+      SIM.pts.push({ t: SIM.t+dT, vc:0, vr:0, i:0, ph:'D' });
+      drawGraph(SIM.pts);
+      addObs(SIM.t+dT, 0, 0, 0, 'Discharged','DC');
+      SIM.state = 'idle';
+      document.getElementById('btnC').disabled = false;
+      setStatus('idle','Discharged — ready for next run');
+    }
+  }, ms);
+}
+
+function setMeters(vc, i, vr) {
+  const {Vs, C} = getP();
+  document.getElementById('mVc').textContent = vc.toFixed(2);
+  document.getElementById('mI').textContent  = i.toFixed(2);
+  document.getElementById('mVr').textContent = vr.toFixed(2);
+
+  // Live % charge
+  const pct = Vs > 0 ? (vc / Vs) * 100 : 0;
+  const mPct = document.getElementById('mPct');
+  if (mPct) mPct.textContent = pct.toFixed(1);
+
+  // Energy stored  E = ½CV²
+  const E = 0.5 * C * vc * vc;
+  const mEgy = document.getElementById('mEgy');
+  const mEgyU = document.getElementById('mEgyU');
+  if (mEgy && mEgyU) {
+    if (E < 1e-3)   { mEgy.textContent = (E*1e6).toFixed(2); mEgyU.textContent = 'µJ'; }
+    else if (E < 1) { mEgy.textContent = (E*1e3).toFixed(2); mEgyU.textContent = 'mJ'; }
+    else            { mEgy.textContent = E.toFixed(3);        mEgyU.textContent = 'J';  }
+  }
+
+  // Update tau-ref table voltage column
+  const refIds  = ['r1t','r2t','r3t','r4t','r5t'];
+  const refPcts = [0.6321, 0.8647, 0.9502, 0.9817, 0.9933];
+  refIds.forEach((id, k) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = (refPcts[k] * Vs).toFixed(2) + ' V';
+  });
+  const vRef = document.getElementById('tauVsRef');
+  if (vRef) vRef.textContent = Vs;
+}
+function setArr(frac) {
+  const el = document.getElementById('arr');
+  if (el) el.setAttribute('opacity', Math.max(0, Math.min(1, frac)).toFixed(2));
+}
+function setSw1(closed) {
+  // S1 pivot (130,45); open arm → (167,33); closed arm → (173,45)
+  const sw = document.getElementById('sw1');
+  if (!sw) return;
+  sw.setAttribute('x2', closed ? '173' : '167');
+  sw.setAttribute('y2', closed ? '45'  : '33');
+}
+function setSw2(pos) {
+  // S2 pivot (490,45); pos1 contact (541,46) horizontal; pos2 contact drops to (538,96)
+  const sw = document.getElementById('sw2');
+  if (!sw) return;
+  if (pos === 1) { sw.setAttribute('x2','541'); sw.setAttribute('y2','46'); }
+  else           { sw.setAttribute('x2','538'); sw.setAttribute('y2','96'); }
+}
+
+// checkpoint observations
+const CPS = [0.2,0.5,1,2,3,4,5];
+function needsObs(t, tau) {
+  return CPS.some(cp => Math.abs(t - cp*tau) < DT*0.7);
+}
+let obsN = 0;
+function addObs(t, vc, vr, i, phase, cls) {
+  obsN++;
+  const tb = document.getElementById('obsTb');
+  if (!tb) return;
+  const {Vs, C} = getP();
+  const rem = phase==='Charging'      ? 'Vc↑ I↓ Vr↓'
+            : phase==='Fully Charged' ? 'Vc=Vs  I=0  open ckt'
+            : phase==='Discharging'   ? 'Vc↓ I↓ opposite dir'
+                                      : 'Fully discharged';
+  const pct = Vs > 0 ? (vc / Vs * 100).toFixed(1) : '0.0';
+  const E   = 0.5 * C * vc * vc;
+  let eStr;
+  if (E < 1e-3)   eStr = (E*1e6).toFixed(1) + ' µJ';
+  else if (E < 1) eStr = (E*1e3).toFixed(2) + ' mJ';
+  else            eStr = E.toFixed(3) + ' J';
+  const tr = document.createElement('tr');
+  tr.className = cls;
+  tr.innerHTML = `<td>${obsN}</td><td>${phase}</td><td>${t.toFixed(2)}</td>
+    <td>${vc.toFixed(2)}</td><td>${vr.toFixed(2)}</td><td>${i.toFixed(2)}</td>
+    <td style="color:#7C3AED;font-weight:700">${pct}%</td>
+    <td style="color:#065F46">${eStr}</td>
+    <td style="font-size:.85rem">${rem}</td>`;
+  tb.appendChild(tr);
+}
+function clearObs() {
+  document.getElementById('obsTb').innerHTML = '';
+  obsN = 0;
+}
+
+// ── Capacitor 3-digit code decoder ────────────────────────────────────────
+function decodeCapCode() {
+  const raw = (document.getElementById('codeIn')?.value || '').trim().toUpperCase();
+  const out = document.getElementById('codeResult');
+  if (!out) return;
+
+  if (!raw) { out.innerHTML = ''; return; }
+
+  // Strip tolerance letter and voltage suffix — keep only the numeric part
+  const numeric = raw.match(/^(\d{2,3})/);
+  if (!numeric) {
+    out.innerHTML = '<span style="color:#B91C1C">❌ Enter 2–3 digits (e.g. 104, 47)</span>';
+    return;
+  }
+  const code = numeric[1];
+  let pF;
+  if (code.length === 2) {
+    // Two-digit marking — direct pF value (e.g. "47" = 47 pF)
+    pF = parseInt(code, 10);
+  } else {
+    // Three-digit: first two = significant, third = number of zeros
+    const sig  = parseInt(code.slice(0,2), 10);
+    const exp3 = parseInt(code[2], 10);
+    if (exp3 === 9) pF = sig * 0.1;          // special: ×0.1
+    else            pF = sig * Math.pow(10, exp3);
+  }
+
+  // Convert pF → nF → µF
+  const nF = pF / 1000;
+  const uF = pF / 1e6;
+
+  // Choose the most human-readable unit
+  let primary;
+  if      (pF < 1000)  primary = `<strong>${pF.toFixed(pF < 1 ? 1 : 0)} pF</strong>`;
+  else if (nF < 1000)  primary = `<strong>${nF.toFixed(nF < 10 ? 2 : 1)} nF</strong>`;
+  else                 primary = `<strong>${uF.toFixed(uF < 10 ? 3 : 2)} µF</strong>`;
+
+  // Check for tolerance letter suffix
+  const tolMap = {B:'±0.1pF',C:'±0.25pF',D:'±0.5pF',F:'±1%',G:'±2%',
+                  J:'±5%',K:'±10%',M:'±20%',Z:'+80%/−20%'};
+  const tolLetter = raw.match(/[BCDFGJKMZ]/);
+  const tolStr = tolLetter ? `  &nbsp;Tolerance: <strong>${tolLetter[0]}</strong> = ${tolMap[tolLetter[0]]}` : '';
+
+  // Voltage suffix (e.g. 50V, 100V)
+  const voltMatch = raw.match(/(\d+)\s*V/);
+  const voltStr = voltMatch ? `  &nbsp;Working voltage: <strong>${voltMatch[1]} V</strong>` : '';
+
+  out.innerHTML =
+    `${code} → ${primary}<br>`+
+    `<span style="font-size:.88rem;color:#444">`+
+    `pF: <strong>${pF.toLocaleString()}</strong> &nbsp;|&nbsp; `+
+    `nF: <strong>${nF < 0.001 ? nF.toExponential(1) : nF.toFixed(nF<10?3:1)}</strong> &nbsp;|&nbsp; `+
+    `µF: <strong>${uF < 0.001 ? uF.toExponential(1) : uF.toFixed(uF<10?4:2)}</strong>`+
+    `${tolStr}${voltStr}</span>`;
+}
+
+
+function drawGraph(pts) {
+  const canvas = document.getElementById('gCanvas');
+  if (!canvas) return;
+  const W = Math.max(canvas.parentElement.clientWidth || 600, 300);
+  canvas.width  = W;
+  canvas.height = 260;
+  const H = 260;
+  const ctx = canvas.getContext('2d');
+  const PAD = { t:18, r:18, b:38, l:50 };
+  const gW = W - PAD.l - PAD.r;
+  const gH = H - PAD.t - PAD.b;
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#FAFCFF'; ctx.fillRect(0,0,W,H);
+
+  const {Vs, R} = getP();
+  const tau = getP().R * getP().C;
+  const maxT = pts && pts.length ? Math.max(...pts.map(p=>p.t), 5*tau*1.1) : 10;
+  const maxV = Vs * 1.12;
+
+  // Grid
+  ctx.strokeStyle = '#DDE8F0'; ctx.lineWidth = 1;
+  for (let i=0;i<=5;i++) {
+    const y = PAD.t + gH*i/5;
+    ctx.beginPath(); ctx.moveTo(PAD.l,y); ctx.lineTo(PAD.l+gW,y); ctx.stroke();
+    ctx.fillStyle='#777'; ctx.font='11px Cousine,monospace'; ctx.textAlign='right';
+    ctx.fillText((maxV*(5-i)/5).toFixed(1), PAD.l-5, y+4);
+  }
+  for (let i=0;i<=5;i++) {
+    const x = PAD.l + gW*i/5;
+    ctx.beginPath(); ctx.moveTo(x,PAD.t); ctx.lineTo(x,PAD.t+gH); ctx.stroke();
+    ctx.fillStyle='#777'; ctx.font='11px Cousine,monospace'; ctx.textAlign='center';
+    ctx.fillText((maxT*i/5).toFixed(1)+'s', x, H-6);
+  }
+
+  if (!pts || pts.length < 2) return;
+
+  const tx = t => PAD.l + (t/maxT)*gW;
+  const ty = v => PAD.t + gH - Math.min((v/maxV)*gH, gH);
+
+  // ── τ markers: 1τ–5τ with % charge annotations ──────────────────────────
+  // These horizontal reference lines help trainees read the graph against theory
+  const TAU_MARKS = [
+    { n:1, pct:63.2, col:'#1A7F4B' },
+    { n:2, pct:86.5, col:'#0A5C8A' },
+    { n:3, pct:95.0, col:'#6D28D9' },
+    { n:4, pct:98.2, col:'#C2410C' },
+    { n:5, pct:99.3, col:'#BE185D' },
+  ];
+  TAU_MARKS.forEach(m => {
+    const xt = tx(m.n * tau);
+    if (xt <= PAD.l || xt >= PAD.l + gW) return;
+    // Vertical dashed line at nτ
+    ctx.strokeStyle = m.col; ctx.lineWidth = 1.2; ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(xt, PAD.t); ctx.lineTo(xt, PAD.t + gH); ctx.stroke();
+    ctx.setLineDash([]);
+    // nτ label at top
+    ctx.fillStyle = m.col;
+    ctx.font = 'bold 11px Cousine,monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(m.n + 'τ', xt, PAD.t + 11);
+    // % label pinned to the Vc curve at that tau point
+    const vcAtTau = Vs * (1 - Math.exp(-m.n));     // universal (charge phase)
+    const yPct = ty(vcAtTau);
+    if (yPct > PAD.t + 14 && yPct < PAD.t + gH - 4) {
+      // Small badge: filled rounded rect + white text
+      const label = m.pct.toFixed(1) + '%';
+      ctx.font = 'bold 10px Cousine,monospace';
+      const tw2 = ctx.measureText(label).width;
+      ctx.fillStyle = m.col;
+      const bx = xt + 4, bw = tw2 + 8, bh = 14;
+      roundRect(ctx, bx, yPct - 10, bw, bh, 3);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'left';
+      ctx.fillText(label, bx + 4, yPct + 1);
+    }
+    // Horizontal dashed reference line at that Vc level (faint)
+    const yRef = ty(Vs * (1 - Math.exp(-m.n)));
+    if (yRef > PAD.t && yRef < PAD.t + gH) {
+      ctx.strokeStyle = m.col + '44';   // 27% opacity
+      ctx.lineWidth = 0.8; ctx.setLineDash([3, 5]);
+      ctx.beginPath();
+      ctx.moveTo(PAD.l, yRef); ctx.lineTo(PAD.l + gW, yRef);
+      ctx.stroke(); ctx.setLineDash([]);
+    }
+  });
+
+  // Helper: draw rounded rectangle path
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  function line(key, color, dash) {
+    ctx.beginPath(); ctx.strokeStyle=color; ctx.lineWidth=2.5;
+    if (dash) ctx.setLineDash([6,3]); else ctx.setLineDash([]);
+    pts.forEach((p,i) => { i===0 ? ctx.moveTo(tx(p.t),ty(p[key])) : ctx.lineTo(tx(p.t),ty(p[key])); });
+    ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  // current scaled
+  const maxI = Vs / R * 1000;
+  const isc  = maxI > 0 ? maxV/maxI : 1;
+  ctx.beginPath(); ctx.strokeStyle='#B91C1C'; ctx.lineWidth=1.8; ctx.setLineDash([5,3]);
+  pts.forEach((p,i) => { i===0 ? ctx.moveTo(tx(p.t),ty(p.i*isc)) : ctx.lineTo(tx(p.t),ty(p.i*isc)); });
+  ctx.stroke(); ctx.setLineDash([]);
+
+  line('vr','#0A5C8A', true);
+  line('vc','#D97706', false);
+}
+
+// ── Ohmmeter test ─────────────────────────────────────────────────────────
+let ohCond = 'good';
+let needleAnimId = null;
+
+function setCond(c, btn) {
+  ohCond = c;
+  document.querySelectorAll('.ocb').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('orb').style.display = 'none';
+  resetNeedle();
+}
+
+function resetNeedle() {
+  if (needleAnimId) cancelAnimationFrame(needleAnimId);
+  setNeedle(-80);
+  const m = document.getElementById('oMsg');
+  if (m) m.textContent = '';
+}
+
+function setNeedle(deg) {
+  const n = document.getElementById('oNeedle');
+  if (n) n.setAttribute('transform', `rotate(${deg},160,148)`);
+}
+
+function animNeedle(from, to, dur, cb) {
+  if (needleAnimId) cancelAnimationFrame(needleAnimId);
+  const start = performance.now();
+  function step(now) {
+    const p = Math.min((now-start)/dur, 1);
+    const e = p<.5 ? 2*p*p : -1+(4-2*p)*p;
+    setNeedle(from + (to-from)*e);
+    if (p < 1) { needleAnimId = requestAnimationFrame(step); }
+    else { if (cb) cb(); }
+  }
+  needleAnimId = requestAnimationFrame(step);
+}
+
+const OHM_INFO = {
+  good:  { cls:'gd',
+    en:'✅ GOOD CAPACITOR — Needle deflected briefly then returned to ∞. The internal battery charged the capacitor momentarily, causing current to flow. Once fully charged, current stopped and needle returned. The capacitor can hold charge — it is healthy.',
+    hi:'✅ अच्छा संधारित्र — सुई विक्षेपित हुई फिर ∞ पर लौटी। आंतरिक बैटरी ने संधारित्र को चार्ज किया। पूर्ण चार्ज पर धारा = 0 → सुई लौटी। संधारित्र स्वस्थ है।',
+    ml:'✅ Good Capacitor — Needle deflect ആയ ശേഷം ∞-ൽ return. Internal battery capacitor charge ചെയ്തു. Fully charged → I=0 → needle return. Capacitor healthy.' },
+  open:  { cls:'op',
+    en:'⭕ OPEN CAPACITOR — No deflection at all. There is an internal break — current never flowed. No charging was possible. Needle stayed at ∞ throughout. Capacitor is dead.',
+    hi:'⭕ खुला संधारित्र — कोई विक्षेप नहीं। आंतरिक टूट है। धारा नहीं बही। संधारित्र खराब है।',
+    ml:'⭕ Open — Deflection ഇല്ല. Internal break. Current ഒഴുകിയില്ല. Capacitor dead.' },
+  short: { cls:'sh',
+    en:'⚡ SHORT CIRCUIT — Needle slammed to 0 Ω and stayed. The dielectric broke down — behaves like a plain wire. Capacitor is seriously damaged. Replace immediately.',
+    hi:'⚡ शॉर्ट सर्किट — सुई 0Ω पर टिकी। डाइइलेक्ट्रिक टूट गया। तुरंत बदलें।',
+    ml:'⚡ Short — Needle 0Ω-ൽ ഉടൻ ഉറച്ചു. Dielectric breakdown. Immediately replace.' },
+  leak:  { cls:'lk',
+    en:'💧 LEAKY CAPACITOR — Needle deflected to an intermediate reading and stayed. Partial leakage through the dielectric — current flows continuously. Suitable for non-critical circuits only; replace for precision work.',
+    hi:'💧 रिसाव — सुई बीच में रुकी। डाइइलेक्ट्रिक में आंशिक रिसाव। गैर-महत्त्वपूर्ण परिपथ में ठीक, अन्यथा बदलें।',
+    ml:'💧 Leaky — Needle intermediate-ൽ. Partial dielectric leakage. Non-critical circuits-ൽ OK, precision-ൽ replace.' },
+};
+
+function runTest() {
+  resetNeedle();
+  document.getElementById('orb').style.display = 'none';
+  const msg = document.getElementById('oMsg');
+  if (msg) msg.textContent = '…testing…';
+
+  setTimeout(() => {
+    const c = ohCond;
+    if (c === 'good') {
+      animNeedle(-80, 45, 450, () => {
+        if (msg) msg.textContent = 'charging…';
+        animNeedle(45, -80, 2400, () => {
+          if (msg) msg.textContent = 'returned to ∞';
+          showOhmRes(c);
+        });
+      });
+    } else if (c === 'open') {
+      if (msg) msg.textContent = 'No deflection (∞)';
+      showOhmRes(c);
+    } else if (c === 'short') {
+      animNeedle(-80, 80, 320, () => {
+        if (msg) msg.textContent = '0 Ω — stays';
+        showOhmRes(c);
+      });
+    } else if (c === 'leak') {
+      animNeedle(-80, 12, 700, () => {
+        if (msg) msg.textContent = 'some resistance';
+        showOhmRes(c);
+      });
+    }
+  }, 150);
+}
+
+function showOhmRes(c) {
+  const info = OHM_INFO[c];
+  const el = document.getElementById('orb');
+  el.className = 'orb ' + info.cls;
+  el.innerHTML = `<span class="en">${info.en}</span><span class="hi">${info.hi}</span><span class="ml">${info.ml}</span>`;
+  el.style.display = 'block';
+  setStatus(c==='good'?'idle':c==='short'?'rd':'or', c.toUpperCase() + ' condition');
+}
+
+// ── Theory tabs ───────────────────────────────────────────────────────────
+function showT(id, btn) {
+  document.querySelectorAll('.tc').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.ttb').forEach(b => b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ── Page navigation ───────────────────────────────────────────────────────
+function goPage(id, btn) {
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(b => b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+  if (id==='p2') setTimeout(()=>drawGraph(SIM.pts),50);
+}
+
+// ── Language ──────────────────────────────────────────────────────────────
+function setLang(l, btn) {
+  document.body.className = 'L-'+l;
+  document.querySelectorAll('.lb').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+// ── Status bar ────────────────────────────────────────────────────────────
+function setStatus(type, msg) {
+  const led = document.getElementById('sLed');
+  const txt = document.getElementById('sMsg');
+  if (!led||!txt) return;
+  led.className = 'led' + (type==='or'?' or':type==='rd'?' rd':'');
+  txt.textContent = msg;
+}
+
+// ── Event listeners ───────────────────────────────────────────────────────
+['sVs','sC','sR'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('change', updTau);
+});
+window.addEventListener('resize', () => {
+  if (SIM.pts && SIM.pts.length) drawGraph(SIM.pts);
+  else drawGraph([]);
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────
+try { buildPage1(); } catch(e) { console.error('Page1 build error:',e); }
+try { updTau(); }     catch(e) { console.error('Tau update error:',e); }
+try { drawGraph([]); }catch(e) { console.error('Graph init error:',e); }
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

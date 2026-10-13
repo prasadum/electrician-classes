@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Series &amp; Parallel Circuits</title>
+<meta name="section" content="Circuits &amp; Power Systems">
+<meta name="section-order" content="2">
+<meta name="order" content="1">
+<meta name="description" content="Series and parallel connection of lamps">
+
+<meta name="color-scheme" content="light">
+<style>
+:root {
+  --page: #eef1f4; --panel: #ffffff; --ink: #1f2d3a; --muted: #5a6977; --line: #d3dae1;
+  --steel: #2f4a63; --accent: #1c65a8; --ok: #1d8049; --warn: #a96a0c; --err: #bf2d22;
+  --font: "Bahnschrift", "DIN Alternate", "Barlow", "Roboto Condensed", "Nirmala UI", "Noto Sans Devanagari", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page: #eef1f4; --panel: #ffffff; --ink: #1f2d3a; } }
+:root[data-theme="dark"] { --page: #eef1f4; --panel: #ffffff; --ink: #1f2d3a; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--page); color: var(--ink); font-family: var(--font); }
+body { font-size: 15px; line-height: 1.45; }
+html:lang(hi) body { font-size: 15.5px; }
+.wrap { max-width: 1680px; margin: 0 auto; padding: 10px 14px 24px; }
+header.top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 6px 2px 10px; }
+.brand h1 { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.12; }
+.brand p { margin: 3px 0 0; color: var(--muted); font-size: 14px; }
+.tabs { display: inline-flex; background: #dfe5ea; border-radius: 10px; padding: 4px; gap: 4px; }
+.tabs button { font: inherit; font-size: 16px; font-weight: 600; border: 0; background: transparent; color: var(--steel); padding: 9px 20px; border-radius: 7px; cursor: pointer; min-height: 42px; }
+.tabs button[aria-selected="true"] { background: var(--panel); color: var(--ink); box-shadow: 0 1px 3px rgba(20,40,60,.18); }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; }
+.tg { display: flex; align-items: center; gap: 8px; }
+.tg > span { color: var(--muted); font-size: 13px; }
+.wIn { width: 62px; font: inherit; font-size: 15px; padding: 7px 6px; border: 1px solid var(--line); border-radius: 7px; min-height: 40px; text-align: center; }
+.wUnit { color: var(--muted); font-size: 13px; margin-left: -4px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { font: inherit; font-size: 14px; border: 0; background: #f6f8fa; color: var(--ink); padding: 8px 12px; cursor: pointer; min-height: 40px; }
+.seg button + button { border-left: 1px solid var(--line); }
+.sw { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); cursor: pointer; padding: 0; font: inherit; font-size: 11px; }
+.sw[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--accent); }
+.sw.auto { background: conic-gradient(#d3261d 0 50%, #2b2e33 50% 100%); color: #fff; font-weight: 700; }
+select { font: inherit; font-size: 14px; padding: 7px 8px; border: 1px solid var(--line); border-radius: 7px; min-height: 40px; background: #f6f8fa; }
+.btn { font: inherit; font-size: 14px; font-weight: 600; background: #f4f6f8; color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px 13px; min-height: 40px; cursor: pointer; }
+.btn:hover:not(:disabled) { background: #e8edf1; }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn.primary { background: var(--steel); border-color: var(--steel); color: #fff; }
+.btn.primary:hover { background: #253c52; }
+.btn.danger { background: var(--err); border-color: var(--err); color: #fff; }
+.chk { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer; min-height: 40px; }
+.chk input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--steel); }
+button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.stage { position: relative; }
+#board { display: block; width: 100%; height: auto; touch-action: none; user-select: none; -webkit-user-select: none; border-radius: 8px; }
+body.busy #board { cursor: progress !important; }
+.toast { position: absolute; left: 50%; top: 14px; transform: translate(-50%, -10px); background: #1f2d3a; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: 15px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; max-width: 90%; text-align: center; z-index: 5; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast.err { background: var(--err); } .toast.ok { background: var(--ok); }
+.status { display: flex; gap: 14px; align-items: flex-start; background: var(--panel); border: 1px solid var(--line); border-left: 8px solid var(--muted); border-radius: 10px; padding: 12px 16px; margin: 10px 0; min-height: 76px; }
+.status .ic { flex: 0 0 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 18px; background: var(--muted); margin-top: 2px; }
+.status h2 { margin: 0 0 2px; font-size: 19px; line-height: 1.25; }
+.status p { margin: 0; color: #33424f; max-width: 82ch; }
+.status.ok { border-left-color: var(--ok); } .status.ok .ic { background: var(--ok); } .status.ok h2 { color: var(--ok); }
+.status.warn { border-left-color: var(--warn); } .status.warn .ic { background: var(--warn); } .status.warn h2 { color: var(--warn); }
+.status.err { border-left-color: var(--err); background: #fff6f5; } .status.err .ic { background: var(--err); } .status.err h2 { color: var(--err); }
+.status.info { border-left-color: var(--steel); } .status.info .ic { background: var(--steel); }
+.status .ic::after { content: "i"; }
+.status.ok .ic::after { content: "✓"; } .status.warn .ic::after { content: "!"; } .status.err .ic::after { content: "✕"; }
+.lower > * { min-width: 0; }
+.lower { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 10px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+.card h2 { font-size: 18px; margin: 0; }
+.cardHead { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.cardHead div { display: flex; gap: 8px; }
+.tableWrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+th, td { border: 1px solid var(--line); padding: 6px 8px; text-align: center; white-space: nowrap; }
+th { background: #eef2f5; font-weight: 600; }
+td.empty { color: var(--muted); white-space: normal; padding: 14px; }
+td.tick { color: var(--ok); font-weight: 700; } td.cross { color: var(--err); font-weight: 700; }
+.concl { margin-top: 10px; background: #f1f7f3; border: 1px solid #cfe3d6; border-radius: 8px; padding: 10px 14px; }
+.concl h3 { margin: 0 0 4px; font-size: 16px; color: var(--ok); }
+.concl p { margin: 0 0 4px; max-width: 82ch; }
+.concl .hint { color: var(--muted); font-size: 13px; }
+.safety ul { margin: 6px 0 0; padding-left: 18px; }
+.safety li { margin: 0 0 6px; }
+.safety .ref { color: var(--muted); font-size: 13px; margin-top: 8px; }
+footer { color: var(--muted); font-size: 13px; margin-top: 12px; text-align: center; }
+#modal { position: fixed; inset: 0; background: rgba(20,32,44,.55); display: grid; place-items: center; z-index: 20; padding: 16px; }
+#modal[hidden] { display: none; }
+.mBox { background: #fff; border-radius: 12px; width: min(940px, 100%); padding: 16px 18px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+.mBox h2 { margin: 0 0 8px; font-size: 20px; }
+.schem { width: 100%; height: auto; background: #fbfcfd; border: 1px solid var(--line); border-radius: 8px; }
+.mFoot { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+.mFoot p { margin: 0; color: var(--muted); font-size: 13px; }
+/* ---- SVG ---- */
+svg text { font-family: var(--font); }
+.stencil { font-size: 25px; font-weight: 700; letter-spacing: 2px; fill: #45525a; }
+.stencilSm { font-size: 14px; letter-spacing: 1px; fill: #5c6a71; }
+.sticker { font-size: 15px; font-weight: 700; fill: #1d2429; letter-spacing: .5px; }
+.lblW { font-size: 17px; font-weight: 700; fill: #fff; }
+.lblWs { font-size: 12.5px; fill: #e3e8ec; }
+.lblD { font-size: 16px; font-weight: 700; fill: #2c2a26; }
+.lblDs { font-size: 12px; fill: #5b564b; }
+.lblWin { font-size: 11px; font-weight: 700; fill: #fff; }
+.lblRock { font-size: 17px; font-weight: 700; fill: #fff; opacity: .9; }
+.polL { font-size: 15px; font-weight: 700; fill: #c8261d; }
+.polN { font-size: 15px; font-weight: 700; fill: #1c1d20; }
+.polS { font-size: 16px; font-weight: 700; fill: #fff; }
+.dialNum { font-size: 11px; fill: #111; }
+.dialUnit { font-size: 20px; font-weight: 700; fill: #111; }
+.dialSym { font-size: 11px; fill: #111; }
+.lcdLab { font-size: 16px; font-weight: 700; fill: #7fe3a6; letter-spacing: 1px; }
+.lcdTxt { font-size: 23px; font-weight: 700; fill: #8dffc0; font-variant-numeric: tabular-nums; }
+body.noLcd .lcd { display: none; }
+.busLab { font-size: 13px; font-weight: 700; fill: #4d3a0c; }
+.dpHit { cursor: pointer; }
+.post .tring { fill: none; stroke: var(--accent); stroke-width: 3; opacity: 0; }
+.post.hover .tring { opacity: 1; }
+.post.pending .tring { opacity: 1; stroke: #f0a400; animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { stroke-width: 6; } }
+.lead { cursor: pointer; }
+.selHalo { stroke: #ffd21f; stroke-width: 15; fill: none; opacity: .75; stroke-linejoin: round; }
+.delBtn { cursor: pointer; }
+.led { fill: #5b1d1d; stroke: #111; }
+.aflash { fill: none; stroke: #ff2a1f; stroke-width: 6; opacity: 0; }
+.meter.alarm .aflash { animation: blink .42s steps(1) infinite; }
+.meter.alarm .led { animation: led .42s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 1; } }
+@keyframes led { 50% { fill: #ff3b2f; } }
+.meter .fire, .meter .smoke, .meter .crack, .meter .soot { display: none; }
+.meter.burning .fire { display: inline; }
+.meter.smoking .smoke { display: inline; }
+.meter.burnt .crack, .meter.burnt .soot { display: inline; }
+.flame { transform-box: fill-box; transform-origin: 50% 100%; animation: flick .16s ease-in-out infinite alternate; opacity: .95; }
+.flame.f2 { animation-duration: .21s; animation-delay: -.07s; }
+.flame.f3 { animation-duration: .19s; animation-delay: -.12s; }
+.flame.f4 { animation-duration: .13s; }
+@keyframes flick { from { transform: scale(1, 1) skewX(3deg); } to { transform: scale(.86, 1.14) skewX(-4deg); } }
+.smoke circle { transform-box: fill-box; transform-origin: center; animation: rise 2.5s linear infinite; opacity: 0; }
+@keyframes rise { 0% { transform: translate(0,0) scale(.6); opacity: 0; } 15% { opacity: .5; } 100% { transform: translate(16px,-170px) scale(2.6); opacity: 0; } }
+.spark { animation: spark .9s ease-out forwards; }
+@keyframes spark { 0% { opacity: 1; } 100% { opacity: 0; } }
+.sLab { font-size: 15px; fill: #1d2a36; }
+.sMeter { font-size: 14px; font-weight: 700; fill: #1d2a36; }
+.sNote { font-size: 14px; fill: #5a6977; font-style: italic; }
+@media (prefers-reduced-motion: reduce) {
+  .flame, .smoke circle, .post.pending .tring { animation: none; }
+  .smoke circle { opacity: .4; }
+}
+@media (max-width: 920px) {
+  .stage { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #board { min-width: 900px; }
+  .stage::after { content: "↔"; display: block; color: var(--muted); font-size: 13px; padding: 2px; text-align: center; }
+}
+@media (max-width: 1000px) {
+  .lower { grid-template-columns: 1fr; }
+  .wrap { padding: 8px 8px 18px; }
+  .brand h1 { font-size: 21px; }
+  .tabs button { padding: 8px 12px; font-size: 15px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1 data-i18n="ui.title"></h1>
+      <p data-i18n="ui.sub"></p>
+    </div>
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="series" aria-selected="true" data-i18n="ui.tabS"></button>
+      <button role="tab" data-tab="parallel" aria-selected="false" data-i18n="ui.tabP"></button>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="tg"><span data-i18n="ui.lang"></span>
+      <select id="langSel" aria-label="Language">
+        <option value="en">English</option>
+        <option value="hi">हिंदी</option>
+      </select>
+    </div>
+    <div class="tg"><span data-i18n="ui.lamps"></span>
+      <label class="chk">L1 <input class="wIn" type="number" step="5" inputmode="numeric" aria-label="L1 watt"></label>
+      <label class="chk">L2 <input class="wIn" type="number" step="5" inputmode="numeric" aria-label="L2 watt"></label>
+      <label class="chk">L3 <input class="wIn" type="number" step="5" inputmode="numeric" aria-label="L3 watt"></label>
+      <span class="wUnit">W</span>
+      <div class="seg">
+        <button data-preset="equal" data-i18n="ui.p1"></button>
+        <button data-preset="unequal" data-i18n="ui.p2"></button>
+      </div>
+    </div>
+    <div class="tg"><span data-i18n="ui.colour"></span>
+      <button class="sw auto" data-col="auto" aria-pressed="true" data-i18n-aria="ui.auto">A</button>
+      <button class="sw" data-col="red" aria-pressed="false" data-i18n-aria="ui.red" style="background:#d3261d"></button>
+      <button class="sw" data-col="black" aria-pressed="false" data-i18n-aria="ui.black" style="background:#2b2e33"></button>
+      <button class="sw" data-col="yellow" aria-pressed="false" data-i18n-aria="ui.yellow" style="background:#efbf22"></button>
+      <button class="sw" data-col="blue" aria-pressed="false" data-i18n-aria="ui.blue" style="background:#1f6bd0"></button>
+    </div>
+    <div class="tg">
+      <button class="btn" id="btnUndo" data-i18n="ui.undo" disabled></button>
+      <button class="btn" id="btnDel" data-i18n="ui.del" disabled></button>
+      <button class="btn" id="btnReset" data-i18n="ui.reset"></button>
+    </div>
+    <div class="tg">
+      <button class="btn primary" id="btnCheck" data-i18n="ui.check"></button>
+      <button class="btn" id="btnDiagram" data-i18n="ui.diagram"></button>
+      <button class="btn danger" id="btnReplace" data-i18n="ui.replace" hidden></button>
+    </div>
+    <div class="tg">
+      <label class="chk"><input type="checkbox" id="tglRead" checked> <span data-i18n="ui.readouts"></span></label>
+      <label class="chk"><input type="checkbox" id="tglSound" checked> <span data-i18n="ui.sound"></span></label>
+    </div>
+  </div>
+
+  <div class="stage">
+    <svg id="board" viewBox="0 0 1620 1230" aria-label="Wiring panel"></svg>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <section id="status" class="status info" aria-live="polite">
+    <div class="ic" aria-hidden="true"></div>
+    <div><h2 id="stTitle"></h2><p id="stText"></p></div>
+  </section>
+
+  <div class="lower">
+    <section class="card">
+      <div class="cardHead">
+        <h2 data-i18n="ui.obs"></h2>
+        <div><button class="btn primary" id="btnRecord" data-i18n="ui.record"></button><button class="btn" id="btnClear" data-i18n="ui.clear"></button></div>
+      </div>
+      <div class="tableWrap"><table id="obsTable"></table></div>
+      <div id="conclusion" class="concl" hidden></div>
+    </section>
+    <section class="card safety">
+      <h2 data-i18n="ui.safety"></h2>
+      <ul>
+        <li data-i18n="ui.s1"></li><li data-i18n="ui.s2"></li><li data-i18n="ui.s3"></li>
+        <li data-i18n="ui.s4"></li><li data-i18n="ui.s5"></li>
+      </ul>
+      <p class="ref" data-i18n="ui.refs"></p>
+    </section>
+  </div>
+  <footer data-i18n="ui.footer"></footer>
+</div>
+
+<div id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="mBox">
+    <h2 id="modalTitle"></h2>
+    <div id="schemBox"></div>
+    <div class="mFoot">
+      <p data-i18n="ui.modalNote"></p>
+      <div><button class="btn" id="btnDemo" data-i18n="ui.wireMe"></button> <button class="btn primary" id="btnClose" data-i18n="ui.close"></button></div>
+    </div>
+  </div>
+</div>
+<script>
+/* =====================================================================
+   0. LANGUAGE  – English / हिंदी
+   ===================================================================== */
+const I18N = {
+en: {
+'ui.title': 'Series and parallel connection of lamps',
+'ui.sub': 'Wire the panel, switch ON, and measure voltage and current on a 230 V, 50 Hz AC supply',
+'ui.tabS': 'Series circuit', 'ui.tabP': 'Parallel circuit',
+'ui.lang': 'Language', 'ui.lamps': 'Lamp wattage', 'ui.preset': 'Preset',
+'ui.p1': '3 × 60 W', 'ui.p2': '40, 60, 100 W',
+'ui.colour': 'Lead colour', 'ui.auto': 'Automatic colour', 'ui.red': 'Red lead', 'ui.black': 'Black lead',
+'ui.yellow': 'Yellow lead', 'ui.blue': 'Blue lead',
+'ui.undo': 'Undo', 'ui.del': 'Remove lead', 'ui.reset': 'Reset wiring',
+'ui.check': 'Check circuit', 'ui.diagram': 'Show diagram', 'ui.replace': 'Replace meter',
+'ui.readouts': 'Digital readouts', 'ui.sound': 'Sound',
+'ui.obs': 'Observation table', 'ui.record': 'Record reading', 'ui.clear': 'Clear',
+'ui.empty': 'No readings yet. Wire the circuit, switch ON, then press Record reading.',
+'ui.concl': 'Conclusion',
+'ui.conclS': 'In a series circuit the same current flows through every lamp, and the supply voltage divides among them, so V = V1 + V2 + V3 and the lamps glow dimly. The lamp of lowest wattage has the highest resistance, takes the largest share of the voltage and glows brightest. If one lamp fails, the path breaks and all lamps go out.',
+'ui.conclP': 'In a parallel circuit every lamp receives the full supply voltage, so each lamp glows at its rated brightness. The total current is the sum of the branch currents, IT = I1 + I2 + I3, and the lamp of highest wattage draws the most current. If one lamp fails, the other branches keep working.',
+'ui.hintSets': 'Record readings with another set of lamp wattages to compare.',
+'ui.safety': 'Safety and good practice',
+'ui.s1': 'Switch OFF and isolate the supply before making or removing any connection.',
+'ui.s2': 'Connect an ammeter in series with the load. Across the supply it is a dead short.',
+'ui.s3': 'Connect a voltmeter in parallel. In series it blocks the load current.',
+'ui.s4': 'The DP switch must break both phase and neutral. Use red leads for phase and black for neutral.',
+'ui.s5': 'Choose a meter range higher than the expected reading.',
+'ui.refs': 'References: IS 732 (wiring), IS 3854 (switches), IS 1258 (lamp holders), IS 1248 (indicating instruments), CEA Safety Regulations 2023.',
+'ui.footer': 'Developed by PRASAD UM, VI, NSTI Calicut. Tap a binding post, then tap another post to plug in a lead. Dragging between posts also works. Tap a lead to remove it.',
+'ui.modalS': 'Series circuit diagram', 'ui.modalP': 'Parallel circuit diagram',
+'ui.modalNote': 'Symbols as per IS/IEC 60617. Voltmeter across the supply, ammeter in series.',
+'ui.wireMe': 'Wire it for me', 'ui.close': 'Close',
+'ui.no': 'No.', 'ui.lampsW': 'Lamps (W)', 'ui.check2': 'Check', 'ui.remark': 'Remark',
+'ui.sumV': 'V1+V2+V3 (V)', 'ui.sumI': 'I1+I2+I3',
+'ui.okSumV': 'V = V1+V2+V3', 'ui.okSumI': 'IT = I1+I2+I3',
+'ui.dimEqual': 'All lamps equally dim', 'ui.bright': '{0} W lamp brightest',
+'term.left': '{0} left terminal', 'term.right': '{0} right terminal',
+'term.supL': 'supply phase (L)', 'term.supN': 'supply neutral (N)',
+'term.dpLin': 'DP switch L line', 'term.dpNin': 'DP switch N line',
+'term.dpLout': 'DP switch L load', 'term.dpNout': 'DP switch N load',
+'term.pb': 'phase link post {0}', 'term.nb': 'neutral link post {0}',
+'board.title': 'Series parallel connection', 'board.sub': '230 V, 50 Hz AC  |  NSTI Calicut',
+'board.mains': 'Mains', 'board.rating': '230 V ~ 50 Hz', 'board.supply': 'Supply',
+'board.danger': 'Danger 230 V', 'board.dp': 'DP switch', 'board.dpr': '16 A  240 V~',
+'board.line': 'Line', 'board.load': 'Load',
+'board.pb': 'Phase link (L)', 'board.nb': 'Neutral link (N)',
+'board.foot': 'NSTI Calicut  |  Electrician trade  |  PRASAD UM, VI',
+'pfx.check': 'Check: ', 'pfx.on': 'If switched ON: ',
+'msg.off.t': 'DP switch is OFF – circuit isolated',
+'msg.off.x': 'Complete the connections, then switch the DP switch ON to test.',
+'msg.off0.x': 'Tap a binding post, then tap another post to plug in a lead. Start from the supply terminals.',
+'msg.none.t': 'Nothing connected', 'msg.none.x': 'The panel has no leads yet. Switch OFF and wire the circuit.',
+'msg.short.t': 'Dead short between phase and neutral',
+'msg.short.x': 'A lead joins phase directly to neutral with no load in between. The protective device trips and the DP switch is turned OFF. Find the lead that connects L to N and remove it.',
+'msg.ashort.t': 'Ammeter connected in parallel – short circuit!',
+'msg.ashort.x': 'Current through {0} is about {1} A. An ammeter has almost zero resistance, so connecting it across the supply or across a load is a dead short. Always connect an ammeter in series with the load.',
+'msg.aover.t': 'Ammeter overloaded – meter burnt!',
+'msg.aover.x': 'Current through {0} is about {1} A, more than five times the range of the meter. Check the connection and the wattage of the lamps before replacing the meter.',
+'msg.vser.t': 'Voltmeter connected in series',
+'msg.vser.x': '{0} reads about {1} V but the lamps stay dark: its 100 kΩ resistance blocks the load current. A voltmeter must be connected in parallel, across the supply or across the load.',
+'msg.open.t': 'Open circuit – no current flows',
+'msg.open.x': 'No lead on: {0}. Every component must lie in a closed path from phase back to neutral.',
+'msg.open2.x': 'All posts carry leads, but there is no closed path from phase through the lamps back to neutral. Trace the phase line and the neutral return.',
+'msg.dpby.t': 'DP switch bypassed',
+'msg.dpby.x': 'The supply must pass through the DP switch: the lamps stay ON even when it is switched OFF.',
+'msg.dpl.x': 'Phase bypasses the DP switch. Both phase and neutral must pass through it.',
+'msg.dpn.x': 'Neutral bypasses the DP switch. A DP switch must break both phase and neutral.',
+'msg.dpsw.x': 'Phase and neutral are swapped at the DP switch input. Keep L to L and N to N.',
+'msg.dpchk.t': 'Check the DP switch wiring',
+'msg.burnt.t': 'Meter burnt', 'msg.burnt.x': 'Replace {0} to take readings.',
+'msg.anotpath.t': 'Lamps glow, but ammeter A is not in the current path',
+'msg.anotpath.x': 'Connect A in series between the DP switch load terminal (L) and the lamp circuit.',
+'msg.amis.t': 'Ammeter A does not read the circuit current',
+'msg.amis.x': 'Check that A is in series with the lamp circuit and not short-circuited by another lead.',
+'msg.vnot.t': 'Voltmeter V is not across the supply',
+'msg.vnot.x': 'Connect V in parallel across the DP switch load terminals (L and N).',
+'msg.vpart.x': 'V reads {0} V, which is only part of the supply. Connect it across the DP switch load terminals (L and N).',
+'msg.aacross.t': 'Ammeter {0} is connected across {1} – lamp shorted',
+'msg.aacross.x': '{1} is dark because the ammeter bypasses it. An ammeter in parallel is a short circuit; connect it in series.',
+'msg.snot.t': 'Connection does not match the required series circuit',
+'msg.snot.par': '{0} glow at full brightness, so they are across the full supply. In a series circuit all three lamps must be joined end to end in one path.',
+'msg.snot.dark': '{0} not in the current path. All three lamps must carry the same current in one path.',
+'msg.snot.gen': 'The lamps are not carrying equal current. Join L1, L2 and L3 end to end in one path.',
+'msg.sok.t': 'Series circuit correct',
+'msg.sok.x': 'The same current, {0}, flows through all three lamps. The {1} V supply divides across them: {2}. The lamps glow dimly.',
+'msg.pok.t': 'Parallel circuit correct',
+'msg.pok.x': 'Every lamp receives the full {0} V and glows at rated brightness. The branch currents {1} add up to the total current {2}.',
+'msg.atmain.t': 'Ammeter A is not in the main line',
+'msg.atmain.x': 'Connect A in series between the DP switch load terminal (L) and the common phase point, before the branches divide.',
+'msg.atbr.x': 'A is measuring one branch only. Move it to the main line, before the branches divide.',
+'msg.akwrong.t': 'Branch ammeter {0} is not in series with {1}',
+'msg.akwrong.x': '{0} is in the branch of {1}. Connect {0} in series with {2} so that the readings match the observation table.',
+'msg.akwrong2.x': 'Connect {0} in series with {1}, in its own branch.',
+'msg.vkwrong.t': 'Voltmeter {0} is not across {1}',
+'msg.vkwrong.x': 'Connect {0} in parallel across {1} to measure the voltage of that lamp.',
+'msg.pnot.t': 'Connection does not match the required parallel circuit',
+'msg.pnot.ser': 'The lamps are dim and carry the same current, so they are in series. In parallel each lamp needs its own branch from the common phase point to the common neutral point.',
+'msg.pnot.gen': '{0} not receiving the full supply voltage. Each branch must run from the common phase point through its ammeter and lamp to the common neutral point.',
+'msg.hint': 'Still to connect: {0}.',
+'toast.blocked': 'Switch OFF the DP switch before making or removing connections.',
+'toast.dup': 'These two posts are already connected.',
+'toast.max': 'A binding post takes a maximum of 3 stacked plugs.',
+'toast.noroute': 'No clear route – remove a lead or use a different terminal.',
+'toast.reset': 'All leads removed. Use Undo to bring them back.',
+'toast.lampoff': 'Switch OFF the DP switch before changing the lamps.',
+'toast.repoff': 'Switch OFF the DP switch before replacing a meter.',
+'toast.replaced': 'Meter replaced.',
+'toast.recon': 'Switch ON the DP switch to take readings.',
+'toast.recbad': 'Readings can be recorded only when the circuit is correct.',
+'toast.recok': 'Reading recorded.',
+'toast.demo': 'Reference wiring placed. Switch ON to test.',
+'toast.demooff': 'Switch OFF the DP switch first.',
+'sch.note.s': 'The same current flows through L1, L2 and L3',
+'sch.note.p': 'Same voltage across each branch, IT = I1 + I2 + I3',
+'sch.dp': 'DP switch'
+},
+hi: {
+'ui.title': 'लैंपों का श्रेणी एवं समानांतर संयोजन',
+'ui.sub': 'पैनल की वायरिंग कीजिए, स्विच ON कीजिए और 230 V, 50 Hz AC आपूर्ति पर वोल्टता तथा धारा मापिए',
+'ui.tabS': 'श्रेणी परिपथ', 'ui.tabP': 'समानांतर परिपथ',
+'ui.lang': 'भाषा', 'ui.lamps': 'लैंप वाट क्षमता', 'ui.preset': 'पूर्व निर्धारित',
+'ui.p1': '3 × 60 W', 'ui.p2': '40, 60, 100 W',
+'ui.colour': 'तार का रंग', 'ui.auto': 'स्वतः रंग', 'ui.red': 'लाल तार', 'ui.black': 'काला तार',
+'ui.yellow': 'पीला तार', 'ui.blue': 'नीला तार',
+'ui.undo': 'पूर्ववत्', 'ui.del': 'तार हटाएँ', 'ui.reset': 'वायरिंग हटाएँ',
+'ui.check': 'परिपथ जाँचें', 'ui.diagram': 'परिपथ आरेख', 'ui.replace': 'मीटर बदलें',
+'ui.readouts': 'डिजिटल रीडिंग', 'ui.sound': 'ध्वनि',
+'ui.obs': 'प्रेक्षण तालिका', 'ui.record': 'रीडिंग दर्ज करें', 'ui.clear': 'साफ़ करें',
+'ui.empty': 'अभी कोई रीडिंग नहीं। परिपथ जोड़िए, स्विच ON कीजिए, फिर रीडिंग दर्ज करें दबाइए।',
+'ui.concl': 'निष्कर्ष',
+'ui.conclS': 'श्रेणी परिपथ में प्रत्येक लैंप से समान धारा बहती है और आपूर्ति वोल्टता लैंपों में बँट जाती है, अतः V = V1 + V2 + V3 तथा लैंप मंद जलते हैं। सबसे कम वाट वाले लैंप का प्रतिरोध सबसे अधिक होता है, उस पर सबसे अधिक वोल्टता आती है और वह सबसे तेज़ जलता है। यदि एक लैंप जल जाए तो परिपथ टूट जाता है और सभी लैंप बुझ जाते हैं।',
+'ui.conclP': 'समानांतर परिपथ में प्रत्येक लैंप को पूरी आपूर्ति वोल्टता मिलती है, इसलिए हर लैंप अपनी निर्धारित चमक से जलता है। कुल धारा शाखा धाराओं का योग होती है, IT = I1 + I2 + I3, तथा सबसे अधिक वाट वाला लैंप सबसे अधिक धारा लेता है। एक लैंप जलने पर शेष शाखाएँ कार्य करती रहती हैं।',
+'ui.hintSets': 'तुलना के लिए किसी अन्य वाट क्षमता के साथ भी रीडिंग दर्ज कीजिए।',
+'ui.safety': 'सुरक्षा एवं उत्तम कार्यप्रणाली',
+'ui.s1': 'कोई भी संयोजन करने या हटाने से पहले आपूर्ति बंद कर पृथक् कीजिए।',
+'ui.s2': 'अमीटर को सदैव लोड के श्रेणी में जोड़िए। आपूर्ति के आर-पार जोड़ने पर यह शॉर्ट सर्किट है।',
+'ui.s3': 'वोल्टमीटर को समानांतर में जोड़िए। श्रेणी में जोड़ने पर यह लोड धारा रोक देता है।',
+'ui.s4': 'डीपी स्विच फेज़ तथा न्यूट्रल दोनों को तोड़ना चाहिए। फेज़ के लिए लाल और न्यूट्रल के लिए काला तार प्रयोग कीजिए।',
+'ui.s5': 'अपेक्षित पाठ्यांक से अधिक परास (range) वाला मीटर चुनिए।',
+'ui.refs': 'संदर्भ: IS 732 (वायरिंग), IS 3854 (स्विच), IS 1258 (लैंप होल्डर), IS 1248 (सूचक यंत्र), CEA सुरक्षा विनियम 2023।',
+'ui.footer': 'निर्माण: PRASAD UM, VI, NSTI कालीकट। एक बाइंडिंग पोस्ट पर टैप कीजिए, फिर दूसरे पोस्ट पर टैप कर तार जोड़िए। पोस्टों के बीच ड्रैग करके भी जोड़ सकते हैं। तार हटाने के लिए उस पर टैप कीजिए।',
+'ui.modalS': 'श्रेणी परिपथ आरेख', 'ui.modalP': 'समानांतर परिपथ आरेख',
+'ui.modalNote': 'प्रतीक IS/IEC 60617 के अनुसार। वोल्टमीटर आपूर्ति के आर-पार, अमीटर श्रेणी में।',
+'ui.wireMe': 'स्वतः वायरिंग करें', 'ui.close': 'बंद करें',
+'ui.no': 'क्र.', 'ui.lampsW': 'लैंप (W)', 'ui.check2': 'जाँच', 'ui.remark': 'टिप्पणी',
+'ui.sumV': 'V1+V2+V3 (V)', 'ui.sumI': 'I1+I2+I3',
+'ui.okSumV': 'V = V1+V2+V3', 'ui.okSumI': 'IT = I1+I2+I3',
+'ui.dimEqual': 'सभी लैंप समान रूप से मंद', 'ui.bright': '{0} W का लैंप सबसे तेज़',
+'term.left': '{0} का बायाँ टर्मिनल', 'term.right': '{0} का दायाँ टर्मिनल',
+'term.supL': 'आपूर्ति फेज़ (L)', 'term.supN': 'आपूर्ति न्यूट्रल (N)',
+'term.dpLin': 'डीपी स्विच L लाइन', 'term.dpNin': 'डीपी स्विच N लाइन',
+'term.dpLout': 'डीपी स्विच L लोड', 'term.dpNout': 'डीपी स्विच N लोड',
+'term.pb': 'फेज़ लिंक पोस्ट {0}', 'term.nb': 'न्यूट्रल लिंक पोस्ट {0}',
+'board.title': 'श्रेणी एवं समानांतर संयोजन', 'board.sub': '230 V, 50 Hz AC  |  NSTI कालीकट',
+'board.mains': 'मेन्स', 'board.rating': '230 V ~ 50 Hz', 'board.supply': 'आपूर्ति',
+'board.danger': 'खतरा 230 V', 'board.dp': 'डीपी स्विच', 'board.dpr': '16 A  240 V~',
+'board.line': 'लाइन', 'board.load': 'लोड',
+'board.pb': 'फेज़ लिंक (L)', 'board.nb': 'न्यूट्रल लिंक (N)',
+'board.foot': 'NSTI कालीकट  |  इलेक्ट्रिशियन ट्रेड  |  PRASAD UM, VI',
+'pfx.check': 'जाँच: ', 'pfx.on': 'ON करने पर: ',
+'msg.off.t': 'डीपी स्विच OFF है – परिपथ पृथक्',
+'msg.off.x': 'संयोजन पूरे कीजिए, फिर परीक्षण के लिए डीपी स्विच ON कीजिए।',
+'msg.off0.x': 'एक बाइंडिंग पोस्ट पर टैप कीजिए, फिर दूसरे पोस्ट पर टैप कर तार जोड़िए। आपूर्ति टर्मिनल से आरंभ कीजिए।',
+'msg.none.t': 'कोई संयोजन नहीं', 'msg.none.x': 'पैनल पर अभी कोई तार नहीं है। स्विच OFF रखकर परिपथ जोड़िए।',
+'msg.short.t': 'फेज़ और न्यूट्रल के बीच सीधा शॉर्ट सर्किट',
+'msg.short.x': 'कोई तार फेज़ को बिना लोड के सीधे न्यूट्रल से जोड़ रहा है। सुरक्षा उपकरण ट्रिप हो जाता है और डीपी स्विच OFF हो जाता है। L को N से जोड़ने वाला तार खोजकर हटाइए।',
+'msg.ashort.t': 'अमीटर समानांतर में जुड़ा – शॉर्ट सर्किट!',
+'msg.ashort.x': '{0} में लगभग {1} A धारा बह रही है। अमीटर का प्रतिरोध लगभग शून्य होता है, अतः उसे आपूर्ति या लोड के आर-पार जोड़ना सीधा शॉर्ट सर्किट है। अमीटर सदैव लोड के श्रेणी में जोड़िए।',
+'msg.aover.t': 'अमीटर पर अतिभार – मीटर जल गया!',
+'msg.aover.x': '{0} में लगभग {1} A धारा है, जो मीटर के परास से पाँच गुना अधिक है। मीटर बदलने से पहले संयोजन तथा लैंपों की वाट क्षमता जाँचिए।',
+'msg.vser.t': 'वोल्टमीटर श्रेणी में जुड़ा है',
+'msg.vser.x': '{0} लगभग {1} V दिखा रहा है परंतु लैंप नहीं जल रहे: इसका 100 kΩ प्रतिरोध लोड धारा रोक देता है। वोल्टमीटर सदैव समानांतर में, आपूर्ति या लोड के आर-पार जोड़िए।',
+'msg.open.t': 'खुला परिपथ – कोई धारा नहीं',
+'msg.open.x': 'इन पर कोई तार नहीं है: {0}। प्रत्येक उपकरण फेज़ से न्यूट्रल तक के बंद पथ में होना चाहिए।',
+'msg.open2.x': 'सभी पोस्ट पर तार हैं, परंतु फेज़ से लैंपों होकर न्यूट्रल तक कोई बंद पथ नहीं है। फेज़ लाइन तथा न्यूट्रल वापसी की जाँच कीजिए।',
+'msg.dpby.t': 'डीपी स्विच बायपास हो रहा है',
+'msg.dpby.x': 'आपूर्ति डीपी स्विच से होकर जानी चाहिए: स्विच OFF करने पर भी लैंप जलते रहते हैं।',
+'msg.dpl.x': 'फेज़ डीपी स्विच को बायपास कर रहा है। फेज़ तथा न्यूट्रल दोनों उसी से होकर जाने चाहिए।',
+'msg.dpn.x': 'न्यूट्रल डीपी स्विच को बायपास कर रहा है। डीपी स्विच दोनों लाइनें तोड़ना चाहिए।',
+'msg.dpsw.x': 'डीपी स्विच के इनपुट पर फेज़ और न्यूट्रल आपस में बदल गए हैं। L को L से तथा N को N से जोड़िए।',
+'msg.dpchk.t': 'डीपी स्विच की वायरिंग जाँचिए',
+'msg.burnt.t': 'मीटर जल चुका है', 'msg.burnt.x': 'रीडिंग लेने के लिए {0} बदलिए।',
+'msg.anotpath.t': 'लैंप जल रहे हैं, परंतु अमीटर A धारा पथ में नहीं है',
+'msg.anotpath.x': 'A को डीपी स्विच के लोड टर्मिनल (L) तथा लैंप परिपथ के बीच श्रेणी में जोड़िए।',
+'msg.amis.t': 'अमीटर A परिपथ की धारा नहीं दिखा रहा',
+'msg.amis.x': 'जाँचिए कि A लैंप परिपथ के श्रेणी में है और किसी तार से शॉर्ट नहीं हो रहा।',
+'msg.vnot.t': 'वोल्टमीटर V आपूर्ति के आर-पार नहीं है',
+'msg.vnot.x': 'V को डीपी स्विच के लोड टर्मिनलों (L तथा N) के आर-पार समानांतर में जोड़िए।',
+'msg.vpart.x': 'V केवल {0} V दिखा रहा है, जो आपूर्ति का एक भाग है। इसे डीपी स्विच के लोड टर्मिनलों (L तथा N) के आर-पार जोड़िए।',
+'msg.aacross.t': 'अमीटर {0} {1} के आर-पार जुड़ा है – लैंप शॉर्ट',
+'msg.aacross.x': 'अमीटर द्वारा बायपास होने के कारण {1} नहीं जल रहा। समानांतर में जुड़ा अमीटर शॉर्ट सर्किट है; उसे श्रेणी में जोड़िए।',
+'msg.snot.t': 'संयोजन अपेक्षित श्रेणी परिपथ से मेल नहीं खाता',
+'msg.snot.par': '{0} पूरी चमक से जल रहे हैं, अर्थात् वे पूरी आपूर्ति के आर-पार (समानांतर) हैं। श्रेणी परिपथ में तीनों लैंप एक ही पथ में क्रमशः जुड़ने चाहिए।',
+'msg.snot.dark': '{0} धारा पथ में नहीं हैं। तीनों लैंपों में एक ही पथ की समान धारा बहनी चाहिए।',
+'msg.snot.gen': 'लैंपों में समान धारा नहीं बह रही। L1, L2 तथा L3 को एक ही पथ में क्रमशः जोड़िए।',
+'msg.sok.t': 'श्रेणी परिपथ सही है',
+'msg.sok.x': 'तीनों लैंपों में समान धारा {0} बह रही है। {1} V आपूर्ति लैंपों में बँटती है: {2}। लैंप मंद जलते हैं।',
+'msg.pok.t': 'समानांतर परिपथ सही है',
+'msg.pok.x': 'प्रत्येक लैंप को पूरी {0} V मिलती है और वह पूरी चमक से जलता है। शाखा धाराएँ {1} मिलकर कुल धारा {2} बनाती हैं।',
+'msg.atmain.t': 'अमीटर A मुख्य लाइन में नहीं है',
+'msg.atmain.x': 'A को डीपी स्विच के लोड टर्मिनल (L) तथा सामान्य फेज़ बिंदु के बीच, शाखाओं के विभाजन से पहले श्रेणी में जोड़िए।',
+'msg.atbr.x': 'A केवल एक शाखा की धारा माप रहा है। इसे शाखाओं के विभाजन से पहले मुख्य लाइन में लगाइए।',
+'msg.akwrong.t': 'शाखा अमीटर {0} {1} के श्रेणी में नहीं है',
+'msg.akwrong.x': '{0} {1} की शाखा में है। तालिका से मेल के लिए {0} को {2} के श्रेणी में जोड़िए।',
+'msg.akwrong2.x': '{0} को उसकी अपनी शाखा में {1} के श्रेणी में जोड़िए।',
+'msg.vkwrong.t': 'वोल्टमीटर {0} {1} के आर-पार नहीं है',
+'msg.vkwrong.x': 'उस लैंप की वोल्टता मापने के लिए {0} को {1} के आर-पार समानांतर में जोड़िए।',
+'msg.pnot.t': 'संयोजन अपेक्षित समानांतर परिपथ से मेल नहीं खाता',
+'msg.pnot.ser': 'लैंप मंद हैं और उनमें समान धारा है, अर्थात् वे श्रेणी में हैं। समानांतर में प्रत्येक लैंप की अपनी शाखा सामान्य फेज़ बिंदु से सामान्य न्यूट्रल बिंदु तक होनी चाहिए।',
+'msg.pnot.gen': '{0} को पूरी आपूर्ति वोल्टता नहीं मिल रही। प्रत्येक शाखा सामान्य फेज़ बिंदु से अपने अमीटर तथा लैंप होकर सामान्य न्यूट्रल बिंदु तक जानी चाहिए।',
+'msg.hint': 'अभी जोड़ना शेष: {0}।',
+'toast.blocked': 'संयोजन करने या हटाने से पहले डीपी स्विच OFF कीजिए।',
+'toast.dup': 'ये दोनों पोस्ट पहले से जुड़े हैं।',
+'toast.max': 'एक बाइंडिंग पोस्ट पर अधिकतम 3 प्लग लगाए जा सकते हैं।',
+'toast.noroute': 'कोई स्पष्ट मार्ग नहीं – कोई तार हटाइए या दूसरा टर्मिनल चुनिए।',
+'toast.reset': 'सभी तार हटा दिए गए। वापस लाने के लिए पूर्ववत् दबाइए।',
+'toast.lampoff': 'लैंप बदलने से पहले डीपी स्विच OFF कीजिए।',
+'toast.repoff': 'मीटर बदलने से पहले डीपी स्विच OFF कीजिए।',
+'toast.replaced': 'मीटर बदल दिया गया।',
+'toast.recon': 'रीडिंग लेने के लिए डीपी स्विच ON कीजिए।',
+'toast.recbad': 'रीडिंग केवल सही परिपथ पर ही दर्ज की जा सकती है।',
+'toast.recok': 'रीडिंग दर्ज हो गई।',
+'toast.demo': 'संदर्भ वायरिंग लगा दी गई। परीक्षण के लिए ON कीजिए।',
+'toast.demooff': 'पहले डीपी स्विच OFF कीजिए।',
+'sch.note.s': 'L1, L2 तथा L3 में समान धारा बहती है',
+'sch.note.p': 'प्रत्येक शाखा पर समान वोल्टता, IT = I1 + I2 + I3',
+'sch.dp': 'डीपी स्विच'
+}
+};
+let LANG = 'en';
+function L(key, p) {
+  let s = (I18N[LANG] && I18N[LANG][key]) != null ? I18N[LANG][key] : (I18N.en[key] != null ? I18N.en[key] : key);
+  if (p && p.length) s = s.replace(/\{(\d+)\}/g, (m, i) => p[i] != null ? p[i] : m);
+  return s;
+}
+
+/* =====================================================================
+   1. LAYOUT DATA  – modelled on the NSTI "Series parallel connection"
+      training panel: V1..V3 (left), L1..L3 (centre), A1..A3 (right),
+      main voltmeter, main ammeter, DP switch and supply on the top band,
+      phase link strip (top right) and neutral link strip (bottom).
+   out = preferred exit direction 0 up, 1 right, 2 down, 3 left
+   ===================================================================== */
+const CELL = 15, GW = 108, GH = 82, VW = GW * CELL, VH = GH * CELL;
+const VS = 230;
+const W_MIN = 5, W_MAX = 150, W_DEF = [60, 60, 60];
+const PRESETS = { equal: [60, 60, 60], unequal: [40, 60, 100] };
+
+function mkMeter(id, label, kind, fs, unit, mul, major, minor, dec, c0, r0) {
+  return {
+    id, type: 'meter', label, kind, fs, unit, mul, major, minor, dec,
+    body: [c0, r0, c0 + 10, r0 + 11],
+    terms: [
+      { key: 'a', c: c0 + 2, r: r0 + 12, out: 2, nk: 'term.left', np: [label] },
+      { key: 'b', c: c0 + 8, r: r0 + 12, out: 2, nk: 'term.right', np: [label] }
+    ]
+  };
+}
+function mkLamp(id, label, idx, c0, r0) {
+  return {
+    id, type: 'lamp', label, idx, body: [c0, r0, c0 + 10, r0 + 11],
+    terms: [
+      { key: 'a', c: c0 + 2, r: r0 + 12, out: 2, nk: 'term.left', np: [label] },
+      { key: 'b', c: c0 + 8, r: r0 + 12, out: 2, nk: 'term.right', np: [label] }
+    ]
+  };
+}
+function mkSupply(c0, r0) {
+  return {
+    id: 'SUP', type: 'supply', body: [c0, r0, c0 + 8, r0 + 13],
+    terms: [
+      { key: 'L', c: c0 + 9, r: r0 + 3, out: 1, pol: 'L', nk: 'term.supL', np: [] },
+      { key: 'N', c: c0 + 9, r: r0 + 11, out: 1, pol: 'N', nk: 'term.supN', np: [] }
+    ]
+  };
+}
+function mkDP(c0, r0) {
+  return {
+    id: 'DP', type: 'dp', body: [c0, r0, c0 + 10, r0 + 13],
+    terms: [
+      { key: 'Lin', c: c0 - 1, r: r0 + 3, out: 3, pol: 'L', nk: 'term.dpLin', np: [] },
+      { key: 'Nin', c: c0 - 1, r: r0 + 11, out: 3, pol: 'N', nk: 'term.dpNin', np: [] },
+      { key: 'Lout', c: c0 + 11, r: r0 + 3, out: 1, pol: 'L', nk: 'term.dpLout', np: [] },
+      { key: 'Nout', c: c0 + 11, r: r0 + 11, out: 1, pol: 'N', nk: 'term.dpNout', np: [] }
+    ]
+  };
+}
+function mkBus(id, pol, c0, c1, r0, posts, below) {
+  return {
+    id, type: 'bus', pol, body: [c0, r0, c1, r0 + 1],
+    terms: posts.map((c, i) => ({
+      key: 'p' + i, c, r: below ? r0 + 2 : r0 - 1, out: below ? 2 : 0, pol,
+      nk: pol === 'L' ? 'term.pb' : 'term.nb', np: [i + 1]
+    }))
+  };
+}
+
+function buildBoard(id) {
+  const ser = id === 'series';
+  const bA = (mid, lab, c0, r0) => ser
+    ? mkMeter(mid, lab, 'A', 0.25, 'mA', 1000, 50, 10, 1, c0, r0)
+    : mkMeter(mid, lab, 'A', 1, 'A', 1, 0.2, 0.05, 3, c0, r0);
+  const mainA = ser
+    ? mkMeter('A', 'A', 'A', 0.25, 'mA', 1000, 50, 10, 1, 60, 3)
+    : mkMeter('A', 'A', 'A', 3, 'A', 1, 0.5, 0.1, 3, 60, 3);
+  const rows = [21, 40, 59];
+  const B = {
+    id, comps: [
+      mkSupply(3, 3), mkDP(16, 3),
+      mkMeter('V', 'V', 'V', 300, 'V', 1, 50, 10, 1, 33, 3), mainA,
+      mkBus('PB', 'L', 74, 104, 3, [78, 96, 99, 102], true),
+      mkMeter('V1', 'V1', 'V', 300, 'V', 1, 50, 10, 1, 22, rows[0]),
+      mkMeter('V2', 'V2', 'V', 300, 'V', 1, 50, 10, 1, 22, rows[1]),
+      mkMeter('V3', 'V3', 'V', 300, 'V', 1, 50, 10, 1, 22, rows[2]),
+      mkLamp('L1', 'L1', 0, 44, rows[0]), mkLamp('L2', 'L2', 1, 44, rows[1]), mkLamp('L3', 'L3', 2, 44, rows[2]),
+      bA('A1', 'A1', 82, rows[0]), bA('A2', 'A2', 82, rows[1]), bA('A3', 'A3', 82, rows[2]),
+      mkBus('NB', 'N', 4, 80, 78, [8, 20, 32, 44], false)
+    ]
+  };
+  B.termList = []; B.term = {}; B.comp = {};
+  B.comps.forEach(c => {
+    B.comp[c.id] = c;
+    c.terms.forEach(t => {
+      t.id = c.id + '.' + t.key; t.comp = c; t.idx = B.termList.length;
+      t.x = t.c * CELL + CELL / 2; t.y = t.r * CELL + CELL / 2;
+      B.termList.push(t); B.term[t.id] = t;
+    });
+  });
+  return B;
+}
+function buildBoards() { return { series: buildBoard('series'), parallel: buildBoard('parallel') }; }
+
+/* Reference wiring for "Wire it for me" and the self-tests */
+const SOLUTIONS = {
+  series: [
+    ['SUP.L', 'DP.Lin'], ['SUP.N', 'DP.Nin'],
+    ['DP.Lout', 'A.a'], ['A.b', 'A1.a'], ['A1.b', 'L1.b'],
+    ['L1.a', 'A2.a'], ['A2.b', 'L2.b'], ['L2.a', 'A3.a'], ['A3.b', 'L3.b'],
+    ['L3.a', 'DP.Nout'], ['V.a', 'DP.Lout'], ['V.b', 'DP.Nout'],
+    ['V1.a', 'L1.a'], ['V1.b', 'L1.b'], ['V2.a', 'L2.a'], ['V2.b', 'L2.b'], ['V3.a', 'L3.a'], ['V3.b', 'L3.b']
+  ],
+  parallel: [
+    ['SUP.L', 'DP.Lin'], ['SUP.N', 'DP.Nin'],
+    ['DP.Lout', 'A.a'], ['A.b', 'PB.p0'],
+    ['PB.p1', 'A1.a'], ['A1.b', 'L1.b'], ['L1.a', 'NB.p1'],
+    ['PB.p2', 'A2.a'], ['A2.b', 'L2.b'], ['L2.a', 'NB.p2'],
+    ['PB.p3', 'A3.a'], ['A3.b', 'L3.b'], ['L3.a', 'NB.p3'],
+    ['NB.p0', 'DP.Nout'], ['V.a', 'DP.Lout'], ['V.b', 'DP.Nout'],
+    ['V1.a', 'L1.a'], ['V1.b', 'L1.b'], ['V2.a', 'L2.a'], ['V2.b', 'L2.b'], ['V3.a', 'L3.a'], ['V3.b', 'L3.b']
+  ]
+};
+
+/* =====================================================================
+   2. ROUTER  – orthogonal A* on the board grid.
+   Hard rules : never through a component body, never through a cell
+                used by another lead, never through a foreign terminal
+                or the four cells around it (keeps posts accessible).
+   Soft costs : turns, hugging bodies, passing near foreign terminals.
+   If a new lead cannot be placed, existing leads are ripped up and
+   re-routed in other orders before giving up.
+   ===================================================================== */
+const DC = [0, 1, 0, -1], DR = [-1, 0, 1, 0];
+
+class Router {
+  constructor(B) {
+    this.B = B;
+    const N = GW * GH;
+    this.N = N;
+    this.block = new Uint8Array(N);
+    this.cost = new Float32Array(N);
+    this.termAt = new Int16Array(N).fill(-1);
+    this.guard = new Int16Array(N).fill(-1);   // 4-neighbour of a terminal
+    this.prox = new Int16Array(N).fill(-1);    // within radius 2 of a terminal (-2 = several)
+    for (let c = 0; c < GW; c++) for (const r of [0, 1, GH - 2, GH - 1]) this.block[r * GW + c] = 1;
+    for (let r = 0; r < GH; r++) for (const c of [0, 1, GW - 2, GW - 1]) this.block[r * GW + c] = 1;
+    B.comps.forEach(cp => {
+      const [c0, r0, c1, r1] = cp.body;
+      for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) this.block[r * GW + c] = 1;
+    });
+    // hugging cost
+    for (let r = 1; r < GH - 1; r++) for (let c = 1; c < GW - 1; c++) {
+      const i = r * GW + c; if (this.block[i]) continue;
+      let near = 0;
+      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) if (this.block[i + dr * GW + dc]) near = 1;
+      if (near) this.cost[i] += 0.6;
+    }
+    B.termList.forEach(t => {
+      const i = t.r * GW + t.c;
+      this.termAt[i] = t.idx;
+      for (let d = 0; d < 4; d++) {
+        const c = t.c + DC[d], r = t.r + DR[d];
+        if (c < 0 || r < 0 || c >= GW || r >= GH) continue;
+        this.guard[r * GW + c] = t.idx;
+      }
+      for (let dr = -2; dr <= 2; dr++) for (let dc = -2; dc <= 2; dc++) {
+        const c = t.c + dc, r = t.r + dr;
+        if (c < 0 || r < 0 || c >= GW || r >= GH) continue;
+        const j = r * GW + c;
+        this.prox[j] = (this.prox[j] === -1 || this.prox[j] === t.idx) ? t.idx : -2;
+      }
+    });
+    const S = N * 4;
+    this.g = new Float32Array(S);
+    this.stamp = new Uint32Array(S);
+    this.closed = new Uint32Array(S);
+    this.from = new Int32Array(S);
+    this.gen = 0;
+    this.heapS = new Int32Array(S * 2);
+    this.heapF = new Float32Array(S * 2);
+  }
+
+  /* occ: Int32Array(N) lead index per cell or -1 */
+  route(ta, tb, occ) {
+    if (ta === tb) return null;
+    const s = ta.r * GW + ta.c, goal = tb.r * GW + tb.c;
+    const A = ta.idx, Bi = tb.idx;
+    const gen = ++this.gen;
+    const g = this.g, st = this.stamp, cl = this.closed, from = this.from;
+    const hS = this.heapS, hF = this.heapF;
+    let hn = 0;
+    const gc = tb.c, gr = tb.r;
+    const push = (sid, f) => {
+      let i = hn++;
+      while (i > 0) { const p = (i - 1) >> 1; if (hF[p] <= f) break; hS[i] = hS[p]; hF[i] = hF[p]; i = p; }
+      hS[i] = sid; hF[i] = f;
+    };
+    const pop = () => {
+      const top = hS[0]; hn--;
+      if (hn > 0) {
+        const ls = hS[hn], lf = hF[hn]; let i = 0;
+        for (;;) {
+          let l = 2 * i + 1; if (l >= hn) break;
+          if (l + 1 < hn && hF[l + 1] < hF[l]) l++;
+          if (hF[l] >= lf) break;
+          hS[i] = hS[l]; hF[i] = hF[l]; i = l;
+        }
+        hS[i] = ls; hF[i] = lf;
+      }
+      return top;
+    };
+    const h = (c, r) => Math.abs(c - gc) + Math.abs(r - gr);
+    for (let d = 0; d < 4; d++) {
+      const sid = s * 4 + d; st[sid] = gen; g[sid] = 0; from[sid] = -1;
+      push(sid, h(ta.c, ta.r));
+    }
+    const inDir = (tb.out + 2) % 4;  // preferred direction of travel when entering goal
+    let found = -1, iter = 0;
+    while (hn > 0) {
+      const sid = pop();
+      if (cl[sid] === gen) continue;
+      cl[sid] = gen;
+      const cell = sid >> 2, dir = sid & 3;
+      if (cell === goal) { found = sid; break; }
+      if (++iter > 200000) break;
+      const c = cell % GW, r = (cell / GW) | 0;
+      for (let d = 0; d < 4; d++) {
+        const nc = c + DC[d], nr = r + DR[d];
+        if (nc < 0 || nr < 0 || nc >= GW || nr >= GH) continue;
+        const n = nr * GW + nc;
+        if (this.block[n]) continue;
+        if (n !== goal) {
+          if (this.termAt[n] >= 0) continue;
+          if (occ[n] >= 0) continue;
+          const gd = this.guard[n];
+          if (gd >= 0 && gd !== A && gd !== Bi) continue;
+        }
+        let step = 1 + this.cost[n];
+        if (cell === s) { if (d !== ta.out) step += 3; }
+        else if (d !== dir) step += 2;
+        const px = this.prox[n];
+        if (px !== -1 && px !== A && px !== Bi) step += 3;
+        if (n === goal && d !== inDir) step += 3;
+        const nid = n * 4 + d;
+        const ng = g[sid] + step;
+        if (st[nid] !== gen || ng < g[nid]) {
+          st[nid] = gen; g[nid] = ng; from[nid] = sid;
+          push(nid, ng + h(nc, nr));
+        }
+      }
+    }
+    if (found < 0) return null;
+    const cells = [];
+    for (let x = found; x >= 0; x = from[x]) {
+      const cc = x >> 2;
+      if (cells[cells.length - 1] !== cc) cells.push(cc);
+    }
+    cells.reverse();
+    return cells;
+  }
+
+  mark(occ, cells, li) {
+    for (const cc of cells) if (this.termAt[cc] < 0) occ[cc] = li;
+  }
+
+  /* route leads in given order; returns array of paths (by lead index) or null */
+  routeAll(leads, order) {
+    const occ = new Int32Array(this.N).fill(-1);
+    const paths = new Array(leads.length);
+    for (const li of order) {
+      const L = leads[li];
+      const p = this.route(this.B.term[L.a], this.B.term[L.b], occ);
+      if (!p) return null;
+      this.mark(occ, p, li);
+      paths[li] = p;
+    }
+    return paths;
+  }
+
+  occupancy(leads, skip) {
+    const occ = new Int32Array(this.N).fill(-1);
+    leads.forEach((L, i) => { if (i !== skip && L.path) this.mark(occ, L.path, i); });
+    return occ;
+  }
+
+  /* Place leads[newIdx]; existing leads already have paths.
+     Returns true and updates .path on all leads, or false. */
+  place(leads, newIdx, budgetMs = 700) {
+    const occ = this.occupancy(leads, newIdx);
+    const L = leads[newIdx];
+    const ta = this.B.term[L.a], tb = this.B.term[L.b];
+    const p = this.route(ta, tb, occ);
+    const man = Math.abs(ta.c - tb.c) + Math.abs(ta.r - tb.r);
+    const total = paths => paths.reduce((s, q) => s + (q ? q.length : 400), 0);
+    let best = null, bestScore = Infinity;
+    if (p) {
+      best = leads.map((l, i) => i === newIdx ? p : l.path);
+      bestScore = total(best);
+      if (p.length <= 1.5 * man + 14) { L.path = p; return true; }   // good enough
+    }
+    const n = leads.length;
+    const others = [...Array(n).keys()].filter(i => i !== newIdx);
+    const len = i => leads[i].path ? leads[i].path.length : 999;
+    const tries = [
+      [newIdx, ...others],
+      [...others.slice().sort((a, b) => len(a) - len(b)), newIdx],
+      [newIdx, ...others.slice().sort((a, b) => len(a) - len(b))],
+      [newIdx, ...others.slice().reverse()],
+      [newIdx, ...others.slice().sort((a, b) => len(b) - len(a))]
+    ];
+    const t0 = Date.now();
+    const budget = best ? Math.min(250, budgetMs) : budgetMs;
+    let seed = 12345 + n * 7;
+    const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+    for (let k = 0; ; k++) {
+      let order;
+      if (k < tries.length) order = tries[k];
+      else {
+        if (Date.now() - t0 > budget || k > 400 || (!p && best)) break;
+        order = [newIdx, ...others];
+        for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+      }
+      const paths = this.routeAll(leads, order);
+      if (paths) {
+        const sc = total(paths);
+        if (sc < bestScore - 0.5) { best = paths; bestScore = sc; }
+        if (!p && k >= tries.length) break;
+      }
+    }
+    if (!best) return false;
+    leads.forEach((l, i) => l.path = best[i]);
+    return true;
+  }
+
+  /* After deletion try a clean re-route in creation order; keep old paths if it fails */
+  tidy(leads) {
+    const paths = this.routeAll(leads, [...leads.keys()]);
+    if (paths) leads.forEach((l, i) => l.path = paths[i]);
+  }
+}
+
+/* =====================================================================
+   3. NETLIST + SOLVER (Modified Nodal Analysis, resistive AC RMS)
+   Supply 230 V with 0.1 Ω internal resistance (Norton form),
+   ammeter 0.05 Ω, voltmeter 100 kΩ, DP contact 0.01 Ω, lamp R = V²/P.
+   ===================================================================== */
+const G_SRC = 1 / 0.1, G_AMM = 1 / 0.05, G_VM = 1 / 100000, G_DP = 1 / 0.01;
+
+function makeUF(n) {
+  const p = [...Array(n).keys()];
+  const find = x => { while (p[x] !== x) { p[x] = p[p[x]]; x = p[x]; } return x; };
+  const union = (a, b) => { a = find(a); b = find(b); if (a !== b) p[a] = b; };
+  return { p, find, union, clone() { const u = makeUF(n); u.p.splice(0, n, ...p); return u; } };
+}
+function lampR(w) { return VS * VS / Math.max(1, w); }
+
+function buildNet(B, leads) {
+  const T = B.term, n = B.termList.length;
+  const uf = makeUF(n);
+  leads.forEach(Ld => uf.union(T[Ld.a].idx, T[Ld.b].idx));
+  B.comps.forEach(c => { if (c.type === 'bus') for (let i = 1; i < c.terms.length; i++) uf.union(c.terms[0].idx, c.terms[i].idx); });
+  const roots = new Map(); let nn = 0;
+  for (let i = 0; i < n; i++) { const r = uf.find(i); if (!roots.has(r)) roots.set(r, nn++); }
+  const node = id => roots.get(uf.find(T[id].idx));
+  return { uf, node, nn };
+}
+
+function solveNet(B, net, st, dpL, dpN, vShort) {
+  const els = [], nd = net.node, w = st.w;
+  els.push({ id: 'SRC', a: nd('SUP.L'), b: nd('SUP.N'), g: G_SRC });
+  if (dpL) els.push({ id: 'DPL', a: nd('DP.Lin'), b: nd('DP.Lout'), g: G_DP });
+  if (dpN) els.push({ id: 'DPN', a: nd('DP.Nin'), b: nd('DP.Nout'), g: G_DP });
+  B.comps.forEach(c => {
+    if (c.type === 'meter') {
+      const g = c.kind === 'A' ? (st.burnt.has(c.id) ? 0 : G_AMM) : (vShort === c.id ? 1000 : G_VM);
+      if (g > 0) els.push({ id: c.id, a: nd(c.id + '.a'), b: nd(c.id + '.b'), g });
+    } else if (c.type === 'lamp') {
+      els.push({ id: c.id, a: nd(c.id + '.a'), b: nd(c.id + '.b'), g: 1 / lampR(w[c.idx]) });
+    }
+  });
+  const nn = net.nn, gnd = nd('SUP.N');
+  const map = new Int32Array(nn).fill(-1); let m = 0;
+  for (let i = 0; i < nn; i++) if (i !== gnd) map[i] = m++;
+  const A = new Float64Array(m * m), z = new Float64Array(m);
+  for (let i = 0; i < m; i++) A[i * m + i] += 1e-9;
+  els.forEach(e => {
+    const ia = map[e.a], ib = map[e.b];
+    if (ia >= 0) A[ia * m + ia] += e.g;
+    if (ib >= 0) A[ib * m + ib] += e.g;
+    if (ia >= 0 && ib >= 0) { A[ia * m + ib] -= e.g; A[ib * m + ia] -= e.g; }
+  });
+  if (map[nd('SUP.L')] >= 0) z[map[nd('SUP.L')]] += VS * G_SRC;
+  for (let k = 0; k < m; k++) {
+    let piv = k, best = Math.abs(A[k * m + k]);
+    for (let i = k + 1; i < m; i++) { const v = Math.abs(A[i * m + k]); if (v > best) { best = v; piv = i; } }
+    if (piv !== k) {
+      for (let j = 0; j < m; j++) { const t = A[k * m + j]; A[k * m + j] = A[piv * m + j]; A[piv * m + j] = t; }
+      const t = z[k]; z[k] = z[piv]; z[piv] = t;
+    }
+    const d = A[k * m + k];
+    for (let i = k + 1; i < m; i++) {
+      const f = A[i * m + k] / d; if (f === 0) continue;
+      for (let j = k; j < m; j++) A[i * m + j] -= f * A[k * m + j];
+      z[i] -= f * z[k];
+    }
+  }
+  const x = new Float64Array(m);
+  for (let i = m - 1; i >= 0; i--) {
+    let s = z[i];
+    for (let j = i + 1; j < m; j++) s -= A[i * m + j] * x[j];
+    x[i] = s / A[i * m + i];
+  }
+  const V = i => (i === gnd ? 0 : x[map[i]]);
+  const I = {}, dV = {};
+  els.forEach(e => { dV[e.id] = Math.abs(V(e.a) - V(e.b)); I[e.id] = e.g * dV[e.id]; });
+  return { I, dV };
+}
+
+/* ---------- helpers shared by the checks ---------- */
+function fmtCur(c, v) {
+  return c.unit === 'mA' ? (v * 1000).toFixed(1) + ' mA' : v.toFixed(3) + ' A';
+}
+function isConnected(B, leads, c) {
+  return c.terms.every(t => leads.some(L => L.a === t.id || L.b === t.id));
+}
+function acrossSame(net, m, c) {
+  const a = net.node(m.id + '.a'), b = net.node(m.id + '.b');
+  const p = net.node(c.id + '.a'), q = net.node(c.id + '.b');
+  return (a === p && b === q) || (a === q && b === p);
+}
+function inSeriesWith(B, net, mA, mB) {
+  const elemTerms = B.termList.filter(t => ['meter', 'lamp', 'dp', 'supply'].includes(t.comp.type));
+  for (const ta of mA.terms) for (const tb of mB.terms) {
+    const na = net.node(ta.id);
+    if (na !== net.node(tb.id)) continue;
+    const others = elemTerms.filter(t => net.node(t.id) === na && t.comp !== mA && t.comp !== mB &&
+      !(t.comp.type === 'meter' && t.comp.kind === 'V'));
+    if (!others.length) return true;
+  }
+  return false;
+}
+
+/* =====================================================================
+   4. FAULT ENGINE
+   st = { dpOn, w:[w1,w2,w3], burnt:Set }
+   status = { level, t:[key,params], x:[[key,params], ...] }
+   ===================================================================== */
+function evaluate(B, leads, st, simulate) {
+  const res = { meters: {}, lampI: {}, lampP: {}, status: null, burn: [], alarm: [], short: null,
+                correct: false, energised: false };
+  const meters = B.comps.filter(c => c.type === 'meter');
+  const lamps = B.comps.filter(c => c.type === 'lamp');
+  const amms = meters.filter(c => c.kind === 'A'), vms = meters.filter(c => c.kind === 'V');
+  const mainA = B.comp.A, mainV = B.comp.V;
+  const brA = [B.comp.A1, B.comp.A2, B.comp.A3], brV = [B.comp.V1, B.comp.V2, B.comp.V3];
+  meters.forEach(c => res.meters[c.id] = 0);
+  lamps.forEach(c => { res.lampI[c.id] = 0; res.lampP[c.id] = 0; });
+  const w = st.w, Irated = k => w[k] / VS;
+  const say = (level, t, x) => { res.status = { level, t, x }; return res; };
+
+  if (!st.dpOn && !simulate)
+    return say('info', ['msg.off.t'], [[leads.length ? 'msg.off.x' : 'msg.off0.x']]);
+  res.energised = !simulate;
+
+  const net = buildNet(B, leads), T = B.term;
+
+  /* a) dead short through leads and switch only */
+  const uf2 = net.uf.clone();
+  uf2.union(T['DP.Lin'].idx, T['DP.Lout'].idx); uf2.union(T['DP.Nin'].idx, T['DP.Nout'].idx);
+  if (uf2.find(T['SUP.L'].idx) === uf2.find(T['SUP.N'].idx)) {
+    res.short = net.uf.find(T['SUP.L'].idx) === net.uf.find(T['SUP.N'].idx) ? 'supply' : 'dp';
+    res.energised = false;
+    return say('err', ['msg.short.t'], [['msg.short.x']]);
+  }
+
+  const n = solveNet(B, net, st, true, true, null);
+  meters.forEach(c => res.meters[c.id] = c.kind === 'A' ? (n.I[c.id] || 0) : (n.dV[c.id] || 0));
+  lamps.forEach(c => { res.lampI[c.id] = n.I[c.id]; res.lampP[c.id] = n.I[c.id] * n.I[c.id] * lampR(w[c.idx]); });
+  const lampLit = s => lamps.some(c => s.I[c.id] > 0.02 * Irated(c.idx));
+
+  /* b) ammeter carrying a fault current */
+  amms.forEach(c => { if (!st.burnt.has(c.id) && n.I[c.id] > 5 * c.fs) res.burn.push(c.id); });
+  if (res.burn.length) {
+    lamps.forEach(c => { res.lampI[c.id] = 0; res.lampP[c.id] = 0; });
+    const big = Math.max(...res.burn.map(id => n.I[id]));
+    const amps = big < 10 ? big.toFixed(2) : big.toFixed(0);
+    const u = uf2.clone();
+    res.burn.forEach(id => u.union(T[id + '.a'].idx, T[id + '.b'].idx));
+    const shorting = u.find(T['SUP.L'].idx) === u.find(T['SUP.N'].idx);
+    const names = res.burn.join(', ');
+    return shorting
+      ? say('err', ['msg.ashort.t'], [['msg.ashort.x', [names, amps]]])
+      : say('err', ['msg.aover.t'], [['msg.aover.x', [names, amps]]]);
+  }
+
+  /* c) voltmeter in series */
+  vms.forEach(v => {
+    const s = solveNet(B, net, st, true, true, v.id);
+    let ser = lamps.some(c => s.I[c.id] > 0.1 * Irated(c.idx) && n.I[c.id] < 0.02 * Irated(c.idx));
+    if (!ser) ser = amms.some(a => !st.burnt.has(a.id) && s.I[a.id] > 0.2 * a.fs && n.I[a.id] < 0.02 * a.fs);
+    if (ser) res.alarm.push(v.id);
+  });
+  if (res.alarm.length)
+    return say('err', ['msg.vser.t'], [['msg.vser.x', [res.alarm.join(', '), res.meters[res.alarm[0]].toFixed(0)]]]);
+
+  /* d) open circuit */
+  if (!lampLit(n)) {
+    if (!leads.length) return say('warn', ['msg.none.t'], [['msg.none.x']]);
+    const used = new Set(); leads.forEach(Ld => { used.add(Ld.a); used.add(Ld.b); });
+    const loose = [];
+    B.comps.filter(c => c.type !== 'bus').forEach(c => c.terms.forEach(t => { if (!used.has(t.id)) loose.push(L(t.nk, t.np)); }));
+    return loose.length
+      ? say('warn', ['msg.open.t'], [['msg.open.x', [loose.slice(0, 4).join(', ')]]])
+      : say('warn', ['msg.open.t'], [['msg.open2.x']]);
+  }
+
+  /* e) DP switch usage */
+  const sL = solveNet(B, net, st, false, true, null), sN = solveNet(B, net, st, true, false, null);
+  const fL = lampLit(sL), fN = lampLit(sN);
+  const f = id => net.uf.find(T[id].idx);
+  let dpLevel = null; const dpNotes = [];
+  if (fL && fN) { dpLevel = 'err'; dpNotes.push(['msg.dpby.x']); }
+  else if (fL) { dpLevel = 'warn'; dpNotes.push(['msg.dpl.x']); }
+  else if (fN) { dpLevel = 'warn'; dpNotes.push(['msg.dpn.x']); }
+  if (f('SUP.L') === f('DP.Nin') && f('SUP.N') === f('DP.Lin')) { dpLevel = dpLevel || 'warn'; dpNotes.push(['msg.dpsw.x']); }
+
+  /* f) topology */
+  const ctx = { B, net, n, st, res, lamps, mainA, mainV, brA, brV, leads, Irated };
+  const topo = B.id === 'series' ? checkSeries(ctx) : checkParallel(ctx);
+  if (dpLevel) {
+    const lvl = (dpLevel === 'err' || topo.level === 'err') ? 'err' : 'warn';
+    const x = dpNotes.concat(topo.level === 'ok' ? [] : topo.x);
+    return say(lvl, [dpLevel === 'err' ? 'msg.dpby.t' : 'msg.dpchk.t'], x);
+  }
+  res.correct = topo.level === 'ok';
+  return say(topo.level, topo.t, topo.x);
+}
+
+/* instruments that are not wired up yet – reported as a gentle hint */
+function pending(ctx) {
+  const { B, leads } = ctx;
+  return B.comps.filter(c => c.type === 'meter' && !isConnected(B, leads, c)).map(c => c.label);
+}
+function branchChecks(ctx, expectV) {
+  const { B, net, res, lamps, brA, brV, leads, st } = ctx;
+  for (let k = 0; k < 3; k++) {
+    const V = brV[k], Lk = lamps[k];
+    if (isConnected(B, leads, V) && !acrossSame(net, V, Lk))
+      return { level: 'warn', t: ['msg.vkwrong.t', [V.label, Lk.label]], x: [['msg.vkwrong.x', [V.label, Lk.label]]] };
+    const A = brA[k];
+    if (isConnected(B, leads, A) && !st.burnt.has(A.id) && !inSeriesWith(B, net, A, Lk)) {
+      let j = -1;
+      for (let q = 0; q < 3; q++) if (q !== k && inSeriesWith(B, net, A, lamps[q])) j = q;
+      return j >= 0
+        ? { level: 'warn', t: ['msg.akwrong.t', [A.label, Lk.label]], x: [['msg.akwrong.x', [A.label, lamps[j].label, Lk.label]]] }
+        : { level: 'warn', t: ['msg.akwrong.t', [A.label, Lk.label]], x: [['msg.akwrong2.x', [A.label, Lk.label]]] };
+    }
+  }
+  return null;
+}
+
+function checkSeries(ctx) {
+  const { B, net, n, st, res, lamps, mainA, mainV, leads } = ctx;
+  const w = st.w, R = lamps.map(c => lampR(w[c.idx]));
+  const Iexp = VS / R.reduce((a, b) => a + b, 0);
+  const I = lamps.map(c => n.I[c.id]);
+  const near = (x, y, tol) => Math.abs(x - y) <= tol * y;
+  if (I.every(i => near(i, Iexp, 0.03))) {
+    if (st.burnt.size) return { level: 'warn', t: ['msg.burnt.t'], x: [['msg.burnt.x', [[...st.burnt].join(', ')]]] };
+    const a = res.meters.A, v = res.meters.V;
+    if (isConnected(B, leads, mainA)) {
+      if (a < 0.5 * Iexp) return { level: 'warn', t: ['msg.anotpath.t'], x: [['msg.anotpath.x']] };
+      if (!near(a, Iexp, 0.03)) return { level: 'warn', t: ['msg.amis.t'], x: [['msg.amis.x']] };
+    }
+    if (isConnected(B, leads, mainV) && v < 220)
+      return { level: 'warn', t: ['msg.vnot.t'], x: [[v > 5 ? 'msg.vpart.x' : 'msg.vnot.x', [v.toFixed(1)]]] };
+    const br = branchChecks(ctx);
+    if (br) return br;
+    const vl = lamps.map((c, k) => (I[k] * R[k]).toFixed(0) + ' V').join(', ');
+    const x = [['msg.sok.x', [fmtCur(mainA, I[0]), v.toFixed(0), vl]]];
+    const p = pending(ctx);
+    if (p.length) x.push(['msg.hint', [p.join(', ')]]);
+    return { level: 'ok', t: ['msg.sok.t'], x };
+  }
+  const amms = B.comps.filter(c => c.type === 'meter' && c.kind === 'A');
+  for (const c of lamps) {
+    if (n.I[c.id] >= 0.02 * Iexp) continue;
+    for (const A of amms) {
+      if (!st.burnt.has(A.id) && acrossSame(net, A, c))
+        return { level: 'err', t: ['msg.aacross.t', [A.label, c.label]], x: [['msg.aacross.x', [A.label, c.label]]] };
+    }
+  }
+  const full = lamps.filter((c, k) => near(I[k], VS / R[k], 0.05));
+  if (full.length >= 2)
+    return { level: 'err', t: ['msg.snot.t'], x: [['msg.snot.par', [full.map(c => c.label).join(', ')]]] };
+  const dark = lamps.filter((c, k) => I[k] < 0.02 * w[c.idx] / VS);
+  return { level: 'err', t: ['msg.snot.t'], x: [[dark.length ? 'msg.snot.dark' : 'msg.snot.gen', [dark.map(c => c.label).join(', ')]]] };
+}
+
+function checkParallel(ctx) {
+  const { B, net, n, st, res, lamps, mainA, mainV, brA, leads } = ctx;
+  const w = st.w;
+  const Ik = lamps.map(c => n.I[c.id]);
+  const Iexp = lamps.map(c => VS / lampR(w[c.idx]));
+  const near = (x, y, tol) => Math.abs(x - y) <= tol * y;
+  const sum = Ik.reduce((a, b) => a + b, 0);
+  if (Ik.every((i, k) => near(i, Iexp[k], 0.03))) {
+    if (st.burnt.size) return { level: 'warn', t: ['msg.burnt.t'], x: [['msg.burnt.x', [[...st.burnt].join(', ')]]] };
+    const at = res.meters.A, v = res.meters.V;
+    if (isConnected(B, leads, mainA) && !near(at, sum, 0.02)) {
+      const one = Ik.some(i => near(at, i, 0.03));
+      return { level: 'warn', t: ['msg.atmain.t'], x: [[one ? 'msg.atbr.x' : 'msg.atmain.x']] };
+    }
+    const br = branchChecks(ctx);
+    if (br) return br;
+    if (isConnected(B, leads, mainV) && v < 220)
+      return { level: 'warn', t: ['msg.vnot.t'], x: [[v > 5 ? 'msg.vpart.x' : 'msg.vnot.x', [v.toFixed(1)]]] };
+    const x = [['msg.pok.x', [v.toFixed(0), Ik.map((i, k) => fmtCur(brA[k], i)).join(' + '), fmtCur(mainA, sum)]]];
+    const p = pending(ctx);
+    if (p.length) x.push(['msg.hint', [p.join(', ')]]);
+    return { level: 'ok', t: ['msg.pok.t'], x };
+  }
+  const sI = VS / lamps.reduce((s, c) => s + lampR(w[c.idx]), 0);
+  if (Ik.every(i => near(i, sI, 0.05)))
+    return { level: 'err', t: ['msg.pnot.t'], x: [['msg.pnot.ser']] };
+  const bad = lamps.filter((c, k) => !near(Ik[k], Iexp[k], 0.03));
+  return { level: 'err', t: ['msg.pnot.t'], x: [['msg.pnot.gen', [bad.map(c => c.label).join(', ')]]] };
+}
+
+/* =====================================================================
+   5. RENDERER – painted-steel training panel with aluminium frame
+   ===================================================================== */
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function tx(parent, x, y, s, attrs) { const t = el('text', Object.assign({ x, y }, attrs || {}), parent); t.textContent = s; return t; }
+function boxOf(c) { const [c0, r0, c1, r1] = c.body; return { x: c0 * CELL, y: r0 * CELL, w: (c1 - c0 + 1) * CELL, h: (r1 - r0 + 1) * CELL }; }
+
+const WIRE = {
+  red:    { main: '#d3261d', dark: '#8b150f', lite: '#ff6a5c' },
+  black:  { main: '#2b2e33', dark: '#0e0f11', lite: '#5c6168' },
+  yellow: { main: '#efbf22', dark: '#9c7a0a', lite: '#ffe27a' },
+  blue:   { main: '#1f6bd0', dark: '#11468c', lite: '#6aa6f5' }
+};
+
+function buildDefs(svg) {
+  const d = el('defs', null, svg);
+  const lin = (id, stops, x2 = 0, y2 = 1, x1 = 0, y1 = 0) => {
+    const g = el('linearGradient', { id, x1, y1, x2, y2 }, d);
+    stops.forEach(([o, c]) => el('stop', { offset: o, 'stop-color': c }, g));
+  };
+  const rad = (id, stops, cx = 0.5, cy = 0.5, r = 0.5) => {
+    const g = el('radialGradient', { id, cx, cy, r }, d);
+    stops.forEach(([o, c, op]) => el('stop', { offset: o, 'stop-color': c, 'stop-opacity': op == null ? 1 : op }, g));
+  };
+  lin('gPanel', [[0, '#d5ded9'], [0.45, '#c9d3cf'], [1, '#bcc7c3']]);
+  lin('gFrame', [[0, '#e6eaec'], [0.35, '#b9c0c4'], [0.6, '#d4dadd'], [1, '#98a1a6']], 1, 1);
+  rad('gBrass', [[0, '#fff5c4'], [0.45, '#e2bb4c'], [1, '#8f6c1c']], 0.35, 0.3, 0.7);
+  lin('gBrassBar', [[0, '#f5dc8c'], [0.5, '#c9a141'], [1, '#e9c96f']]);
+  rad('gSteel', [[0, '#ffffff'], [0.5, '#bfc4ca'], [1, '#6f757c']], 0.35, 0.3, 0.75);
+  lin('gBezel', [[0, '#4b4f56'], [1, '#17191c']]);
+  lin('gDial', [[0, '#ffffff'], [1, '#eeece3']]);
+  lin('gLcd', [[0, '#122016'], [1, '#0a1410']]);
+  lin('gIvory', [[0, '#fdfbf6'], [1, '#e3dccd']]);
+  lin('gSupply', [[0, '#6c7682'], [1, '#434b55']]);
+  lin('gLip', [[0, '#3a3f46'], [1, '#22262b']]);
+  lin('gRockUp', [[0, '#ef6255'], [1, '#c3372c']]);
+  lin('gRockDn', [[0, '#9a2219'], [1, '#c23a2f']]);
+  rad('gGlow', [[0, '#fff1c9', 1], [0.3, '#ffcf73', 0.55], [0.65, '#ffb347', 0.18], [1, '#ffb347', 0]]);
+  rad('gCore', [[0, '#ffffff', 1], [0.5, '#fff1b8', 0.8], [1, '#ffd36b', 0]]);
+  rad('gSoot', [[0, '#1b130b', 0.85], [0.6, '#2d2217', 0.5], [1, '#2d2217', 0]]);
+  lin('gFlame', [[0, '#fff7b0'], [0.3, '#ffc21a'], [0.7, '#ff5a0a'], [1, '#c81e00']], 0, 0, 0, 1);
+  lin('gGlass', [[0, '#ffffff'], [1, '#dfe8ef']], 1, 1);
+  let f = el('filter', { id: 'fShadow', x: '-20%', y: '-20%', width: '140%', height: '150%' }, d);
+  el('feDropShadow', { dx: 0, dy: 4, stdDeviation: 4, 'flood-color': '#243033', 'flood-opacity': 0.3 }, f);
+  f = el('filter', { id: 'fWire', x: '-10%', y: '-10%', width: '120%', height: '120%' }, d);
+  el('feDropShadow', { dx: 1.5, dy: 2.5, stdDeviation: 1.6, 'flood-color': '#1d2528', 'flood-opacity': 0.35 }, f);
+  f = el('filter', { id: 'fBlur', x: '-50%', y: '-50%', width: '200%', height: '200%' }, d);
+  el('feGaussianBlur', { stdDeviation: 5 }, f);
+  f = el('filter', { id: 'fSoft', x: '-50%', y: '-50%', width: '200%', height: '200%' }, d);
+  el('feGaussianBlur', { stdDeviation: 1.6 }, f);
+  const cp = el('clipPath', { id: 'cBoard' }, d);
+  el('rect', { x: 22, y: 22, width: VW - 44, height: VH - 44 }, cp);
+}
+
+function screw(g, x, y, r, rot) {
+  el('circle', { cx: x, cy: y + 1, r: r + 1, fill: '#000', 'fill-opacity': 0.18 }, g);
+  el('circle', { cx: x, cy: y, r, fill: 'url(#gSteel)', stroke: '#5d6268', 'stroke-width': 1 }, g);
+  el('line', { x1: x - r * 0.65, y1: y, x2: x + r * 0.65, y2: y, stroke: '#4a4f55', 'stroke-width': 2, transform: `rotate(${rot} ${x} ${y})` }, g);
+}
+
+function drawBoard(g) {
+  el('rect', { x: 2, y: 2, width: VW - 4, height: VH - 4, rx: 6, fill: 'url(#gFrame)', stroke: '#8b9498', 'stroke-width': 2 }, g);
+  el('rect', { x: 20, y: 20, width: VW - 40, height: VH - 40, fill: 'url(#gPanel)', stroke: '#9aa5a1', 'stroke-width': 1.5 }, g);
+  const wear = el('g', { 'clip-path': 'url(#cBoard)', stroke: '#8d9a95', fill: 'none' }, g);
+  let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 90; i++) {
+    const x = 20 + rnd() * (VW - 40), y = 20 + rnd() * (VH - 40), l = 8 + rnd() * 90, a = rnd() * Math.PI;
+    el('line', { x1: x, y1: y, x2: x + l * Math.cos(a), y2: y + l * Math.sin(a), 'stroke-width': (0.5 + rnd()).toFixed(2), 'stroke-opacity': (0.05 + rnd() * 0.08).toFixed(3) }, wear);
+  }
+  for (let i = 0; i < 40; i++) {
+    const x = 20 + rnd() * (VW - 40), y = 20 + rnd() * (VH - 40);
+    el('circle', { cx: x, cy: y, r: (1 + rnd() * 3).toFixed(1), fill: '#9fada8', 'fill-opacity': (0.06 + rnd() * 0.1).toFixed(3), stroke: 'none' }, wear);
+  }
+  for (let x = 60; x < VW - 40; x += 150) { screw(g, x, 11, 6, 30); screw(g, x, VH - 11, 6, 110); }
+  for (let y = 70; y < VH - 40; y += 150) { screw(g, 11, y, 6, 70); screw(g, VW - 11, y, 6, 20); }
+  const t = el('g', { id: 'boardText' }, g);
+  tx(t, VW / 2, 26, L('board.title'), { class: 'stencil', 'text-anchor': 'middle', id: 'bTitle' });
+  tx(t, VW - 40, VH - 11, L('board.foot'), { class: 'stencilSm', 'text-anchor': 'end', id: 'bFoot' });
+  return t;
+}
+
+function drawPost(g, t, ring) {
+  const pg = el('g', { class: 'post', 'data-term': t.id }, g);
+  const { x, y } = t;
+  const hex = [];
+  for (let i = 0; i < 6; i++) { const a = Math.PI / 6 + i * Math.PI / 3; hex.push((x + 13 * Math.cos(a)).toFixed(1) + ',' + (y + 13 * Math.sin(a)).toFixed(1)); }
+  el('polygon', { points: hex.join(' '), fill: '#a8842b', stroke: '#6e5316', 'stroke-width': 1 }, pg);
+  el('circle', { cx: x, cy: y, r: 10.5, fill: ring, stroke: '#111', 'stroke-opacity': 0.35 }, pg);
+  el('circle', { cx: x, cy: y, r: 7, fill: 'url(#gBrass)', stroke: '#7a5b17', 'stroke-width': 0.8 }, pg);
+  el('circle', { cx: x, cy: y, r: 2.4, fill: '#2e2208' }, pg);
+  t.ringEl = el('circle', { cx: x, cy: y, r: 17, class: 'tring' }, pg);
+  t.el = pg;
+}
+function lip(g, x, y1, y2, w = 13) { el('rect', { x: x - w / 2, y: Math.min(y1, y2), width: w, height: Math.abs(y2 - y1), fill: 'url(#gLip)', rx: 2 }, g); }
+function lipH(g, x1, x2, y, h = 16) { el('rect', { x: Math.min(x1, x2), y: y - h / 2, width: Math.abs(x2 - x1), height: h, fill: 'url(#gLip)', rx: 2 }, g); }
+
+/* label sticker under a component, between its two posts */
+function sticker(g, cx, y, text, cls) {
+  const sg = el('g', { class: 'stk' }, g);
+  const wdt = Math.max(46, 13 * text.length + 18);
+  const r = el('rect', { x: cx - wdt / 2, y: y - 12, width: wdt, height: 24, rx: 3, fill: '#f7f7f4', stroke: '#8e9691' }, sg);
+  const t = tx(sg, cx, y + 6, text, { class: cls || 'sticker', 'text-anchor': 'middle' });
+  t.addEventListener && (t.rectEl = r);
+  t.resize = () => { const w2 = Math.max(46, 13 * t.textContent.length + 18); r.setAttribute('width', w2); r.setAttribute('x', cx - w2 / 2); };
+  return t;
+}
+
+function drawSupply(g, c, R) {
+  const b = boxOf(c);
+  c.terms.forEach(t => lipH(g, b.x + b.w - 6, t.x, t.y, 18));
+  el('rect', { x: b.x, y: b.y, width: b.w, height: b.h, rx: 8, fill: 'url(#gSupply)', stroke: '#2f353c', 'stroke-width': 1.5, filter: 'url(#fShadow)' }, g);
+  el('rect', { x: b.x + 8, y: b.y + 8, width: b.w - 46, height: 54, rx: 5, fill: '#39414a' }, g);
+  R.t1 = tx(g, b.x + (b.w - 38) / 2, b.y + 30, L('board.mains'), { class: 'lblW', 'text-anchor': 'middle' });
+  R.t2 = tx(g, b.x + (b.w - 38) / 2, b.y + 50, L('board.rating'), { class: 'lblWs', 'text-anchor': 'middle' });
+  el('rect', { x: b.x + b.w - 34, y: b.y + 8, width: 26, height: b.h - 16, rx: 4, fill: '#353c44' }, g);
+  const nx = b.x + 32, ny = b.y + 92;
+  el('circle', { cx: nx, cy: ny, r: 13, fill: '#222' }, g);
+  el('circle', { cx: nx, cy: ny, r: 17, fill: 'url(#gGlow)', opacity: 0.85 }, g);
+  el('circle', { cx: nx, cy: ny, r: 8.5, fill: '#ff7a2e', stroke: '#ffd2a6', 'stroke-width': 1.2 }, g);
+  R.t3 = tx(g, nx + 22, ny + 5, L('board.supply'), { class: 'lblWs' });
+  const hx = b.x + (b.w - 38) / 2, hy = b.y + 118;
+  el('path', { d: `M ${hx} ${hy} l 20 34 h -40 z`, fill: '#f5c518', stroke: '#1a1a1a', 'stroke-width': 2.5, 'stroke-linejoin': 'round' }, g);
+  el('path', { d: `M ${hx + 3} ${hy + 9} l -7 13 h 6 l -4 10 l 10 -14 h -6 l 4 -9 z`, fill: '#1a1a1a' }, g);
+  R.t4 = tx(g, hx, hy + 52, L('board.danger'), { class: 'lblWs', 'text-anchor': 'middle' });
+  c.terms.forEach(t => {
+    tx(g, b.x + b.w - 21, t.y + 6, t.key, { class: 'polS', 'text-anchor': 'middle' });
+    drawPost(g, t, t.key === 'L' ? '#c8261d' : '#1c1d20');
+  });
+}
+
+function drawDP(g, c, R) {
+  const b = boxOf(c);
+  c.terms.forEach(t => lipH(g, t.out === 3 ? b.x + 6 : b.x + b.w - 6, t.x, t.y, 18));
+  el('rect', { x: b.x, y: b.y, width: b.w, height: b.h, rx: 10, fill: 'url(#gIvory)', stroke: '#bdb39e', 'stroke-width': 1.5, filter: 'url(#fShadow)' }, g);
+  screw(g, b.x + b.w / 2, b.y + 13, 5.5, 45); screw(g, b.x + b.w / 2, b.y + b.h - 13, 5.5, 120);
+  R.t1 = tx(g, b.x + b.w / 2, b.y + 40, L('board.dp'), { class: 'lblD', 'text-anchor': 'middle' });
+  R.t2 = tx(g, b.x + b.w / 2, b.y + 58, L('board.dpr'), { class: 'lblDs', 'text-anchor': 'middle' });
+  const cx = b.x + b.w / 2, cy = b.y + 122;
+  R.win = el('rect', { x: cx - 24, y: b.y + 68, width: 48, height: 16, rx: 3, fill: '#2f9e57', stroke: '#444' }, g);
+  R.winT = tx(g, cx, b.y + 80.5, 'OFF', { class: 'lblWin', 'text-anchor': 'middle' });
+  const sw = el('g', { class: 'dpHit', 'data-dp': '1', tabindex: 0, role: 'button', 'aria-label': 'DP switch' }, g);
+  el('rect', { x: cx - 34, y: cy - 36, width: 68, height: 98, rx: 9, fill: '#d6cfbf', stroke: '#a79d88' }, sw);
+  el('rect', { x: cx - 28, y: cy - 30, width: 56, height: 86, rx: 6, fill: '#3a3a3a' }, sw);
+  R.top = el('rect', { x: cx - 25, y: cy - 27, width: 50, height: 40, rx: 4, fill: 'url(#gRockDn)' }, sw);
+  R.bot = el('rect', { x: cx - 25, y: cy + 13, width: 50, height: 40, rx: 4, fill: 'url(#gRockUp)' }, sw);
+  R.top.dataset.y0 = cy - 27; R.bot.dataset.y0 = cy + 13;
+  tx(sw, cx, cy - 2, 'I', { class: 'lblRock', 'text-anchor': 'middle' });
+  tx(sw, cx, cy + 39, 'O', { class: 'lblRock', 'text-anchor': 'middle' });
+  el('rect', { x: cx - 38, y: cy - 40, width: 76, height: 106, fill: 'transparent' }, sw);
+  R.t3 = tx(g, b.x + 10, b.y + b.h - 12, L('board.line'), { class: 'lblDs' });
+  R.t4 = tx(g, b.x + b.w - 10, b.y + b.h - 12, L('board.load'), { class: 'lblDs', 'text-anchor': 'end' });
+  c.terms.forEach(t => {
+    const left = t.out === 3, pol = t.key[0];
+    tx(g, left ? b.x + 13 : b.x + b.w - 13, t.y + 6, pol, { class: pol === 'L' ? 'polL' : 'polN', 'text-anchor': 'middle' });
+    drawPost(g, t, pol === 'L' ? '#c8261d' : '#1c1d20');
+  });
+}
+function setDP(R, on) {
+  R.top.setAttribute('fill', on ? 'url(#gRockDn)' : 'url(#gRockUp)');
+  R.bot.setAttribute('fill', on ? 'url(#gRockUp)' : 'url(#gRockDn)');
+  R.top.setAttribute('y', on ? +R.top.dataset.y0 + 2 : R.top.dataset.y0);
+  R.bot.setAttribute('y', on ? R.bot.dataset.y0 : +R.bot.dataset.y0 + 2);
+  R.win.setAttribute('fill', on ? '#cf2c22' : '#2f9e57');
+  R.winT.textContent = on ? 'ON' : 'OFF';
+}
+
+/* ---------- panel meter: digital display on top, analogue dial below ---------- */
+function dialAngle(x) {
+  if (x <= 0) return -45 + Math.max(x, -0.03) * 90;
+  if (x <= 1) return -45 + 90 * Math.pow(x, 1.25);
+  return Math.min(54, 45 + (x - 1) * 60);
+}
+function drawMeter(g, c) {
+  const b = boxOf(c), R = {};
+  const mg = el('g', { class: 'meter', id: 'm_' + c.id }, g);
+  c.terms.forEach(t => lip(mg, t.x, b.y + b.h - 6, t.y));
+  el('rect', { x: b.x + 2, y: b.y, width: b.w - 4, height: b.h - 2, rx: 8, fill: 'url(#gBezel)', stroke: '#0c0d0f', filter: 'url(#fShadow)' }, mg);
+  R.flash = el('rect', { x: b.x - 2, y: b.y - 4, width: b.w + 4, height: b.h + 6, rx: 11, class: 'aflash' }, mg);
+  /* digital display */
+  R.lcdG = el('g', { class: 'lcd' }, mg);
+  el('rect', { x: b.x + 10, y: b.y + 7, width: b.w - 20, height: 42, rx: 4, fill: 'url(#gLcd)', stroke: '#05100a', 'stroke-width': 2 }, R.lcdG);
+  tx(R.lcdG, b.x + 19, b.y + 37, c.label, { class: 'lcdLab' });
+  R.lcd = tx(R.lcdG, b.x + b.w - 16, b.y + 38, '0.0', { class: 'lcdTxt', 'text-anchor': 'end' });
+  /* analogue dial */
+  const dx = b.x + 10, dy = b.y + 55, dw = b.w - 20, dh = b.h - 66;
+  el('rect', { x: dx, y: dy, width: dw, height: dh, rx: 3, fill: 'url(#gDial)', stroke: '#050505', 'stroke-width': 1.5 }, mg);
+  const px = b.x + b.w / 2, py = dy + dh - 12;
+  const P = (ang, r) => [px + r * Math.sin(ang * Math.PI / 180), py - r * Math.cos(ang * Math.PI / 180)];
+  const [ax1, ay1] = P(-45, 68), [ax2, ay2] = P(45, 68), [bx1, by1] = P(45, 64), [bx2, by2] = P(-45, 64);
+  el('path', { d: `M ${ax1} ${ay1} A 68 68 0 0 1 ${ax2} ${ay2} L ${bx1} ${by1} A 64 64 0 0 0 ${bx2} ${by2} Z`, fill: '#c9d0d6' }, mg);
+  const max = c.fs * c.mul, ticks = el('g', { stroke: '#161616' }, mg);
+  let lastLab = -99;
+  const steps = Math.round(max / c.minor);
+  for (let i = 0; i <= steps; i++) {
+    const v = i * c.minor, x = v / max, a = dialAngle(x);
+    const maj = Math.abs(v / c.major - Math.round(v / c.major)) < 1e-6;
+    const [x1, y1] = P(a, 78), [x2, y2] = P(a, maj ? 66 : 72);
+    el('line', { x1, y1, x2, y2, 'stroke-width': maj ? 1.6 : 0.9 }, ticks);
+    if (maj && a - lastLab >= 8.5) {
+      const [lx, ly] = P(a, 88);
+      tx(mg, lx, ly + 4, max <= 3 ? (v === 0 ? '0' : (max <= 1 ? v.toFixed(1) : v.toFixed(1))) : String(Math.round(v)), { class: 'dialNum', 'text-anchor': 'middle' });
+      lastLab = a;
+    }
+  }
+  tx(mg, px, py - 34, c.unit, { class: 'dialUnit', 'text-anchor': 'middle' });
+  tx(mg, dx + 7, dy + dh - 7, '~', { class: 'dialSym' });
+  el('path', { d: `M ${dx + 20} ${dy + dh - 9} l 7 -8`, stroke: '#111', 'stroke-width': 2 }, mg);
+  tx(mg, dx + dw - 7, dy + dh - 7, '1.5', { class: 'dialSym', 'text-anchor': 'end' });
+  R.soot = el('ellipse', { cx: px, cy: dy + 56, rx: 58, ry: 48, fill: 'url(#gSoot)', class: 'soot' }, mg);
+  R.needle = el('g', {}, mg);
+  el('line', { x1: px, y1: py + 7, x2: px, y2: py - 60, stroke: '#111', 'stroke-width': 2 }, R.needle);
+  el('line', { x1: px, y1: py - 58, x2: px, y2: py - 80, stroke: '#d51f1f', 'stroke-width': 2.4 }, R.needle);
+  el('circle', { cx: px, cy: py, r: 6, fill: '#1d1d1d' }, mg);
+  el('circle', { cx: px, cy: py, r: 2.2, fill: '#9a9a9a' }, mg);
+  el('path', { d: `M ${dx + 3} ${dy + 3} h ${dw * 0.55} l -${dw * 0.35} ${dh * 0.55} h -${dw * 0.2} z`, fill: '#fff', opacity: 0.2 }, mg);
+  const cr = el('g', { class: 'crack', stroke: '#f3f3f3', 'stroke-width': 1.3, fill: 'none' }, mg);
+  const ox = px + 16, oy = dy + 42;
+  [[-44, -26, -56, -32], [36, -28, 52, -34], [-32, 34, -50, 54], [26, 40, 46, 60], [4, -38, 9, -42]].forEach(([a1, b1, a2, b2]) =>
+    el('polyline', { points: `${ox},${oy} ${ox + a1},${oy + b1} ${ox + a2},${oy + b2}` }, cr));
+  el('circle', { cx: ox, cy: oy, r: 5, stroke: '#ddd' }, cr);
+  if (c.kind === 'V') R.led = el('circle', { cx: b.x + b.w - 26, cy: b.y + 60, r: 5.5, class: 'led' }, mg);
+  /* fire and smoke */
+  R.fire = el('g', { class: 'fire' }, mg);
+  const fb = dy + dh - 10;
+  [[0, 1, 'f1'], [-24, 0.72, 'f2'], [26, 0.78, 'f3'], [6, 0.5, 'f4']].forEach(([off, s, cls]) => {
+    const wq = 42 * s, h = 150 * s, x0 = px + off;
+    el('path', { class: 'flame ' + cls, fill: 'url(#gFlame)', d: `M ${x0} ${fb - h} C ${x0 + wq * 0.35} ${fb - h * 0.7} ${x0 + wq} ${fb - h * 0.45} ${x0 + wq * 0.8} ${fb - h * 0.15} C ${x0 + wq * 0.6} ${fb} ${x0 - wq * 0.6} ${fb} ${x0 - wq * 0.8} ${fb - h * 0.15} C ${x0 - wq} ${fb - h * 0.45} ${x0 - wq * 0.2} ${fb - h * 0.6} ${x0} ${fb - h} Z` }, R.fire);
+  });
+  el('ellipse', { cx: px, cy: fb - 26, rx: 36, ry: 26, fill: '#fff4a0', opacity: 0.7, filter: 'url(#fBlur)' }, R.fire);
+  R.smoke = el('g', { class: 'smoke' }, mg);
+  for (let i = 0; i < 5; i++) el('circle', { cx: px - 20 + i * 10, cy: dy + 10, r: 13, fill: '#555', filter: 'url(#fBlur)', style: `animation-delay:${-i * 0.5}s` }, R.smoke);
+  c.terms.forEach(t => drawPost(mg, t, '#6b7076'));
+  sticker(mg, px, b.y + b.h + 33, c.label);
+  R.group = mg; R.px = px; R.py = py;
+  return R;
+}
+
+/* ---------- lamp in a B22 batten holder ---------- */
+function drawLamp(g, c) {
+  const b = boxOf(c), R = {};
+  const cx = b.x + b.w / 2, y = b.y;
+  c.terms.forEach(t => lip(g, t.x, y + b.h - 8, t.y, 11));
+  R.glow = el('circle', { cx, cy: y + 50, r: 108, fill: 'url(#gGlow)', opacity: 0, 'pointer-events': 'none' }, g);
+  el('rect', { x: cx - 62, y: y + 148, width: 124, height: 30, rx: 13, fill: 'url(#gIvory)', stroke: '#b9af9a', filter: 'url(#fShadow)' }, g);
+  screw(g, cx - 47, y + 163, 5, 30); screw(g, cx + 47, y + 163, 5, 150);
+  el('rect', { x: cx - 29, y: y + 124, width: 58, height: 28, rx: 7, fill: 'url(#gIvory)', stroke: '#b9af9a' }, g);
+  el('rect', { x: cx - 21, y: y + 108, width: 42, height: 20, rx: 3, fill: 'url(#gBrassBar)', stroke: '#8f6c1c' }, g);
+  for (let i = 0; i < 3; i++) el('line', { x1: cx - 21, y1: y + 113 + i * 5, x2: cx + 21, y2: y + 113 + i * 5, stroke: '#8f6c1c', 'stroke-width': 0.8, opacity: 0.7 }, g);
+  const bulb = `M ${cx - 18} ${y + 110} L ${cx - 18} ${y + 100} C ${cx - 18} ${y + 90} ${cx - 42} ${y + 82} ${cx - 42} ${y + 50} A 42 42 0 0 1 ${cx + 42} ${y + 50} C ${cx + 42} ${y + 82} ${cx + 18} ${y + 90} ${cx + 18} ${y + 100} L ${cx + 18} ${y + 110} Z`;
+  el('path', { d: bulb, fill: 'url(#gGlass)', 'fill-opacity': 0.55, stroke: '#9fb0bd', 'stroke-width': 1.2 }, g);
+  R.tint = el('path', { d: bulb, fill: '#ffd98a', opacity: 0 }, g);
+  el('path', { d: `M ${cx - 7} ${y + 106} L ${cx - 5} ${y + 80} L ${cx + 5} ${y + 80} L ${cx + 7} ${y + 106} Z`, fill: '#e6eef3', opacity: 0.8 }, g);
+  const fil = el('g', { fill: 'none', 'stroke-linecap': 'round' }, g);
+  el('polyline', { points: `${cx - 5},${y + 82} ${cx - 14},${y + 54}`, stroke: '#7d7d7d', 'stroke-width': 1.2 }, fil);
+  el('polyline', { points: `${cx + 5},${y + 82} ${cx + 14},${y + 54}`, stroke: '#7d7d7d', 'stroke-width': 1.2 }, fil);
+  let pts = '';
+  for (let i = 0; i <= 14; i++) pts += `${cx - 14 + i * 28 / 14},${y + 54 + (i % 2 ? -3.5 : 3.5)} `;
+  R.fil = el('polyline', { points: pts, stroke: '#555', 'stroke-width': 1.8 }, fil);
+  R.core = el('circle', { cx, cy: y + 54, r: 24, fill: 'url(#gCore)', opacity: 0, filter: 'url(#fSoft)' }, g);
+  el('path', { d: `M ${cx - 28} ${y + 32} C ${cx - 28} ${y + 17} ${cx - 15} ${y + 9} ${cx - 6} ${y + 9}`, stroke: '#fff', 'stroke-width': 4, fill: 'none', opacity: 0.6, 'stroke-linecap': 'round' }, g);
+  c.terms.forEach(t => drawPost(g, t, '#8b6a25'));
+  R.lab = sticker(g, cx, b.y + b.h + 33, c.label + '  60 W');
+  return R;
+}
+
+function drawBus(g, c, R) {
+  const b = boxOf(c);
+  c.terms.forEach(t => lip(g, t.x, t.out === 2 ? b.y + b.h - 4 : b.y + 4, t.y, 11));
+  el('rect', { x: b.x, y: b.y + 3, width: b.w, height: b.h - 6, rx: 4, fill: 'url(#gBrassBar)', stroke: '#7c5d17', filter: 'url(#fShadow)' }, g);
+  el('rect', { x: b.x + 2, y: c.pol === 'L' ? b.y + 4 : b.y + b.h - 8, width: b.w - 4, height: 4, fill: c.pol === 'L' ? '#c8261d' : '#1c1d20', opacity: 0.85 }, g);
+  const labX = c.pol === 'L' ? b.x + 60 : b.x + b.w - 70;
+  R.lab = tx(g, labX, b.y + b.h / 2 + 5, L(c.pol === 'L' ? 'board.pb' : 'board.nb'), { class: 'busLab', 'text-anchor': 'middle' });
+  c.terms.forEach(t => drawPost(g, t, c.pol === 'L' ? '#c8261d' : '#1c1d20'));
+}
+
+/* ---------- leads ---------- */
+function cellPt(cell) { return [(cell % GW) * CELL + CELL / 2, ((cell / GW) | 0) * CELL + CELL / 2]; }
+function roundedPath(pts, rad = 8) {
+  const p = [pts[0]];
+  for (let i = 1; i < pts.length - 1; i++) {
+    const [ax, ay] = p[p.length - 1], [bx, by] = pts[i], [cx, cy] = pts[i + 1];
+    if ((ax === bx && bx === cx) || (ay === by && by === cy)) continue;
+    p.push(pts[i]);
+  }
+  p.push(pts[pts.length - 1]);
+  let d = `M ${p[0][0]} ${p[0][1]}`;
+  for (let i = 1; i < p.length - 1; i++) {
+    const [ax, ay] = p[i - 1], [bx, by] = p[i], [cx, cy] = p[i + 1];
+    const l1 = Math.hypot(bx - ax, by - ay), l2 = Math.hypot(cx - bx, cy - by);
+    const r = Math.min(rad, l1 / 2, l2 / 2);
+    d += ` L ${bx - (bx - ax) / l1 * r} ${by - (by - ay) / l1 * r} Q ${bx} ${by} ${bx + (cx - bx) / l2 * r} ${by + (cy - by) / l2 * r}`;
+  }
+  const q = p[p.length - 1];
+  return d + ` L ${q[0]} ${q[1]}`;
+}
+function drawPlug(g, x, y, col, k) {
+  const W = WIRE[col];
+  const pg = el('g', { transform: `translate(${-k * 2.5} ${-k * 6})`, 'pointer-events': 'none' }, g);
+  el('circle', { cx: x, cy: y + 2, r: 12.5, fill: '#000', opacity: 0.22 }, pg);
+  el('circle', { cx: x, cy: y, r: 12, fill: W.main, stroke: W.dark, 'stroke-width': 1.5 }, pg);
+  el('circle', { cx: x, cy: y, r: 7.5, fill: W.dark }, pg);
+  el('circle', { cx: x, cy: y, r: 5.5, fill: '#d8b44a', stroke: '#6e5316', 'stroke-width': 0.8 }, pg);
+  el('circle', { cx: x, cy: y, r: 2.2, fill: '#241a05' }, pg);
+  el('ellipse', { cx: x - 5, cy: y - 6, rx: 3.5, ry: 2, fill: '#fff', opacity: 0.45 }, pg);
+}
+
+/* =====================================================================
+   6. AUDIO (generated with Web Audio – no sound files)
+   ===================================================================== */
+const Snd = {
+  ctx: null, on: true,
+  ensure() {
+    if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    return this.ctx;
+  },
+  noise(dur) {
+    const c = this.ctx, n = Math.floor(c.sampleRate * dur), buf = c.createBuffer(1, n, c.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+    const s = c.createBufferSource(); s.buffer = buf; return s;
+  },
+  env(t0, peak, dur) { const g = this.ctx.createGain(); g.gain.setValueAtTime(peak, t0); g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur); return g; },
+  click() {
+    if (!this.on || !this.ensure()) return;
+    const c = this.ctx, t = c.currentTime, s = this.noise(0.05), f = c.createBiquadFilter(), g = this.env(t, 0.5, 0.045);
+    f.type = 'bandpass'; f.frequency.value = 2400; s.connect(f).connect(g).connect(c.destination); s.start(t);
+  },
+  plug() {
+    if (!this.on || !this.ensure()) return;
+    const c = this.ctx, t = c.currentTime, o = c.createOscillator(), g = this.env(t, 0.18, 0.08);
+    o.type = 'triangle'; o.frequency.setValueAtTime(900, t); o.frequency.exponentialRampToValueAtTime(420, t + 0.07);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t + 0.1);
+  },
+  beep() {
+    if (!this.on || !this.ensure()) return;
+    const c = this.ctx, t = c.currentTime, o = c.createOscillator(), g = c.createGain();
+    o.type = 'square'; o.frequency.value = 2700;
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.09, t + 0.01);
+    g.gain.setValueAtTime(0.09, t + 0.15); g.gain.linearRampToValueAtTime(0.0001, t + 0.17);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t + 0.2);
+  },
+  bang() {
+    if (!this.on || !this.ensure()) return;
+    const c = this.ctx, t = c.currentTime, s = this.noise(0.6), f = c.createBiquadFilter(), g = this.env(t, 1.0, 0.5);
+    f.type = 'lowpass'; f.frequency.value = 1400; s.connect(f).connect(g).connect(c.destination); s.start(t);
+    const o = c.createOscillator(), g2 = this.env(t, 0.7, 0.35);
+    o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(40, t + 0.3);
+    o.connect(g2).connect(c.destination); o.start(t); o.stop(t + 0.4);
+  },
+  crackle(dur) {
+    if (!this.on || !this.ensure()) return;
+    const c = this.ctx, t0 = c.currentTime;
+    const roar = this.noise(dur), lf = c.createBiquadFilter(), rg = c.createGain();
+    lf.type = 'lowpass'; lf.frequency.value = 500;
+    rg.gain.setValueAtTime(0.0001, t0); rg.gain.linearRampToValueAtTime(0.25, t0 + 0.3); rg.gain.linearRampToValueAtTime(0.0001, t0 + dur);
+    roar.connect(lf).connect(rg).connect(c.destination); roar.start(t0);
+    for (let t = 0; t < dur; t += 0.03 + Math.random() * 0.09) {
+      const s = this.noise(0.02), hp = c.createBiquadFilter(), g = this.env(t0 + t, 0.15 + Math.random() * 0.45, 0.02);
+      hp.type = 'highpass'; hp.frequency.value = 1800; s.connect(hp).connect(g).connect(c.destination); s.start(t0 + t);
+    }
+  }
+};
+
+/* =====================================================================
+   7. APPLICATION
+   ===================================================================== */
+const BOARDS = buildBoards();
+const $ = s => document.querySelector(s);
+const svg = $('#board');
+svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
+buildDefs(svg);
+
+const app = { cur: 'series', w: W_DEF.slice(), color: 'auto', pending: null, sel: null, hover: null,
+              drag: null, pointer: null, previewKey: '', previewPath: null, seq: 1 };
+const BS = {};
+
+['series', 'parallel'].forEach(bid => {
+  const B = BOARDS[bid];
+  const layer = el('g', { class: 'layer', id: 'layer_' + bid, style: bid === 'series' ? '' : 'display:none' }, svg);
+  const s = { B, router: new Router(B), leads: [], undo: [], dpOn: false, burnt: new Set(), obs: [],
+              res: null, sticky: null, layer, refs: {}, needle: {}, glow: {}, burnTimer: null, shortTimer: null, smokeTimers: {} };
+  s.refs.board = drawBoard(el('g', {}, layer));
+  const gc = el('g', {}, layer);
+  B.comps.forEach(c => {
+    if (c.type === 'supply') { s.refs.SUP = {}; drawSupply(gc, c, s.refs.SUP); }
+    else if (c.type === 'dp') { s.refs.DP = {}; drawDP(gc, c, s.refs.DP); }
+    else if (c.type === 'bus') { s.refs[c.id] = {}; drawBus(gc, c, s.refs[c.id]); }
+  });
+  B.comps.forEach(c => {
+    if (c.type === 'lamp') { s.refs[c.id] = drawLamp(gc, c); s.glow[c.id] = 0; }
+    if (c.type === 'meter') { s.refs[c.id] = drawMeter(gc, c); s.needle[c.id] = { a: -45, v: 0 }; }
+  });
+  s.leadLayer = el('g', { class: 'leads' }, layer);
+  s.labelLayer = el('g', { 'pointer-events': 'none' }, layer);
+  gc.querySelectorAll('.stk').forEach(n => s.labelLayer.appendChild(n));
+  s.plugLayer = el('g', {}, layer);
+  s.uiLayer = el('g', {}, layer);
+  s.fxLayer = el('g', { 'pointer-events': 'none' }, layer);
+  s.previewLayer = el('g', { 'pointer-events': 'none' }, layer);
+  BS[bid] = s;
+});
+const cur = () => BS[app.cur];
+const state = s => ({ dpOn: s.dpOn, w: app.w, burnt: s.burnt });
+
+/* ---------- toast + status ---------- */
+let toastT = null;
+function toast(key, kind) {
+  const t = $('#toast'); t.textContent = L(key); t.className = 'toast show ' + (kind || '');
+  clearTimeout(toastT); toastT = setTimeout(() => t.className = 'toast', 2800);
+}
+function renderStatus(st, prefix) {
+  const box = $('#status');
+  box.className = 'status ' + st.level;
+  $('#stTitle').textContent = (prefix ? L(prefix) : '') + L(st.t[0], st.t[1]);
+  $('#stText').textContent = st.x.map(e => L(e[0], e[1])).join(' ');
+}
+
+/* ---------- leads ---------- */
+function autoColor(a, b, s) {
+  const ta = s.B.term[a], tb = s.B.term[b];
+  if (ta.pol === 'N' || tb.pol === 'N') return 'black';
+  if (ta.pol === 'L' || tb.pol === 'L') return 'red';
+  const at = s.leads.find(Ld => Ld.a === a || Ld.b === a) || s.leads.find(Ld => Ld.a === b || Ld.b === b);
+  return at ? at.color : 'red';
+}
+function renderLeads(s) {
+  s.leadLayer.textContent = ''; s.plugLayer.textContent = ''; s.uiLayer.textContent = '';
+  const stack = {};
+  s.leads.forEach(Ld => {
+    const W = WIRE[Ld.color], d = roundedPath(Ld.path.map(cellPt));
+    const g = el('g', { class: 'lead' + (app.sel === Ld.id ? ' sel' : ''), 'data-lead': Ld.id }, s.leadLayer);
+    if (app.sel === Ld.id) el('path', { d, class: 'selHalo' }, g);
+    el('path', { d, stroke: W.dark, 'stroke-width': 8, fill: 'none', 'stroke-linejoin': 'round', filter: 'url(#fWire)' }, g);
+    el('path', { d, stroke: W.main, 'stroke-width': 6, fill: 'none', 'stroke-linejoin': 'round' }, g);
+    el('path', { d, stroke: W.lite, 'stroke-width': 1.6, fill: 'none', 'stroke-linejoin': 'round', opacity: 0.75, transform: 'translate(-1 -1.4)' }, g);
+    el('path', { d, stroke: 'transparent', 'stroke-width': 20, fill: 'none', class: 'leadHit' }, g);
+    [Ld.a, Ld.b].forEach(tid => { (stack[tid] = stack[tid] || []).push(Ld); });
+  });
+  Object.keys(stack).forEach(tid => {
+    const t = s.B.term[tid];
+    stack[tid].forEach((Ld, k) => drawPlug(s.plugLayer, t.x, t.y, Ld.color, k));
+  });
+  const sel = s.leads.find(Ld => Ld.id === app.sel);
+  if (sel) {
+    const [x, y] = cellPt(sel.path[Math.floor(sel.path.length / 2)]);
+    const g = el('g', { class: 'delBtn', 'data-del': sel.id, role: 'button' }, s.uiLayer);
+    el('circle', { cx: x, cy: y, r: 17, fill: '#c0392b', stroke: '#fff', 'stroke-width': 2.5 }, g);
+    el('path', { d: `M ${x - 6} ${y - 6} L ${x + 6} ${y + 6} M ${x + 6} ${y - 6} L ${x - 6} ${y + 6}`, stroke: '#fff', 'stroke-width': 3, 'stroke-linecap': 'round' }, g);
+  }
+  $('#btnDel').disabled = !sel;
+  $('#btnUndo').disabled = !s.undo.length;
+}
+function renderPreview() {
+  const s = cur(), P = s.previewLayer; P.textContent = '';
+  s.B.termList.forEach(t => {
+    t.el.classList.toggle('hover', app.hover === t && !s.dpOn);
+    t.el.classList.toggle('pending', app.pending === t);
+  });
+  if (!app.pending || !app.pointer) return;
+  const t = app.pending;
+  const col = WIRE[app.color === 'auto' ? (t.pol === 'N' ? 'black' : 'red') : app.color];
+  const h = app.hover;
+  if (h && h !== t) {
+    const key = t.id + '|' + h.id + '|' + s.leads.length;
+    if (key !== app.previewKey) {
+      app.previewKey = key;
+      app.previewPath = s.router.route(t, h, s.router.occupancy(s.leads, -1));
+    }
+    if (app.previewPath) {
+      el('path', { d: roundedPath(app.previewPath.map(cellPt)), stroke: col.main, 'stroke-width': 5, fill: 'none', 'stroke-dasharray': '10 8', opacity: 0.85 }, P);
+      return;
+    }
+  }
+  const { x, y } = app.pointer;
+  const sag = Math.min(120, 20 + Math.hypot(x - t.x, y - t.y) * 0.3);
+  const d = `M ${t.x} ${t.y} C ${t.x} ${t.y + sag} ${x} ${y + sag} ${x} ${y}`;
+  el('path', { d, stroke: col.dark, 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round', opacity: 0.9 }, P);
+  el('path', { d, stroke: col.main, 'stroke-width': 6, fill: 'none', 'stroke-linecap': 'round' }, P);
+  const pg = el('g', { transform: `translate(${x} ${y})` }, P);
+  el('rect', { x: -8, y: -4, width: 16, height: 34, rx: 6, fill: col.main, stroke: col.dark, 'stroke-width': 1.5 }, pg);
+  el('rect', { x: -2.2, y: -18, width: 4.4, height: 16, rx: 1.5, fill: '#d8b44a', stroke: '#7a5b17', 'stroke-width': 0.6 }, pg);
+  el('rect', { x: -5, y: 6, width: 10, height: 2, fill: col.dark }, pg);
+  el('rect', { x: -5, y: 11, width: 10, height: 2, fill: col.dark }, pg);
+  if (h && h !== t && !app.previewPath)
+    el('circle', { cx: h.x, cy: h.y, r: 20, fill: 'none', stroke: '#c0392b', 'stroke-width': 3, 'stroke-dasharray': '5 4' }, P);
+}
+
+/* ---------- wiring actions ---------- */
+function snapshot(s) { s.undo.push(s.leads.map(Ld => ({ ...Ld, path: Ld.path.slice() }))); if (s.undo.length > 60) s.undo.shift(); }
+function blockedIfOn(s) { if (s.dpOn) { toast('toast.blocked', 'err'); Snd.beep(); return true; } return false; }
+function connect(ta, tb) {
+  const s = cur();
+  if (blockedIfOn(s) || ta === tb) return;
+  if (s.leads.some(Ld => (Ld.a === ta.id && Ld.b === tb.id) || (Ld.a === tb.id && Ld.b === ta.id))) { toast('toast.dup'); return; }
+  const count = id => s.leads.filter(Ld => Ld.a === id || Ld.b === id).length;
+  if (count(ta.id) >= 3 || count(tb.id) >= 3) { toast('toast.max', 'err'); return; }
+  const prev = s.leads.map(Ld => Ld.path);
+  const nl = { id: 'w' + (app.seq++), a: ta.id, b: tb.id, color: app.color === 'auto' ? autoColor(ta.id, tb.id, s) : app.color, path: null };
+  s.leads.push(nl);
+  document.body.classList.add('busy');
+  const ok = s.router.place(s.leads, s.leads.length - 1);
+  document.body.classList.remove('busy');
+  if (!ok) {
+    s.leads.pop(); s.leads.forEach((l, i) => l.path = prev[i]);
+    toast('toast.noroute', 'err');
+    return;
+  }
+  const added = s.leads.pop(), saved = s.leads.map(l => l.path);
+  s.leads.forEach((l, i) => l.path = prev[i]);
+  snapshot(s);
+  s.leads.forEach((l, i) => l.path = saved[i]);
+  s.leads.push(added);
+  Snd.plug(); s.sticky = null;
+  renderLeads(s); refresh();
+}
+function deleteLead(id) {
+  const s = cur();
+  if (blockedIfOn(s)) return;
+  const i = s.leads.findIndex(Ld => Ld.id === id); if (i < 0) return;
+  snapshot(s); s.leads.splice(i, 1); s.router.tidy(s.leads);
+  app.sel = null; s.sticky = null; Snd.plug();
+  renderLeads(s); refresh();
+}
+function undo() {
+  const s = cur();
+  if (blockedIfOn(s) || !s.undo.length) return;
+  s.leads = s.undo.pop(); app.sel = null; s.sticky = null;
+  renderLeads(s); refresh();
+}
+function resetWiring() {
+  const s = cur();
+  if (blockedIfOn(s) || !s.leads.length) return;
+  snapshot(s); s.leads = []; app.sel = null; s.sticky = null;
+  renderLeads(s); refresh(); toast('toast.reset');
+}
+function demoWire() {
+  const s = cur();
+  if (blockedIfOn(s)) return;
+  snapshot(s); s.leads = []; s.sticky = null;
+  SOLUTIONS[app.cur].forEach(([a, b]) => {
+    s.leads.push({ id: 'w' + (app.seq++), a, b, color: autoColor(a, b, s), path: null });
+    if (!s.router.place(s.leads, s.leads.length - 1)) s.leads.pop();
+  });
+  renderLeads(s); refresh();
+}
+
+/* ---------- DP switch and evaluation ---------- */
+function toggleDP(bid, force, silent) {
+  const s = BS[bid];
+  s.dpOn = force == null ? !s.dpOn : force;
+  s.tripping = false;
+  if (!silent) Snd.click();
+  if (force == null) { s.sticky = null; clearTimeout(s.burnTimer); clearTimeout(s.shortTimer); }
+  setDP(s.refs.DP, s.dpOn);
+  app.pending = null; renderPreview();
+  refresh(bid);
+}
+function refresh(bid) {
+  bid = bid || app.cur;
+  const s = BS[bid];
+  const res = evaluate(s.B, s.leads, state(s), false);
+  s.res = res;
+  s.B.comps.forEach(c => {
+    if (c.type !== 'meter') return;
+    const R = s.refs[c.id];
+    R.group.classList.toggle('alarm', s.dpOn && res.alarm.includes(c.id));
+    R.group.classList.toggle('burnt', s.burnt.has(c.id));
+  });
+  if (s.dpOn && s.tripping) { /* effects already running */ }
+  else if (s.dpOn && res.short) {
+    s.tripping = true;
+    spark(s, res.short); Snd.bang();
+    s.sticky = res.status;
+    clearTimeout(s.shortTimer);
+    s.shortTimer = setTimeout(() => toggleDP(bid, false, true), 650);
+  } else if (s.dpOn && res.burn.length) {
+    s.tripping = true;
+    res.burn.forEach(id => { s.burnt.add(id); s.refs[id].group.classList.add('burning', 'burnt', 'smoking'); s.needle[id].v = 900; });
+    Snd.crackle(3.2);
+    s.sticky = res.status;
+    clearTimeout(s.burnTimer);
+    const burning = res.burn.slice();
+    s.burnTimer = setTimeout(() => {
+      burning.forEach(id => {
+        s.refs[id].group.classList.remove('burning');
+        clearTimeout(s.smokeTimers[id]);
+        s.smokeTimers[id] = setTimeout(() => s.refs[id].group.classList.remove('smoking'), 5000);
+      });
+      toggleDP(bid, false, true);
+    }, 3000);
+  }
+  if (bid === app.cur) {
+    renderStatus(s.sticky || res.status);
+    $('#btnReplace').hidden = !s.burnt.size;
+    updateTable();
+  }
+}
+function spark(s, where) {
+  const t = where === 'supply' ? s.B.term['SUP.L'] : s.B.term['DP.Lout'];
+  const t2 = where === 'supply' ? s.B.term['SUP.N'] : s.B.term['DP.Nout'];
+  const x = t.x, y = (t.y + t2.y) / 2;
+  const g = el('g', { class: 'spark' }, s.fxLayer);
+  el('circle', { cx: x, cy: y, r: 70, fill: '#fffbe0', filter: 'url(#fBlur)' }, g);
+  for (let i = 0; i < 14; i++) {
+    const a = i / 14 * Math.PI * 2 + Math.random() * 0.3, r2 = 45 + Math.random() * 45;
+    el('line', { x1: x + 12 * Math.cos(a), y1: y + 12 * Math.sin(a), x2: x + r2 * Math.cos(a), y2: y + r2 * Math.sin(a),
+                 stroke: i % 2 ? '#ffd21f' : '#fff', 'stroke-width': 3, 'stroke-linecap': 'round' }, g);
+  }
+  el('circle', { cx: x, cy: y, r: 16, fill: '#fff' }, g);
+  setTimeout(() => g.remove(), 900);
+}
+
+/* ---------- animation ---------- */
+const lerpC = (a, b, t) => {
+  const pa = [1, 3, 5].map(i => parseInt(a.substr(i, 2), 16)), pb = [1, 3, 5].map(i => parseInt(b.substr(i, 2), 16));
+  return '#' + pa.map((v, i) => Math.round(v + (pb[i] - v) * t).toString(16).padStart(2, '0')).join('');
+};
+function filColor(b) {
+  if (b < 0.02) return '#555555';
+  if (b < 0.25) return lerpC('#6a2a14', '#e0561c', b / 0.25);
+  if (b < 0.55) return lerpC('#e0561c', '#ffb347', (b - 0.25) / 0.3);
+  return lerpC('#ffb347', '#fff6d8', Math.min(1, (b - 0.55) / 0.45));
+}
+let lastT = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
+  const s = cur(), res = s.res;
+  if (res) {
+    s.B.comps.forEach(c => {
+      if (c.type === 'meter') {
+        const R = s.refs[c.id], N = s.needle[c.id], burnt = s.burnt.has(c.id);
+        const val = res.meters[c.id] || 0;
+        const target = burnt ? 54 : dialAngle(val / c.fs);
+        N.v += (95 * (target - N.a) - 10 * N.v) * dt; N.a += N.v * dt;
+        if (N.a > 56) { N.a = 56; N.v = -Math.abs(N.v) * 0.3; }
+        if (N.a < -47) { N.a = -47; N.v = Math.abs(N.v) * 0.2; }
+        R.needle.setAttribute('transform', `rotate(${N.a.toFixed(2)} ${R.px} ${R.py})`);
+        let txt;
+        if (burnt) txt = 'Err';
+        else if (val > c.fs * 1.25) txt = 'OL';
+        else if (c.kind === 'V') txt = val.toFixed(1) + ' V';
+        else if (c.unit === 'mA') txt = (val * 1000).toFixed(1) + ' mA';
+        else txt = val.toFixed(3) + ' A';
+        if (R.lcd.textContent !== txt) R.lcd.textContent = txt;
+      } else if (c.type === 'lamp') {
+        const R = s.refs[c.id];
+        const ratio = Math.max(0, Math.min(1.1, (res.lampP[c.id] || 0) / app.w[c.idx]));
+        s.glow[c.id] += (Math.pow(ratio, 0.55) - s.glow[c.id]) * Math.min(1, dt * 7);
+        const b = s.glow[c.id];
+        R.glow.setAttribute('opacity', (Math.pow(b, 1.3) * 0.95).toFixed(3));
+        R.core.setAttribute('opacity', Math.min(1, b * 1.2).toFixed(3));
+        R.tint.setAttribute('opacity', (b * 0.5).toFixed(3));
+        R.fil.setAttribute('stroke', filColor(b));
+        R.fil.setAttribute('stroke-width', (1.8 + b * 1.4).toFixed(2));
+      }
+    });
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+setInterval(() => { const s = cur(); if (s.dpOn && s.res && s.res.alarm.length) Snd.beep(); }, 420);
+
+/* ---------- pointer ---------- */
+function svgPoint(e) {
+  const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+  return p.matrixTransform(svg.getScreenCTM().inverse());
+}
+function termNear(pt) {
+  const scale = svg.getScreenCTM().a || 1;
+  const rad = Math.min(38, Math.max(24, 22 / scale));
+  let best = null, bd = rad;
+  cur().B.termList.forEach(t => { const d = Math.hypot(pt.x - t.x, pt.y - t.y); if (d < bd) { bd = d; best = t; } });
+  return best;
+}
+svg.addEventListener('pointerdown', e => {
+  Snd.ensure();
+  const s = cur(), pt = svgPoint(e);
+  app.pointer = pt;
+  if (e.target.closest('[data-dp]')) { toggleDP(app.cur); return; }
+  const del = e.target.closest('[data-del]');
+  if (del) { deleteLead(del.getAttribute('data-del')); return; }
+  const t = termNear(pt);
+  if (t) {
+    if (blockedIfOn(s)) return;
+    app.sel = null;
+    if (app.pending && app.pending !== t) { const p = app.pending; app.pending = null; connect(p, t); renderPreview(); renderLeads(s); return; }
+    app.pending = t; app.drag = { x: pt.x, y: pt.y, moved: false };
+    try { svg.setPointerCapture(e.pointerId); } catch (_) {}
+    renderLeads(s); renderPreview();
+    return;
+  }
+  const lead = e.target.closest('[data-lead]');
+  app.pending = null;
+  app.sel = lead ? lead.getAttribute('data-lead') : null;
+  renderLeads(s); renderPreview();
+});
+let moveRaf = 0;
+svg.addEventListener('pointermove', e => {
+  const pt = svgPoint(e); app.pointer = pt;
+  if (app.drag && Math.hypot(pt.x - app.drag.x, pt.y - app.drag.y) > 10) app.drag.moved = true;
+  const h = termNear(pt);
+  svg.style.cursor = h || e.target.closest('[data-dp],[data-lead],[data-del]') ? 'pointer' : 'default';
+  app.hover = h;
+  if (!moveRaf) moveRaf = requestAnimationFrame(() => { moveRaf = 0; renderPreview(); });
+});
+svg.addEventListener('pointerup', e => {
+  if (!app.drag) return;
+  const pt = svgPoint(e), moved = app.drag.moved; app.drag = null;
+  if (!moved || !app.pending) return;
+  const t = termNear(pt);
+  if (t && t !== app.pending) { const p = app.pending; app.pending = null; connect(p, t); }
+  else if (!t) app.pending = null;
+  renderPreview();
+});
+svg.addEventListener('pointerleave', () => { app.hover = null; if (!app.drag) renderPreview(); });
+window.addEventListener('keydown', e => {
+  const inField = e.target.closest && e.target.closest('input,select,textarea');
+  if (e.key === 'Escape') { app.pending = null; app.sel = null; renderPreview(); renderLeads(cur()); closeModal(); }
+  if ((e.key === 'Delete' || e.key === 'Backspace') && app.sel && !inField) { e.preventDefault(); deleteLead(app.sel); }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('[data-dp]')) { e.preventDefault(); toggleDP(app.cur); }
+});
+
+/* ---------- toolbar ---------- */
+function switchBoard(bid) {
+  if (bid === app.cur) return;
+  app.pending = null; app.sel = null; app.hover = null;
+  cur().previewLayer.textContent = ''; renderLeads(cur());
+  app.cur = bid;
+  ['series', 'parallel'].forEach(b => BS[b].layer.style.display = b === bid ? '' : 'none');
+  document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === bid));
+  renderLeads(cur()); refresh();
+}
+document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => switchBoard(b.dataset.tab)));
+
+function setLampLabels() {
+  ['series', 'parallel'].forEach(bid => BS[bid].B.comps.forEach(c => {
+    if (c.type === 'lamp') { const lb = BS[bid].refs[c.id].lab; lb.textContent = `${c.label}  ${app.w[c.idx]} W`; lb.resize && lb.resize(); }
+  }));
+}
+function applyWatts() {
+  setLampLabels();
+  refresh('series'); refresh('parallel'); refresh();
+}
+document.querySelectorAll('.wIn').forEach((inp, k) => {
+  inp.addEventListener('change', () => {
+    if (BS.series.dpOn || BS.parallel.dpOn) { toast('toast.lampoff', 'err'); inp.value = app.w[k]; return; }
+    let v = Math.round(+inp.value || W_DEF[k]);
+    v = Math.max(W_MIN, Math.min(W_MAX, v));
+    inp.value = v; app.w[k] = v; applyWatts();
+  });
+});
+document.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => {
+  if (BS.series.dpOn || BS.parallel.dpOn) { toast('toast.lampoff', 'err'); return; }
+  app.w = PRESETS[b.dataset.preset].slice();
+  document.querySelectorAll('.wIn').forEach((inp, k) => inp.value = app.w[k]);
+  applyWatts();
+}));
+document.querySelectorAll('[data-col]').forEach(b => b.addEventListener('click', () => {
+  app.color = b.dataset.col;
+  document.querySelectorAll('[data-col]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  if (app.sel && app.color !== 'auto') {
+    const s = cur(), Ld = s.leads.find(l => l.id === app.sel);
+    if (Ld) { Ld.color = app.color; renderLeads(s); }
+  }
+}));
+$('#btnUndo').addEventListener('click', undo);
+$('#btnDel').addEventListener('click', () => app.sel && deleteLead(app.sel));
+$('#btnReset').addEventListener('click', resetWiring);
+$('#btnCheck').addEventListener('click', () => {
+  const s = cur();
+  if (s.dpOn) { renderStatus(s.sticky || s.res.status); return; }
+  const r = evaluate(s.B, s.leads, { dpOn: true, w: app.w, burnt: s.burnt }, true);
+  const bad = r.short || r.burn.length || r.alarm.length;
+  renderStatus(bad ? { level: 'err', t: r.status.t, x: r.status.x } : r.status, bad ? 'pfx.on' : 'pfx.check');
+});
+$('#btnDiagram').addEventListener('click', openModal);
+$('#btnReplace').addEventListener('click', () => {
+  const s = cur();
+  if (s.dpOn) { toast('toast.repoff', 'err'); return; }
+  s.burnt.forEach(id => { s.refs[id].group.classList.remove('burnt', 'burning', 'smoking'); s.needle[id] = { a: -45, v: 0 }; });
+  s.burnt.clear(); s.sticky = null;
+  refresh(); toast('toast.replaced');
+});
+$('#tglRead').addEventListener('change', e => document.body.classList.toggle('noLcd', !e.target.checked));
+$('#tglSound').addEventListener('change', e => { Snd.on = e.target.checked; });
+
+/* ---------- observation table ---------- */
+function updateTable() {
+  const s = cur(), bid = app.cur;
+  const head = bid === 'series'
+    ? [L('ui.no'), L('ui.lampsW'), 'V (V)', 'V1 (V)', 'V2 (V)', 'V3 (V)', L('ui.sumV'), 'I (mA)', 'I1 (mA)', 'I2 (mA)', 'I3 (mA)', L('ui.check2')]
+    : [L('ui.no'), L('ui.lampsW'), 'V (V)', 'V1 (V)', 'V2 (V)', 'V3 (V)', 'IT (A)', 'I1 (A)', 'I2 (A)', 'I3 (A)', L('ui.sumI') + ' (A)', L('ui.check2')];
+  let h = '<thead><tr>' + head.map(x => `<th>${x}</th>`).join('') + '</tr></thead><tbody>';
+  if (!s.obs.length) h += `<tr><td colspan="${head.length}" class="empty">${L('ui.empty')}</td></tr>`;
+  s.obs.forEach((o, i) => {
+    const c = o.ok ? 'tick' : 'cross';
+    const mark = o.ok ? '✓ ' + L(bid === 'series' ? 'ui.okSumV' : 'ui.okSumI') : '✗';
+    h += `<tr><td>${i + 1}</td><td>${o.w}</td><td>${o.V.toFixed(1)}</td><td>${o.V1.toFixed(1)}</td><td>${o.V2.toFixed(1)}</td><td>${o.V3.toFixed(1)}</td>` +
+      (bid === 'series'
+        ? `<td>${o.sumV.toFixed(1)}</td><td>${(o.I * 1000).toFixed(1)}</td><td>${(o.I1 * 1000).toFixed(1)}</td><td>${(o.I2 * 1000).toFixed(1)}</td><td>${(o.I3 * 1000).toFixed(1)}</td>`
+        : `<td>${o.IT.toFixed(3)}</td><td>${o.I1.toFixed(3)}</td><td>${o.I2.toFixed(3)}</td><td>${o.I3.toFixed(3)}</td><td>${o.sumI.toFixed(3)}</td>`) +
+      `<td class="${c}">${mark}</td></tr>`;
+  });
+  $('#obsTable').innerHTML = h + '</tbody>';
+  const cc = $('#conclusion');
+  cc.hidden = !s.obs.length;
+  const sets = new Set(s.obs.map(o => o.w));
+  cc.innerHTML = `<h3>${L('ui.concl')}</h3><p>${L(bid === 'series' ? 'ui.conclS' : 'ui.conclP')}</p>` +
+    (sets.size < 2 ? `<p class="hint">${L('ui.hintSets')}</p>` : '');
+}
+$('#btnRecord').addEventListener('click', () => {
+  const s = cur(), r = s.res;
+  if (!s.dpOn) { toast('toast.recon'); return; }
+  if (!r || !r.correct) { toast('toast.recbad', 'err'); return; }
+  if (s.obs.length >= 8) s.obs.shift();
+  const m = r.meters, wtxt = app.w.join(', ');
+  const V1 = m.V1, V2 = m.V2, V3 = m.V3;
+  if (app.cur === 'series') {
+    const sumV = V1 + V2 + V3;
+    s.obs.push({ w: wtxt, V: m.V, V1, V2, V3, sumV, I: m.A, I1: m.A1, I2: m.A2, I3: m.A3,
+                 ok: Math.abs(m.V - sumV) <= 0.03 * m.V });
+  } else {
+    const sumI = m.A1 + m.A2 + m.A3;
+    s.obs.push({ w: wtxt, V: m.V, V1, V2, V3, IT: m.A, I1: m.A1, I2: m.A2, I3: m.A3, sumI,
+                 ok: Math.abs(m.A - sumI) <= 0.03 * m.A });
+  }
+  updateTable(); toast('toast.recok', 'ok');
+});
+$('#btnClear').addEventListener('click', () => { cur().obs = []; updateTable(); });
+
+/* ---------- schematic (IS/IEC 60617 symbols) ---------- */
+function schematic(bid) {
+  const S = el('svg', { viewBox: '0 0 820 360', class: 'schem', role: 'img' });
+  const g = el('g', { stroke: '#1d2a36', 'stroke-width': 2.2, fill: 'none', 'stroke-linecap': 'round' }, S);
+  const Ln = (x1, y1, x2, y2) => el('line', { x1, y1, x2, y2 }, g);
+  const dot = (x, y) => el('circle', { cx: x, cy: y, r: 4, fill: '#1d2a36' }, g);
+  const term = (x, y, lab) => { el('circle', { cx: x, cy: y, r: 6, fill: '#fff' }, g); tx(S, x - 12, y + 5, lab, { class: 'sLab', 'text-anchor': 'end' }); };
+  const meterSym = (x, y, lab) => { el('circle', { cx: x, cy: y, r: 18, fill: '#fff' }, g); tx(S, x, y + 6, lab, { class: 'sMeter', 'text-anchor': 'middle' }); };
+  const lampSym = (x, y, lab, side) => {
+    el('circle', { cx: x, cy: y, r: 18, fill: '#fff' }, g);
+    Ln(x - 12.7, y - 12.7, x + 12.7, y + 12.7); Ln(x - 12.7, y + 12.7, x + 12.7, y - 12.7);
+    tx(S, side ? x + 26 : x, side ? y + 5 : y - 26, lab, { class: 'sLab', 'text-anchor': side ? 'start' : 'middle' });
+  };
+  const dp = (x, yT, yB) => {
+    [yT, yB].forEach(y => { dot(x - 20, y); Ln(x - 20, y, x + 16, y - 16); dot(x + 22, y); });
+    el('line', { x1: x - 2, y1: yT - 8, x2: x - 2, y2: yB - 8, 'stroke-dasharray': '6 5', 'stroke-width': 1.6 }, g);
+    tx(S, x, yB + 30, L('sch.dp'), { class: 'sLab', 'text-anchor': 'middle' });
+  };
+  const top = 70, bot = 290;
+  term(50, top, 'L'); term(50, bot, 'N');
+  Ln(56, top, 110, top); Ln(56, bot, 110, bot); dp(130, top, bot);
+  Ln(152, top, 210, top); Ln(152, bot, 210, bot);
+  dot(195, top); dot(195, bot);
+  Ln(195, top, 195, (top + bot) / 2 - 18); Ln(195, (top + bot) / 2 + 18, 195, bot); meterSym(195, (top + bot) / 2, 'V');
+  if (bid === 'series') {
+    Ln(210, top, 262, top); meterSym(280, top, 'A'); Ln(298, top, 340, top);
+    const xs = [380, 530, 680];
+    xs.forEach((x, k) => {
+      meterSym(x - 40, top, 'A' + (k + 1)); lampSym(x + 40, top, 'L' + (k + 1));
+      Ln(x - 22, top, x + 22, top);
+      if (k) Ln(xs[k - 1] + 58, top, x - 58, top);
+      dot(x + 22, top); dot(x + 58, top);
+      Ln(x + 22, top, x + 22, top + 60); Ln(x + 58, top, x + 58, top + 60);
+      Ln(x + 22, top + 60, x + 28, top + 60); Ln(x + 52, top + 60, x + 58, top + 60);
+      meterSym(x + 40, top + 60, 'V' + (k + 1));
+    });
+    Ln(340, top, 340, top); Ln(xs[2] + 58, top, 760, top); Ln(760, top, 760, bot); Ln(760, bot, 210, bot);
+    tx(S, 410, 340, L('sch.note.s'), { class: 'sNote', 'text-anchor': 'middle' });
+  } else {
+    Ln(210, top, 262, top); meterSym(280, top, 'A'); Ln(298, top, 740, top); Ln(210, bot, 740, bot);
+    [400, 550, 700].forEach((x, k) => {
+      dot(x, top); dot(x, bot);
+      Ln(x, top, x, 112); meterSym(x, 130, 'A' + (k + 1)); Ln(x, 148, x, 192);
+      lampSym(x, 210, 'L' + (k + 1), true); Ln(x, 228, x, bot);
+      Ln(x, 170, x - 60, 170); Ln(x - 60, 170, x - 60, 192);
+      Ln(x, 250, x - 60, 250); Ln(x - 60, 250, x - 60, 228);
+      meterSym(x - 60, 210, 'V' + (k + 1));
+      dot(x, 170); dot(x, 250);
+    });
+    tx(S, 410, 340, L('sch.note.p'), { class: 'sNote', 'text-anchor': 'middle' });
+  }
+  return S;
+}
+function openModal() {
+  $('#modalTitle').textContent = L(app.cur === 'series' ? 'ui.modalS' : 'ui.modalP');
+  const box = $('#schemBox'); box.textContent = ''; box.appendChild(schematic(app.cur));
+  $('#modal').hidden = false; $('#btnClose').focus();
+}
+function closeModal() { $('#modal').hidden = true; }
+$('#btnClose').addEventListener('click', closeModal);
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+$('#btnDemo').addEventListener('click', () => {
+  if (cur().dpOn) { toast('toast.demooff', 'err'); return; }
+  closeModal(); demoWire(); toast('toast.demo');
+});
+
+/* ---------- language ---------- */
+function relabel() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-i18n]').forEach(e => e.textContent = L(e.dataset.i18n));
+  document.querySelectorAll('[data-i18n-aria]').forEach(e => e.setAttribute('aria-label', L(e.dataset.i18nAria)));
+  document.title = L('ui.title');
+  ['series', 'parallel'].forEach(bid => {
+    const s = BS[bid], R = s.refs;
+    R.board.querySelector('#bTitle').textContent = L('board.title');
+    R.board.querySelector('#bFoot').textContent = L('board.foot');
+    R.SUP.t1.textContent = L('board.mains'); R.SUP.t2.textContent = L('board.rating');
+    R.SUP.t3.textContent = L('board.supply'); R.SUP.t4.textContent = L('board.danger');
+    R.DP.t1.textContent = L('board.dp'); R.DP.t2.textContent = L('board.dpr');
+    R.DP.t3.textContent = L('board.line'); R.DP.t4.textContent = L('board.load');
+    R.PB.lab.textContent = L('board.pb'); R.NB.lab.textContent = L('board.nb');
+  });
+  if ($('#modal').hidden === false) openModal();
+  renderStatus(cur().sticky || cur().res.status);
+  updateTable();
+}
+$('#langSel').addEventListener('change', e => { LANG = e.target.value; relabel(); });
+
+/* ---------- start ---------- */
+document.querySelectorAll('.wIn').forEach((inp, k) => { inp.value = app.w[k]; inp.min = W_MIN; inp.max = W_MAX; });
+setLampLabels();
+['series', 'parallel'].forEach(b => { setDP(BS[b].refs.DP, false); renderLeads(BS[b]); refresh(b); });
+relabel();
+refresh();
+
+
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

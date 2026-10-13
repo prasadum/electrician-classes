@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLDC Ceiling Fan</title>
+<meta name="section" content="Installation, Estimation &amp; Appliances">
+<meta name="section-order" content="4">
+<meta name="order" content="5">
+<meta name="description" content="Brushless DC fan theory">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg: #f4f7fb;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --border: #dce4f0;
+  --accent: #1565c0;
+  --accent2: #e65100;
+  --accent3: #2e7d32;
+  --muted: #607080;
+  --text: #1a2535;
+  --sub: #445566;
+  --shadow: 0 2px 16px rgba(21,101,192,0.08);
+  --N: #e53935;
+  --S: #1565c0;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Nunito',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* HEADER */
+header {
+  background: linear-gradient(135deg,#1565c0 0%,#0d47a1 60%,#01579b 100%);
+  color:#fff; text-align:center; padding:46px 20px 32px;
+  position:relative; overflow:hidden;
+}
+header::after {
+  content:''; position:absolute; bottom:-1px; left:0; right:0; height:30px;
+  background: var(--bg); clip-path: ellipse(55% 100% at 50% 100%);
+}
+header h1 { font-size: clamp(1.8rem,5vw,3rem); font-weight:800; letter-spacing:-0.5px; }
+header p  { margin-top:6px; opacity:0.75; font-family:'Space Mono',monospace; font-size:0.78rem; letter-spacing:2px; text-transform:uppercase; }
+
+/* NAV */
+nav {
+  display:flex; justify-content:center; flex-wrap:wrap; gap:8px;
+  padding:16px 20px; background:#fff; border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+nav button {
+  background:transparent; border:1.5px solid var(--border); color:var(--muted);
+  padding:7px 18px; border-radius:24px; cursor:pointer;
+  font-family:'Nunito',sans-serif; font-weight:700; font-size:0.82rem;
+  transition:all 0.25s;
+}
+nav button:hover { border-color:var(--accent); color:var(--accent); }
+nav button.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+/* SECTIONS */
+section { display:none; padding:36px 20px; max-width:980px; margin:0 auto; }
+section.active { display:block; animation:fadeUp 0.35s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* CARDS */
+.card {
+  background:var(--card); border:1px solid var(--border); border-radius:16px;
+  padding:28px; margin-bottom:22px; box-shadow:var(--shadow);
+}
+.card h2 { font-size:1.25rem; font-weight:800; color:var(--accent); margin-bottom:12px; }
+.card h3 { font-size:1rem; font-weight:700; color:var(--accent2); margin:14px 0 6px; }
+.card p, .card li { color:var(--sub); line-height:1.85; font-size:0.94rem; }
+.card ul { padding-left:20px; }
+.card li { margin-bottom:5px; }
+strong { color:var(--accent); }
+
+/* TABLE */
+.tbl { width:100%; border-collapse:collapse; font-size:0.88rem; }
+.tbl th { background:var(--accent); color:#fff; padding:10px 14px; text-align:left; }
+.tbl td { padding:9px 14px; border-bottom:1px solid var(--border); color:var(--sub); }
+.tbl tr:nth-child(even) td { background:#f8fafd; }
+.good { color:#2e7d32; font-weight:700; }
+.bad  { color:#c62828; }
+
+/* BADGE GRID */
+.badge-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin-top:14px; }
+.badge { background:#f0f5ff; border:1.5px solid #c5d5f0; border-radius:14px; padding:16px; text-align:center; transition:all 0.25s; }
+.badge:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 4px 16px rgba(21,101,192,0.12); }
+.badge .icon { font-size:1.9rem; margin-bottom:6px; }
+.badge .label { font-size:0.75rem; color:var(--muted); font-family:'Space Mono',monospace; }
+.badge .val { font-size:1rem; font-weight:800; color:var(--accent); }
+
+/* FORMULA */
+.formula {
+  background:#e8f0fe; border-left:4px solid var(--accent);
+  border-radius:8px; padding:12px 18px; font-family:'Space Mono',monospace;
+  font-size:0.88rem; color:#1a3a7a; margin:12px 0; white-space:pre-wrap;
+}
+
+/* ── SPEED BUTTONS ── */
+.speed-btns { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:16px; }
+.speed-btn {
+  background:#f0f5ff; border:1.5px solid var(--border); color:var(--accent);
+  padding:8px 22px; border-radius:8px; cursor:pointer;
+  font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem; transition:all 0.22s;
+}
+.speed-btn:hover { border-color:var(--accent); background:#e0eaff; }
+.speed-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+/* ── POLE SELECTOR ── */
+.pole-btns { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:18px; }
+.pole-btn {
+  background:#fff3e0; border:1.5px solid #ffcc80; color:var(--accent2);
+  padding:7px 20px; border-radius:8px; cursor:pointer;
+  font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem; transition:all 0.22s;
+}
+.pole-btn:hover { border-color:var(--accent2); background:#ffe0b2; }
+.pole-btn.active { background:var(--accent2); color:#fff; border-color:var(--accent2); }
+
+/* ── COMMUTATION ── */
+.hall-grid { display:flex; gap:20px; justify-content:center; margin:14px 0; flex-wrap:wrap; }
+.hall-sensor { display:flex; flex-direction:column; align-items:center; gap:5px; }
+.hall-dot { width:42px; height:42px; border-radius:50%; border:2px solid #ccc; background:#eee; transition:all 0.28s; }
+.hall-dot.high { background:#2e7d32; border-color:#1b5e20; box-shadow:0 0 12px rgba(46,125,50,0.35); }
+.hall-dot.low  { background:#e8ecf0; border-color:#c0c8d0; }
+.hall-label { font-family:'Space Mono',monospace; font-size:0.72rem; color:var(--muted); font-weight:700; }
+.phase-grid { display:flex; gap:14px; justify-content:center; margin:10px 0; flex-wrap:wrap; }
+.phase-coil {
+  background:#f4f7fb; border:1.5px solid #c0ccd8; border-radius:8px;
+  padding:9px 20px; text-align:center; min-width:66px;
+  transition:all 0.28s; font-family:'Space Mono',monospace; font-size:0.85rem; font-weight:700; color:#8899aa;
+}
+.phase-coil.pos { background:#e3f2fd; border-color:#1565c0; color:#0d47a1; box-shadow:0 0 8px rgba(21,101,192,0.2); }
+.phase-coil.neg { background:#fff3e0; border-color:#e65100; color:#bf360c; box-shadow:0 0 8px rgba(230,81,0,0.2); }
+.step-indicator { text-align:center; font-family:'Space Mono',monospace; font-size:0.85rem; color:var(--accent); margin:8px 0; font-weight:700; }
+.commut-btn {
+  display:block; margin:10px auto 0; background:var(--accent2); border:none; color:#fff;
+  padding:9px 30px; border-radius:8px; cursor:pointer;
+  font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem; transition:opacity 0.2s;
+}
+.commut-btn:hover { opacity:0.85; }
+
+/* MCQ */
+.q-card { background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:22px; margin-bottom:16px; box-shadow:var(--shadow); }
+.q-text { font-size:0.96rem; color:var(--text); margin-bottom:12px; font-weight:700; }
+.q-opts { display:flex; flex-direction:column; gap:8px; }
+.q-opt { background:#f8fafd; border:1.5px solid var(--border); border-radius:8px; padding:9px 16px; cursor:pointer; font-size:0.9rem; color:var(--sub); transition:all 0.2s; text-align:left; font-family:'Nunito',sans-serif; }
+.q-opt:hover { border-color:var(--accent); color:var(--accent); }
+.q-opt.correct { background:#e8f5e9; border-color:#2e7d32; color:#1b5e20; font-weight:700; }
+.q-opt.wrong   { background:#ffebee; border-color:#c62828; color:#b71c1c; }
+.q-feedback { margin-top:8px; font-size:0.83rem; font-family:'Space Mono',monospace; min-height:16px; }
+#mcq-score { text-align:center; font-size:1.2rem; color:var(--accent); font-weight:800; margin-top:20px; }
+
+canvas { display:block; margin:0 auto; max-width:100%; border-radius:10px; border:1px solid var(--border); }
+
+@media(max-width:600px){ section{padding:20px 10px;} }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>BLDC Ceiling Fan</h1>
+  <p>Brushless DC Technology — Theory &amp; Operation</p>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('intro',this)">Introduction</button>
+  <button onclick="showTab('construction',this)">Construction</button>
+  <button onclick="showTab('working',this)">Working</button>
+  <button onclick="showTab('animation',this)">⚡ Animations</button>
+  <button onclick="showTab('control',this)">Control Circuit</button>
+  <button onclick="showTab('advantages',this)">Advantages</button>
+  <button onclick="showTab('quiz',this)">Quiz</button>
+</nav>
+
+<!-- ══ INTRO ══ -->
+<section id="intro" class="active">
+  <div class="card">
+    <h2>What is a BLDC Ceiling Fan?</h2>
+    <p>A <strong>Brushless DC (BLDC) ceiling fan</strong> uses a permanent-magnet motor with <strong>electronic commutation</strong> instead of mechanical brushes. The rotation speed is precisely controlled by an electronic driver, offering significantly lower power consumption and longer life.</p>
+    <h3>Why BLDC?</h3>
+    <ul>
+      <li>Conventional fans: <strong>70–80 W</strong> &nbsp;|&nbsp; BLDC fans: <strong>28–35 W</strong> — up to 65% savings.</li>
+      <li>No brushes → no friction, no sparks, no wear particles.</li>
+      <li>Electronic PWM speed control — no lossy resistors.</li>
+      <li>Life: 25,000–40,000 hours vs 10,000–15,000 hours for induction.</li>
+    </ul>
+  </div>
+  <div class="badge-grid">
+    <div class="badge"><div class="icon">⚡</div><div class="val">28–35 W</div><div class="label">Power Draw</div></div>
+    <div class="badge"><div class="icon">🌀</div><div class="val">300–380 RPM</div><div class="label">Typical Speed</div></div>
+    <div class="badge"><div class="icon">🧲</div><div class="val">NdFeB Magnet</div><div class="label">Rotor Type</div></div>
+    <div class="badge"><div class="icon">🔌</div><div class="val">Electronic</div><div class="label">Commutation</div></div>
+    <div class="badge"><div class="icon">📅</div><div class="val">40,000 hrs</div><div class="label">Service Life</div></div>
+    <div class="badge"><div class="icon">🌡️</div><div class="val">Very Low</div><div class="label">Heat Generation</div></div>
+  </div>
+</section>
+
+<!-- ══ CONSTRUCTION ══ -->
+<section id="construction">
+  <div class="card">
+    <h2>Construction of BLDC Fan Motor</h2>
+    <!-- Cross-section SVG -->
+    <svg viewBox="0 0 580 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:580px;display:block;margin:0 auto 20px;">
+      <!-- Stator ring -->
+      <circle cx="290" cy="160" r="138" fill="#f0f5ff" stroke="#1565c0" stroke-width="30"/>
+      <!-- Stator slots -->
+      <g opacity="0.85">
+        <rect x="281" y="27" width="18" height="36" rx="3" fill="#1565c0" transform="rotate(0,290,160)"/>
+        <rect x="281" y="27" width="18" height="36" rx="3" fill="#e65100" transform="rotate(30,290,160)"/>
+        <rect x="281" y="27" width="18" height="36" rx="3" fill="#2e7d32" transform="rotate(60,290,160)"/>
+        <rect x="281" y="27" width="18" height="36" rx="3" fill="#1565c0" transform="rotate(90,290,160)"/>
+        <rect x="281" y="27" width="18" height="36" rx="3" fill="#e65100" transform="rotate(120,290,160)"/>
+        <rect x="281" y="27" width="18" height="36" rx="3" fill="#2e7d32" transform="rotate(150,290,160)"/>
+        <rect x="281" y="27" width="18" height="36" rx="3" fill="#1565c0" transform="rotate(180,290,160)"/>
+        <rect x="281" y="27" width="18" height="36" rx="3" fill="#e65100" transform="rotate(210,290,160)"/>
+        <rect x="281" y="27" width="18" height="36" rx="3" fill="#2e7d32" transform="rotate(240,290,160)"/>
+        <rect x="281" y="27" width="18" height="36" rx="3" fill="#1565c0" transform="rotate(270,290,160)"/>
+        <rect x="281" y="27" width="18" height="36" rx="3" fill="#e65100" transform="rotate(300,290,160)"/>
+        <rect x="281" y="27" width="18" height="36" rx="3" fill="#2e7d32" transform="rotate(330,290,160)"/>
+      </g>
+      <!-- Air gap -->
+      <circle cx="290" cy="160" r="106" fill="#f8faff" stroke="#90a8d0" stroke-width="1" stroke-dasharray="5,4"/>
+      <!-- Rotor -->
+      <circle cx="290" cy="160" r="100" fill="#e8f0fe" stroke="#b0c4e8" stroke-width="1.5"/>
+      <!-- Magnets (8 pole) -->
+      <rect x="270" y="64" width="40" height="22" rx="4" fill="#e53935"/>
+      <text x="290" y="79" text-anchor="middle" fill="#fff" font-size="10" font-family="Nunito,sans-serif" font-weight="800">N</text>
+      <rect x="270" y="64" width="40" height="22" rx="4" fill="#1565c0" transform="rotate(45,290,160)"/>
+      <text x="290" y="79" text-anchor="middle" fill="#fff" font-size="10" font-family="Nunito,sans-serif" font-weight="800" transform="rotate(45,290,160)">S</text>
+      <rect x="270" y="64" width="40" height="22" rx="4" fill="#e53935" transform="rotate(90,290,160)"/>
+      <text x="290" y="79" text-anchor="middle" fill="#fff" font-size="10" font-family="Nunito,sans-serif" font-weight="800" transform="rotate(90,290,160)">N</text>
+      <rect x="270" y="64" width="40" height="22" rx="4" fill="#1565c0" transform="rotate(135,290,160)"/>
+      <text x="290" y="79" text-anchor="middle" fill="#fff" font-size="10" font-family="Nunito,sans-serif" font-weight="800" transform="rotate(135,290,160)">S</text>
+      <rect x="270" y="64" width="40" height="22" rx="4" fill="#e53935" transform="rotate(180,290,160)"/>
+      <text x="290" y="79" text-anchor="middle" fill="#fff" font-size="10" font-family="Nunito,sans-serif" font-weight="800" transform="rotate(180,290,160)">N</text>
+      <rect x="270" y="64" width="40" height="22" rx="4" fill="#1565c0" transform="rotate(225,290,160)"/>
+      <text x="290" y="79" text-anchor="middle" fill="#fff" font-size="10" font-family="Nunito,sans-serif" font-weight="800" transform="rotate(225,290,160)">S</text>
+      <rect x="270" y="64" width="40" height="22" rx="4" fill="#e53935" transform="rotate(270,290,160)"/>
+      <text x="290" y="79" text-anchor="middle" fill="#fff" font-size="10" font-family="Nunito,sans-serif" font-weight="800" transform="rotate(270,290,160)">N</text>
+      <rect x="270" y="64" width="40" height="22" rx="4" fill="#1565c0" transform="rotate(315,290,160)"/>
+      <text x="290" y="79" text-anchor="middle" fill="#fff" font-size="10" font-family="Nunito,sans-serif" font-weight="800" transform="rotate(315,290,160)">S</text>
+      <!-- Hall sensors -->
+      <rect x="274" y="206" width="10" height="16" rx="2" fill="#2e7d32"/>
+      <rect x="306" y="210" width="10" height="16" rx="2" fill="#2e7d32"/>
+      <rect x="242" y="210" width="10" height="16" rx="2" fill="#2e7d32"/>
+      <!-- Shaft -->
+      <circle cx="290" cy="160" r="26" fill="#dce4f0" stroke="#90a8d0" stroke-width="2"/>
+      <circle cx="290" cy="160" r="9"  fill="#1565c0" opacity="0.7"/>
+      <!-- Legend -->
+      <rect x="14" y="290" width="14" height="14" rx="2" fill="#e53935"/>
+      <text x="34" y="302" fill="#607080" font-size="11" font-family="Nunito,sans-serif">N-pole</text>
+      <rect x="90" y="290" width="14" height="14" rx="2" fill="#1565c0"/>
+      <text x="110" y="302" fill="#607080" font-size="11" font-family="Nunito,sans-serif">S-pole</text>
+      <rect x="170" y="290" width="14" height="14" rx="2" fill="#2e7d32"/>
+      <text x="190" y="302" fill="#607080" font-size="11" font-family="Nunito,sans-serif">Hall sensor</text>
+      <rect x="288" y="290" width="14" height="14" rx="2" fill="#1565c0"/>
+      <text x="308" y="302" fill="#607080" font-size="11" font-family="Nunito,sans-serif">Ph-U winding</text>
+      <rect x="416" y="290" width="14" height="14" rx="2" fill="#e65100"/>
+      <text x="436" y="302" fill="#607080" font-size="11" font-family="Nunito,sans-serif">Ph-V winding</text>
+    </svg>
+    <h3>1. Stator (Fixed)</h3>
+    <ul>
+      <li>Silicon-steel laminations with 3-phase windings (U, V, W) in slots.</li>
+      <li>Star (Y) connected; acts as the electromagnet energised sequentially.</li>
+    </ul>
+    <h3>2. Rotor (Rotating)</h3>
+    <ul>
+      <li>Carries <strong>Neodymium Iron Boron (NdFeB)</strong> permanent magnets — no windings, no brushes.</li>
+      <li>Fan blades are mounted on or coupled to the rotor.</li>
+    </ul>
+    <h3>3. Hall Sensors</h3>
+    <ul>
+      <li>3 sensors (H1, H2, H3) at 120° intervals detect rotor N/S pole position.</li>
+      <li>Provide digital feedback to the MCU for correct commutation timing.</li>
+    </ul>
+    <h3>4. Electronic Driver</h3>
+    <ul>
+      <li>MCU + 6-MOSFET bridge + PWM generator. Speed varied by duty cycle.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══ WORKING ══ -->
+<section id="working">
+  <div class="card">
+    <h2>Working Principle</h2>
+    <p>Magnetic attraction/repulsion between <strong>stator electromagnets</strong> and <strong>rotor permanent magnets</strong>. An electronic controller sequences stator current using Hall sensor feedback — no brushes needed.</p>
+    <h3>Step-by-Step</h3>
+    <ol style="padding-left:20px;color:var(--sub);line-height:2.1;">
+      <li>AC mains → Rectifier + Filter → ≈300 V DC bus.</li>
+      <li>MCU reads 3-bit Hall code (H1 H2 H3).</li>
+      <li>MCU fires the correct MOSFET pair from the 6-step table.</li>
+      <li>Current through two stator phases → rotating magnetic field.</li>
+      <li>Rotor PM aligns → rotor turns → Hall detects new position → next step.</li>
+      <li>Speed: adjust PWM duty cycle → adjust average voltage → adjust RPM.</li>
+    </ol>
+  </div>
+  <div class="card" style="overflow-x:auto;">
+    <h2>6-Step Commutation Table</h2>
+    <table class="tbl">
+      <tr><th>Step</th><th>H1</th><th>H2</th><th>H3</th><th>Phase U</th><th>Phase V</th><th>Phase W</th></tr>
+      <tr><td>1</td><td>1</td><td>0</td><td>1</td><td class="good">+</td><td class="bad">−</td><td>—</td></tr>
+      <tr><td>2</td><td>1</td><td>0</td><td>0</td><td class="good">+</td><td>—</td><td class="bad">−</td></tr>
+      <tr><td>3</td><td>1</td><td>1</td><td>0</td><td>—</td><td class="good">+</td><td class="bad">−</td></tr>
+      <tr><td>4</td><td>0</td><td>1</td><td>0</td><td class="bad">−</td><td class="good">+</td><td>—</td></tr>
+      <tr><td>5</td><td>0</td><td>1</td><td>1</td><td class="bad">−</td><td>—</td><td class="good">+</td></tr>
+      <tr><td>6</td><td>0</td><td>0</td><td>1</td><td>—</td><td class="bad">−</td><td class="good">+</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h2>PWM Speed Control</h2>
+    <div class="formula">Speed ∝ V_avg = V_DC × Duty Cycle (%)
+High duty cycle → High speed
+Low duty cycle  → Low speed (no resistor waste!)</div>
+  </div>
+</section>
+
+<!-- ══ ANIMATIONS ══ -->
+<section id="animation">
+
+  <!-- A. FAN + POLES + MAGNET ANIMATION -->
+  <div class="card">
+    <h2>🧲 Poles, Permanent Magnets &amp; Fan Speed</h2>
+    <p style="color:var(--sub);font-size:0.9rem;margin-bottom:16px;">
+      Select number of poles and fan speed. Watch how pole count affects RPM for the same electrical frequency, and see the permanent magnets (N/S) rotate with the rotor.
+    </p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:6px;">
+      <div>
+        <div style="text-align:center;font-weight:700;font-size:0.8rem;color:var(--muted);margin-bottom:6px;font-family:'Space Mono',monospace;">POLE PAIRS</div>
+        <div class="pole-btns" id="poleBtns">
+          <button class="pole-btn active" onclick="setPoles(2,this)">4-pole</button>
+          <button class="pole-btn" onclick="setPoles(4,this)">8-pole</button>
+          <button class="pole-btn" onclick="setPoles(6,this)">12-pole</button>
+        </div>
+      </div>
+      <div>
+        <div style="text-align:center;font-weight:700;font-size:0.8rem;color:var(--muted);margin-bottom:6px;font-family:'Space Mono',monospace;">FAN SPEED</div>
+        <div class="speed-btns" id="speedBtns">
+          <button class="speed-btn" onclick="setFanSpeed('off',this)">⏹ OFF</button>
+          <button class="speed-btn active" onclick="setFanSpeed('slow',this)">① SLOW</button>
+          <button class="speed-btn" onclick="setFanSpeed('medium',this)">② MED</button>
+          <button class="speed-btn" onclick="setFanSpeed('fast',this)">③ FAST</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main canvas -->
+    <canvas id="fanCanvas" width="700" height="400" style="background:#f8fafd;border-radius:14px;border:1px solid var(--border);width:100%;"></canvas>
+
+    <div id="fanStats" style="display:flex;flex-wrap:wrap;gap:18px;justify-content:center;margin-top:14px;">
+      <div style="text-align:center;"><div style="font-size:0.75rem;color:var(--muted);font-family:'Space Mono',monospace;">POLES</div><div id="statPoles" style="font-size:1.3rem;font-weight:800;color:var(--accent);">4</div></div>
+      <div style="text-align:center;"><div style="font-size:0.75rem;color:var(--muted);font-family:'Space Mono',monospace;">PWM DUTY</div><div id="statDuty" style="font-size:1.3rem;font-weight:800;color:var(--accent2);">30%</div></div>
+      <div style="text-align:center;"><div style="font-size:0.75rem;color:var(--muted);font-family:'Space Mono',monospace;">MECH. RPM</div><div id="statRpm" style="font-size:1.3rem;font-weight:800;color:var(--accent3);">~120</div></div>
+      <div style="text-align:center;"><div style="font-size:0.75rem;color:var(--muted);font-family:'Space Mono',monospace;">ELEC. FREQ</div><div id="statFreq" style="font-size:1.3rem;font-weight:800;color:#7b1fa2;">~4 Hz</div></div>
+    </div>
+
+    <div style="background:#fff8e1;border:1.5px solid #ffcc02;border-radius:10px;padding:14px 18px;margin-top:16px;">
+      <strong style="color:#e65100;">📌 Key Relation:</strong>
+      <div class="formula" style="margin-top:8px;background:#fff3e0;border-left-color:#e65100;color:#5d2900;">N (RPM) = (120 × f) / P
+where f = electrical frequency (Hz), P = number of poles
+More poles → Slower RPM for same f
+Fewer poles → Faster RPM for same f</div>
+    </div>
+  </div>
+
+  <!-- B. COMMUTATION STEPPER -->
+  <div class="card">
+    <h2>⚡ Live Electronic Commutation</h2>
+    <p style="color:var(--sub);font-size:0.9rem;margin-bottom:12px;">Step through all 6 commutation states. Watch Hall sensors trigger phase switching.</p>
+    <div class="step-indicator" id="stepLabel">Step 1 of 6 — U+ V−</div>
+    <div class="hall-grid">
+      <div class="hall-sensor"><div class="hall-dot high" id="h1"></div><div class="hall-label">H1</div></div>
+      <div class="hall-sensor"><div class="hall-dot low"  id="h2"></div><div class="hall-label">H2</div></div>
+      <div class="hall-sensor"><div class="hall-dot high" id="h3"></div><div class="hall-label">H3</div></div>
+    </div>
+    <div class="phase-grid">
+      <div class="phase-coil pos" id="phU">U +</div>
+      <div class="phase-coil neg" id="phV">V −</div>
+      <div class="phase-coil off" id="phW">W  </div>
+    </div>
+    <button class="commut-btn" onclick="nextStep()">▶ Next Step</button>
+  </div>
+
+  <!-- C. WAVEFORM -->
+  <div class="card">
+    <h2>Back-EMF &amp; Hall Signal Waveforms</h2>
+    <canvas id="waveCanvas" width="780" height="190" style="background:#f8fafd;width:100%;"></canvas>
+    <p style="margin-top:10px;font-size:0.85rem;color:var(--muted);">Trapezoidal Back-EMF (blue) is characteristic of BLDC motors. Hall sensor signal (green) triggers each commutation transition.</p>
+  </div>
+
+</section>
+
+<!-- ══ CONTROL ══ -->
+<section id="control">
+  <div class="card">
+    <h2>Control Circuit Block Diagram</h2>
+    <svg viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:0 auto;">
+      <defs>
+        <marker id="arB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#1565c0"/></marker>
+        <marker id="arG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2e7d32"/></marker>
+        <marker id="arO" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#e65100"/></marker>
+        <marker id="arP" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#7b1fa2"/></marker>
+      </defs>
+      <!-- boxes -->
+      <rect x="8"   y="170" width="90" height="48" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+      <text x="53"  y="191" text-anchor="middle" fill="#0d47a1" font-size="11" font-family="Nunito,sans-serif" font-weight="700">AC Supply</text>
+      <text x="53"  y="207" text-anchor="middle" fill="#607080" font-size="10" font-family="Space Mono,monospace">230V 50Hz</text>
+
+      <rect x="125" y="170" width="90" height="48" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+      <text x="170" y="191" text-anchor="middle" fill="#0d47a1" font-size="11" font-family="Nunito,sans-serif" font-weight="700">Rectifier</text>
+      <text x="170" y="207" text-anchor="middle" fill="#607080" font-size="10" font-family="Space Mono,monospace">+ Filter</text>
+
+      <rect x="242" y="170" width="80" height="48" rx="8" fill="#fff3e0" stroke="#e65100" stroke-width="1.5"/>
+      <text x="282" y="191" text-anchor="middle" fill="#bf360c" font-size="11" font-family="Nunito,sans-serif" font-weight="700">DC Bus</text>
+      <text x="282" y="207" text-anchor="middle" fill="#607080" font-size="10" font-family="Space Mono,monospace">~300V DC</text>
+
+      <rect x="305" y="55" width="130" height="62" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+      <text x="370" y="78"  text-anchor="middle" fill="#1b5e20" font-size="11" font-family="Nunito,sans-serif" font-weight="700">MCU / DSP</text>
+      <text x="370" y="94"  text-anchor="middle" fill="#607080" font-size="10" font-family="Space Mono,monospace">PWM Generator</text>
+      <text x="370" y="108" text-anchor="middle" fill="#607080" font-size="10" font-family="Space Mono,monospace">Commutation Logic</text>
+
+      <rect x="360" y="170" width="110" height="48" rx="8" fill="#fff3e0" stroke="#e65100" stroke-width="1.5"/>
+      <text x="415" y="191" text-anchor="middle" fill="#bf360c" font-size="11" font-family="Nunito,sans-serif" font-weight="700">3-Ph Inverter</text>
+      <text x="415" y="207" text-anchor="middle" fill="#607080" font-size="10" font-family="Space Mono,monospace">6 MOSFETs</text>
+
+      <rect x="510" y="148" width="110" height="90" rx="10" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+      <text x="565" y="172" text-anchor="middle" fill="#0d47a1" font-size="11" font-family="Nunito,sans-serif" font-weight="700">BLDC Motor</text>
+      <text x="565" y="188" text-anchor="middle" fill="#607080" font-size="9" font-family="Space Mono,monospace">3-Ph Stator</text>
+      <text x="565" y="202" text-anchor="middle" fill="#607080" font-size="9" font-family="Space Mono,monospace">PM Rotor</text>
+      <text x="565" y="216" text-anchor="middle" fill="#607080" font-size="9" font-family="Space Mono,monospace">Hall Sensors</text>
+      <text x="565" y="230" text-anchor="middle" fill="#607080" font-size="9" font-family="Space Mono,monospace">Fan Blades</text>
+
+      <!-- Speed ctrl -->
+      <rect x="305" y="316" width="130" height="48" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+      <text x="370" y="337" text-anchor="middle" fill="#4a148c" font-size="11" font-family="Nunito,sans-serif" font-weight="700">Speed Control</text>
+      <text x="370" y="353" text-anchor="middle" fill="#607080" font-size="10" font-family="Space Mono,monospace">Remote / Wall Sw</text>
+
+      <!-- arrows -->
+      <line x1="98"  y1="194" x2="123"  y2="194" stroke="#1565c0" stroke-width="1.8" marker-end="url(#arB)"/>
+      <line x1="215" y1="194" x2="240"  y2="194" stroke="#1565c0" stroke-width="1.8" marker-end="url(#arB)"/>
+      <line x1="322" y1="194" x2="358"  y2="194" stroke="#e65100" stroke-width="1.8" marker-end="url(#arO)"/>
+      <line x1="470" y1="194" x2="508"  y2="194" stroke="#e65100" stroke-width="1.8" marker-end="url(#arO)"/>
+      <line x1="415" y1="117" x2="415"  y2="168" stroke="#2e7d32" stroke-width="1.8" marker-end="url(#arG)"/>
+      <text x="420" y="148" fill="#2e7d32" font-size="9" font-family="Space Mono,monospace">PWM</text>
+      <path d="M565 238 Q565 285 480 285 Q370 285 370 316" fill="none" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arG)"/>
+      <text x="468" y="280" fill="#2e7d32" font-size="9" font-family="Space Mono,monospace">Hall feedback</text>
+      <line x1="370" y1="316" x2="370" y2="119" stroke="#7b1fa2" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arP)"/>
+      <text x="376" y="145" fill="#7b1fa2" font-size="9" font-family="Space Mono,monospace">Speed cmd</text>
+    </svg>
+  </div>
+  <div class="card">
+    <h2>MOSFET Inverter &amp; PWM</h2>
+    <h3>Gate Driver IC</h3>
+    <ul>
+      <li>Level-shifted gate signals for high-side MOSFETs.</li>
+      <li>Dead-time insertion prevents shoot-through.</li>
+      <li>Over-current, over-temp, UVLO protection built-in.</li>
+    </ul>
+    <h3>PWM Speed Control</h3>
+    <div class="formula">High duty cycle (90%) → High V_avg → High RPM → More airflow
+Low duty cycle  (20%) → Low V_avg  → Low RPM  → Less airflow</div>
+    <p>Efficiency stays high at all speeds — no resistive heat waste.</p>
+  </div>
+</section>
+
+<!-- ══ ADVANTAGES ══ -->
+<section id="advantages">
+  <div class="card" style="overflow-x:auto;">
+    <h2>BLDC vs Conventional Induction Fan</h2>
+    <table class="tbl">
+      <tr><th>Parameter</th><th>BLDC Fan</th><th>Induction Fan</th></tr>
+      <tr><td>Power</td><td class="good">28–35 W</td><td class="bad">70–80 W</td></tr>
+      <tr><td>Speed control</td><td class="good">PWM (lossless)</td><td class="bad">Resistor (lossy)</td></tr>
+      <tr><td>Efficiency</td><td class="good">85–92%</td><td class="bad">55–65%</td></tr>
+      <tr><td>Commutation</td><td class="good">Electronic</td><td class="bad">Mechanical brushes</td></tr>
+      <tr><td>Heat</td><td class="good">Very low</td><td class="bad">Moderate</td></tr>
+      <tr><td>Service life</td><td class="good">40,000 hrs</td><td class="bad">15,000 hrs</td></tr>
+      <tr><td>Noise</td><td class="good">Very quiet</td><td class="bad">Audible hum</td></tr>
+      <tr><td>Maintenance</td><td class="good">Near zero</td><td class="bad">Bearings + cap</td></tr>
+      <tr><td>Cost</td><td class="bad">Higher initial</td><td class="good">Lower initial</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h2>Energy Savings Estimate</h2>
+    <div class="formula">Fan running 12 h/day × 365 days/year:
+Induction : 75 W × 4,380 h = 328.5 kWh/year
+BLDC      : 30 W × 4,380 h = 131.4 kWh/year
+Saving    : 197 kWh/year ≈ ₹1,182/year @ ₹6/unit
+Payback   : 2–3 years</div>
+  </div>
+  <div class="badge-grid">
+    <div class="badge"><div class="icon">🏠</div><div class="val">Residential</div><div class="label">Home ceiling fans</div></div>
+    <div class="badge"><div class="icon">🏢</div><div class="val">Commercial</div><div class="label">Offices / malls</div></div>
+    <div class="badge"><div class="icon">☀️</div><div class="val">Solar DC</div><div class="label">Off-grid fans</div></div>
+    <div class="badge"><div class="icon">🌱</div><div class="val">BEE 5-Star</div><div class="label">Green buildings</div></div>
+  </div>
+</section>
+
+<!-- ══ QUIZ ══ -->
+<section id="quiz">
+  <div style="max-width:700px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:26px;">
+      <h2 style="color:var(--accent);font-size:1.5rem;font-weight:800;">Knowledge Check</h2>
+      <p style="color:var(--muted);font-family:'Space Mono',monospace;font-size:0.78rem;">8 QUESTIONS — BLDC CEILING FAN</p>
+    </div>
+    <div id="quiz-container"></div>
+    <div id="mcq-score"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════ -->
+<script>
+/* ── TAB ── */
+function showTab(id, btn) {
+  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'animation') { initAnim(); drawWaveform(); }
+}
+
+/* ════════════════════════════════════════════
+   MAIN CANVAS ANIMATION
+   Shows: fan blades, rotor with N/S magnets,
+   stator slots, flux arrows, speed/pole relation
+════════════════════════════════════════════ */
+let poles = 2;       // pole pairs → total poles = poles*2
+let fanSpeedLevel = 'slow';
+let animRunning = false;
+let rotorAngle = 0;
+let bladeAngle = 0;
+let lastTs = null;
+let animId = null;
+
+// electrical angular velocity (rad/s) for rotor
+// mechRPM = 60*f/p  → mechRad/s = 2π*f/p
+// We set f (elec freq Hz) based on speed
+const speedParams = {
+  off:    { duty:0,   mechRPS:0   },
+  slow:   { duty:0.3, mechRPS:2   },
+  medium: { duty:0.6, mechRPS:4   },
+  fast:   { duty:1.0, mechRPS:7   }
+};
+
+function setPoles(p, btn) {
+  poles = p;
+  document.querySelectorAll('#poleBtns .pole-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateStats();
+}
+function setFanSpeed(level, btn) {
+  fanSpeedLevel = level;
+  document.querySelectorAll('#speedBtns .speed-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateStats();
+}
+
+function updateStats() {
+  const sp = speedParams[fanSpeedLevel];
+  const mechRPM = sp.mechRPS * 60;
+  const elecFreq = sp.mechRPS * poles; // f = n_s * p
+  document.getElementById('statPoles').textContent = poles * 2;
+  document.getElementById('statDuty').textContent  = (sp.duty * 100) + '%';
+  document.getElementById('statRpm').textContent   = '~' + Math.round(mechRPM);
+  document.getElementById('statFreq').textContent  = '~' + elecFreq.toFixed(1) + ' Hz';
+}
+
+let animInitDone = false;
+function initAnim() {
+  if (animInitDone) return;
+  animInitDone = true;
+  updateStats();
+  if (animId) cancelAnimationFrame(animId);
+  function loop(ts) {
+    if (!lastTs) lastTs = ts;
+    const dt = (ts - lastTs) / 1000;
+    lastTs = ts;
+    const sp = speedParams[fanSpeedLevel];
+    rotorAngle += sp.mechRPS * 2 * Math.PI * dt;
+    bladeAngle  += sp.mechRPS * 2 * Math.PI * dt;
+    drawFanCanvas();
+    animId = requestAnimationFrame(loop);
+  }
+  animId = requestAnimationFrame(loop);
+}
+
+function drawFanCanvas() {
+  const canvas = document.getElementById('fanCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // --- LEFT PANEL: Rotor cross-section (motor) ---
+  const mX = 210, mY = 200, mR = 155;
+  drawMotorCrossSection(ctx, mX, mY, mR);
+
+  // --- RIGHT PANEL: Fan view from below ---
+  const fX = 530, fY = 200;
+  drawFanView(ctx, fX, fY, 135);
+
+  // --- Speed bar / PWM indicator at bottom ---
+  drawSpeedBar(ctx, W);
+}
+
+function drawMotorCrossSection(ctx, cx, cy, R) {
+  const totalPoles = poles * 2;
+
+  // Stator outer ring (silicon steel, light grey)
+  ctx.beginPath(); ctx.arc(cx,cy,R,0,2*Math.PI);
+  ctx.fillStyle = '#e8f0fe'; ctx.fill();
+  ctx.strokeStyle='#90a8d0'; ctx.lineWidth=1.5; ctx.stroke();
+
+  // Stator slot teeth
+  const slotCount = totalPoles * 3; // 3 slots per pole
+  for (let i = 0; i < slotCount; i++) {
+    const ang = (2*Math.PI/slotCount) * i;
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(ang);
+    // tooth
+    const tw = 10, th = 28;
+    ctx.fillStyle = i%3===0 ? '#1565c0' : i%3===1 ? '#e65100' : '#2e7d32';
+    ctx.globalAlpha = 0.7;
+    ctx.fillRect(-tw/2, -(R-2), tw, th);
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  // Air gap (dashed circle)
+  ctx.setLineDash([5,4]);
+  ctx.strokeStyle='#b0c4e8'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.arc(cx,cy,R-34,0,2*Math.PI); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Rotor disc (rotating)
+  const rR = R - 38;
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(rotorAngle);
+
+  // Rotor body
+  ctx.beginPath(); ctx.arc(0,0,rR,0,2*Math.PI);
+  ctx.fillStyle='#dce8fa'; ctx.fill();
+  ctx.strokeStyle='#7a9ccf'; ctx.lineWidth=1.5; ctx.stroke();
+
+  // Permanent magnets around rotor perimeter
+  for (let i = 0; i < totalPoles; i++) {
+    const ang = (2*Math.PI/totalPoles)*i;
+    const isN = i % 2 === 0;
+    const mx = Math.cos(ang) * (rR - 10);
+    const my = Math.sin(ang) * (rR - 10);
+    const mw = (2*Math.PI*rR/totalPoles)*0.72;
+    const mh = 18;
+
+    ctx.save();
+    ctx.translate(mx, my);
+    ctx.rotate(ang);
+    // Magnet body
+    ctx.fillStyle = isN ? '#ef5350' : '#1e88e5';
+    ctx.strokeStyle = isN ? '#b71c1c' : '#0d47a1';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(-mw/2, -mh/2, mw, mh, 3);
+    ctx.fill(); ctx.stroke();
+
+    // N/S label
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 10px Nunito,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(isN ? 'N' : 'S', 0, 0);
+    ctx.restore();
+  }
+
+  // Flux arrows between magnets (show field direction)
+  ctx.globalAlpha = 0.5;
+  for (let i = 0; i < totalPoles; i++) {
+    const ang1 = (2*Math.PI/totalPoles)*i;
+    const ang2 = (2*Math.PI/totalPoles)*(i+1);
+    const isN = i % 2 === 0;
+    const midAng = (ang1+ang2)/2;
+    const r1 = rR+8, r2 = rR+26;
+    if (isN) {
+      drawArrow(ctx, Math.cos(midAng)*r1, Math.sin(midAng)*r1, Math.cos(midAng)*r2, Math.sin(midAng)*r2, '#c62828', 1.5);
+    } else {
+      drawArrow(ctx, Math.cos(midAng)*r2, Math.sin(midAng)*r2, Math.cos(midAng)*r1, Math.sin(midAng)*r1, '#0d47a1', 1.5);
+    }
+  }
+  ctx.globalAlpha = 1;
+
+  // Shaft
+  ctx.beginPath(); ctx.arc(0,0,16,0,2*Math.PI);
+  ctx.fillStyle='#90a8d0'; ctx.fill();
+  ctx.beginPath(); ctx.arc(0,0,7,0,2*Math.PI);
+  ctx.fillStyle='#1565c0'; ctx.fill();
+
+  ctx.restore();
+
+  // Hall sensors (fixed on stator, 120° apart)
+  const hsR = R - 36;
+  for (let i = 0; i < 3; i++) {
+    const a = (2*Math.PI/3)*i - Math.PI/2;
+    const hx = cx + Math.cos(a)*hsR;
+    const hy = cy + Math.sin(a)*hsR;
+    // detect polarity under sensor
+    const relAng = ((rotorAngle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+    const sensorRelAng = ((a - relAng) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI);
+    const poleAng = (2*Math.PI/totalPoles);
+    const poleIdx = Math.floor(sensorRelAng/poleAng);
+    const isHigh = poleIdx % 2 === 0;
+    ctx.beginPath(); ctx.arc(hx,hy,7,0,2*Math.PI);
+    ctx.fillStyle = isHigh ? '#2e7d32' : '#e0e8f0';
+    ctx.strokeStyle = '#1b5e20'; ctx.lineWidth=1.5; ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font='bold 7px Space Mono'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('H'+(i+1), hx, hy);
+  }
+
+  // Label
+  ctx.fillStyle = '#1565c0'; ctx.font = 'bold 13px Nunito,sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  ctx.fillText('Rotor (PM) Cross-Section', cx, cy + R + 8);
+  ctx.fillStyle = '#607080'; ctx.font = '11px Space Mono';
+  ctx.fillText(poles*2 + '-pole motor', cx, cy + R + 26);
+}
+
+function drawFanView(ctx, cx, cy, R) {
+  // Fan mounting disk
+  ctx.beginPath(); ctx.arc(cx,cy,22,0,2*Math.PI);
+  ctx.fillStyle='#dce4f0'; ctx.fill();
+  ctx.strokeStyle='#90a8d0'; ctx.lineWidth=2; ctx.stroke();
+
+  // 5 blades
+  const blades = 5;
+  for (let i = 0; i < blades; i++) {
+    const ang = bladeAngle + (2*Math.PI/blades)*i;
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(ang);
+    // Blade shape
+    ctx.beginPath();
+    ctx.ellipse(0, -R*0.55, 22, R*0.45, 0, 0, 2*Math.PI);
+    ctx.fillStyle = 'rgba(21,101,192,0.75)';
+    ctx.strokeStyle='#0d47a1'; ctx.lineWidth=1.2;
+    ctx.fill(); ctx.stroke();
+    // Blade shine
+    ctx.beginPath();
+    ctx.ellipse(5, -R*0.5, 7, R*0.18, 0.2, 0, 2*Math.PI);
+    ctx.fillStyle='rgba(255,255,255,0.18)'; ctx.fill();
+    ctx.restore();
+  }
+
+  // Hub
+  ctx.beginPath(); ctx.arc(cx,cy,18,0,2*Math.PI);
+  ctx.fillStyle='#e8f0fe'; ctx.fill();
+  ctx.strokeStyle='#1565c0'; ctx.lineWidth=2; ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx,cy,7,0,2*Math.PI);
+  ctx.fillStyle='#1565c0'; ctx.fill();
+
+  // Air flow lines (only if moving)
+  const sp = speedParams[fanSpeedLevel];
+  if (sp.mechRPS > 0) {
+    ctx.globalAlpha = sp.duty * 0.6;
+    const t = Date.now()/1000;
+    for (let i = 0; i < 8; i++) {
+      const a = (2*Math.PI/8)*i + t*sp.mechRPS*0.5;
+      for (let j = 1; j <= 3; j++) {
+        const r = R * 0.4 * j / 3;
+        const x1 = cx + Math.cos(a)*r;
+        const y1 = cy + Math.sin(a)*r;
+        const x2 = cx + Math.cos(a)*(r+22);
+        const y2 = cy + Math.sin(a)*(r+22);
+        ctx.strokeStyle='#0d47a1'; ctx.lineWidth=1.2;
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      }
+    }
+    ctx.globalAlpha=1;
+  }
+
+  ctx.fillStyle='#1565c0'; ctx.font='bold 13px Nunito,sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  ctx.fillText('Fan (View from below)', cx, cy+R+8);
+  const rpmStr = sp.mechRPS>0 ? Math.round(sp.mechRPS*60)+' RPM' : 'Stopped';
+  ctx.fillStyle='#607080'; ctx.font='11px Space Mono';
+  ctx.fillText(rpmStr, cx, cy+R+26);
+}
+
+function drawSpeedBar(ctx, W) {
+  const sp = speedParams[fanSpeedLevel];
+  const bx=30, by=370, bw=W-60, bh=14;
+  // Background
+  ctx.fillStyle='#e0e8f8'; ctx.strokeStyle='#b0c4e8'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.roundRect(bx,by,bw,bh,7); ctx.fill(); ctx.stroke();
+  // Fill
+  if (sp.duty>0){
+    const grad=ctx.createLinearGradient(bx,0,bx+bw,0);
+    grad.addColorStop(0,'#42a5f5'); grad.addColorStop(1,'#0d47a1');
+    ctx.fillStyle=grad;
+    ctx.beginPath(); ctx.roundRect(bx,by,bw*sp.duty,bh,7); ctx.fill();
+  }
+  ctx.fillStyle='#1565c0'; ctx.font='bold 10px Space Mono';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText('PWM Duty: '+(sp.duty*100)+'%', bx, by+bh+4);
+  ctx.textAlign='right';
+  ctx.fillText('Speed: '+(sp.mechRPS>0?Math.round(sp.mechRPS*60)+' RPM':'OFF'), bx+bw, by+bh+4);
+}
+
+function drawArrow(ctx, x1,y1,x2,y2, color, lw) {
+  const a=Math.atan2(y2-y1,x2-x1);
+  ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=lw;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-6*Math.cos(a-0.4), y2-6*Math.sin(a-0.4));
+  ctx.lineTo(x2-6*Math.cos(a+0.4), y2-6*Math.sin(a+0.4));
+  ctx.closePath(); ctx.fill();
+}
+
+/* ── COMMUTATION ── */
+const commutSteps=[
+  {h:[1,0,1],phases:['pos','neg','off'],label:'Step 1: U+ V−'},
+  {h:[1,0,0],phases:['pos','off','neg'],label:'Step 2: U+ W−'},
+  {h:[1,1,0],phases:['off','pos','neg'],label:'Step 3: V+ W−'},
+  {h:[0,1,0],phases:['neg','pos','off'],label:'Step 4: V+ U−'},
+  {h:[0,1,1],phases:['neg','off','pos'],label:'Step 5: W+ U−'},
+  {h:[0,0,1],phases:['off','neg','pos'],label:'Step 6: W+ V−'},
+];
+let stepIdx=0;
+(function initStep(){
+  const s=commutSteps[0];
+  ['h1','h2','h3'].forEach((id,i)=>{document.getElementById(id).className='hall-dot '+(s.h[i]?'high':'low');});
+  ['phU','phV','phW'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    el.className='phase-coil '+s.phases[i];
+    el.textContent=['U','V','W'][i]+(s.phases[i]==='pos'?' +':(s.phases[i]==='neg'?' −':'  '));
+  });
+})();
+
+function nextStep(){
+  stepIdx=(stepIdx+1)%6;
+  const s=commutSteps[stepIdx];
+  ['h1','h2','h3'].forEach((id,i)=>{document.getElementById(id).className='hall-dot '+(s.h[i]?'high':'low');});
+  ['phU','phV','phW'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    el.className='phase-coil '+s.phases[i];
+    el.textContent=['U','V','W'][i]+(s.phases[i]==='pos'?' +':(s.phases[i]==='neg'?' −':'  '));
+  });
+  document.getElementById('stepLabel').textContent=s.label+' ('+(stepIdx+1)+' of 6)';
+}
+
+/* ── WAVEFORM ── */
+function drawWaveform(){
+  const canvas=document.getElementById('waveCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#f8fafd'; ctx.fillRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle='#dce4f0'; ctx.lineWidth=0.7;
+  for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=25){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  const mid=H/2,amp=68,T=200;
+  // centre line
+  ctx.strokeStyle='#c0ccd8'; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,mid);ctx.lineTo(W,mid);ctx.stroke();
+  // Trapezoidal BEMF
+  ctx.strokeStyle='#1565c0'; ctx.lineWidth=2.5;
+  ctx.beginPath();
+  for(let x=0;x<W;x++){
+    const t=(x%T)/T;
+    let y;
+    if(t<0.1)      y=mid-amp*(t/0.1);
+    else if(t<0.4) y=mid-amp;
+    else if(t<0.5) y=mid-amp*(1-(t-0.4)/0.1);
+    else if(t<0.6) y=mid+amp*((t-0.5)/0.1);
+    else if(t<0.9) y=mid+amp;
+    else           y=mid+amp*(1-(t-0.9)/0.1);
+    x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // Hall H1
+  ctx.strokeStyle='#2e7d32'; ctx.lineWidth=1.8;
+  ctx.beginPath();
+  for(let x=0;x<W;x++){
+    const t=(x%T)/T;
+    const y=(t<0.5)?(H-28):(H-52);
+    x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // Labels
+  ctx.font='11px Space Mono'; ctx.fillStyle='#1565c0'; ctx.textAlign='left'; ctx.fillText('Back-EMF (Phase U)',10,18);
+  ctx.fillStyle='#2e7d32'; ctx.fillText('Hall H1 Signal',10,H-8);
+}
+
+/* ── QUIZ ── */
+const questions=[
+  {q:'What type of commutation does a BLDC fan use?',opts:['Mechanical brushes','Electronic (Hall sensor + MCU)','Slip rings','Carbon brushes'],ans:1},
+  {q:'Typical power consumption of a BLDC ceiling fan?',opts:['70–80 W','50–60 W','28–35 W','100 W'],ans:2},
+  {q:'How many Hall sensors in a 3-phase BLDC motor?',opts:['1','2','3','6'],ans:2},
+  {q:'PWM stands for:',opts:['Permanent Winding Method','Pulse Width Modulation','Power Winding Mode','Phase Winding Mux'],ans:1},
+  {q:'Rotor of a BLDC fan contains:',opts:['Armature windings','Permanent magnets','Electro magnets','Slip rings'],ans:1},
+  {q:'If pole count doubles, mechanical RPM (for same electrical frequency):',opts:['Doubles','Stays same','Halves','Quadruples'],ans:2},
+  {q:'Back-EMF waveform of a BLDC motor is:',opts:['Sinusoidal','Trapezoidal','Square','Sawtooth'],ans:1},
+  {q:'BLDC fans save approximately how much energy vs induction fans?',opts:['10–15%','25–30%','50–65%','80–90%'],ans:2},
+];
+const qc=document.getElementById('quiz-container');
+let answered=0,correct=0;
+questions.forEach((q,qi)=>{
+  const div=document.createElement('div'); div.className='q-card';
+  div.innerHTML=`<div class="q-text">${qi+1}. ${q.q}</div>
+  <div class="q-opts">${q.opts.map((o,oi)=>`<button class="q-opt" onclick="checkAns(this,${qi},${oi})">${String.fromCharCode(65+oi)}. ${o}</button>`).join('')}</div>
+  <div class="q-feedback" id="fb${qi}"></div>`;
+  qc.appendChild(div);
+});
+function checkAns(btn,qi,sel){
+  const btns=btn.parentElement.querySelectorAll('.q-opt');
+  if([...btns].some(b=>b.classList.contains('correct')||b.classList.contains('wrong')))return;
+  answered++;
+  const ok=sel===questions[qi].ans;
+  if(ok){btn.classList.add('correct');correct++;}
+  else{btn.classList.add('wrong');btns[questions[qi].ans].classList.add('correct');}
+  const fb=document.getElementById('fb'+qi);
+  fb.textContent=ok?'✔ Correct!':'✘ Correct: '+String.fromCharCode(65+questions[qi].ans)+'. '+questions[qi].opts[questions[qi].ans];
+  fb.style.color=ok?'#2e7d32':'#c62828';
+  if(answered===questions.length)
+    document.getElementById('mcq-score').innerHTML=`<br>Score: <b style="color:#1565c0">${correct}</b> / ${questions.length} &nbsp;(${Math.round(correct/questions.length*100)}%)`;
+}
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

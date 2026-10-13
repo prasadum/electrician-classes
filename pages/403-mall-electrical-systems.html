@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shopping Mall Electrical Systems</title>
+<meta name="section" content="Installation, Estimation &amp; Appliances">
+<meta name="section-order" content="4">
+<meta name="order" content="3">
+<meta name="description" content="Distribution and services in a commercial building">
+
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F7FA;
+  --panel:#FFFFFF;
+  --panel2:#EEF2F8;
+  --border:#C8D4E8;
+  --accent:#1A3A6B;
+  --accent2:#E8500A;
+  --accent3:#1A7A3A;
+  --accent4:#7B1FA2;
+  --accent5:#B8860B;
+  --text:#1A1A2E;
+  --subtext:#445577;
+  --tag:#D6E4F7;
+  --tagtext:#1A3A6B;
+  --shadow:0 2px 16px rgba(26,58,107,0.10);
+  --radius:12px;
+  --font:'Rajdhani',sans-serif;
+  --mono:'Share Tech Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:18px;line-height:1.5;min-height:100vh}
+
+/* ── TOP BAR ── */
+#topbar{
+  background:var(--accent);color:#fff;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 24px;position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 12px rgba(0,0,0,0.18);
+}
+#topbar .title{font-size:22px;font-weight:700;letter-spacing:1px;display:flex;align-items:center;gap:10px}
+#topbar .title .icon{font-size:28px}
+.lang-sel{
+  display:flex;gap:6px;align-items:center;
+}
+.lang-btn{
+  background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.4);
+  color:#fff;padding:5px 14px;border-radius:20px;cursor:pointer;
+  font-family:var(--font);font-size:15px;font-weight:600;transition:all .2s;
+}
+.lang-btn.active,.lang-btn:hover{background:#fff;color:var(--accent)}
+
+/* ── OVERVIEW MAP ── */
+#overview{
+  padding:28px 20px 10px;max-width:1200px;margin:0 auto;
+}
+.overview-title{
+  font-size:28px;font-weight:700;color:var(--accent);
+  border-left:5px solid var(--accent2);padding-left:14px;margin-bottom:18px;
+}
+.mall-svg-wrap{position:relative;background:var(--panel);border-radius:var(--radius);border:2px solid var(--border);box-shadow:var(--shadow);overflow:hidden;padding:12px}
+.mall-svg-wrap svg{width:100%;height:auto;display:block}
+
+/* clickable system cards grid */
+.systems-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  gap:14px;margin:22px 0 10px;
+}
+.sys-card{
+  background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);
+  padding:16px 14px 14px;cursor:pointer;transition:all .22s;
+  display:flex;flex-direction:column;gap:6px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.sys-card::before{content:'';position:absolute;top:0;left:0;width:5px;height:100%}
+.sys-card:hover{transform:translateY(-3px);box-shadow:0 6px 24px rgba(26,58,107,0.16);border-color:var(--accent)}
+.sys-card .sicon{font-size:36px;line-height:1}
+.sys-card .sname{font-size:17px;font-weight:700;color:var(--accent);line-height:1.2}
+.sys-card .sdesc{font-size:13.5px;color:var(--subtext);line-height:1.35}
+.sys-card .stag{
+  display:inline-block;background:var(--tag);color:var(--tagtext);
+  font-size:11.5px;padding:2px 8px;border-radius:8px;font-weight:600;margin-top:2px;
+}
+
+/* colour coding per system */
+.c-solar::before{background:#F9A825}
+.c-dg::before{background:#E8500A}
+.c-hv::before{background:#1A3A6B}
+.c-lv::before{background:#1565C0}
+.c-ems::before{background:#2E7D32}
+.c-fire::before{background:#C62828}
+.c-cctv::before{background:#6A1B9A}
+.c-hvac::before{background:#00838F}
+.c-lift::before{background:#5D4037}
+.c-ups::before{background:#F57F17}
+.c-bms::before{background:#283593}
+.c-ev::before{background:#1B5E20}
+.c-pa::before{background:#880E4F}
+.c-lt::before{background:#BF360C}
+
+/* ── DETAIL PANEL ── */
+#detail{display:none;max-width:1200px;margin:0 auto;padding:10px 20px 40px}
+.detail-header{
+  display:flex;align-items:center;gap:14px;
+  background:var(--accent);color:#fff;border-radius:var(--radius) var(--radius) 0 0;
+  padding:16px 22px;
+}
+.detail-header .dicon{font-size:42px}
+.detail-header .dtitle{font-size:26px;font-weight:700}
+.detail-header .dsub{font-size:15px;opacity:.82;margin-top:2px}
+.back-btn{
+  margin-left:auto;background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.5);
+  color:#fff;padding:7px 18px;border-radius:20px;cursor:pointer;font-family:var(--font);
+  font-size:15px;font-weight:600;transition:all .2s;
+}
+.back-btn:hover{background:#fff;color:var(--accent)}
+
+.detail-body{background:var(--panel);border:2px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:24px}
+
+/* tabs */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;border-bottom:2px solid var(--border);padding-bottom:8px}
+.tab{
+  padding:7px 18px;border-radius:8px 8px 0 0;cursor:pointer;font-weight:600;font-size:15.5px;
+  border:1.5px solid transparent;transition:all .18s;color:var(--subtext);
+}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tab:hover:not(.active){background:var(--panel2);border-color:var(--border);color:var(--accent)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* content blocks */
+.section-h{font-size:20px;font-weight:700;color:var(--accent);margin:18px 0 10px;border-left:4px solid var(--accent2);padding-left:10px}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:10px 0 16px}
+.info-box{background:var(--panel2);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px}
+.info-box .ibtitle{font-size:13px;font-weight:700;color:var(--subtext);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px}
+.info-box .ibval{font-size:17px;font-weight:700;color:var(--accent)}
+.info-box .ibsub{font-size:13px;color:var(--subtext);margin-top:2px}
+
+.steps{list-style:none;counter-reset:step}
+.steps li{
+  counter-increment:step;
+  display:flex;gap:12px;align-items:flex-start;
+  padding:10px 14px;background:var(--panel2);border-radius:8px;margin-bottom:8px;
+  border-left:3px solid var(--accent);
+}
+.steps li::before{
+  content:counter(step);
+  background:var(--accent);color:#fff;
+  min-width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;margin-top:1px;
+}
+.steps li .step-text{font-size:15.5px;color:var(--text)}
+.steps li .step-text strong{color:var(--accent)}
+
+table.spec-table{width:100%;border-collapse:collapse;font-size:15px;margin:10px 0 16px}
+table.spec-table th{background:var(--accent);color:#fff;padding:9px 12px;text-align:left;font-weight:600}
+table.spec-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+table.spec-table tr:nth-child(even) td{background:var(--panel2)}
+
+.warn-box{background:#FFF8E1;border:1.5px solid #FFB300;border-radius:8px;padding:12px 16px;margin:10px 0;display:flex;gap:10px;align-items:flex-start}
+.warn-box .wicon{font-size:22px;flex-shrink:0}
+.warn-box .wtext{font-size:15px;color:#5D4000}
+
+.safe-box{background:#E8F5E9;border:1.5px solid #4CAF50;border-radius:8px;padding:12px 16px;margin:10px 0;display:flex;gap:10px;align-items:flex-start}
+.safe-box .sicon2{font-size:22px;flex-shrink:0}
+.safe-box .stext{font-size:15px;color:#1B5E20}
+
+.tag-row{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0}
+.etag{background:var(--tag);color:var(--tagtext);padding:4px 12px;border-radius:14px;font-size:13.5px;font-weight:600}
+.etag.red{background:#FFEBEE;color:#C62828}
+.etag.green{background:#E8F5E9;color:#1B5E20}
+.etag.orange{background:#FFF3E0;color:#E65100}
+.etag.purple{background:#F3E5F5;color:#6A1B9A}
+
+/* SVG floor plan styles */
+.floor-label{font-family:var(--font);font-weight:700;fill:#1A3A6B;font-size:13px}
+.floor-sublabel{font-family:var(--font);fill:#445577;font-size:11px}
+.node-dot{cursor:pointer}
+.node-dot:hover circle{filter:brightness(1.2)}
+.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* language visibility */
+.en,.ml,.hi{display:none}
+body.lang-en .en{display:block}
+body.lang-en span.en{display:inline}
+body.lang-ml .ml{display:block}
+body.lang-ml span.ml{display:inline}
+body.lang-hi .hi{display:block}
+body.lang-hi span.hi{display:inline}
+
+/* For inline text, control spans */
+.tl{display:inline}
+.tl .en,.tl .ml,.tl .hi{display:none}
+body.lang-en .tl .en{display:inline}
+body.lang-ml .tl .ml{display:inline}
+body.lang-hi .tl .hi{display:inline}
+
+/* responsive */
+@media(max-width:640px){
+  .systems-grid{grid-template-columns:repeat(2,1fr)}
+  #topbar .title{font-size:16px}
+  .detail-header .dtitle{font-size:19px}
+}
+</style>
+</head>
+<body class="lang-en">
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="title">
+    <span class="icon">🏬</span>
+    <span>
+      <span class="tl"><span class="en">Mall Electrical Systems – Teaching Module</span><span class="ml">മാൾ വൈദ്യുത സംവിധാനങ്ങൾ – പഠന മോഡ്യൂൾ</span><span class="hi">मॉल विद्युत प्रणाली – शिक्षण मॉड्यूल</span></span>
+    </span>
+  </div>
+  <div class="lang-sel">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('ml')">മല</button>
+    <button class="lang-btn" onclick="setLang('hi')">हि</button>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<div id="overview">
+  <div class="overview-title">
+    <span class="tl"><span class="en">⚡ Electrical Systems Overview – Multi-Storey Shopping Mall</span><span class="ml">⚡ ബഹുനില ഷോപ്പിംഗ് മാൾ – വൈദ്യുത സംവിധാനങ്ങളുടെ അവലോകനം</span><span class="hi">⚡ बहुमंजिला शॉपिंग मॉल – विद्युत प्रणाली अवलोकन</span></span>
+  </div>
+
+  <!-- MALL BLOCK DIAGRAM SVG -->
+  <div class="mall-svg-wrap">
+    <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
+      <!-- Sky/ground -->
+      <rect x="0" y="0" width="900" height="420" fill="#F0F4FA"/>
+      <!-- Ground -->
+      <rect x="0" y="370" width="900" height="50" fill="#D6E0F0"/>
+
+      <!-- Mall building floors -->
+      <!-- Basement B2 -->
+      <rect x="120" y="330" width="660" height="40" rx="4" fill="#C8D4E8" stroke="#7A8DB0" stroke-width="1.5"/>
+      <text x="450" y="356" text-anchor="middle" class="floor-label">B2 – Sub-Station / Generator Room / Basement Parking</text>
+
+      <!-- Basement B1 -->
+      <rect x="120" y="285" width="660" height="42" rx="4" fill="#D6E4F7" stroke="#7A8DB0" stroke-width="1.5"/>
+      <text x="450" y="311" text-anchor="middle" class="floor-label">B1 – EV Charging / UPS Room / Pump Room / CCTV Control</text>
+
+      <!-- GF -->
+      <rect x="120" y="235" width="660" height="47" rx="4" fill="#E8F0FA" stroke="#7A8DB0" stroke-width="1.5"/>
+      <text x="450" y="258" text-anchor="middle" class="floor-label">Ground Floor – Retail + Main DB + LV Panel + Fire Panel</text>
+      <text x="450" y="274" text-anchor="middle" class="floor-sublabel">(Main Entry, Shops, Food Court Prep)</text>
+
+      <!-- F1 -->
+      <rect x="140" y="187" width="620" height="45" rx="4" fill="#EEF4FA" stroke="#7A8DB0" stroke-width="1.5"/>
+      <text x="450" y="214" text-anchor="middle" class="floor-label">First Floor – Retail / Entertainment / AHU Room / LDB-F1</text>
+
+      <!-- F2 -->
+      <rect x="160" y="141" width="580" height="43" rx="4" fill="#F2F6FA" stroke="#7A8DB0" stroke-width="1.5"/>
+      <text x="450" y="167" text-anchor="middle" class="floor-label">Second Floor – Food Court / Multiplex / PA / BMS Terminal</text>
+
+      <!-- F3 / Terrace -->
+      <rect x="180" y="98" width="540" height="40" rx="4" fill="#F7F9FA" stroke="#7A8DB0" stroke-width="1.5"/>
+      <text x="450" y="122" text-anchor="middle" class="floor-label">Third Floor / Terrace – Solar PV Plant / Cooling Tower</text>
+
+      <!-- Roof / solar -->
+      <rect x="200" y="60" width="500" height="35" rx="6" fill="#FFF8DC" stroke="#F9A825" stroke-width="2"/>
+      <text x="450" y="83" text-anchor="middle" class="floor-label" fill="#7B5800">☀️ SOLAR PV ARRAY (Rooftop) – Grid-Tie Inverters</text>
+
+      <!-- HT line from left -->
+      <line x1="20" y1="310" x2="120" y2="338" stroke="#1A3A6B" stroke-width="3" stroke-dasharray="8,4"/>
+      <text x="12" y="300" class="floor-label" fill="#1A3A6B" font-size="11">HT</text>
+      <text x="12" y="312" class="floor-label" fill="#1A3A6B" font-size="11">11kV</text>
+
+      <!-- DG from right -->
+      <rect x="790" y="318" width="90" height="36" rx="6" fill="#FBE9E7" stroke="#E8500A" stroke-width="2"/>
+      <text x="835" y="341" text-anchor="middle" class="floor-label" fill="#BF360C" font-size="11.5">DG SET</text>
+
+      <!-- Arrows showing power flow -->
+      <line x1="120" y1="310" x2="120" y2="338" stroke="#1A3A6B" stroke-width="2.5" marker-end="url(#arr)"/>
+      <line x1="790" y1="336" x2="783" y2="336" stroke="#E8500A" stroke-width="2.5" marker-end="url(#arr2)"/>
+      <line x1="450" y1="330" x2="450" y2="285" stroke="#1A3A6B" stroke-width="2.5" marker-end="url(#arr)"/>
+      <line x1="450" y1="283" x2="450" y2="235" stroke="#1A3A6B" stroke-width="2.5" marker-end="url(#arr)"/>
+      <line x1="450" y1="233" x2="450" y2="187" stroke="#1565C0" stroke-width="2" marker-end="url(#arr)"/>
+      <line x1="450" y1="185" x2="450" y2="141" stroke="#1565C0" stroke-width="2" marker-end="url(#arr)"/>
+      <line x1="450" y1="139" x2="450" y2="98" stroke="#1565C0" stroke-width="2" marker-end="url(#arr)"/>
+      <line x1="450" y1="96" x2="450" y2="60" stroke="#F9A825" stroke-width="2" marker-end="url(#arr3)"/>
+
+      <!-- System nodes -->
+      <!-- Fire -->
+      <g class="node-dot" onclick="openSystem('fire')">
+        <circle cx="210" cy="258" r="13" fill="#C62828"/>
+        <text x="210" y="263" text-anchor="middle" fill="white" font-size="13">🔥</text>
+        <text x="210" y="278" text-anchor="middle" fill="#C62828" font-size="10" font-weight="700">FIRE</text>
+      </g>
+      <!-- CCTV -->
+      <g class="node-dot" onclick="openSystem('cctv')">
+        <circle cx="700" cy="298" r="13" fill="#6A1B9A"/>
+        <text x="700" y="303" text-anchor="middle" fill="white" font-size="13">📹</text>
+        <text x="700" y="318" text-anchor="middle" fill="#6A1B9A" font-size="10" font-weight="700">CCTV</text>
+      </g>
+      <!-- UPS -->
+      <g class="node-dot" onclick="openSystem('ups')">
+        <circle cx="320" cy="300" r="13" fill="#F57F17"/>
+        <text x="320" y="305" text-anchor="middle" fill="white" font-size="13">🔋</text>
+        <text x="320" y="320" text-anchor="middle" fill="#F57F17" font-size="10" font-weight="700">UPS</text>
+      </g>
+      <!-- EV -->
+      <g class="node-dot" onclick="openSystem('ev')">
+        <circle cx="580" cy="300" r="13" fill="#2E7D32"/>
+        <text x="580" y="305" text-anchor="middle" fill="white" font-size="13">🔌</text>
+        <text x="580" y="320" text-anchor="middle" fill="#2E7D32" font-size="10" font-weight="700">EV</text>
+      </g>
+      <!-- HVAC -->
+      <g class="node-dot" onclick="openSystem('hvac')">
+        <circle cx="340" cy="210" r="13" fill="#00838F"/>
+        <text x="340" y="215" text-anchor="middle" fill="white" font-size="13">❄️</text>
+        <text x="340" y="230" text-anchor="middle" fill="#00838F" font-size="10" font-weight="700">HVAC</text>
+      </g>
+      <!-- BMS -->
+      <g class="node-dot" onclick="openSystem('bms')">
+        <circle cx="620" cy="165" r="13" fill="#283593"/>
+        <text x="620" y="170" text-anchor="middle" fill="white" font-size="13">🖥️</text>
+        <text x="620" y="185" text-anchor="middle" fill="#283593" font-size="10" font-weight="700">BMS</text>
+      </g>
+      <!-- PA -->
+      <g class="node-dot" onclick="openSystem('pa')">
+        <circle cx="310" cy="165" r="13" fill="#880E4F"/>
+        <text x="310" y="170" text-anchor="middle" fill="white" font-size="13">📢</text>
+        <text x="310" y="185" text-anchor="middle" fill="#880E4F" font-size="10" font-weight="700">PA</text>
+      </g>
+      <!-- Lift -->
+      <g class="node-dot" onclick="openSystem('lift')">
+        <circle cx="750" cy="210" r="13" fill="#5D4037"/>
+        <text x="750" y="215" text-anchor="middle" fill="white" font-size="13">🛗</text>
+        <text x="750" y="230" text-anchor="middle" fill="#5D4037" font-size="10" font-weight="700">LIFT</text>
+      </g>
+
+      <!-- Arrow markers -->
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#1A3A6B"/>
+        </marker>
+        <marker id="arr2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#E8500A"/>
+        </marker>
+        <marker id="arr3" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#F9A825"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
+
+  <p style="text-align:center;font-size:13.5px;color:var(--subtext);margin-top:6px">
+    <span class="tl"><span class="en">🔵 Click any system node on the diagram or card below for detailed information</span><span class="ml">🔵 വിശദ വിവരങ്ങൾക്ക് ഡയഗ്രത്തിലെ നോഡോ ചുവടെയുള്ള കാർഡോ ക്ലിക്ക് ചെയ്യുക</span><span class="hi">🔵 विस्तृत जानकारी के लिए आरेख में नोड या नीचे कार्ड पर क्लिक करें</span></span>
+  </p>
+
+  <!-- SYSTEM CARDS -->
+  <div class="systems-grid">
+
+    <div class="sys-card c-solar" onclick="openSystem('solar')">
+      <div class="sicon">☀️</div>
+      <div class="sname"><span class="tl"><span class="en">Solar PV Plant</span><span class="ml">സോളാർ PV പ്ലാന്റ്</span><span class="hi">सौर PV संयंत्र</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">Rooftop grid-tie system, net metering, inverters</span><span class="ml">റൂഫ്ടോപ്പ് ഗ്രിഡ്-ടൈ, നെറ്റ് മീറ്ററിംഗ്, ഇൻവെർട്ടർ</span><span class="hi">रूफटॉप ग्रिड-टाई, नेट मीटरिंग, इनवर्टर</span></span></div>
+      <span class="stag">Renewable Energy</span>
+    </div>
+
+    <div class="sys-card c-dg" onclick="openSystem('dg')">
+      <div class="sicon">⚙️</div>
+      <div class="sname"><span class="tl"><span class="en">DG Sets</span><span class="ml">ഡീസൽ ജനറേറ്റർ</span><span class="hi">डीजी सेट</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">Backup power, AMF panel, load sharing</span><span class="ml">ബാക്കപ്പ് പവർ, AMF പാനൽ, ലോഡ് ഷെയറിംഗ്</span><span class="hi">बैकअप पावर, AMF पैनल, लोड शेयरिंग</span></span></div>
+      <span class="stag">Power Backup</span>
+    </div>
+
+    <div class="sys-card c-hv" onclick="openSystem('ht')">
+      <div class="sicon">⚡</div>
+      <div class="sname"><span class="tl"><span class="en">HT Sub-Station</span><span class="ml">HT സബ്-സ്റ്റേഷൻ</span><span class="hi">HT उप-केंद्र</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">11kV incoming, transformer, HT panels, metering</span><span class="ml">11kV ഇൻകമിംഗ്, ട്രാൻസ്ഫോർമർ, HT പാനൽ</span><span class="hi">11kV इनकमिंग, ट्रांसफॉर्मर, HT पैनल</span></span></div>
+      <span class="stag">High Voltage</span>
+    </div>
+
+    <div class="sys-card c-lv" onclick="openSystem('lv')">
+      <div class="sicon">🔌</div>
+      <div class="sname"><span class="tl"><span class="en">LV Distribution</span><span class="ml">LV ഡിസ്ട്രിബ്യൂഷൻ</span><span class="hi">LV वितरण</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">MDB, DB boards, bus ducts, MCBs, ACBs, cable trays</span><span class="ml">MDB, DB ബോർഡ്, ബസ് ഡക്റ്റ്, MCB, ACB, കേബിൾ ട്രേ</span><span class="hi">MDB, DB बोर्ड, बस डक्ट, MCB, ACB, केबल ट्रे</span></span></div>
+      <span class="stag">LV System</span>
+    </div>
+
+    <div class="sys-card c-ems" onclick="openSystem('ems')">
+      <div class="sicon">📊</div>
+      <div class="sname"><span class="tl"><span class="en">Energy Metering</span><span class="ml">എനർജി മീറ്ററിംഗ്</span><span class="hi">ऊर्जा मीटरिंग</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">Smart meters, TOD, PF correction, harmonics</span><span class="ml">സ്മാർട്ട് മീറ്റർ, TOD, PF കറക്ഷൻ, ഹാർമോണിക്സ്</span><span class="hi">स्मार्ट मीटर, TOD, PF सुधार, हार्मोनिक्स</span></span></div>
+      <span class="stag">Energy Mgmt</span>
+    </div>
+
+    <div class="sys-card c-fire" onclick="openSystem('fire')">
+      <div class="sicon">🔥</div>
+      <div class="sname"><span class="tl"><span class="en">Fire Protection</span><span class="ml">അഗ്നി സംരക്ഷണം</span><span class="hi">अग्नि सुरक्षा</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">FACP, detectors, sprinklers, fire pumps, suppression</span><span class="ml">FACP, ഡിറ്റക്ടർ, സ്പ്രിങ്ക്ലർ, ഫയർ പമ്പ്</span><span class="hi">FACP, डिटेक्टर, स्प्रिंकलर, फायर पंप</span></span></div>
+      <span class="stag">Life Safety</span>
+    </div>
+
+    <div class="sys-card c-cctv" onclick="openSystem('cctv')">
+      <div class="sicon">📹</div>
+      <div class="sname"><span class="tl"><span class="en">CCTV & Security</span><span class="ml">CCTV & സെക്യൂരിറ്റി</span><span class="hi">CCTV और सुरक्षा</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">IP cameras, NVR/DVR, access control, ANPR</span><span class="ml">IP ക്യാമറ, NVR/DVR, ആക്സസ് കൺട്രോൾ, ANPR</span><span class="hi">IP कैमरा, NVR/DVR, एक्सेस कंट्रोल, ANPR</span></span></div>
+      <span class="stag">Security</span>
+    </div>
+
+    <div class="sys-card c-hvac" onclick="openSystem('hvac')">
+      <div class="sicon">❄️</div>
+      <div class="sname"><span class="tl"><span class="en">HVAC Systems</span><span class="ml">HVAC സംവിധാനം</span><span class="hi">HVAC प्रणाली</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">Chillers, AHUs, FCUs, VFDs, BACnet controls</span><span class="ml">ചില്ലർ, AHU, FCU, VFD, BACnet</span><span class="hi">चिलर, AHU, FCU, VFD, BACnet</span></span></div>
+      <span class="stag">MEP</span>
+    </div>
+
+    <div class="sys-card c-lift" onclick="openSystem('lift')">
+      <div class="sicon">🛗</div>
+      <div class="sname"><span class="tl"><span class="en">Lifts & Escalators</span><span class="ml">ലിഫ്റ്റ് & എസ്കലേറ്റർ</span><span class="hi">लिफ्ट और एस्केलेटर</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">MRL lifts, VVVF drives, firefighter mode, ARD</span><span class="ml">MRL ലിഫ്റ്റ്, VVVF ഡ്രൈവ്, ഫയർഫൈറ്റർ മോഡ്, ARD</span><span class="hi">MRL लिफ्ट, VVVF ड्राइव, ARD</span></span></div>
+      <span class="stag">Vertical Transport</span>
+    </div>
+
+    <div class="sys-card c-ups" onclick="openSystem('ups')">
+      <div class="sicon">🔋</div>
+      <div class="sname"><span class="tl"><span class="en">UPS Systems</span><span class="ml">UPS സംവിധാനം</span><span class="hi">UPS प्रणाली</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">Online UPS, battery banks, critical load distribution</span><span class="ml">ഓൺലൈൻ UPS, ബാറ്ററി ബാങ്ക്, ക്രിറ്റിക്കൽ ലോഡ്</span><span class="hi">ऑनलाइन UPS, बैटरी बैंक, क्रिटिकल लोड</span></span></div>
+      <span class="stag">Critical Power</span>
+    </div>
+
+    <div class="sys-card c-bms" onclick="openSystem('bms')">
+      <div class="sicon">🖥️</div>
+      <div class="sname"><span class="tl"><span class="en">BMS / SCADA</span><span class="ml">BMS / SCADA</span><span class="hi">BMS / SCADA</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">Building management, MODBUS, BACnet, energy dashboard</span><span class="ml">ബിൽഡിംഗ് മാനേജ്മെന്റ്, MODBUS, BACnet</span><span class="hi">बिल्डिंग मैनेजमेंट, MODBUS, BACnet</span></span></div>
+      <span class="stag">Automation</span>
+    </div>
+
+    <div class="sys-card c-ev" onclick="openSystem('ev')">
+      <div class="sicon">🚗</div>
+      <div class="sname"><span class="tl"><span class="en">EV Charging</span><span class="ml">EV ചാർജിംഗ്</span><span class="hi">EV चार्जिंग</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">AC/DC chargers, OCPP, load management, billing</span><span class="ml">AC/DC ചാർജർ, OCPP, ലോഡ് മാനേജ്മെന്റ്</span><span class="hi">AC/DC चार्जर, OCPP, लोड मैनेजमेंट</span></span></div>
+      <span class="stag">EV Infrastructure</span>
+    </div>
+
+    <div class="sys-card c-pa" onclick="openSystem('pa')">
+      <div class="sicon">📢</div>
+      <div class="sname"><span class="tl"><span class="en">PA / VA System</span><span class="ml">PA / VA സംവിധാനം</span><span class="hi">PA / VA प्रणाली</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">Public address, voice evacuation, BGM, zoning</span><span class="ml">പബ്ലിക് അഡ്രസ്, വോയ്സ് ഇവാക്വേഷൻ, BGM</span><span class="hi">पब्लिक एड्रेस, वॉयस इवेक्यूएशन, BGM</span></span></div>
+      <span class="stag">Communication</span>
+    </div>
+
+    <div class="sys-card c-lt" onclick="openSystem('lighting')">
+      <div class="sicon">💡</div>
+      <div class="sname"><span class="tl"><span class="en">Lighting Systems</span><span class="ml">ലൈറ്റിംഗ് സംവിധാനം</span><span class="hi">प्रकाश प्रणाली</span></span></div>
+      <div class="sdesc"><span class="tl"><span class="en">LED, DALI, emergency lighting, façade, lux levels</span><span class="ml">LED, DALI, ഇമർജൻസി ലൈറ്റ്, ഫസേഡ്</span><span class="hi">LED, DALI, आपातकालीन प्रकाश, फसाड</span></span></div>
+      <span class="stag">Lighting</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div id="detail"></div>
+
+<script>
+// ── LANGUAGE SWITCH ──
+function setLang(l){
+  document.body.className='lang-'+l;
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('active', b.textContent.trim().toLowerCase()===l||
+      (l==='ml'&&b.textContent.trim()==='മല')||
+      (l==='hi'&&b.textContent.trim()==='हि'));
+  });
+}
+
+// ── SYSTEM DATA ──
+const systems={
+
+solar:{
+  icon:'☀️',color:'#F9A825',cls:'c-solar',
+  name:{en:'Solar PV Plant',ml:'സോളാർ PV പ്ലാന്റ്',hi:'सौर PV संयंत्र'},
+  sub:{en:'Rooftop Grid-Tie Photovoltaic System',ml:'റൂഫ്ടോപ്പ് ഗ്രിഡ്-ടൈ ഫോട്ടോവോൾട്ടായിക് സംവിധാനം',hi:'रूफटॉप ग्रिड-टाई फोटोवोल्टाइक प्रणाली'},
+  tabs:['Overview','Components','Maintenance','Safety'],
+  content:{
+    Overview:`
+      <div class="section-h en">System Introduction</div>
+      <div class="section-h ml">സംവിധാന ആമുഖം</div>
+      <div class="section-h hi">प्रणाली परिचय</div>
+      <p class="en">A rooftop solar PV plant converts sunlight to electricity using photovoltaic panels. In a shopping mall, a typical capacity is <strong>200–500 kWp</strong>, installed on the flat terrace. The system is connected to the main grid (grid-tie) and exports surplus energy. Net metering allows the mall to earn credits for exported units.</p>
+      <p class="ml">ഒരു റൂഫ്ടോപ്പ് സോളാർ PV പ്ലാന്റ് ഫോട്ടോവോൾട്ടായിക് പാനലുകൾ ഉപയോഗിച്ച് സൂര്യപ്രകാശത്തെ വൈദ്യുതിയാക്കി മാറ്റുന്നു. ഒരു ഷോപ്പിംഗ് മാളിൽ സാധാരണ ശേഷി <strong>200–500 kWp</strong> ആണ്, ഫ്ലാറ്റ് ടെറസ്സിൽ ഘടിപ്പിക്കുന്നു. ഗ്രിഡ് ടൈ ആണ്; അധിക ഊർജം ഗ്രിഡ്ലേക്ക് കയറ്റുമതി ചെയ്യുന്നു.</p>
+      <p class="hi">रूफटॉप सोलर PV प्लांट फोटोवोल्टाइक पैनलों से सूर्यप्रकाश को बिजली में बदलता है। शॉपिंग मॉल में सामान्य क्षमता <strong>200–500 kWp</strong> होती है। यह ग्रिड-टाई प्रणाली है; अतिरिक्त ऊर्जा ग्रिड को निर्यात की जाती है।</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="ibtitle en">Typical Capacity</div><div class="ibtitle ml">ശേഷി</div><div class="ibtitle hi">क्षमता</div><div class="ibval">200–500 kWp</div><div class="ibsub">Mono/Poly PERC modules</div></div>
+        <div class="info-box"><div class="ibtitle en">Annual Generation</div><div class="ibtitle ml">വാർഷിക ഉൽപ്പാദനം</div><div class="ibtitle hi">वार्षिक उत्पादन</div><div class="ibval">2.5–3 lakh kWh</div><div class="ibsub">at 1500 Peak Sun Hours/yr</div></div>
+        <div class="info-box"><div class="ibtitle en">Grid Voltage</div><div class="ibtitle ml">ഗ്രിഡ് വോൾട്ടേജ്</div><div class="ibtitle hi">ग्रिड वोल्टेज</div><div class="ibval">415V / 11kV</div><div class="ibsub">3-phase, 50 Hz</div></div>
+        <div class="info-box"><div class="ibtitle en">Payback Period</div><div class="ibtitle ml">Payback കാലം</div><div class="ibtitle hi">पेबैक काल</div><div class="ibval">4–6 Years</div><div class="ibsub">25-yr panel warranty</div></div>
+      </div>
+      <div class="tag-row"><span class="etag">Grid-Tie</span><span class="etag">Net Metering</span><span class="etag">SCADA Monitoring</span><span class="etag green">Zero Carbon</span><span class="etag orange">MNRE Guidelines</span></div>`,
+    Components:`
+      <div class="section-h en">Key Components</div><div class="section-h ml">പ്രധാന ഘടകങ്ങൾ</div><div class="section-h hi">मुख्य घटक</div>
+      <table class="spec-table">
+        <tr><th>Component</th><th class="en">Description</th><th class="ml">വിവരണം</th><th class="hi">विवरण</th></tr>
+        <tr><td><strong>PV Modules</strong></td><td class="en">Mono PERC, 400–540 Wp each, IP67, Anti-reflective glass</td><td class="ml">Mono PERC, 400–540 Wp, IP67, ആൻ്റി-റിഫ്ലക്റ്റീവ് ഗ്ലാസ്</td><td class="hi">Mono PERC, 400–540 Wp, IP67, एंटी-रिफ्लेक्टिव ग्लास</td></tr>
+        <tr><td><strong>String Inverter</strong></td><td class="en">MPPT tracking, >98% efficiency, anti-islanding protection, WiFi monitoring</td><td class="ml">MPPT ട്രാക്കിംഗ്, >98% ഇഫിഷ്യൻസി, ആൻ്റി-ഐലാൻഡിംഗ്</td><td class="hi">MPPT ट्रैकिंग, >98% दक्षता, एंटी-आइलैंडिंग</td></tr>
+        <tr><td><strong>DC Junction Box</strong></td><td class="en">String combiner, DC fuses, surge protection, IP65</td><td class="ml">സ്ട്രിംഗ് കൊംബൈനർ, DC ഫ്യൂസ്, സർജ് പ്രൊട്ടക്ഷൻ</td><td class="hi">स्ट्रिंग कॉम्बिनर, DC फ्यूज, सर्ज प्रोटेक्शन</td></tr>
+        <tr><td><strong>Net Meter</strong></td><td class="en">Bidirectional, ToD tariff, DISCOM approved</td><td class="ml">ബൈഡൈറക്ഷണൽ, ToD ടാരിഫ്, KSEB അംഗീകൃതം</td><td class="hi">द्विदिशीय, ToD टैरिफ, DISCOM अनुमोदित</td></tr>
+        <tr><td><strong>Mounting Structure</strong></td><td class="en">Hot-dip galvanised MS, tilt 10°–15°, wind load rated</td><td class="ml">ഗൽവനൈസ്ഡ് MS, ടിൽറ്റ് 10°–15°, വിൻഡ് ലോഡ് ഡിസൈൻ</td><td class="hi">गैल्वेनाइज्ड MS, टिल्ट 10°–15°, विंड लोड रेटेड</td></tr>
+        <tr><td><strong>SCADA/Datalogger</strong></td><td class="en">Energy yield, irradiation, PR monitoring, remote alerts</td><td class="ml">ഊർജ ഉൽപ്പാദനം, ഇറേഡിയേഷൻ, PR മോണിറ്ററിംഗ്</td><td class="hi">ऊर्जा उत्पादन, इरेडिएशन, PR मॉनिटरिंग</td></tr>
+        <tr><td><strong>Earthing & SPD</strong></td><td class="en">DC/AC SPD Type 1+2, array frame earthing, IS 3043</td><td class="ml">DC/AC SPD ടൈപ്പ് 1+2, ഫ്രെയിം ഏർത്തിംഗ്, IS 3043</td><td class="hi">DC/AC SPD टाइप 1+2, फ्रेम अर्थिंग, IS 3043</td></tr>
+      </table>`,
+    Maintenance:`
+      <div class="section-h en">Maintenance Tasks for Electrician</div><div class="section-h ml">ഇലക്ട്രീഷ്യനുള്ള മെയ്ന്റനൻസ് ടാസ്ക്കുകൾ</div><div class="section-h hi">इलेक्ट्रीशियन के लिए रखरखाव कार्य</div>
+      <ol class="steps">
+        <li><div class="step-text"><strong class="en">Panel Cleaning</strong><strong class="ml">പാനൽ ക്ലീനിംഗ്</strong><strong class="hi">पैनल सफाई</strong> – <span class="en">Fortnightly dry cleaning; quarterly wet cleaning with soft cloth. Measure Voc and Isc to verify performance.</span><span class="ml">രണ്ടാഴ്ചയിൽ ഒരിക്കൽ ഡ്രൈ ക്ലീനിംഗ്; ത്രൈമാസ വെറ്റ് ക്ലീനിംഗ്. Voc, Isc അളക്കുക.</span><span class="hi">पखवाड़े में एक बार ड्राई क्लीनिंग; तिमाही वेट क्लीनिंग। Voc और Isc मापें।</span></div></li>
+        <li><div class="step-text"><strong class="en">Inverter Check</strong><strong class="ml">ഇൻവെർട്ടർ പരിശോധന</strong><strong class="hi">इनवर्टर जांच</strong> – <span class="en">Check display for fault codes; verify cooling fan operation; clean air filters; log energy yield daily.</span><span class="ml">ഫോൾട്ട് കോഡ് പരിശോധിക്കുക; കൂളിംഗ് ഫാൻ, ഫിൽട്ടർ വൃത്തിയാക്കുക; ഊർജ ഉൽപ്പാദനം രേഖപ്പെടുത്തുക.</span><span class="hi">फॉल्ट कोड जांचें; कूलिंग फैन और फिल्टर साफ करें; ऊर्जा उत्पादन दर्ज करें।</span></div></li>
+        <li><div class="step-text"><strong class="en">Earthing Test</strong><strong class="ml">ഏർത്തിംഗ് ടെസ്റ്റ്</strong><strong class="hi">अर्थिंग परीक्षण</strong> – <span class="en">Measure earth resistance annually (should be &lt;2Ω). Tighten all earth bonds. Inspect SPD indicator.</span><span class="ml">വർഷത്തിൽ ഒരിക്കൽ ഏർത്ത് റസിസ്റ്റൻസ് അളക്കുക (&lt;2Ω). SPD ഇൻഡിക്കേറ്റർ പരിശോധിക്കുക.</span><span class="hi">वार्षिक अर्थ रेजिस्टेंस मापें (&lt;2Ω)। SPD इंडिकेटर जांचें।</span></div></li>
+        <li><div class="step-text"><strong class="en">String IV Curve</strong><strong class="ml">സ്ട്രിംഗ് IV കർവ്</strong><strong class="hi">स्ट्रिंग IV कर्व</strong> – <span class="en">Use IV tracer / clamp meter to verify string current. Identify shaded or faulty modules. Check DC junction box fuses.</span><span class="ml">IV ട്രേസർ ഉപയോഗിച്ച് സ്ട്രിംഗ് കറന്റ് പരിശോധിക്കുക. ഡാമേജ്ഡ് മൊഡ്യൂൾ തിരിച്ചറിയുക.</span><span class="hi">IV ट्रेसर से स्ट्रिंग करंट जांचें। क्षतिग्रस्त मॉड्यूल पहचानें।</span></div></li>
+        <li><div class="step-text"><strong class="en">Insulation Test</strong><strong class="ml">ഇൻസുലേഷൻ ടെസ്റ്റ്</strong><strong class="hi">इन्सुलेशन परीक्षण</strong> – <span class="en">Annual IR test of DC cables (500V Megger). Replace cables with IR &lt;1MΩ. Check cable tray condition.</span><span class="ml">DC കേബിളുകളുടെ IR ടെസ്റ്റ് (500V Megger). IR &lt;1MΩ ആണെങ്കിൽ കേബിൾ മാറ്റുക.</span><span class="hi">DC केबल का IR परीक्षण (500V Megger)। IR &lt;1MΩ हो तो केबल बदलें।</span></div></li>
+      </ol>`,
+    Safety:`
+      <div class="section-h en">Safety Rules</div><div class="section-h ml">സുരക്ഷാ നിയമങ്ങൾ</div><div class="section-h hi">सुरक्षा नियम</div>
+      <div class="warn-box"><div class="wicon">⚡</div><div class="wtext en">Solar panels generate DC voltage (up to 1000V) even when the inverter is OFF. Always use insulated tools (1000V rated) and wear rubber gloves during any DC-side work.</div><div class="wtext ml">ഇൻവെർട്ടർ ഓഫ് ആണെങ്കിലും സോളാർ പാനലുകൾ DC വോൾട്ടേജ് ഉൽപ്പാദിപ്പിക്കുന്നു. ഇൻസുലേറ്റഡ് ടൂൾസ്, റബ്ബർ ഗ്ലൗസ് ഉപയോഗിക്കുക.</div><div class="wtext hi">इनवर्टर बंद होने पर भी सोलर पैनल DC वोल्टेज उत्पन्न करते हैं। 1000V रेटेड इंसुलेटेड टूल्स और रबर दस्ताने पहनें।</div></div>
+      <div class="warn-box"><div class="wicon">🔥</div><div class="wtext en">Hot-spot heating in faulty modules can cause fire. Thermal imaging survey every 6 months is mandatory.</div><div class="wtext ml">ഹോട്ട്-സ്പോട്ട് ഹീറ്റിംഗ് മൂലം തീ പിടിക്കാം. 6 മാസത്തിൽ ഒരിക്കൽ തെർമൽ ഇമേജിംഗ് സർവ്വേ നടത്തണം.</div><div class="wtext hi">हॉट-स्पॉट हीटिंग से आग लग सकती है। हर 6 महीने में थर्मल इमेजिंग सर्वे अनिवार्य है।</div></div>
+      <div class="safe-box"><div class="sicon2">✅</div><div class="stext en">LOTO (Lockout-Tagout) procedure mandatory before any maintenance. Shade the panel string with opaque cover to de-energize during DC work.</div><div class="stext ml">ഏത് മെയ്ന്റനൻസിനും മുൻപ് LOTO നടപടിക്രമം നിർബന്ധം. DC വർക്ക് ചെയ്യുമ്പോൾ പാനൽ ഓപ്പേക്ക് കവർ കൊണ്ട് മറക്കുക.</div><div class="stext hi">किसी भी रखरखाव से पहले LOTO प्रक्रिया अनिवार्य है। DC कार्य के दौरान पैनल को अपारदर्शी कवर से ढकें।</div></div>
+      <div class="tag-row"><span class="etag red">Arc Flash Hazard</span><span class="etag red">Height Work PPE</span><span class="etag green">IS 13369</span><span class="etag orange">CEA Regulations 2010</span></div>`
+  }
+},
+
+dg:{
+  icon:'⚙️',color:'#E8500A',cls:'c-dg',
+  name:{en:'Diesel Generator Sets',ml:'ഡീസൽ ജനറേറ്റർ സെറ്റ്',hi:'डीजी सेट'},
+  sub:{en:'Standby Power – AMF Panel – Load Sharing',ml:'സ്റ്റാൻഡ്ബൈ പവർ – AMF പാനൽ – ലോഡ് ഷെയറിംഗ്',hi:'स्टैंडबाय पावर – AMF पैनल – लोड शेयरिंग'},
+  tabs:['Overview','AMF & Controls','Maintenance','Safety'],
+  content:{
+    Overview:`<div class="info-grid">
+        <div class="info-box"><div class="ibtitle en">Total DG Capacity</div><div class="ibtitle ml">ആകെ DG ശേഷി</div><div class="ibtitle hi">कुल DG क्षमता</div><div class="ibval">2 × 500 kVA</div><div class="ibsub">Auto Load Sharing</div></div>
+        <div class="info-box"><div class="ibtitle en">Switchover Time</div><div class="ibtitle ml">സ്വിച്ചോവർ സമയം</div><div class="ibtitle hi">स्विचओवर समय</div><div class="ibval">&lt;10 seconds</div><div class="ibsub">AMF auto-start</div></div>
+        <div class="info-box"><div class="ibtitle en">Fuel Tank</div><div class="ibtitle ml">ഫ്യൂവൽ ടാങ്ക്</div><div class="ibtitle hi">ईंधन टंकी</div><div class="ibval">2000 L (base)</div><div class="ibsub">Day tank + bulk storage</div></div>
+        <div class="info-box"><div class="ibtitle en">Output Voltage</div><div class="ibtitle ml">ഔട്ട്പുട്ട് വോൾട്ടേജ്</div><div class="ibtitle hi">आउटपुट वोल्टेज</div><div class="ibval">415V, 3φ, 50Hz</div><div class="ibsub">AVR controlled</div></div>
+      </div>
+      <p class="en">The DG room is located in B2. Two DG sets operate in parallel (load sharing) via a synchronising panel. The AMF (Automatic Mains Failure) panel detects grid failure within 2 cycles and initiates auto-start. On grid restoration, the ATS (Automatic Transfer Switch) returns load to the grid smoothly.</p>
+      <p class="ml">DG റൂം B2-ൽ ആണ്. രണ്ട് DG സെറ്റ്കൾ സിൻക്രൊണൈസ് പാനൽ വഴി പാരലൽ ആയി (ലോഡ് ഷെയർ) ഓടിക്കുന്നു. AMF പാനൽ ഗ്രിഡ് ഫെയിൽ ആകുമ്പോൾ 2 സൈക്കിളിനുള്ളിൽ DG ഓട്ടോ-സ്റ്റാർട്ട് ചെയ്യിക്കുന്നു.</p>
+      <p class="hi">DG कक्ष B2 में है। दो DG सेट सिंक्रोनाइजिंग पैनल के माध्यम से समानांतर (लोड शेयरिंग) चलते हैं। AMF पैनल ग्रिड विफलता पर 2 साइकिल में ऑटो-स्टार्ट करता है।</p>
+      <div class="tag-row"><span class="etag">CPCB-II Emission Norm</span><span class="etag">AMF Panel</span><span class="etag">Synchronising Panel</span><span class="etag orange">Acoustic Enclosure</span></div>`,
+    'AMF & Controls':`
+      <div class="section-h en">AMF Panel Operation</div><div class="section-h ml">AMF പാനൽ ഓപ്പറേഷൻ</div><div class="section-h hi">AMF पैनल संचालन</div>
+      <ol class="steps">
+        <li><div class="step-text"><strong>Grid Healthy</strong> – <span class="en">AMF monitors all 3 phases. Normal supply → load on Grid via ATS.</span><span class="ml">AMF മൂന്ന് ഫേസ് നിരീക്ഷിക്കുന്നു. നോർമൽ → ATS വഴി ഗ്രിഡ് ലോഡ്.</span><span class="hi">AMF तीनों फेज मॉनिटर करता है। सामान्य → ATS से ग्रिड लोड।</span></div></li>
+        <li><div class="step-text"><strong>Grid Failure Detected</strong> – <span class="en">Under-voltage or phase failure sensed → start signal sent to DG engine.</span><span class="ml">അൻഡർ-വോൾട്ടേജ് / ഫേസ് ഫെയിൽ → DG ഇൻജിൻ സ്റ്റാർട്ട് സിഗ്നൽ.</span><span class="hi">अंडर-वोल्टेज / फेज फेल → DG इंजन स्टार्ट सिग्नल।</span></div></li>
+        <li><div class="step-text"><strong>DG Warm-up</strong> – <span class="en">DG runs at no-load for 15–30 seconds; voltage and frequency stabilise (415V ±5%, 50Hz ±1Hz).</span><span class="ml">DG 15–30 സെ. നോ-ലോഡ് ഓടിക്കുന്നു; 415V ±5%, 50Hz ±1Hz സ്ഥിരപ്പെടുന്നു.</span><span class="hi">DG 15–30 सेकंड नो-लोड चलता है; 415V ±5%, 50Hz ±1Hz स्थिर होता है।</span></div></li>
+        <li><div class="step-text"><strong>ATS Changeover</strong> – <span class="en">ATS opens grid contactor, closes DG contactor. Load transferred to DG.</span><span class="ml">ATS ഗ്രിഡ് കോൺടാക്റ്റർ ഓപ്പൺ, DG കോൺടാക്റ്റർ ക്ലോസ്. ലോഡ് DG-ലേക്ക്.</span><span class="hi">ATS ग्रिड कॉन्टेक्टर खोलता है, DG कॉन्टेक्टर बंद करता है।</span></div></li>
+        <li><div class="step-text"><strong>Grid Restore</strong> – <span class="en">ATS detects healthy grid → retransfer load to grid → DG cool-down (5 min) → auto-stop.</span><span class="ml">ഗ്രിഡ് ഹെൽദി ആകുമ്പോൾ → ലോഡ് ഗ്രിഡ്ലേക്ക് → DG കൂൾ-ഡൗൺ (5 min) → ഓട്ടോ-സ്റ്റോപ്.</span><span class="hi">ग्रिड सामान्य → लोड ग्रिड को → DG कूल-डाउन (5 मिनट) → ऑटो-स्टॉप।</span></div></li>
+      </ol>
+      <div class="warn-box"><div class="wicon">⚠️</div><div class="wtext en">Never close grid and DG contactors simultaneously — it causes a dangerous back-feed. The AMF interlocking circuit prevents this, but always verify before manual operation.</div><div class="wtext ml">ഗ്രിഡ്, DG കോൺടാക്റ്ററുകൾ ഒരേ സമയം ക്ലോസ് ചെയ്യരുത് — ബാക്ക്-ഫീഡ് അപകടം. AMF ഇൻ്റർലോക്ക് ഇത് തടയുന്നു.</div><div class="wtext hi">ग्रिड और DG कॉन्टेक्टर एक साथ बंद न करें — खतरनाक बैक-फीड होगा। AMF इंटरलॉक से बचाव होता है।</div></div>`,
+    Maintenance:`
+      <div class="section-h en">Periodic Maintenance Schedule</div><div class="section-h ml">ആനുകാലിക മെയ്ന്റനൻസ്</div><div class="section-h hi">आवधिक रखरखाव</div>
+      <table class="spec-table">
+        <tr><th>Frequency</th><th class="en">Task</th><th class="ml">ജോലി</th><th class="hi">कार्य</th></tr>
+        <tr><td>Daily</td><td class="en">Check fuel level, coolant level, oil level, battery voltage, run for 15 min on load</td><td class="ml">ഫ്യൂവൽ, കൂളന്റ്, ഓയിൽ ലെവൽ; 15 മി. ലോഡ് ടെസ്റ്റ്</td><td class="hi">ईंधन, कूलेंट, तेल स्तर; 15 मिनट लोड टेस्ट</td></tr>
+        <tr><td>Weekly</td><td class="en">Clean air filter, check battery terminals, tighten cable lugs, test alarm annunciator</td><td class="ml">എയർ ഫിൽട്ടർ, ബാറ്ററി ടെർമിനൽ, കേബിൾ ലഗ്, അലാം</td><td class="hi">एयर फिल्टर, बैटरी टर्मिनल, केबल लग, अलार्म</td></tr>
+        <tr><td>Monthly</td><td class="en">Engine oil top-up, AVR adjustment, earth resistance test, fuel filter drain sediment</td><td class="ml">ഓയിൽ, AVR, ഏർത്ത് ടെസ്റ്റ്, ഫ്യൂവൽ ഫിൽട്ടർ</td><td class="hi">तेल, AVR, अर्थ टेस्ट, ईंधन फिल्टर</td></tr>
+        <tr><td>6-Monthly</td><td class="en">Oil change, coolant change, air filter replacement, valve clearance check</td><td class="ml">ഓയിൽ, കൂളന്റ്, ഫിൽട്ടർ, വാൽവ് ക്ലിയറൻസ്</td><td class="hi">तेल, कूलेंट, फिल्टर, वाल्व क्लीयरेंस</td></tr>
+        <tr><td>Annual</td><td class="en">Full load bank test (100%), injector calibration, turbo inspection, megger test of winding</td><td class="ml">ഫുൾ ലോഡ് ടെസ്റ്റ്, ഇൻജക്ടർ, ടർബോ, വൈൻഡിംഗ് Megger</td><td class="hi">फुल लोड टेस्ट, इंजेक्टर, टर्बो, वाइंडिंग Megger</td></tr>
+      </table>`,
+    Safety:`
+      <div class="safe-box"><div class="sicon2">✅</div><div class="stext en">Use earthing rod before working on DG terminals. Ensure exhaust flue is clear and directed outside. CO detector mandatory in DG room.</div><div class="stext ml">DG ടെർമിനലുകൾ ടച്ച് ചെയ്യുന്നതിന് മുൻപ് ഏർത്തിംഗ് ബോൺ ഉപയോഗിക്കുക. CO ഡിറ്റക്ടർ DG റൂമിൽ നിർബന്ധം.</div><div class="stext hi">DG टर्मिनल छूने से पहले अर्थिंग बोन उपयोग करें। DG कक्ष में CO डिटेक्टर अनिवार्य है।</div></div>
+      <div class="warn-box"><div class="wicon">🔊</div><div class="wtext en">DG sets produce 85–95 dB noise. Use acoustic enclosure. Wear ear protection (muffs) when entering the DG room during operation.</div><div class="wtext ml">DG സെറ്റ് 85–95 dB നോയ്സ് ഉൽപ്പാദിപ്പിക്കുന്നു. ഓഡിയോ ഇൻക്ലോഷർ, ഇയർ മഫ്സ് നിർബന്ധം.</div><div class="wtext hi">DG 85–95 dB शोर उत्पन्न करता है। एकॉस्टिक एनक्लोजर और इयर मफ्स अनिवार्य हैं।</div></div>`
+  }
+},
+
+ht:{
+  icon:'⚡',color:'#1A3A6B',cls:'c-hv',
+  name:{en:'HT Sub-Station',ml:'HT സബ്-സ്റ്റേഷൻ',hi:'HT उप-केंद्र'},
+  sub:{en:'11kV Incoming – Transformer – LV Panels',ml:'11kV ഇൻകമിംഗ് – ട്രാൻസ്ഫോർമർ – LV പാനൽ',hi:'11kV इनकमिंग – ट्रांसफॉर्मर – LV पैनल'},
+  tabs:['Overview','Equipment','Maintenance','Safety'],
+  content:{
+    Overview:`<p class="en">The HT substation in B2 receives 11kV (or 33kV) supply from the utility (DISCOM). The Vacuum Circuit Breaker (VCB) panel controls the HV incoming. Step-down transformers (typically 11kV/415V, 1000kVA) convert HT to LT supply for the LV distribution boards.</p>
+      <p class="ml">B2-ലെ HT സബ്-സ്റ്റേഷൻ DISCOM-ൽ നിന്ന് 11kV/33kV ലഭിക്കുന്നു. VCB പാനൽ HV ഇൻകമിംഗ് നിയന്ത്രിക്കുന്നു. 11kV/415V, 1000kVA ട്രാൻസ്ഫോർമർ LT സപ്ലൈ നൽകുന്നു.</p>
+      <p class="hi">B2 में HT सबस्टेशन को DISCOM से 11kV मिलता है। VCB पैनल HV इनकमिंग नियंत्रित करता है। 11kV/415V, 1000kVA ट्रांसफॉर्मर LT आपूर्ति देता है।</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="ibtitle en">HT Incoming</div><div class="ibtitle ml">HT ഇൻകമിംഗ്</div><div class="ibtitle hi">HT इनकमिंग</div><div class="ibval">11kV / 33kV</div><div class="ibsub">DISCOM supply</div></div>
+        <div class="info-box"><div class="ibtitle en">Transformer</div><div class="ibtitle ml">ട്രാൻസ്ഫോർമർ</div><div class="ibtitle hi">ट्रांसफॉर्मर</div><div class="ibval">2 × 1000 kVA</div><div class="ibsub">11kV/415V, ONAN/AN</div></div>
+        <div class="info-box"><div class="ibtitle en">Protection</div><div class="ibtitle ml">പ്രൊട്ടക്ഷൻ</div><div class="ibtitle hi">सुरक्षा</div><div class="ibval">VCB + Relays</div><div class="ibsub">O/C, E/F, differential</div></div>
+        <div class="info-box"><div class="ibtitle en">Metering</div><div class="ibtitle ml">മീറ്ററിംഗ്</div><div class="ibtitle hi">मीटरिंग</div><div class="ibval">ABT / ToD Meter</div><div class="ibsub">CT/PT metering panel</div></div>
+      </div>
+      <div class="tag-row"><span class="etag">CEA Regulations</span><span class="etag">IS 13947</span><span class="etag orange">Only Licensed Electricians</span><span class="etag red">Authorised Persons Only</span></div>`,
+    Equipment:`
+      <table class="spec-table">
+        <tr><th>Equipment</th><th class="en">Function</th><th class="ml">പ്രവർത്തനം</th><th class="hi">कार्य</th></tr>
+        <tr><td>VCB (Vacuum Circuit Breaker)</td><td class="en">Interrupt fault current on HT side, rated 11kV, 630A</td><td class="ml">HT ഫോൾട്ട് കറന്റ് ഇൻ്ററപ്ട്, 11kV, 630A</td><td class="hi">HT फॉल्ट करंट इंटरप्ट, 11kV, 630A</td></tr>
+        <tr><td>Current Transformer (CT)</td><td class="en">Steps down HT current for metering and protection relays</td><td class="ml">HT കറന്റ് സ്റ്റെപ്-ഡൗൺ; മീറ്ററിംഗ്, പ്രൊട്ടക്ഷൻ</td><td class="hi">HT करंट स्टेप-डाउन; मीटरिंग, प्रोटेक्शन</td></tr>
+        <tr><td>Potential Transformer (PT)</td><td class="en">Steps down HT voltage for metering and relay operation</td><td class="ml">HT വോൾട്ടേജ് സ്റ്റെപ്-ഡൗൺ; മീറ്ററിംഗ്</td><td class="hi">HT वोल्टेज स्टेप-डाउन; मीटरिंग</td></tr>
+        <tr><td>Relay Panel (Numerical)</td><td class="en">O/C (50/51), E/F (50N/51N), transformer differential (87T)</td><td class="ml">O/C, E/F, ഡിഫറൻഷ്യൽ (87T) പ്രൊട്ടക്ഷൻ</td><td class="hi">O/C, E/F, डिफरेंशियल (87T) रिले</td></tr>
+        <tr><td>Power Transformer</td><td class="en">Oil/dry type, 11kV/415V, OLTC or off-circuit tap changer</td><td class="ml">ഓയിൽ/ഡ്രൈ, 11kV/415V, OLTC / ഓഫ്-ടാപ്</td><td class="hi">ऑइल/ड्राई, 11kV/415V, OLTC/ऑफ-टैप</td></tr>
+        <tr><td>LT Breaker Panel (ACB)</td><td class="en">415V, 3200A ACB, bus coupler, capacitor bank feeder</td><td class="ml">415V, 3200A ACB, ബസ് കപ്ലർ, ക്യാപ്സിറ്റർ ഫീഡർ</td><td class="hi">415V, 3200A ACB, बस कपलर, कैपेसिटर फीडर</td></tr>
+      </table>`,
+    Maintenance:`
+      <ol class="steps">
+        <li><div class="step-text"><strong class="en">Oil Breakdown Voltage Test (BDV)</strong><strong class="ml">BDV ടെസ്റ്റ്</strong><strong class="hi">BDV परीक्षण</strong> – <span class="en">Test transformer oil every 6 months. BDV should be &gt;60kV/cm. Send to lab for moisture and acidity test annually.</span><span class="ml">6 മാസത്തിൽ ഒരിക്കൽ ട്രാൻസ്ഫോർമർ ഓയിൽ BDV ടെസ്റ്റ്. BDV &gt;60kV/cm ആകണം.</span><span class="hi">6 माह में ट्रांसफॉर्मर तेल BDV परीक्षण। BDV &gt;60kV/cm होना चाहिए।</span></div></li>
+        <li><div class="step-text"><strong>IR (Insulation Resistance) Test</strong> – <span class="en">Annual megger test on transformer windings (5kV Megger). PI (Polarisation Index) &gt;1.5 acceptable.</span><span class="ml">ട്രാൻസ്ഫോർമർ വൈൻഡിംഗ് IR ടെസ്റ്റ് (5kV Megger). PI &gt;1.5 ആകണം.</span><span class="hi">ट्रांसफॉर्मर वाइंडिंग IR टेस्ट (5kV Megger)। PI &gt;1.5 स्वीकार्य।</span></div></li>
+        <li><div class="step-text"><strong>VCB Servicing</strong> – <span class="en">Check contact gap, spring charge mechanism, breaker timing, SF6 gas pressure (if used).</span><span class="ml">VCB കോൺടാക്ട് ഗ്യാപ്, സ്പ്രിംഗ് ചാർജ്, ടൈമിംഗ് ടെസ്റ്റ്.</span><span class="hi">VCB कॉन्टेक्ट गैप, स्प्रिंग चार्ज, टाइमिंग टेस्ट।</span></div></li>
+        <li><div class="step-text"><strong>Earth Pit Inspection</strong> – <span class="en">Measure earth resistance of transformer neutral and body (&lt;1Ω). Water the earth pit if dry.</span><span class="ml">ട്രാൻസ്ഫോർമർ ന്യൂട്രൽ, ബോഡി ഏർത്ത് (&lt;1Ω) അളക്കുക.</span><span class="hi">ट्रांसफॉर्मर न्यूट्रल, बॉडी अर्थ (&lt;1Ω) मापें।</span></div></li>
+      </ol>`,
+    Safety:`
+      <div class="warn-box"><div class="wicon">⚡</div><div class="wtext en">HT substation work is restricted to Licensed Electrical Supervisors (Class-I certificate holders) only. Never enter HT room alone. Use safety shoes, HV gloves, face shield, and keep rubber mat underfoot.</div><div class="wtext ml">HT സബ്-സ്റ്റേഷൻ ജോലി Class-I ലൈസൻസ് ഉള്ള Supervisor മാത്രം. HV ഗ്ലൗസ്, ഫേസ് ഷീൽഡ്, റബ്ബർ മാറ്റ് നിർബന്ധം.</div><div class="wtext hi">HT सबस्टेशन कार्य केवल Class-I लाइसेंसधारी सुपरवाइजर ही करें। HV दस्ताने, फेस शील्ड, रबर मैट अनिवार्य।</div></div>
+      <div class="tag-row"><span class="etag red">HV Gloves Class 2</span><span class="etag red">Rubber Mat IS 15652</span><span class="etag orange">Permit to Work</span><span class="etag red">Never Work Alone</span></div>`
+  }
+},
+
+fire:{
+  icon:'🔥',color:'#C62828',cls:'c-fire',
+  name:{en:'Fire Protection System',ml:'അഗ്നി സംരക്ഷണ സംവിധാനം',hi:'अग्नि सुरक्षा प्रणाली'},
+  sub:{en:'FACP – Detectors – Sprinklers – Fire Pumps – Suppression',ml:'FACP – ഡിറ്റക്ടർ – സ്പ്രിങ്ക്ലർ – ഫയർ പമ്പ്',hi:'FACP – डिटेक्टर – स्प्रिंकलर – फायर पंप'},
+  tabs:['Overview','Components','Electrical Tasks','Safety'],
+  content:{
+    Overview:`<p class="en">The Fire Alarm & Suppression system is the most critical life-safety system in the mall. The FACP (Fire Alarm Control Panel) receives inputs from smoke/heat detectors, manual call points, and activates alarms, sprinklers, fire doors, PA evacuation, and staircase pressurisation.</p>
+      <p class="ml">ഫയർ അലാം & സപ്രഷൻ സിസ്റ്റം മാളിലെ ഏറ്റവും നിർണ്ണായക Life Safety സിസ്റ്റം ആണ്. FACP (ഫയർ അലാം കൺട്രോൾ പാനൽ) സ്മോക്ക്/ഹീറ്റ് ഡിറ്റക്ടർ, MCP-ൽ നിന്ന് ഇൻപുട്ട് ലഭിക്കുന്നു; അലാം, സ്പ്രിങ്ക്ലർ, ഫയർ ഡോർ, PA ഇവ ആക്ടിവേറ്റ് ചെയ്യുന്നു.</p>
+      <p class="hi">फायर अलार्म और दमन प्रणाली मॉल की सबसे महत्वपूर्ण जीवन-सुरक्षा प्रणाली है। FACP स्मोक/हीट डिटेक्टर, MCP से इनपुट लेकर अलार्म, स्प्रिंकलर, फायर दरवाजे, PA इवेक्यूएशन सक्रिय करता है।</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="ibtitle">FACP Supply</div><div class="ibval">230V AC + Battery</div><div class="ibsub">24V DC internal bus, 72hr standby</div></div>
+        <div class="info-box"><div class="ibtitle">Detection</div><div class="ibval">Addressable Loop</div><div class="ibsub">Up to 127 devices/loop</div></div>
+        <div class="info-box"><div class="ibtitle">Fire Pump</div><div class="ibval">Jockey + Main + Standby</div><div class="ibsub">NFPA 20, IS 12349</div></div>
+        <div class="info-box"><div class="ibtitle">Suppression</div><div class="ibval">Wet Pipe Sprinkler</div><div class="ibsub">68°C / 141°C bulbs</div></div>
+      </div>
+      <div class="tag-row"><span class="etag red">NBC 2016</span><span class="etag red">NFPA 72</span><span class="etag red">IS 2189</span><span class="etag orange">Fire NOC Mandatory</span></div>`,
+    Components:`
+      <table class="spec-table">
+        <tr><th>Device</th><th class="en">Type / Function</th><th class="ml">ടൈപ്പ് / പ്രവർത്തനം</th><th class="hi">प्रकार / कार्य</th></tr>
+        <tr><td>Smoke Detector (SD)</td><td class="en">Photoelectric / ionisation; detects smoke in early stage</td><td class="ml">ഫോട്ടോഇലക്ട്രിക്; പ്രാരംഭ ദശയിൽ പുക കണ്ടെത്തുന്നു</td><td class="hi">फोटोइलेक्ट्रिक; प्रारंभिक चरण में धुंआ पहचानता है</td></tr>
+        <tr><td>Heat Detector (HD)</td><td class="en">ROR (Rate of Rise) + fixed 58°C; kitchen / boiler areas</td><td class="ml">ROR + 58°C ഫിക്സ്ഡ്; കിച്ചൻ / ബോയിലർ ഏരിയ</td><td class="hi">ROR + 58°C फिक्स्ड; किचन / बॉयलर क्षेत्र</td></tr>
+        <tr><td>Manual Call Point (MCP)</td><td class="en">Break-glass type; installed at exit routes every 30m</td><td class="ml">ബ്രേക്ക്-ഗ്ലാസ്; 30m ദൂരത്തിൽ ഓരോ ഷ്ടോ</td><td class="hi">ब्रेक-ग्लास; हर 30m पर निकास मार्गों में</td></tr>
+        <tr><td>Hooter / Sounder</td><td class="en">24V DC, 85 dB min, zone-wise activation</td><td class="ml">24V DC, 85 dB; സോൺ-വൈസ് ആക്ടിവേഷൻ</td><td class="hi">24V DC, 85 dB; जोन-वार सक्रियण</td></tr>
+        <tr><td>Sprinkler Head</td><td class="en">Glass bulb 68°C (red) or 141°C (green), pendant/upright/sidewall</td><td class="ml">ഗ്ലാസ് ബൾബ് 68°C (ചുവപ്പ്)/141°C (പച്ച)</td><td class="hi">ग्लास बल्ब 68°C (लाल)/141°C (हरा)</td></tr>
+        <tr><td>Fire Pump Panel</td><td class="en">Auto-start on pressure drop, DOL/VFD, diesel backup pump</td><td class="ml">പ്രഷർ ഡ്രോപ്പ് → ഓട്ടോ-സ്റ്റാർട്ട്; DOL/VFD; ഡീസൽ ബാക്കപ്</td><td class="hi">प्रेशर ड्रॉप → ऑटो-स्टार्ट; DOL/VFD; डीजल बैकअप</td></tr>
+        <tr><td>Gas Suppression (Server Room)</td><td class="en">FM-200 / Novec 1230, clean agent, 10 sec discharge time</td><td class="ml">FM-200 / Novec 1230, ക്ലീൻ ഏജൻ്റ്, 10 സെ. ഡിസ്ചാർജ്</td><td class="hi">FM-200 / Novec 1230, क्लीन एजेंट, 10 सेकंड डिस्चार्ज</td></tr>
+      </table>`,
+    'Electrical Tasks':`
+      <ol class="steps">
+        <li><div class="step-text"><strong class="en">Loop Circuit Resistance Check</strong><strong class="ml">ലൂപ്പ് സർക്കീട്ട് ടെസ്റ്റ്</strong><strong class="hi">लूप सर्किट परीक्षण</strong> – <span class="en">Measure loop resistance from FACP. Should be &lt;40Ω/loop. Open circuit indicates cable fault; short circuit indicates damaged detector.</span><span class="ml">FACP-ൽ നിന്ന് ലൂപ്പ് റസിസ്റ്റൻസ് അളക്കുക. &lt;40Ω/ലൂപ്. ഓപ്പൺ = കേബിൾ ഫോൾട്ട്; ഷോർട്ട് = ഡിറ്റക്ടർ ഡാമേജ്.</span><span class="hi">FACP से लूप रेजिस्टेंस मापें। &lt;40Ω/लूप। ओपन = केबल फॉल्ट; शॉर्ट = डिटेक्टर क्षति।</span></div></li>
+        <li><div class="step-text"><strong>Fire Pump Auto-Start Test</strong> – <span class="en">Close the jockey pump discharge valve to drop pressure; verify main pump starts automatically at preset pressure (3.5 bar typical).</span><span class="ml">ജോക്കി പമ്പ് ഡിസ്ചാർജ് വാൽവ് ക്ലോസ് ചെയ്ത് പ്രഷർ ഡ്രോപ്പ് ഉണ്ടാക്കുക; 3.5 bar-ൽ മെയ്ൻ പമ്പ് ഓട്ടോ-സ്റ്റാർട്ട് ആകണം.</span><span class="hi">जॉकी पंप डिस्चार्ज वाल्व बंद करके प्रेशर ड्रॉप करें; 3.5 bar पर मेन पंप ऑटो-स्टार्ट होना चाहिए।</span></div></li>
+        <li><div class="step-text"><strong>Detector Functional Test</strong> – <span class="en">Use canned smoke (for smoke detectors) or heat gun (for heat detectors) to verify FACP shows correct zone alarm and buzzer activates.</span><span class="ml">സ്മോക്ക് ടെസ്ടർ / ഹീറ്റ് ഗൺ ഉപയോഗിച്ച് ഡിറ്റക്ടർ ടെസ്റ്റ് ചെയ്ത് FACP സോൺ അലാം കാണിക്കുന്നുണ്ടോ എന്ന് ഉറപ്പ് വരുത്തുക.</span><span class="hi">कैन्ड स्मोक / हीट गन से डिटेक्टर टेस्ट करें; FACP पर सही जोन अलार्म दिखना चाहिए।</span></div></li>
+        <li><div class="step-text"><strong>Battery Backup Test</strong> – <span class="en">Switch off FACP mains supply; verify system runs on 24V batteries; check battery voltage under load (&gt;22V acceptable).</span><span class="ml">FACP മെയ്ൻസ് ഓഫ് ചെയ്ത് 24V ബാറ്ററിയിൽ ഓടുന്നുണ്ടോ പരിശോധിക്കുക. ലോഡ് വോൾട്ടേജ് &gt;22V ആകണം.</span><span class="hi">FACP मेन्स बंद करके 24V बैटरी पर चलना जांचें। लोड वोल्टेज &gt;22V होना चाहिए।</span></div></li>
+      </ol>`,
+    Safety:`
+      <div class="warn-box"><div class="wicon">🚨</div><div class="wtext en">Never disable or bypass fire alarm zones without written Fire Officer permission. Always notify the control room before conducting fire system tests to avoid false emergency response.</div><div class="wtext ml">ഫയർ ഓഫിസർ അനുമതി ഇല്ലാതെ ഫയർ അലാം സോൺ ഡിസേബിൾ / ബൈപ്പാസ് ചെയ്യരുത്. ടെസ്റ്റ് ചെയ്യുന്നതിന് മുൻപ് കൺട്രോൾ റൂമിനെ അറിയിക്കണം.</div><div class="wtext hi">लिखित अनुमति के बिना फायर जोन बाइपास न करें। परीक्षण से पहले कंट्रोल रूम को सूचित करें।</div></div>`
+  }
+},
+
+cctv:{
+  icon:'📹',color:'#6A1B9A',cls:'c-cctv',
+  name:{en:'CCTV & Security System',ml:'CCTV & സെക്യൂരിറ്റി സിസ്റ്റം',hi:'CCTV और सुरक्षा प्रणाली'},
+  sub:{en:'IP Cameras – NVR – Access Control – ANPR – Video Analytics',ml:'IP ക്യാമറ – NVR – ആക്സസ് കൺട്രോൾ – ANPR',hi:'IP कैमरा – NVR – एक्सेस कंट्रोल – ANPR'},
+  tabs:['Overview','Components','Electrical Tasks','Safety'],
+  content:{
+    Overview:`<p class="en">A shopping mall requires a comprehensive CCTV + integrated security system. Hundreds of IP cameras are networked via PoE switches to an NVR server room. The CCTV control room is in B1. Integrated with access control (boom barriers, turnstiles), ANPR at parking entry/exit, video analytics (crowd counting, intrusion), and the BMS.</p>
+      <p class="ml">ഒരു ഷോപ്പിംഗ് മാളിന് വ്യാപകമായ CCTV + ഇന്റഗ്രേറ്റഡ് സെക്യൂരിറ്റി സിസ്റ്റം ആവശ്യമാണ്. PoE സ്വിച്ചുകൾ വഴി IP ക്യാമറകൾ B1-ലെ NVR സർവർ റൂമിലേക്ക് ബന്ധിപ്പിക്കുന്നു. ANPR, ആക്സസ് കൺട്രോൾ, BMS ഇൻ്റഗ്രേഷൻ ഉൾപ്പെടുന്നു.</p>
+      <p class="hi">शॉपिंग मॉल में IP कैमरे PoE स्विच के माध्यम से B1 के NVR सर्वर रूम से जुड़े हैं। ANPR, एक्सेस कंट्रोल और BMS एकीकरण भी होता है।</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="ibtitle">Camera Count</div><div class="ibval">200–400 nos</div><div class="ibsub">2MP–8MP IP cameras</div></div>
+        <div class="info-box"><div class="ibtitle">PoE Power</div><div class="ibval">15.4W – 30W/camera</div><div class="ibsub">IEEE 802.3af/at</div></div>
+        <div class="info-box"><div class="ibtitle">Recording</div><div class="ibval">30-day minimum</div><div class="ibsub">H.265+ compression</div></div>
+        <div class="info-box"><div class="ibtitle">UPS Backup</div><div class="ibval">Online UPS</div><div class="ibsub">4 hr battery backup</div></div>
+      </div>`,
+    Components:`
+      <table class="spec-table">
+        <tr><th>Component</th><th class="en">Specification</th><th class="ml">സ്പെസിഫിക്കേഷൻ</th><th class="hi">विशिष्टता</th></tr>
+        <tr><td>PTZ Camera</td><td class="en">2MP+ / 36× optical zoom / IR 200m / mall atrium</td><td class="ml">2MP+, 36× ഒപ്ടിക്കൽ സൂം, IR 200m, അട്രിയം</td><td class="hi">2MP+, 36× ऑप्टिकल ज़ूम, IR 200m</td></tr>
+        <tr><td>Fixed Dome IP Camera</td><td class="en">4MP, varifocal 2.8–12mm, IP67, IK10, WDR, PoE</td><td class="ml">4MP, IP67, IK10, WDR, PoE, അകത്ത്-പുറത്ത്</td><td class="hi">4MP, IP67, IK10, WDR, PoE</td></tr>
+        <tr><td>ANPR Camera</td><td class="en">Dedicated LPR camera, IR illuminator, parking barrier interface</td><td class="ml">LPR ക്യാമറ, IR ഇല്ലൂമിനേറ്റർ, ബാരിയർ ഇൻ്റർഫേസ്</td><td class="hi">LPR कैमरा, IR इलुमिनेटर, बैरियर इंटरफेस</td></tr>
+        <tr><td>PoE Network Switch</td><td class="en">24-port, 370W PoE budget, managed, VLAN, fibre uplink</td><td class="ml">24-പോർട്ട്, 370W PoE, VLAN, ഫൈബർ അപ്ലിങ്ക്</td><td class="hi">24-पोर्ट, 370W PoE, VLAN, फाइबर अपलिंक</td></tr>
+        <tr><td>NVR Server</td><td class="en">64ch+ NVR, RAID-5 storage, redundant PSU, online UPS</td><td class="ml">64ch+ NVR, RAID-5 സ്റ്റോറേജ്, UPS</td><td class="hi">64ch+ NVR, RAID-5 स्टोरेज, UPS</td></tr>
+        <tr><td>Access Controller</td><td class="en">TCP/IP, RFID/biometric readers, EM lock (fail-safe), battery backup</td><td class="ml">TCP/IP, RFID/ബയോമെട്രിക്, EM ലോക്ക്, ബാറ്ററി</td><td class="hi">TCP/IP, RFID/बायोमेट्रिक, EM लॉक, बैटरी</td></tr>
+      </table>`,
+    'Electrical Tasks':`
+      <ol class="steps">
+        <li><div class="step-text"><strong>PoE Cable Certification</strong> – <span class="en">Test all CAT6A cables with cable tester (Fluke). Verify wire map, length &lt;90m, attenuation, crosstalk for PoE.</span><span class="ml">CAT6A കേബിൾ ഫ്ലൂക്ക് ടെസ്ടർ ഉപയോഗിച്ച് സർട്ടിഫൈ ചെയ്യുക. ലൈൻ &lt;90m; attenuation, crosstalk.</span><span class="hi">CAT6A केबल Fluke टेस्टर से सर्टिफाई करें। लंबाई &lt;90m, attenuation, crosstalk जांचें।</span></div></li>
+        <li><div class="step-text"><strong>UPS Changeover Test</strong> – <span class="en">Simulate mains failure; verify NVR and all PoE switches remain powered from UPS for rated backup time (4 hrs minimum).</span><span class="ml">മെയ്ൻ ഫെയിൽ സിമുലേറ്റ് ചെയ്ത് NVR, PoE സ്വിച്ചുകൾ UPS-ൽ 4 മണിക്കൂർ ഓടുന്നുണ്ടോ ഉറപ്പ് വരുത്തുക.</span><span class="hi">मेन्स फेल सिमुलेट करें; NVR और PoE स्विच UPS पर 4 घंटे चलने चाहिए।</span></div></li>
+        <li><div class="step-text"><strong>Camera Earthing & Surge Protection</strong> – <span class="en">All outdoor camera housings must be bonded to earth. Install PoE surge protectors at camera end (LAN/PoE SPD).</span><span class="ml">ഔട്ട്ഡോർ ക്യാമറ ഹൗസിംഗ് ഏർത്ത് ബോണ്ടഡ് ആകണം. PoE SPD ഇൻസ്റ്റാൾ ചെയ്യണം.</span><span class="hi">आउटडोर कैमरा हाउसिंग अर्थ बॉन्डेड होनी चाहिए। PoE SPD लगाएं।</span></div></li>
+      </ol>`,
+    Safety:`<div class="safe-box"><div class="sicon2">🔒</div><div class="stext en">CCTV data is sensitive. Access to NVR must be restricted with password and biometric entry. Data retention policy must comply with local data protection laws.</div><div class="stext ml">CCTV ഡേറ്റ ശ്രദ്ധാപൂർവ്വം കൈകാര്യം ചെയ്യണം. NVR-ലേക്ക് ആക്സസ് പാസ്‌വേഡ്, ബയോമെട്രിക് കൊണ്ട് നിയന്ത്രിക്കണം.</div><div class="stext hi">CCTV डेटा संवेदनशील है। NVR तक पहुंच पासवर्ड और बायोमेट्रिक से नियंत्रित करें।</div></div>`
+  }
+},
+
+ups:{
+  icon:'🔋',color:'#F57F17',cls:'c-ups',
+  name:{en:'UPS Systems',ml:'UPS സംവിധാനം',hi:'UPS प्रणाली'},
+  sub:{en:'Online Double-Conversion – Battery Banks – Critical Loads',ml:'ഓൺലൈൻ ഡബിൾ-കൺവേർഷൻ – ബാറ്ററി ബാങ്ക്',hi:'ऑनलाइन डबल-कन्वर्जन – बैटरी बैंक'},
+  tabs:['Overview','Battery Maintenance','Electrical Tasks','Safety'],
+  content:{
+    Overview:`<p class="en">UPS (Uninterruptible Power Supply) provides clean, conditioned power to critical loads: CCTV/NVR, fire alarm FACP, BMS servers, POS terminals, and data network equipment. Online double-conversion UPS provides zero transfer time and excellent power quality.</p>
+      <p class="ml">UPS ക്രിറ്റിക്കൽ ലോഡ്കൾക്ക് (CCTV/NVR, FACP, BMS, POS, ഡേറ്റ നെറ്റ്‌വർക്ക്) ക്ലീൻ, കണ്ടീഷൻഡ് പവർ നൽകുന്നു. ഓൺലൈൻ ഡബിൾ-കൺവേർഷൻ UPS സീറോ ട്രാൻസ്ഫർ ടൈം ഉറപ്പ് നൽകുന്നു.</p>
+      <p class="hi">UPS क्रिटिकल लोड को (CCTV/NVR, FACP, BMS, POS, नेटवर्क) क्लीन पावर देता है। ऑनलाइन डबल-कन्वर्जन UPS जीरो ट्रांसफर टाइम देता है।</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="ibtitle">UPS Type</div><div class="ibval">Online Double Conversion</div><div class="ibsub">IEC 62040-3 Class VFI</div></div>
+        <div class="info-box"><div class="ibtitle">Capacity</div><div class="ibval">20–80 kVA</div><div class="ibsub">N+1 redundancy</div></div>
+        <div class="info-box"><div class="ibtitle">Battery</div><div class="ibval">VRLA / Li-Ion</div><div class="ibsub">30–60 min backup typical</div></div>
+        <div class="info-box"><div class="ibtitle">Efficiency</div><div class="ibval">&gt;96%</div><div class="ibsub">ECO mode available</div></div>
+      </div>`,
+    'Battery Maintenance':`
+      <ol class="steps">
+        <li><div class="step-text"><strong class="en">Monthly Battery Check</strong><strong class="ml">മാസ ബാറ്ററി ചെക്ക്</strong><strong class="hi">मासिक बैटरी जांच</strong> – <span class="en">Measure each VRLA cell voltage (should be 2.0–2.15V/cell at float). Check for swelling, leakage, corrosion on terminals.</span><span class="ml">ഓരോ VRLA സെൽ വോൾട്ടേജ് (2.0–2.15V/cell ഫ്ലോട്ടിൽ). സ്വെല്ലിംഗ്, ലീക്ക്, ടെർമിനൽ കൊറോഷൻ പരിശോധിക്കുക.</span><span class="hi">प्रत्येक VRLA सेल वोल्टेज (2.0–2.15V/cell फ्लोट)। सूजन, लीक, टर्मिनल जंग जांचें।</span></div></li>
+        <li><div class="step-text"><strong>Load Bank Test (Annual)</strong> – <span class="en">Discharge to 80% DOD (Depth of Discharge) at rated load. Record discharge time. Battery replacement needed if &lt;80% of rated capacity.</span><span class="ml">രേഖപ്പെടുത്തിയ ലോഡിൽ 80% DOD ഡിസ്ചാർജ്. ഡിസ്ചാർജ് ടൈം രേഖപ്പെടുത്തുക. &lt;80% കപ്പാസിറ്റി → ബാറ്ററി മാറ്റുക.</span><span class="hi">रेटेड लोड पर 80% DOD तक डिस्चार्ज। डिस्चार्ज समय रिकॉर्ड करें। &lt;80% क्षमता → बैटरी बदलें।</span></div></li>
+        <li><div class="step-text"><strong>Torque Check Terminals</strong> – <span class="en">Tighten battery terminal bolts to manufacturer torque (typically 2–4 Nm). Loose terminals cause heating and arc hazard.</span><span class="ml">ബാറ്ററി ടെർമിനൽ ബോൾട്ടുകൾ (2–4 Nm) മുറുക്കുക. ലൂസ് ടെർമിനൽ → ഹീറ്റിംഗ്, ആർക്ക് ഹാസർഡ്.</span><span class="hi">टर्मिनल बोल्ट (2–4 Nm) कसें। ढीला टर्मिनल → हीटिंग और आर्क हैजार्ड।</span></div></li>
+      </ol>`,
+    'Electrical Tasks':`
+      <ol class="steps">
+        <li><div class="step-text"><strong>Bypass Switch Operation</strong> – <span class="en">For UPS servicing, transfer load to static bypass (automatic) or manual bypass before opening UPS cabinet.</span><span class="ml">UPS സർവീസ്: ലോഡ് ഓട്ടോ/മാനുവൽ ബൈപ്പാസ്ലേക്ക് ട്രാൻസ്ഫർ ചെയ്ത ശേഷം ക്യാബിനറ്റ് തുറക്കുക.</span><span class="hi">UPS सर्विसिंग से पहले ऑटो/मैनुअल बाइपास पर लोड ट्रांसफर करें।</span></div></li>
+        <li><div class="step-text"><strong>Harmonic Measurement</strong> – <span class="en">Measure THD at UPS input and output annually. Input THD &gt;15% needs input filter. Output THD should be &lt;2%.</span><span class="ml">UPS ഇൻപുട്ട്/ഔട്ട്പുട്ടിൽ THD അളക്കുക. ഇൻപുട്ട് THD &gt;15% → ഫിൽട്ടർ. ഔട്ട്പുട്ട് THD &lt;2% ആകണം.</span><span class="hi">UPS इनपुट/आउटपुट पर THD मापें। इनपुट THD &gt;15% → फिल्टर। आउटपुट THD &lt;2% होना चाहिए।</span></div></li>
+      </ol>`,
+    Safety:`<div class="warn-box"><div class="wicon">🔋</div><div class="wtext en">VRLA batteries emit hydrogen gas during overcharge. Ensure ventilation in battery room. No open flames or sparks near battery bank. Use insulated tools to prevent short circuit (battery can deliver thousands of Amperes).</div><div class="wtext ml">VRLA ബാറ്ററി ഓവർചാർജ് സമയത്ത് ഹൈഡ്രജൻ ഗ്യാസ് പ്രസരിക്കുന്നു. ബാറ്ററി റൂം വൃത്തിക്ക് വെൻ്റിലേഷൻ ഉണ്ടാകണം. തീ, സ്പാർക്ക് ഇല്ലാതിരിക്കണം. ഇൻസുലേറ്റഡ് ടൂൾസ് ഉപയോഗിക്കുക.</div><div class="wtext hi">VRLA बैटरी ओवरचार्ज पर हाइड्रोजन गैस उत्सर्जित करती है। बैटरी रूम में वेंटिलेशन जरूरी है। इंसुलेटेड टूल्स उपयोग करें।</div></div>`
+  }
+},
+
+bms:{
+  icon:'🖥️',color:'#283593',cls:'c-bms',
+  name:{en:'BMS / SCADA',ml:'BMS / SCADA',hi:'BMS / SCADA'},
+  sub:{en:'Building Management System – Energy Dashboard – MODBUS/BACnet',ml:'ബിൽഡിംഗ് മാനേജ്മെന്റ് – MODBUS/BACnet',hi:'बिल्डिंग मैनेजमेंट – MODBUS/BACnet'},
+  tabs:['Overview','Integration','Electrical Tasks','Safety'],
+  content:{
+    Overview:`<p class="en">The BMS (Building Management System) is the nerve centre of the mall. It integrates and monitors all electromechanical systems: HVAC, lighting, power (smart meters), fire alarm status, lifts, EV charging, solar yield, and energy consumption. Supervisory control via SCADA workstations in the control room.</p>
+      <p class="ml">BMS (ബിൽഡിംഗ് മാനേജ്മെന്റ് സിസ്റ്റം) മാളിന്റെ സെൻ്ട്രൽ ഹബ് ആണ്. HVAC, ലൈറ്റിംഗ്, പവർ, FACP, ലിഫ്റ്റ്, EV, സോളാർ – ഇവ എല്ലാം ഇൻ്റഗ്രേറ്റ് ചെയ്ത് SCADA വർക്ക്സ്റ്റേഷനിൽ നിരീക്ഷിക്കുന്നു.</p>
+      <p class="hi">BMS मॉल का केंद्रीय हब है। HVAC, लाइटिंग, पावर, FACP, लिफ्ट, EV, सोलर – सभी को SCADA वर्कस्टेशन पर इंटीग्रेट कर मॉनिटर किया जाता है।</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="ibtitle">Protocol</div><div class="ibval">BACnet / MODBUS</div><div class="ibsub">TCP/IP, RS-485</div></div>
+        <div class="info-box"><div class="ibtitle">I/O Points</div><div class="ibval">2000–5000</div><div class="ibsub">DDC controllers per floor</div></div>
+        <div class="info-box"><div class="ibtitle">Energy Dashboard</div><div class="ibval">Real-time kWh</div><div class="ibsub">Per zone, per tenant</div></div>
+        <div class="info-box"><div class="ibtitle">Alarm Management</div><div class="ibval">Email / SMS / App</div><div class="ibsub">Priority-based alerting</div></div>
+      </div>`,
+    Integration:`
+      <table class="spec-table">
+        <tr><th>System</th><th class="en">Integration</th><th class="ml">ഇൻ്റഗ്രേഷൻ</th><th class="hi">एकीकरण</th></tr>
+        <tr><td>HVAC / Chillers</td><td class="en">BACnet MS/TP; chiller ON/OFF, setpoint adjust, alarms</td><td class="ml">BACnet; ചില്ലർ ON/OFF, സെറ്റ്‌പോയിൻ്റ്, അലാം</td><td class="hi">BACnet; चिलर ON/OFF, सेटपॉइंट, अलार्म</td></tr>
+        <tr><td>Lighting / DALI</td><td class="en">DALI gateway to BMS; scheduled dimming, occupancy control</td><td class="ml">DALI ഗേറ്റ്‌വേ; ഡിമ്മിംഗ്, ഒക്യൂപ്പൻസി</td><td class="hi">DALI गेटवे; डिमिंग, ऑक्यूपेंसी</td></tr>
+        <tr><td>Smart Meters</td><td class="en">MODBUS TCP; kWh, kVAr, PF, harmonics per feeder</td><td class="ml">MODBUS; kWh, kVAr, PF, ഹാർമോണിക്സ്</td><td class="hi">MODBUS; kWh, kVAr, PF, हार्मोनिक्स</td></tr>
+        <tr><td>Fire Alarm</td><td class="en">Dry contact / BACnet; zone alarm status, AHU shutdown on alarm</td><td class="ml">ഡ്രൈ കോൺടാക്ട്; FACP അലാം → AHU ഷട്ടഡൗൺ</td><td class="hi">ड्राई कॉन्टेक्ट; FACP अलार्म → AHU शटडाउन</td></tr>
+        <tr><td>Solar Inverters</td><td class="en">MODBUS RTU/TCP; yield, irradiation, inverter health</td><td class="ml">MODBUS; ഉൽപ്പാദനം, ഇറേഡിയേഷൻ, ഹെൽദ്</td><td class="hi">MODBUS; उत्पादन, इरेडिएशन, हेल्थ</td></tr>
+        <tr><td>Lifts</td><td class="en">BACnet / relay interface; status, floor, maintenance alerts</td><td class="ml">BACnet/റിലേ; ലിഫ്റ്റ് സ്റ്റാറ്റസ്, ഫ്ലോർ, മെയ്ന്റനൻസ്</td><td class="hi">BACnet/रिले; लिफ्ट स्टेटस, फ्लोर, रखरखाव</td></tr>
+      </table>`,
+    'Electrical Tasks':`
+      <ol class="steps">
+        <li><div class="step-text"><strong>DDC Controller I/O Calibration</strong> – <span class="en">Verify analogue input (0–10V / 4–20mA) from sensors against handheld reference. Adjust span/zero in DDC if drift &gt;2%.</span><span class="ml">DDC ആനലോഗ് ഇൻപുട്ട് (0–10V / 4–20mA) ഹാൻ‌ഡ്‌ഹെൽഡ് റഫറൻസ് ഉപയോഗിച്ച് കാലിബ്രേറ്റ് ചെയ്യുക.</span><span class="hi">DDC एनालॉग इनपुट को हैंडहेल्ड रेफरेंस से कैलिब्रेट करें।</span></div></li>
+        <li><div class="step-text"><strong>MODBUS Communication Test</strong> – <span class="en">Use MODBUS Poll software to verify register mapping, baud rate (9600/19200), parity. Check RS-485 bus termination resistors.</span><span class="ml">MODBUS Poll ഉപയോഗിച്ച് രജിസ്ടർ മാപ്പിംഗ്, baud rate, parity, RS-485 ടെർമിനേഷൻ പരിശോധിക്കുക.</span><span class="hi">MODBUS Poll से रजिस्टर मैपिंग, baud rate, RS-485 टर्मिनेशन जांचें।</span></div></li>
+      </ol>`,
+    Safety:`<div class="safe-box"><div class="sicon2">🖥️</div><div class="stext en">BMS control network must be on a separate VLAN from the business/public network. Cybersecurity patching of BMS servers must be scheduled quarterly to prevent ransomware attacks on building systems.</div><div class="stext ml">BMS നെറ്റ്‌വർക്ക് ബിസിനസ് നെറ്റ്‌വർക്കിൽ നിന്ന് ഒരു VLAN-ൽ അലഗൻ ആകണം. ക്വോർട്ടർ സൈബർ-സെക്യൂരിറ്റി പാച്ചിംഗ്.</div><div class="stext hi">BMS नेटवर्क बिजनेस नेटवर्क से अलग VLAN पर होना चाहिए। त्रैमासिक साइबर-सुरक्षा पैचिंग करें।</div></div>`
+  }
+},
+
+ev:{
+  icon:'🚗',color:'#1B5E20',cls:'c-ev',
+  name:{en:'EV Charging Infrastructure',ml:'EV ചാർജിംഗ് ഇൻഫ്രാസ്ട്രക്ചർ',hi:'EV चार्जिंग अवसंरचना'},
+  sub:{en:'AC/DC Chargers – OCPP – Load Management – Billing',ml:'AC/DC ചാർജർ – OCPP – ലോഡ് മാനേജ്മെന്റ്',hi:'AC/DC चार्जर – OCPP – लोड मैनेजमेंट'},
+  tabs:['Overview','Charger Types','Electrical Tasks','Safety'],
+  content:{
+    Overview:`<p class="en">EV Charging stations in the mall parking (B1/B2) provide AC slow charging and DC fast charging for electric vehicles. OCPP 1.6/2.0 protocol connects chargers to a central management system for billing, load balancing, and remote diagnostics. Integrated with solar PV for green charging.</p>
+      <p class="ml">മാൾ പാർക്കിംഗ് (B1/B2) ൽ EV ചാർജിംഗ് സ്റ്റേഷനുകൾ AC സ്ലോ, DC ഫാസ്ട് ചാർജിംഗ് നൽകുന്നു. OCPP 1.6/2.0 ബില്ലിംഗ്, ലോഡ് ബാലൻസിംഗ്, റിമോട്ട് ഡയഗ്നോസ്റ്റിക്സ് നൽകുന്നു.</p>
+      <p class="hi">मॉल पार्किंग (B1/B2) में EV चार्जिंग स्टेशन AC स्लो और DC फास्ट चार्जिंग प्रदान करते हैं। OCPP 1.6/2.0 बिलिंग, लोड बैलेंसिंग, रिमोट डायग्नोस्टिक्स देता है।</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="ibtitle">AC Charger (Type 2)</div><div class="ibval">7.4 kW / 22 kW</div><div class="ibsub">Single/Three phase</div></div>
+        <div class="info-box"><div class="ibtitle">DC Fast Charger</div><div class="ibval">30–150 kW</div><div class="ibsub">CCS2 / CHAdeMO</div></div>
+        <div class="info-box"><div class="ibtitle">Number of Points</div><div class="ibval">20–50 nos</div><div class="ibsub">B1 + B2 parking</div></div>
+        <div class="info-box"><div class="ibtitle">Smart Load Mgmt</div><div class="ibval">OCPP + BMS</div><div class="ibsub">Peak demand control</div></div>
+      </div>
+      <div class="tag-row"><span class="etag green">BEE Star Rating</span><span class="etag green">MNRE Subsidy</span><span class="etag">OCPP 2.0</span><span class="etag orange">CEA EV Guidelines 2023</span></div>`,
+    'Charger Types':`
+      <table class="spec-table">
+        <tr><th>Type</th><th class="en">Specs</th><th class="ml">സ്പെസ്</th><th class="hi">विशिष्टता</th></tr>
+        <tr><td>AC Slow (Type 2 / BS1363)</td><td class="en">7.4 kW, 32A, 230V 1φ; typical charge time 6–8 hrs</td><td class="ml">7.4 kW, 32A, 230V; ചാർജ് 6–8 മണിക്കൂർ</td><td class="hi">7.4 kW, 32A; चार्ज 6–8 घंटे</td></tr>
+        <tr><td>AC Fast (Type 2 3φ)</td><td class="en">22 kW, 32A, 415V 3φ; charge time 1.5–3 hrs</td><td class="ml">22 kW, 32A, 415V; 1.5–3 മണിക്കൂർ</td><td class="hi">22 kW, 32A; 1.5–3 घंटे</td></tr>
+        <tr><td>DC Fast Charger (CCS2)</td><td class="en">30–60 kW, 500V DC max, 80A; charge 20–40 min</td><td class="ml">30–60 kW, 500V DC; 20–40 മി.</td><td class="hi">30–60 kW, 500V DC; 20–40 मिनट</td></tr>
+        <tr><td>DC Ultra-Fast (CCS2+CHAdeMO)</td><td class="en">120–150 kW, 1000V DC; charge 10–20 min</td><td class="ml">120–150 kW, 1000V DC; 10–20 മി.</td><td class="hi">120–150 kW, 1000V DC; 10–20 मिनट</td></tr>
+      </table>`,
+    'Electrical Tasks':`
+      <ol class="steps">
+        <li><div class="step-text"><strong>Dedicated Circuit Wiring</strong> – <span class="en">Each AC charger needs a dedicated MCB circuit; DC fast charger needs dedicated MCCB with EV-rated cables (90°C XLPE). Label all circuits clearly.</span><span class="ml">AC ചാർജർ – ഡെഡിക്കേറ്റഡ് MCB; DC ഫാസ്ട് ചാർജർ – MCCB, EV-rated (90°C XLPE) കേബിൾ.</span><span class="hi">AC चार्जर – डेडिकेटेड MCB; DC फास्ट चार्जर – MCCB, 90°C XLPE केबल।</span></div></li>
+        <li><div class="step-text"><strong>RCD Protection</strong> – <span class="en">Type A RCD (30mA) mandatory for AC chargers. DC chargers need Type B RCD (detects DC leakage). Earth continuity essential.</span><span class="ml">AC ചാർജർ – Type A RCD (30mA). DC ചാർജർ – Type B RCD (DC ലീക്കേജ്). ഏർത്ത് കൺ്റ്റിന്യുയിറ്റി.</span><span class="hi">AC चार्जर – Type A RCD (30mA)। DC चार्जर – Type B RCD। अर्थ कन्टिन्यूटी।</span></div></li>
+        <li><div class="step-text"><strong>Load Management Commissioning</strong> – <span class="en">Set max amperage per charger in OCPP backend. Verify dynamic load balancing reduces charging current when mall demand is high.</span><span class="ml">OCPP ബാക്കെൻഡിൽ max amperage സെറ്റ് ചെയ്യുക. ഡൈനാമിക് ലോഡ് ബാലൻസിംഗ് ടെസ്റ്റ് ചെയ്യുക.</span><span class="hi">OCPP बैकएंड में max amperage सेट करें। डायनामिक लोड बैलेंसिंग टेस्ट करें।</span></div></li>
+      </ol>`,
+    Safety:`<div class="warn-box"><div class="wicon">⚡</div><div class="wtext en">DC fast charger output is up to 1000V DC and 200A. Never open DC charger cabinet while vehicle is connected. Use insulated gloves and safety footwear. Interlock must prevent opening under live conditions.</div><div class="wtext ml">DC ഫാസ്ട് ചാർജർ 1000V DC, 200A ഉൽപ്പാദിപ്പിക്കുന്നു. വാഹനം ബന്ധിക്കപ്പെട്ടിരിക്കുന്നപ്പോൾ ക്യാബിനറ്റ് തുറക്കരുത്. ഇൻ്റർലോക്ക് ഉണ്ടെന്ന് ഉറപ്പ് വരുത്തുക.</div><div class="wtext hi">DC फास्ट चार्जर 1000V DC, 200A उत्पन्न करता है। वाहन जुड़े होने पर कैबिनेट न खोलें। इंटरलॉक सुनिश्चित करें।</div></div>`
+  }
+},
+
+hvac:{
+  icon:'❄️',color:'#00838F',cls:'c-hvac',
+  name:{en:'HVAC Systems',ml:'HVAC സംവിധാനം',hi:'HVAC प्रणाली'},
+  sub:{en:'Chillers – AHUs – VFDs – BACnet Controls – FCUs',ml:'ചില്ലർ – AHU – VFD – BACnet',hi:'चिलर – AHU – VFD – BACnet'},
+  tabs:['Overview','Electrical Components','Maintenance','Safety'],
+  content:{
+    Overview:`<p class="en">HVAC is the single largest electrical load in a mall (40–50% of total consumption). Centrifugal/screw chillers, AHUs, FCUs, cooling towers, and condenser water pumps constitute the system. VFDs on motors save 30–50% energy. BMS controls setpoints and scheduling.</p>
+      <p class="ml">HVAC മാളിലെ ഏറ്റവും വലിയ വൈദ്യുത ഭാരം ആണ് (40–50%). സെൻ്ട്രിഫ്യൂഗൽ/സ്ക്ര്യൂ ചില്ലർ, AHU, FCU, കൂളിംഗ് ടൊവർ, പമ്പ്. VFD മോട്ടോർ 30–50% ഊർജ ലാഭം നൽകുന്നു.</p>
+      <p class="hi">HVAC मॉल का सबसे बड़ा भार है (40–50%)। चिलर, AHU, FCU, कूलिंग टावर, पंप शामिल हैं। VFD से 30–50% ऊर्जा बचत।</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="ibtitle">Chiller Capacity</div><div class="ibval">2 × 500 TR</div><div class="ibsub">Variable speed screw chiller</div></div>
+        <div class="info-box"><div class="ibtitle">AHU Power</div><div class="ibval">5.5–37 kW each</div><div class="ibsub">VFD controlled, BACnet</div></div>
+        <div class="info-box"><div class="ibtitle">FCU</div><div class="ibval">200–500 nos</div><div class="ibsub">4-pipe, 3-speed fan</div></div>
+        <div class="info-box"><div class="ibtitle">Cooling Tower</div><div class="ibval">Induced draft</div><div class="ibsub">VFD fan, conductivity control</div></div>
+      </div>`,
+    'Electrical Components':`
+      <table class="spec-table">
+        <tr><th>Component</th><th class="en">Electrical Details</th><th class="ml">വൈദ്യുത വിവരങ്ങൾ</th><th class="hi">विद्युत विवरण</th></tr>
+        <tr><td>Chiller Motor</td><td class="en">HV motor 3.3kV or LV 415V, 150–250 kW, star-delta/VFD start</td><td class="ml">HV 3.3kV / LV 415V, 150–250 kW, VFD/star-delta</td><td class="hi">HV 3.3kV / LV 415V, 150–250 kW, VFD/स्टार-डेल्टा</td></tr>
+        <tr><td>VFD (Variable Frequency Drive)</td><td class="en">IGBT-based, programmable, integrated EMC filter, bypass</td><td class="ml">IGBT, EMC ഫിൽട്ടർ, ബൈപ്പാസ്</td><td class="hi">IGBT, EMC फिल्टर, बाइपास</td></tr>
+        <tr><td>MCC Panel (Motor Control Centre)</td><td class="en">Individual MCCB, contactor, overload relay, ammeter per motor</td><td class="ml">ഓരോ മോട്ടോറിനും MCCB, കോൺടാക്ടർ, ഓവർലോഡ്</td><td class="hi">प्रत्येक मोटर के लिए MCCB, कॉन्टेक्टर, ओवरलोड</td></tr>
+        <tr><td>BAS Controller (DDC)</td><td class="en">24V DC I/O; PT100 temp sensors, DP sensors, valve actuators</td><td class="ml">24V DC I/O; PT100 ടെമ്പ്, DP സെൻസർ, ആക്ചുവേറ്റർ</td><td class="hi">24V DC I/O; PT100 तापमान, DP सेंसर, एक्चुएटर</td></tr>
+      </table>`,
+    Maintenance:`
+      <ol class="steps">
+        <li><div class="step-text"><strong>VFD Parameter Check</strong> – <span class="en">Check fault log on VFD display. Verify motor current (should be ≤FLA). Check drive cooling fan and heat sink temperature.</span><span class="ml">VFD ഫോൾട്ട് ലോഗ്, മോട്ടോർ കറന്റ് (≤FLA), ഡ്രൈവ് ഫാൻ, ഹീറ്റ്-സിങ്ക് ടെമ്പ്.</span><span class="hi">VFD फॉल्ट लॉग, मोटर करंट (≤FLA), ड्राइव फैन, हीट-सिंक तापमान।</span></div></li>
+        <li><div class="step-text"><strong>Thermal Imaging of MCC</strong> – <span class="en">Annual IR camera scan of MCC bus bars, cable terminations, and breakers. Hotspots indicate loose connections; tighten to torque spec.</span><span class="ml">MCC ബസ് ബാർ, ടെർമിനേഷൻ IR ക്യാമറ സ്കാൻ. ഹോട്ട്‌സ്പോട്ട് = ലൂസ് കണക്ഷൻ.</span><span class="hi">MCC बस बार, टर्मिनेशन IR कैमरा स्कैन। हॉटस्पॉट = ढीला कनेक्शन।</span></div></li>
+        <li><div class="step-text"><strong>Motor Insulation Test</strong> – <span class="en">Annual IR test of all motors >7.5 kW (1kV Megger). IR &lt;1MΩ needs immediate motor service. Record results in log book.</span><span class="ml">>7.5 kW മോട്ടോർ (1kV Megger) IR ടെസ്റ്റ്. IR &lt;1MΩ → ഉടൻ സർവീസ്.</span><span class="hi">>7.5 kW मोटर (1kV Megger) IR टेस्ट। IR &lt;1MΩ → तुरंत सर्विस।</span></div></li>
+      </ol>`,
+    Safety:`<div class="warn-box"><div class="wicon">⚡</div><div class="wtext en">VFD output terminals are live even when motor is stopped. Capacitors in the drive retain charge for up to 10 minutes after power-off. Wait for DC bus discharge before touching VFD terminals.</div><div class="wtext ml">VFD ഔട്ട്പുട്ട് ടെർമിനൽ മോട്ടോർ സ്റ്റോപ്പ് ആയ ശേഷവും ലൈവ് ആണ്. ക്യാപ്സിറ്ററുകൾ 10 മിനിറ്റ് വരെ ചാർജ് ഉൾക്കൊള്ളുന്നു. DC ബസ് ഡിസ്ചാർജ് ആകട്ടെ.</div><div class="wtext hi">VFD आउटपुट टर्मिनल मोटर बंद होने पर भी लाइव रहते हैं। कैपेसिटर 10 मिनट तक चार्ज रखते हैं। DC बस डिस्चार्ज होने की प्रतीक्षा करें।</div></div>`
+  }
+},
+
+lift:{
+  icon:'🛗',color:'#5D4037',cls:'c-lift',
+  name:{en:'Lifts & Escalators',ml:'ലിഫ്റ്റ് & എസ്കലേറ്റർ',hi:'लिफ्ट और एस्केलेटर'},
+  sub:{en:'MRL Lifts – VVVF Drives – Firefighter Mode – ARD – Escalators',ml:'MRL ലിഫ്റ്റ് – VVVF – ഫയർഫൈറ്റർ മോഡ് – ARD',hi:'MRL लिफ्ट – VVVF – ARD – फायरफाइटर मोड'},
+  tabs:['Overview','Electrical Systems','Maintenance','Safety'],
+  content:{
+    Overview:`<p class="en">A multi-storey mall requires multiple passenger lifts (MRL – Machine Room Less), service lifts, dumbwaiters, and escalators. All modern lifts use VVVF (Variable Voltage Variable Frequency) drives for smooth, energy-efficient operation. ARD (Automatic Rescue Device) brings the car to nearest floor on power failure.</p>
+      <p class="ml">മൾട്ടി-സ്റ്റോറി മാളിൽ MRL പാസഞ്ചർ ലിഫ്റ്റ്, സർവീസ് ലിഫ്റ്റ്, എസ്കലേറ്റർ ഉൾപ്പെടുന്നു. VVVF ഡ്രൈവ് സ്മൂത്, ഊർജ-കാര്യക്ഷമ ഓപ്പറേഷൻ നൽകുന്നു. ARD പവർ ഫെയിൽ ആകുമ്പോൾ ഏറ്റവും അടുത്ത ഫ്ലോറിലേക്ക് ലിഫ്റ്റ് കൊണ്ടുവരുന്നു.</p>
+      <p class="hi">मल्टी-स्टोरी मॉल में MRL पैसेंजर लिफ्ट, सर्विस लिफ्ट, एस्केलेटर होते हैं। VVVF ड्राइव ऊर्जा-कुशल ऑपरेशन देता है। ARD पावर फेल पर निकटतम मंजिल पर लाता है।</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="ibtitle">No. of Lifts</div><div class="ibval">6–12 nos</div><div class="ibsub">Passenger + Service + Goods</div></div>
+        <div class="info-box"><div class="ibtitle">Speed</div><div class="ibval">1.0–2.5 m/s</div><div class="ibsub">VVVF controlled</div></div>
+        <div class="info-box"><div class="ibtitle">Capacity</div><div class="ibval">630–1600 kg</div><div class="ibsub">8–20 persons</div></div>
+        <div class="info-box"><div class="ibtitle">Power Supply</div><div class="ibval">415V, 3φ + 230V 1φ</div><div class="ibsub">ARD: 24V battery</div></div>
+      </div>`,
+    'Electrical Systems':`
+      <table class="spec-table">
+        <tr><th>System</th><th class="en">Description</th><th class="ml">വിവരണം</th><th class="hi">विवरण</th></tr>
+        <tr><td>VVVF Drive</td><td class="en">Controls traction motor speed/torque; regenerative braking feeds back energy</td><td class="ml">ട്ര്ക്ഷൻ മോട്ടോർ സ്പീഡ്/ടോർക്ക്; പ്രേഷക ബ്രേക്കിംഗ് ഊർജ ഫീഡ്‌ബ്യാക്ക്</td><td class="hi">ट्रैक्शन मोटर स्पीड/टॉर्क; रिजनरेटिव ब्रेकिंग से ऊर्जा वापस</td></tr>
+        <tr><td>ARD (Automatic Rescue Device)</td><td class="en">Battery-powered; detects mains failure, moves car to nearest floor, opens doors</td><td class="ml">ബാറ്ററി; പവർ ഫെയിൽ → ഏറ്റവും അടുത്ത ഫ്ലോർ → ഡോർ ഓപ്പൺ</td><td class="hi">बैटरी; पावर फेल → निकटतम मंजिल → दरवाजा खुलता है</td></tr>
+        <tr><td>Firefighter Operation</td><td class="en">Phase-1: park at ground on fire alarm. Phase-2: manual firefighter control</td><td class="ml">Phase-1: ഫയർ → ഗ്രൗണ്ടിൽ. Phase-2: ഫയർഫൈറ്റർ ഓപ്പറേഷൻ</td><td class="hi">Phase-1: फायर → ग्राउंड। Phase-2: फायरफाइटर ऑपरेशन</td></tr>
+        <tr><td>Safety Circuit</td><td class="en">Series circuit: final limit switch, buffer, pit ladder, door contacts — any open = stop</td><td class="ml">ഫൈനൽ ലിമിറ്റ്, ബഫർ, ഡോർ കോൺടാക്ട് – ഒന്ന് ഓപ്പൺ = ലിഫ്റ്റ് സ്റ്റോപ്</td><td class="hi">फाइनल लिमिट, बफर, डोर कॉन्टेक्ट – एक खुला = लिफ्ट बंद</td></tr>
+      </table>`,
+    Maintenance:`
+      <ol class="steps">
+        <li><div class="step-text"><strong>Safety Circuit Test</strong> – <span class="en">Monthly: open each safety switch individually and verify lift stops. Includes buffer, pit, door contacts, overspeed governor.</span><span class="ml">ഓരോ സേഫ്റ്റി സ്വിച്ചും ഓരോന്നായി ഓപ്പൺ ചെയ്ത് ലിഫ്റ്റ് സ്റ്റോപ്പ് ആകുന്നുണ്ടോ പരിശോധിക്കുക.</span><span class="hi">प्रत्येक सेफ्टी स्विच को अलग-अलग खोलकर लिफ्ट बंद होना जांचें।</span></div></li>
+        <li><div class="step-text"><strong>ARD Test</strong> – <span class="en">Simulate mains failure; verify ARD moves car to nearest floor within 60 seconds and doors open fully.</span><span class="ml">പവർ ഫെയിൽ സിമുലേറ്റ് ചെയ്ത് ARD 60 സെ. ഉള്ളിൽ ഏറ്റവും അടുത്ത ഫ്ലോറിൽ ഡോർ ഓപ്പൺ ആകണം.</span><span class="hi">पावर फेल सिमुलेट करें; ARD 60 सेकंड में निकटतम मंजिल पर पहुंचे और दरवाजा खुले।</span></div></li>
+      </ol>`,
+    Safety:`<div class="warn-box"><div class="wicon">🛗</div><div class="wtext en">Lift pit and motor room are confined spaces. Obtain work permit and ensure lockout before entry. Never work on lift with car in motion. IS 14665 (Lifts & Escalators code) compliance mandatory.</div><div class="wtext ml">ലിഫ്റ്റ് പിറ്റ്, മോട്ടോർ റൂം – Confined Space. ലോക്കൗട്ട്, വർക്ക് പർമ്മിറ്റ് ഉറപ്പ് ചെയ്ത ശേഷം മാത്രം. IS 14665 കംപ്ലയൻസ്.</div><div class="wtext hi">लिफ्ट पिट और मोटर रूम कन्फाइन्ड स्पेस हैं। लॉकआउट और वर्क परमिट जरूरी। IS 14665 अनुपालन अनिवार्य।</div></div>`
+  }
+},
+
+lv:{
+  icon:'🔌',color:'#1565C0',cls:'c-lv',
+  name:{en:'LV Distribution System',ml:'LV ഡിസ്ട്രിബ്യൂഷൻ',hi:'LV वितरण प्रणाली'},
+  sub:{en:'MDB – Sub-DB – Bus Duct – MCBs – ACBs – Cable Trays',ml:'MDB – Sub-DB – ബസ് ഡക്റ്റ് – MCB – ACB – കേബിൾ ട്രേ',hi:'MDB – Sub-DB – बस डक्ट – MCB – ACB – केबल ट्रे'},
+  tabs:['Overview','Distribution Hierarchy','Electrical Tasks','Safety'],
+  content:{
+    Overview:`<p class="en">LV (Low Voltage) distribution starts at the 415V output of the transformer (MDB – Main Distribution Board) and distributes power through bus ducts or cables to floor sub-distribution boards (SDB), then to final distribution boards (FDB) serving each shop, lighting circuit, and outlet.</p>
+      <p class="ml">LV ഡിസ്ട്രിബ്യൂഷൻ ട്രാൻസ്ഫോർമർ 415V ഔട്ട്പുട്ടിൽ (MDB) തുടങ്ങി ബസ് ഡക്ട്/കേബിൾ വഴി ഫ്ലോർ SDB-ലേക്കും, FDB-ലേക്കും ഓരോ ഷോപ്പ്, ലൈറ്റ്, ഔട്ട്ലറ്റ്ലേക്കും വൈദ്യുതി വിതരണം ചെയ്യുന്നു.</p>
+      <p class="hi">LV वितरण ट्रांसफॉर्मर के 415V आउटपुट (MDB) से बस डक्ट/केबल के माध्यम से फ्लोर SDB, फिर FDB तक प्रत्येक शॉप, लाइट, आउटलेट को बिजली देता है।</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="ibtitle">MDB Rating</div><div class="ibval">3200–5000A ACB</div><div class="ibsub">415V, 3φ, 4-wire</div></div>
+        <div class="info-box"><div class="ibtitle">Bus Duct</div><div class="ibval">1000–3200A</div><div class="ibsub">Sandwich/Air insulated</div></div>
+        <div class="info-box"><div class="ibtitle">Sub-DB per Floor</div><div class="ibval">630A–1600A MCCB</div><div class="ibsub">Per floor / zone</div></div>
+        <div class="info-box"><div class="ibtitle">Tenant DB</div><div class="ibval">100A–400A MCCB</div><div class="ibsub">Per tenant/shop</div></div>
+      </div>`,
+    'Distribution Hierarchy':`
+      <ol class="steps">
+        <li><div class="step-text"><strong>Transformer LV Output → MDB</strong> – <span class="en">415V, 3φ 4-wire output connected via ACB (3200A) to the Main Distribution Board. Bus coupler enables both transformers to run in parallel or as standby.</span><span class="ml">415V, 3φ 4-wire ഔട്ട്പുട്ട് → ACB → MDB. ബസ് കപ്ലർ – ട്രാൻസ്ഫോർമർ പാരലൽ / സ്റ്റാൻഡ്ബൈ.</span><span class="hi">415V, 3φ 4-wire → ACB → MDB। बस कपलर – ट्रांसफॉर्मर पैरेलल/स्टैंडबाय।</span></div></li>
+        <li><div class="step-text"><strong>MDB → Bus Duct Riser</strong> – <span class="en">Busduct riser (1000–2000A sandwich type) runs vertically through each floor with tap-off boxes at each level.</span><span class="ml">1000–2000A ബസ് ഡക്ട് റൈസർ ഓരോ ഫ്ലോറിൽ ടാപ്-ഓഫ് ബോക്സ് ഉൾക്കൊള്ളുന്നു.</span><span class="hi">1000–2000A बस डक्ट राइजर प्रत्येक मंजिल पर टैप-ऑफ बॉक्स के साथ।</span></div></li>
+        <li><div class="step-text"><strong>Bus Duct → Floor SDB → Tenant FDB</strong> – <span class="en">Each tap-off connects to SDB; SDB feeds tenant FDBs, lighting panels, AHU DB, and common area DB via MCCBs.</span><span class="ml">ടാപ്-ഓഫ് → SDB; SDB → Tenant FDB, ലൈറ്റ്, AHU DB, കോമൺ ഏരിയ DB.</span><span class="hi">टैप-ऑफ → SDB; SDB → Tenant FDB, लाइट, AHU DB, कॉमन DB।</span></div></li>
+        <li><div class="step-text"><strong>Final Circuit MCB Distribution</strong> – <span class="en">Final circuits from FDB: 6–32A MCBs, 30mA RCDs for sockets, arc fault detection for shop circuits.</span><span class="ml">FDB-ൽ നിന്ന്: 6–32A MCB, 30mA RCD, ആർക്ക് ഫോൾട്ട് ഡിറ്റക്ഷൻ.</span><span class="hi">FDB से: 6–32A MCB, 30mA RCD, आर्क फॉल्ट डिटेक्शन।</span></div></li>
+      </ol>`,
+    'Electrical Tasks':`
+      <ol class="steps">
+        <li><div class="step-text"><strong>Thermal Imaging Survey</strong> – <span class="en">Annual IR scanning of MDB and all distribution boards at >75% load. Hot spots at ACB busbars (>10°C rise) = tighten/clean.</span><span class="ml">>75% ലോഡിൽ MDB, DB-കൾ IR സ്കാൻ. ACB ബസ്ബാർ ഹോട്ട്‌സ്പോട്ട് (>10°C) = ടൈറ്റൻ.</span><span class="hi">>75% लोड पर MDB, DB का IR स्कैन। ACB बसबार हॉटस्पॉट (>10°C) = कसें।</span></div></li>
+        <li><div class="step-text"><strong>Load Balancing Check</strong> – <span class="en">Monthly: measure R, Y, B phase currents at MDB with clamp meter. Phase imbalance &gt;10% must be corrected by redistributing loads.</span><span class="ml">MDB-ൽ R, Y, B ഫേസ് കറന്റ് ക്ലാംപ് മീറ്ററിൽ അളക്കുക. ഇംബാലൻസ് &gt;10% → ലോഡ് ബാലൻസ് ചെയ്യുക.</span><span class="hi">MDB पर R, Y, B फेज करंट क्लैंप मीटर से मापें। &gt;10% असंतुलन → लोड संतुलित करें।</span></div></li>
+        <li><div class="step-text"><strong>MCB / MCCB Testing</strong> – <span class="en">Annual trip test: use portable test kit to verify tripping current and time. Replace MCB if tripping time exceeds IS 8828 curve limits.</span><span class="ml">ഓരോ MCB/MCCB ട്രിപ്പ് ടെസ്റ്റ് (IS 8828). ട്രിപ്പ് ടൈം ലിമിറ്റ് കൂടിയാൽ MCB/MCCB മാറ്റുക.</span><span class="hi">MCB/MCCB ट्रिप टेस्ट (IS 8828)। ट्रिप टाइम सीमा से अधिक → बदलें।</span></div></li>
+      </ol>`,
+    Safety:`<div class="warn-box"><div class="wicon">⚡</div><div class="wtext en">MDB ACBs carry 3200A+ fault level. Never open MDB with live busbars unless authorised. Always check with test pen before touching terminals. Use PPE: insulated gloves, arc flash face shield, Class E safety shoes.</div><div class="wtext ml">MDB ACB 3200A+ ഫോൾട്ട് ലെവൽ. ലൈവ് ബസ്ബാർ ഉള്ളപ്പോൾ MDB തുറക്കരുത്. ടെസ്റ്റ് പെൻ ഉപയോഗിക്കുക. ഇൻസുലേറ്റഡ് ഗ്ലൗസ്, ആർക്ക് ഫ്ലാഷ് ഷീൽഡ്.</div><div class="wtext hi">MDB ACB 3200A+ फॉल्ट स्तर। लाइव बसबार के साथ MDB न खोलें। टेस्ट पेन से जांचें। इंसुलेटेड दस्ताने, आर्क फ्लैश शील्ड।</div></div>`
+  }
+},
+
+ems:{
+  icon:'📊',color:'#1A7A3A',cls:'c-ems',
+  name:{en:'Energy Metering & Management',ml:'എനർജി മീറ്ററിംഗ് & മാനേജ്മെന്റ്',hi:'ऊर्जा मीटरिंग और प्रबंधन'},
+  sub:{en:'Smart Meters – ToD – PF Correction – Harmonics – ISO 50001',ml:'സ്മാർട്ട് മീറ്റർ – ToD – PF കറക്ഷൻ – ഹാർമോണിക്സ്',hi:'स्मार्ट मीटर – ToD – PF सुधार – हार्मोनिक्स'},
+  tabs:['Overview','PF Correction','Harmonics','Electrical Tasks'],
+  content:{
+    Overview:`<p class="en">Energy management is critical for mall operating costs. Automatic ToD (Time-of-Day) tariff metering, power factor (PF) correction with automatic capacitor banks, harmonic analysis, and tenant sub-metering help optimise the electricity bill and ensure regulatory compliance (BEE, KSEB).</p>
+      <p class="ml">Energy Management മാൾ ഓപ്പറേഷൻ ചെലവ് കുറയ്ക്കുന്നതിന് നിർണ്ണായകമാണ്. ToD ടാരിഫ്, PF കറക്ഷൻ (ഓട്ടോ ക്യാപ്സിറ്റർ ബാങ്ക്), ഹാർമോണിക് അനാലിസിസ്, ടെനന്റ് സബ്-മീറ്ററിംഗ് – ഇവ ബിൽ ഒപ്റ്റിമൈസ് ചെയ്യുന്നു.</p>
+      <p class="hi">ऊर्जा प्रबंधन मॉल परिचालन लागत कम करता है। ToD टैरिफ, PF सुधार, हार्मोनिक विश्लेषण, टेनेंट सब-मीटरिंग बिल अनुकूलन करते हैं।</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="ibtitle">Smart Meter</div><div class="ibval">ABT / ToD / 4-quadrant</div><div class="ibsub">AMR enabled, DLMS/COSEM</div></div>
+        <div class="info-box"><div class="ibtitle">PF Target</div><div class="ibval">&gt;0.95 lagging</div><div class="ibsub">Auto capacitor bank, 415V</div></div>
+        <div class="info-box"><div class="ibtitle">Demand Control</div><div class="ibval">Auto shedding</div><div class="ibsub">BMS-integrated, 15-min demand</div></div>
+        <div class="info-box"><div class="ibtitle">Harmonic Limit</div><div class="ibval">THDv &lt;5%</div><div class="ibsub">IEEE 519 / IS 12360</div></div>
+      </div>`,
+    'PF Correction':`
+      <p class="en">Poor power factor (PF &lt;0.90) results in penalty charges on the electricity bill. An Automatic Power Factor Correction (APFC) panel with capacitor banks automatically switches capacitor stages to maintain PF &gt;0.95.</p>
+      <p class="ml">PF &lt;0.90 ആകുമ്പോൾ ബില്ലിൽ penalty ഉണ്ടാകുന്നു. APFC പാനൽ ക്യാപ്സിറ്റർ ബാങ്ക് ഘട്ടങ്ങൾ ഓട്ടോ-സ്വിച്ച് ചെയ്ത് PF &gt;0.95 നിലനിർത്തുന്നു.</p>
+      <p class="hi">PF &lt;0.90 पर बिल में पेनल्टी लगती है। APFC पैनल ऑटो-स्विच कैपेसिटर बैंक से PF &gt;0.95 बनाए रखता है।</p>
+      <table class="spec-table">
+        <tr><th>Stage</th><th>kVAr</th><th class="en">Switching</th><th class="ml">സ്വിച്ചിംഗ്</th><th class="hi">स्विचिंग</th></tr>
+        <tr><td>Stage 1–3</td><td>3×25 kVAr</td><td class="en">Contactor switched, PF relay</td><td class="ml">കോൺടാക്ടർ, PF റിലേ</td><td class="hi">कॉन्टेक्टर, PF रिले</td></tr>
+        <tr><td>Stage 4–6</td><td>3×50 kVAr</td><td class="en">Thyristor switched (harmonic areas)</td><td class="ml">Thyristor സ്വിച്ചഡ്</td><td class="hi">थाइरिस्टर स्विच्ड</td></tr>
+      </table>`,
+    Harmonics:`
+      <p class="en">Non-linear loads (VFDs, UPS, LED drivers, EV chargers) generate harmonics, causing heating in transformers and cables, capacitor failure, and neutral overloading. Solutions: detuning reactors (7% or 14%), active harmonic filters (AHF), or harmonic mitigating transformers.</p>
+      <p class="ml">Non-linear ലോഡ് (VFD, UPS, LED, EV ചാർജർ) ഹാർമോണിക്സ് ഉൽപ്പാദിപ്പിക്കുന്നു → ട്രാൻസ്ഫോർമർ/കേബിൾ ഹീറ്റ്, ക്യാപ്സിറ്റർ ഫെയിൽ, ന്യൂട്രൽ ഓവർലോഡ്. ഡ്യൂട്ടൂണിംഗ് റിആക്ടർ, AHF ഉപയോഗിക്കുക.</p>
+      <p class="hi">नॉन-लीनियर लोड (VFD, UPS, LED, EV) हार्मोनिक्स उत्पन्न करते हैं → ट्रांसफॉर्मर/केबल हीटिंग, कैपेसिटर विफलता, न्यूट्रल ओवरलोड। डिट्यूनिंग रिएक्टर, AHF उपयोग करें।</p>
+      <div class="warn-box"><div class="wicon">⚠️</div><div class="wtext en">In a harmonic-rich environment, never install un-detuned capacitor banks — 5th harmonic resonance can destroy capacitors within minutes. Always use 7% or 14% detuned reactor in series with capacitors.</div><div class="wtext ml">ഹാർമോണിക്-rich environment-ൽ detuned reactorഇല്ലാതെ ക്യാപ്സിറ്റർ ഇൻസ്റ്റാൾ ചെയ്യരുത്. 5th ഹാർമോണിക് resonance ക്ഷണനേരത്തിൽ ക്യാപ്സിറ്റർ നശിപ്പിക്കുന്നു. 7%/14% detuned reactor ഉപയോഗിക്കുക.</div><div class="wtext hi">हार्मोनिक-समृद्ध वातावरण में डिट्यून्ड रिएक्टर के बिना कैपेसिटर न लगाएं। 5वां हार्मोनिक रेजोनेंस कैपेसिटर को मिनटों में नष्ट कर सकता है। 7%/14% डिट्यून्ड रिएक्टर उपयोग करें।</div></div>`,
+    'Electrical Tasks':`
+      <ol class="steps">
+        <li><div class="step-text"><strong>Power Quality Survey</strong> – <span class="en">Use power analyser (Fluke 435) at MDB for 7 days: measure THDi, THDv, PF, demand, unbalance. Generate report for BEE audit.</span><span class="ml">Fluke 435 ഉപയോഗിച്ച് MDB-ൽ 7 ദിവസം: THDi, THDv, PF, ഡിമാൻഡ്, ഇൻബാലൻസ്. BEE ഓഡിറ്റ് റിപ്പോർട്ട് തയ്യാറാക്കുക.</span><span class="hi">Fluke 435 से MDB पर 7 दिन: THDi, THDv, PF, डिमांड, असंतुलन। BEE ऑडिट रिपोर्ट तैयार करें।</span></div></li>
+        <li><div class="step-text"><strong>APFC Panel Servicing</strong> – <span class="en">Check contactor contact condition, capacitor discharge resistors, relay settings. Measure capacitor kVAr output with clamp meter on each stage.</span><span class="ml">കോൺടാക്ടർ കോൺടാക്ട്, ഡിസ്ചാർജ് റസിസ്റ്റർ, റിലേ സെറ്റ്റ്റ്, ക്യാപ്സിറ്റർ kVAr ഔട്ട്പുട്ട് അളക്കുക.</span><span class="hi">कॉन्टेक्टर कॉन्टेक्ट, डिस्चार्ज रेजिस्टर, रिले सेटिंग, कैपेसिटर kVAr आउटपुट मापें।</span></div></li>
+      </ol>`
+  }
+},
+
+pa:{
+  icon:'📢',color:'#880E4F',cls:'c-pa',
+  name:{en:'PA / VA System',ml:'PA / VA സംവിധാനം',hi:'PA / VA प्रणाली'},
+  sub:{en:'Public Address – Voice Evacuation – BGM – Zoning',ml:'പബ്ലിക് അഡ്രസ് – വോയ്സ് ഇവാക്വേഷൻ – BGM',hi:'पब्लिक एड्रेस – वॉयस इवेक्यूएशन – BGM'},
+  tabs:['Overview','Components','Electrical Tasks','Safety'],
+  content:{
+    Overview:`<p class="en">The PA/VA (Public Address / Voice Alarm) system serves dual purpose: background music (BGM) during normal operation and emergency voice evacuation during fire or emergency. EN 54-16 / IS 2189 compliant systems are mandatory. The system integrates with FACP for automatic evacuation announcements.</p>
+      <p class="ml">PA/VA സിസ്റ്റം രണ്ട് ആവശ്യങ്ങൾ നിറവേറ്റുന്നു: സാധാരണ ഓപ്പറേഷനിൽ BGM, ഇമർജൻസിയിൽ ഓട്ടോ-ഇവാക്യൂഏഷൻ അനൗൺസ്മെന്റ്. FACP ഇൻ്റഗ്രേഷൻ, EN 54-16 കംപ്ലയൻസ്.</p>
+      <p class="hi">PA/VA प्रणाली सामान्य समय BGM और आपातकाल में ऑटो-इवेक्यूएशन घोषणा करती है। FACP एकीकरण, EN 54-16 अनुपालन।</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="ibtitle">Amplifier Power</div><div class="ibval">24V DC / 100V line</div><div class="ibsub">Class D digital amplifiers</div></div>
+        <div class="info-box"><div class="ibtitle">Speaker Coverage</div><div class="ibval">75 dB at 1m</div><div class="ibsub">Every 15m in corridors</div></div>
+        <div class="info-box"><div class="ibtitle">Zones</div><div class="ibval">Floor-wise zoning</div><span class="ibsub">Up to 32 independent zones</span></div>
+        <div class="info-box"><div class="ibtitle">Battery Backup</div><div class="ibval">1 hr full operation</div><div class="ibsub">EN 54-4 compliant PSU</div></div>
+      </div>`,
+    Components:`
+      <table class="spec-table">
+        <tr><th>Component</th><th class="en">Specification</th><th class="ml">സ്പെസ്</th><th class="hi">विशिष्टता</th></tr>
+        <tr><td>Ceiling Speaker</td><td class="en">6W, 100V line, 8Ω, 90dB/1m, fire-rated housing for VA zones</td><td class="ml">6W, 100V, fire-rated, VA സോൺ</td><td class="hi">6W, 100V, fire-rated, VA ज़ोन</td></tr>
+        <tr><td>Horn Speaker (Outdoor / Parking)</td><td class="en">20W, weatherproof IP66, 100V, 100dB+</td><td class="ml">20W, IP66, 100V, 100dB+</td><td class="hi">20W, IP66, 100V, 100dB+</td></tr>
+        <tr><td>Digital Amplifier</td><td class="en">2×500W, 100V output, Class D, redundant PSU, remote monitoring</td><td class="ml">2×500W, 100V, Class D, റിഡൻഡൻ്റ് PSU</td><td class="hi">2×500W, 100V, Class D, रिडंडेंट PSU</td></tr>
+        <tr><td>Emergency Microphone</td><td class="en">Priority override mic at security/fire control room; zone selector</td><td class="ml">സെക്യൂരിറ്റി/ഫയർ കൺ്ട്രോൾ − സോൺ സെലക്ടർ മൈക്</td><td class="hi">सुरक्षा/फायर कंट्रोल − जोन सेलेक्टर माइक</td></tr>
+      </table>`,
+    'Electrical Tasks':`
+      <ol class="steps">
+        <li><div class="step-text"><strong>Speaker Line Resistance Test</strong> – <span class="en">Measure each 100V speaker line resistance with multimeter. Open circuit = cable break; short circuit = insulation failure. Acceptable line resistance &lt;20Ω.</span><span class="ml">100V സ്പീക്കർ ലൈൻ റസിസ്റ്റൻസ് (multimeter). ഓപ്പൺ = കേബിൾ ബ്രേക്ക്; ഷോർട്ട് = ഇൻസുലേഷൻ ഫെയിൽ. &lt;20Ω.</span><span class="hi">100V स्पीकर लाइन रेजिस्टेंस (मल्टीमीटर)। ओपन = केबल ब्रेक; शॉर्ट = इन्सुलेशन फेल। &lt;20Ω।</span></div></li>
+        <li><div class="step-text"><strong>VA Evacuation Test</strong> – <span class="en">Trigger fire alarm on FACP; verify automatic evacuation message plays in correct zone; check intelligibility (word intelligibility &gt;85% per STI standard).</span><span class="ml">FACP ഫയർ ട്രിഗർ → ശരിയായ സോണിൽ ഇവാക്യൂഏഷൻ മെസ്സേജ് → STI &gt;85%.</span><span class="hi">FACP फायर ट्रिगर → सही जोन में इवेक्यूएशन संदेश → STI &gt;85%।</span></div></li>
+      </ol>`,
+    Safety:`<div class="safe-box"><div class="sicon2">📢</div><div class="stext en">PA/VA system wiring must be in fire-rated conduit / FP200 (fire performance) cables for evacuation zones. Regular testing of VA functionality is a statutory requirement under Fire NOC conditions.</div><div class="stext ml">VA ഇവാക്യൂഏഷൻ സോൺ കേബിൾ fire-rated conduit / FP200 കേബിൾ ആകണം. VA ടെസ്റ്റ് ഫയർ NOC കണ്ടീഷൻ ആണ്.</div><div class="stext hi">VA इवेक्यूएशन केबल fire-rated conduit / FP200 केबल होनी चाहिए। VA परीक्षण फायर NOC शर्त है।</div></div>`
+  }
+},
+
+lighting:{
+  icon:'💡',color:'#BF360C',cls:'c-lt',
+  name:{en:'Lighting Systems',ml:'ലൈറ്റിംഗ് സംവിധാനം',hi:'प्रकाश प्रणाली'},
+  sub:{en:'LED – DALI – Emergency Lighting – Façade – Lux Levels',ml:'LED – DALI – ഇമർജൻസി ലൈറ്റ് – ഫസേഡ്',hi:'LED – DALI – आपातकालीन प्रकाश – फसाड'},
+  tabs:['Overview','Design Standards','Electrical Tasks','Safety'],
+  content:{
+    Overview:`<p class="en">Lighting in a shopping mall encompasses: interior retail lighting (3000–5000 lux), common area lighting, emergency / exit lighting (3 hr battery, IS 3646), façade and signage lighting, parking lighting, and DALI smart controls for dimming and scheduling via BMS.</p>
+      <p class="ml">ഷോപ്പിംഗ് മാൾ ലൈറ്റിംഗ്: ഇൻ്റീരിയർ (3000–5000 lux), കോമൺ ഏരിയ, ഇമർജൻസി/എക്സിറ്റ് ലൈറ്റ് (3 hr, IS 3646), ഫസേഡ്, പാർക്കിംഗ്, DALI ഡിമ്മിംഗ്.</p>
+      <p class="hi">मॉल लाइटिंग: इंटीरियर (3000–5000 lux), कॉमन एरिया, आपातकालीन/EXIT लाइट (3 hr, IS 3646), फसाड, पार्किंग, DALI डिमिंग।</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="ibtitle">Retail Lux</div><div class="ibval">3000–5000 lux</div><div class="ibsub">CRI &gt;80, CCT 3000–4000K</div></div>
+        <div class="info-box"><div class="ibtitle">Emergency</div><div class="ibval">1 lux min (escape)</div><div class="ibsub">IS 3646, 3 hr backup</div></div>
+        <div class="info-box"><div class="ibtitle">Control</div><div class="ibval">DALI-2 Gateway</div><div class="ibsub">BMS-integrated, zoning</div></div>
+        <div class="info-box"><div class="ibtitle">LED Efficacy</div><div class="ibval">&gt;120 lm/W</div><div class="ibsub">BEE 5-star rated drivers</div></div>
+      </div>`,
+    'Design Standards':`
+      <table class="spec-table">
+        <tr><th>Area</th><th class="en">Lux Level</th><th>Standard</th></tr>
+        <tr><td>Retail Shop Floor</td><td class="en">3000–5000 lux horizontal</td><td>IS 3646, NBC 2016</td></tr>
+        <tr><td>Atrium / Concourse</td><td class="en">500–1000 lux</td><td>IS 3646</td></tr>
+        <tr><td>Food Court</td><td class="en">300–500 lux</td><td>IS 3646</td></tr>
+        <tr><td>Corridor / Walkway</td><td class="en">150–300 lux</td><td>IS 3646</td></tr>
+        <tr><td>Parking (Indoor)</td><td class="en">50–100 lux</td><td>NBC 2016</td></tr>
+        <tr><td>Emergency / Escape Route</td><td class="en">1 lux min / 10 lux at task area</td><td>IS 3646, BS EN 1838</td></tr>
+        <tr><td>Façade / Signage</td><td class="en">Programmable RGB LED, 32-bit DMX</td><td>Local Authority</td></tr>
+      </table>`,
+    'Electrical Tasks':`
+      <ol class="steps">
+        <li><div class="step-text"><strong>Lux Level Survey</strong> – <span class="en">Monthly: use calibrated lux meter (IS 3646 grid method) to verify lux at work plane (0.85m AFF). Adjust DALI setpoints if below standard.</span><span class="ml">കാലിബ്രേറ്റഡ് Lux Meter (IS 3646 ഗ്രിഡ്) ഉപയോഗിച്ച് 0.85m AFF-ൽ lux അളക്കുക. DALI സെറ്റ്‌പോയിൻ്റ് adjust ചെയ്യുക.</span><span class="hi">कैलिब्रेटेड लक्स मीटर (IS 3646 ग्रिड) से 0.85m AFF पर lux मापें। DALI सेटपॉइंट समायोजित करें।</span></div></li>
+        <li><div class="step-text"><strong>Emergency Lighting Test</strong> – <span class="en">Monthly function test: inhibit mains supply to emergency luminaires for 1 minute; verify all luminaires illuminate. Annual duration test: 3-hour discharge.</span><span class="ml">ഇമർജൻസി ലൈറ്റ് 1 മി. ഫങ്ഷൻ ടെസ്റ്റ്; 3 hr ഡ്യൂറേഷൻ ടെസ്റ്റ് (വാർഷിക).</span><span class="hi">इमरजेंसी लाइट 1 मिनट फंक्शन टेस्ट; 3 घंटे अवधि परीक्षण (वार्षिक)।</span></div></li>
+        <li><div class="step-text"><strong>DALI Commissioning</strong> – <span class="en">Address each DALI device (0–63 per bus). Set groups for zoning. Program scenes for shopping hours, night, cleaning, emergency. Verify BMS integration via DALI gateway.</span><span class="ml">ഓരോ DALI ഡിവൈസ് address ചെയ്യുക. Group, scene, BMS ഇൻ്റഗ്രേഷൻ verify ചെയ്യുക.</span><span class="hi">प्रत्येक DALI डिवाइस को address करें। ग्रुप, सीन, BMS एकीकरण verify करें।</span></div></li>
+      </ol>`,
+    Safety:`<div class="safe-box"><div class="sicon2">💡</div><div class="stext en">Always use non-conductive ladders for luminaire replacement. De-energise the circuit with MCB and use voltage tester before touching any lamp or driver. LED drivers contain capacitors that retain charge briefly after switch-off.</div><div class="stext ml">ലൂമിനൈർ replace ചെയ്യുമ്പോൾ non-conductive ladder ഉപയോഗിക്കുക. MCB ഓഫ്, voltage tester ഉറപ്പ് ചെയ്ത ശേഷം ടച്ച് ചെയ്യുക.</div><div class="stext hi">लूमिनेयर बदलते समय non-conductive सीढ़ी उपयोग करें। MCB बंद करें, वोल्टेज टेस्टर से जांचें।</div></div>`
+  }
+}
+
+};
+
+// ── OPEN SYSTEM ──
+function openSystem(key){
+  const s=systems[key];
+  if(!s) return;
+  const lang=document.body.className.replace('lang-','');
+  const name=s.name[lang]||s.name.en;
+  const sub=s.sub[lang]||s.sub.en;
+
+  let tabsHtml=s.tabs.map((t,i)=>`<div class="tab ${i===0?'active':''}" onclick="switchTab(this,'tab${i}')">${t}</div>`).join('');
+  let tabContentsHtml=s.tabs.map((t,i)=>`<div class="tab-content ${i===0?'active':''}" id="tab${i}">${s.content[t]||''}</div>`).join('');
+
+  document.getElementById('detail').innerHTML=`
+    <div class="detail-header" style="background:${s.color}">
+      <div class="dicon">${s.icon}</div>
+      <div><div class="dtitle">${name}</div><div class="dsub">${sub}</div></div>
+      <button class="back-btn" onclick="closeDetail()">← <span class="tl"><span class="en">Back</span><span class="ml">തിരിക</span><span class="hi">वापस</span></span></button>
+    </div>
+    <div class="detail-body">
+      <div class="tabs">${tabsHtml}</div>
+      ${tabContentsHtml}
+    </div>
+  `;
+
+  document.getElementById('overview').style.display='none';
+  const d=document.getElementById('detail');
+  d.style.display='block';
+  d.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function switchTab(el,tabId){
+  const parent=el.closest('.detail-body');
+  parent.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  parent.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+function closeDetail(){
+  document.getElementById('detail').style.display='none';
+  document.getElementById('overview').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

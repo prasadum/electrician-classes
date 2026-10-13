@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Water Pump Motor Selection</title>
+<meta name="section" content="Installation, Estimation &amp; Appliances">
+<meta name="section-order" content="4">
+<meta name="order" content="2">
+<meta name="description" content="Selecting the right pump motor">
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0d1b2a;
+  --paper: #f5f0e8;
+  --accent: #1a6b3a;
+  --accent2: #e85d04;
+  --accent3: #3a86ff;
+  --solar: #f4a261;
+  --muted: #6b7280;
+  --rule: #c9c0af;
+  --card: #fffef9;
+  --warn: #dc2626;
+  --phase1: #2563eb;
+  --phase3: #7c3aed;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;
+  line-height:1.6;
+}
+
+/* ── NAV ── */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:var(--ink);
+  display:flex;align-items:center;gap:0;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+#nav::-webkit-scrollbar{display:none}
+.nav-btn{
+  background:none;border:none;cursor:pointer;
+  color:#aab4bf;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
+  padding:14px 16px;white-space:nowrap;letter-spacing:.04em;
+  border-bottom:3px solid transparent;
+  transition:all .2s;
+  text-transform:uppercase;
+}
+.nav-btn:hover{color:#fff}
+.nav-btn.active{color:#fff;border-bottom-color:var(--accent2)}
+#nav-logo{
+  padding:0 20px;font-family:'Bebas Neue',sans-serif;font-size:20px;
+  color:var(--accent2);letter-spacing:.06em;white-space:nowrap;
+  border-right:1px solid #2a3a4a;
+}
+
+/* ── PAGES ── */
+.page{display:none;padding:80px 0 60px}
+.page.active{display:block}
+.wrap{max-width:1100px;margin:0 auto;padding:0 28px}
+
+/* ── HERO ── */
+.hero{
+  background:var(--ink);
+  color:#fff;
+  padding:80px 28px 60px;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    -45deg,transparent,transparent 30px,rgba(255,255,255,.02) 30px,rgba(255,255,255,.02) 31px
+  );
+}
+.hero-inner{max-width:1100px;margin:0 auto;position:relative}
+.hero h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(52px,8vw,100px);
+  line-height:.95;
+  letter-spacing:.03em;
+  color:#fff;
+}
+.hero h1 span{color:var(--accent2)}
+.hero-sub{
+  font-size:17px;font-weight:300;color:#9bb0c0;
+  max-width:600px;margin-top:16px;line-height:1.7;
+}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+.tag{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  color:#c8d8e4;font-size:11px;font-weight:500;letter-spacing:.06em;
+  padding:5px 12px;border-radius:2px;text-transform:uppercase;
+}
+
+/* ── SECTION TITLES ── */
+.section-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(28px,4vw,48px);
+  letter-spacing:.04em;
+  color:var(--ink);
+  margin-bottom:4px;
+}
+.section-title span{color:var(--accent)}
+.section-sub{color:var(--muted);font-size:14px;margin-bottom:32px;font-weight:400}
+.divider{border:none;border-top:2px solid var(--rule);margin:36px 0}
+
+/* ── CARDS ── */
+.card-grid{display:grid;gap:20px}
+.card-grid.cols2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card-grid.cols3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-top:4px solid var(--accent);
+  padding:24px;
+  border-radius:0 0 4px 4px;
+}
+.card.accent2{border-top-color:var(--accent2)}
+.card.accent3{border-top-color:var(--accent3)}
+.card.solar{border-top-color:var(--solar)}
+.card.phase1{border-top-color:var(--phase1)}
+.card.phase3{border-top-color:var(--phase3)}
+.card.warn{border-top-color:var(--warn)}
+
+.card-icon{font-size:32px;margin-bottom:10px}
+.card h3{font-size:16px;font-weight:600;margin-bottom:8px;letter-spacing:.01em}
+.card p{font-size:13.5px;color:var(--muted);line-height:1.65}
+.card ul{font-size:13px;color:var(--muted);padding-left:16px;line-height:2}
+
+/* ── PUMP TYPE CARDS ── */
+.pump-card{
+  background:var(--card);
+  border:1px solid var(--rule);
+  padding:28px;
+  border-radius:4px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+@media(max-width:600px){.pump-card{grid-template-columns:1fr}}
+.pump-card-head{grid-column:1/-1;border-bottom:2px solid var(--rule);padding-bottom:14px;margin-bottom:4px}
+.pump-card-head h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.04em}
+.pump-card-head p{color:var(--muted);font-size:13.5px;margin-top:4px}
+.pump-spec{display:flex;flex-direction:column;gap:6px}
+.spec-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:5px 0;border-bottom:1px dotted var(--rule)}
+.spec-row:last-child{border-bottom:none}
+.spec-label{color:var(--muted);font-weight:500}
+.spec-val{font-weight:600;color:var(--accent);font-family:'DM Mono',monospace;font-size:12px}
+.spec-val.warn{color:var(--warn)}
+
+/* ── HEAD DIAGRAM ── */
+.head-diagram{
+  background:var(--ink);
+  border-radius:4px;
+  padding:32px 20px 20px;
+  color:#fff;
+  position:relative;
+  overflow:hidden;
+}
+.head-diagram svg{width:100%;display:block}
+
+/* ── TABLE ── */
+.data-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:16px}
+.data-table th{
+  background:var(--ink);color:#fff;font-weight:500;
+  padding:10px 14px;text-align:left;letter-spacing:.03em;font-size:12px;text-transform:uppercase;
+}
+.data-table td{padding:10px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:nth-child(even) td{background:#faf7f1}
+.data-table .brand{font-weight:600;color:var(--accent)}
+.data-table .model{font-family:'DM Mono',monospace;font-size:12px;color:var(--accent2)}
+.data-table .note{color:var(--muted);font-size:12px}
+
+/* ── BOM ── */
+.bom-table{width:100%;border-collapse:collapse;font-size:13px}
+.bom-table th{background:#1a3a2a;color:#fff;padding:10px 12px;text-align:left;font-size:11px;letter-spacing:.05em;text-transform:uppercase}
+.bom-table td{padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+.bom-table tr:nth-child(even) td{background:#f5f0e0}
+.bom-table .total-row td{background:#1a3a2a;color:#fff;font-weight:600}
+.bom-table .section-row td{background:var(--ink);color:#9bb0c0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+.qty{font-family:'DM Mono',monospace;font-weight:600}
+.price{font-family:'DM Mono',monospace;color:var(--accent)}
+
+/* ── FLOW CHART ── */
+.flow{display:flex;flex-wrap:wrap;gap:0;align-items:center;margin:20px 0}
+.flow-step{
+  background:var(--ink);color:#fff;
+  padding:12px 18px;font-size:13px;font-weight:500;
+  border-radius:4px;min-width:120px;text-align:center;
+  flex-shrink:0;
+}
+.flow-arrow{padding:0 8px;color:var(--accent2);font-size:20px;font-weight:700;flex-shrink:0}
+
+/* ── FORMULA BOX ── */
+.formula-box{
+  background:var(--ink);color:#fff;
+  border-left:4px solid var(--accent2);
+  padding:20px 24px;
+  font-family:'DM Mono',monospace;
+  font-size:14px;
+  line-height:2;
+  border-radius:0 4px 4px 0;
+  margin:16px 0;
+}
+.formula-box .comment{color:#7a9db0;font-size:12px}
+
+/* ── BADGE ── */
+.badge{
+  display:inline-block;padding:3px 9px;border-radius:2px;
+  font-size:11px;font-weight:600;letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.badge.green{background:#d1fae5;color:#065f46}
+.badge.orange{background:#fed7aa;color:#9a3412}
+.badge.blue{background:#dbeafe;color:#1e40af}
+.badge.purple{background:#ede9fe;color:#5b21b6}
+.badge.yellow{background:#fef3c7;color:#92400e}
+.badge.red{background:#fee2e2;color:#991b1b}
+
+/* ── ALERT ── */
+.alert{
+  border-left:4px solid;padding:14px 18px;border-radius:0 4px 4px 0;
+  font-size:13.5px;margin:16px 0;
+}
+.alert.info{border-color:var(--accent3);background:#eff6ff;color:#1e40af}
+.alert.warn{border-color:var(--accent2);background:#fff7ed;color:#9a3412}
+.alert.success{border-color:var(--accent);background:#f0fdf4;color:#14532d}
+.alert.solar{border-color:var(--solar);background:#fff8ee;color:#7c2d12}
+
+/* ── SOLAR ── */
+.solar-block{
+  background:linear-gradient(135deg,#1a2a1a,#0d1b2a);
+  color:#fff;border-radius:6px;padding:32px;margin:20px 0;
+  border:1px solid #2a4a2a;
+}
+.solar-block h3{color:var(--solar);font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.04em;margin-bottom:16px}
+.solar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:16px}
+.solar-stat{text-align:center;padding:16px;background:rgba(255,255,255,.06);border-radius:4px;border:1px solid rgba(255,255,255,.08)}
+.solar-stat .num{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--solar)}
+.solar-stat .lbl{font-size:12px;color:#9bb0c0;letter-spacing:.04em;text-transform:uppercase;margin-top:4px}
+
+/* ── PANEL REQ ── */
+.panel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:20px 0}
+.panel-item{
+  background:var(--card);border:1px solid var(--rule);
+  padding:20px;border-radius:4px;
+}
+.panel-item h4{font-size:13px;font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}
+.panel-item .component{
+  display:flex;justify-content:space-between;
+  font-size:12.5px;padding:4px 0;border-bottom:1px dotted var(--rule);
+}
+.panel-item .component:last-child{border-bottom:none}
+
+/* ── PAGE TRANSITIONS ── */
+.page{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .pump-card{grid-template-columns:1fr}
+  .flow{flex-direction:column;align-items:flex-start}
+  .flow-arrow{transform:rotate(90deg);padding:4px 0}
+}
+
+.intro-band{
+  background:var(--accent);color:#fff;
+  padding:12px 28px;font-size:13px;font-weight:500;
+  letter-spacing:.03em;
+}
+.intro-band a{color:#9effc0;text-decoration:none}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:640px){.two-col{grid-template-columns:1fr}}
+
+.num-list{counter-reset:steps;list-style:none;padding:0}
+.num-list li{
+  counter-increment:steps;
+  display:flex;gap:14px;align-items:flex-start;
+  padding:10px 0;border-bottom:1px dotted var(--rule);
+  font-size:13.5px;
+}
+.num-list li::before{
+  content:counter(steps);
+  background:var(--accent);color:#fff;
+  min-width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px;
+}
+
+.highlight-row{background:#fff8ee;font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div id="nav-logo">PUMP SELECT</div>
+  <button class="nav-btn active" onclick="show(0)">Overview</button>
+  <button class="nav-btn" onclick="show(1)">Pump Types</button>
+  <button class="nav-btn" onclick="show(2)">Head & Flow</button>
+  <button class="nav-btn" onclick="show(3)">Selection Guide</button>
+  <button class="nav-btn" onclick="show(4)">Electrical</button>
+  <button class="nav-btn" onclick="show(5)">Indian Brands</button>
+  <button class="nav-btn" onclick="show(6)">Solar Pumps</button>
+  <button class="nav-btn" onclick="show(7)">BOM</button>
+</nav>
+
+<!-- ════════════════════════════════════════════
+     PAGE 0 — OVERVIEW
+════════════════════════════════════════════ -->
+<div class="page active" id="p0">
+<div class="hero">
+  <div class="hero-inner">
+    <h1>WATER PUMP<br><span>MOTOR SELECTION</span><br>EXPERT GUIDE</h1>
+    <p class="hero-sub">A comprehensive reference covering pump types, head calculations, electrical requirements, Indian brands & models, solar solutions, and complete Bill of Materials for domestic, commercial, and industrial applications.</p>
+    <div class="hero-tags">
+      <span class="tag">Open Well</span><span class="tag">Borewell</span><span class="tag">Submersible</span>
+      <span class="tag">Monoblock</span><span class="tag">Jet Pump</span><span class="tag">Single Phase</span>
+      <span class="tag">Three Phase</span><span class="tag">Solar BLDC</span><span class="tag">Panel Design</span>
+      <span class="tag">BOM Included</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" style="padding-top:40px">
+  <p class="section-title">What This <span>Guide Covers</span></p>
+  <p class="section-sub">Navigate using the tabs above. Each section is self-contained.</p>
+
+  <div class="card-grid cols3">
+    <div class="card" onclick="show(1)" style="cursor:pointer">
+      <div class="card-icon">💧</div>
+      <h3>Pump Types</h3>
+      <p>Open well, borewell, submersible, non-submersible, monoblock, jet pump — construction, use-case, pros & cons.</p>
+    </div>
+    <div class="card accent2" onclick="show(2)" style="cursor:pointer">
+      <div class="card-icon">📐</div>
+      <h3>Head & Flow</h3>
+      <p>Static head, dynamic head, friction losses, system curve, duty point — with worked examples.</p>
+    </div>
+    <div class="card accent3" onclick="show(3)" style="cursor:pointer">
+      <div class="card-icon">🔍</div>
+      <h3>Selection Guide</h3>
+      <p>Step-by-step decision tree for domestic, commercial, and industrial applications with capacity sizing.</p>
+    </div>
+    <div class="card phase1" onclick="show(4)" style="cursor:pointer">
+      <div class="card-icon">⚡</div>
+      <h3>Electrical & Panel</h3>
+      <p>1-phase vs 3-phase, starter types, cable sizing, MCC/SDB panels, protection devices.</p>
+    </div>
+    <div class="card phase3" onclick="show(5)" style="cursor:pointer">
+      <div class="card-icon">🏭</div>
+      <h3>Indian Brands & Models</h3>
+      <p>Kirloskar, Grundfos, Crompton, CRI, KSB, Lubi, V-Guard — model-wise comparison with specs.</p>
+    </div>
+    <div class="card solar" onclick="show(6)" style="cursor:pointer">
+      <div class="card-icon">☀️</div>
+      <h3>Solar Pump Solutions</h3>
+      <p>BLDC solar pumps, inverter-based AC pumps, panel sizing, MNRE subsidy, KUSUM scheme.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <p class="section-title">Quick <span>Decision Matrix</span></p>
+  <p class="section-sub">First-cut selection based on water source and application</p>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Source</th><th>Application</th><th>Recommended Type</th><th>Power</th><th>Head Range</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Open Well (&lt;7m depth)</td><td>Domestic / Garden</td><td>Monoblock / Jet (self-priming)</td><td>0.5–1.5 HP</td><td>10–30 m</td></tr>
+      <tr><td>Open Well (7–15m)</td><td>Domestic</td><td>Deep Jet / Centrifugal</td><td>1–2 HP</td><td>25–50 m</td></tr>
+      <tr><td>Borewell (&lt;200 ft)</td><td>Domestic</td><td>Submersible (4")</td><td>0.5–1 HP</td><td>40–80 m</td></tr>
+      <tr><td>Borewell (200–400 ft)</td><td>Domestic / Agri</td><td>Submersible (4"–6")</td><td>1–3 HP</td><td>80–150 m</td></tr>
+      <tr><td>Borewell (&gt;400 ft)</td><td>Agri / Industrial</td><td>Submersible (6"–8")</td><td>3–10 HP</td><td>150–300 m</td></tr>
+      <tr><td>Sump / Tank</td><td>Domestic transfer</td><td>Monoblock / Peripheral</td><td>0.5–1 HP</td><td>15–35 m</td></tr>
+      <tr><td>River / Canal</td><td>Agriculture</td><td>Centrifugal / Openwell</td><td>3–15 HP</td><td>10–25 m</td></tr>
+      <tr class="highlight-row"><td>Borewell / Open Well</td><td>Off-grid / Solar</td><td>Solar BLDC Submersible</td><td>1–5 HP</td><td>30–120 m</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert info" style="margin-top:24px">
+    <strong>Expert Tip:</strong> Always add 15–20% safety margin to calculated head values. Under-powered pumps short-cycle, overheat, and fail prematurely. Over-sized pumps waste energy and cavitate.
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 1 — PUMP TYPES
+════════════════════════════════════════════ -->
+<div class="page" id="p1">
+<div class="wrap">
+  <br>
+  <p class="section-title">Pump <span>Types & Construction</span></p>
+  <p class="section-sub">Understanding each type — where it lives, how it works, when to use it</p>
+
+  <!-- SUBMERSIBLE -->
+  <div class="pump-card" style="margin-bottom:20px;border-top:5px solid var(--accent3)">
+    <div class="pump-card-head">
+      <h2>SUBMERSIBLE PUMP</h2>
+      <p>Motor and pump unit both submerged below water level. Motor is sealed, water-cooled.</p>
+    </div>
+    <div>
+      <h4 style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Technical Specs</h4>
+      <div class="pump-spec">
+        <div class="spec-row"><span class="spec-label">Installation</span><span class="spec-val">Inside borewell / sump</span></div>
+        <div class="spec-row"><span class="spec-label">Bore Size</span><span class="spec-val">4", 6", 8"</span></div>
+        <div class="spec-row"><span class="spec-label">Flow Rate</span><span class="spec-val">500 – 5000 LPH</span></div>
+        <div class="spec-row"><span class="spec-label">Head Range</span><span class="spec-val">20 – 300 m</span></div>
+        <div class="spec-row"><span class="spec-label">Motor Rating</span><span class="spec-val">0.5 – 25 HP</span></div>
+        <div class="spec-row"><span class="spec-label">Phase</span><span class="spec-val">1φ (≤2HP) / 3φ (>2HP)</span></div>
+        <div class="spec-row"><span class="spec-label">Efficiency</span><span class="spec-val">60–75%</span></div>
+      </div>
+    </div>
+    <div>
+      <h4 style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Advantages</h4>
+      <ul class="card"><p style="color:var(--ink);font-size:13px">✅ No priming needed<br>✅ Silent operation<br>✅ Self-cooled by water<br>✅ No suction head limitation<br>✅ Space-saving<br>✅ Suitable for deep borewells</p></ul>
+      <br>
+      <h4 style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Limitations</h4>
+      <p style="font-size:13px;color:var(--muted)">⚠ Difficult motor repair in field<br>⚠ Requires stainless steel column pipe<br>⚠ Dry run destroys motor windings<br>⚠ Higher initial cost</p>
+    </div>
+    <div style="grid-column:1/-1">
+      <div class="alert success"><strong>Best For:</strong> Borewells above 30 m depth, domestic water supply, agricultural irrigation, high-rise buildings, solar pumping systems.</div>
+    </div>
+  </div>
+
+  <!-- MONOBLOCK -->
+  <div class="pump-card" style="margin-bottom:20px;border-top:5px solid var(--accent)">
+    <div class="pump-card-head">
+      <h2>MONOBLOCK PUMP</h2>
+      <p>Motor and pump in a single compact unit. Motor shaft directly drives the pump impeller — no coupling.</p>
+    </div>
+    <div>
+      <div class="pump-spec">
+        <div class="spec-row"><span class="spec-label">Installation</span><span class="spec-val">Above ground / dry</span></div>
+        <div class="spec-row"><span class="spec-label">Suction Lift</span><span class="spec-val">max 7–8 m</span></div>
+        <div class="spec-row"><span class="spec-label">Flow Rate</span><span class="spec-val">1000 – 30000 LPH</span></div>
+        <div class="spec-row"><span class="spec-label">Head Range</span><span class="spec-val">10 – 60 m</span></div>
+        <div class="spec-row"><span class="spec-label">Motor Rating</span><span class="spec-val">0.5 – 10 HP</span></div>
+        <div class="spec-row"><span class="spec-label">Phase</span><span class="spec-val">1φ (≤2HP) / 3φ</span></div>
+        <div class="spec-row"><span class="spec-label">Efficiency</span><span class="spec-val">55–70%</span></div>
+      </div>
+    </div>
+    <div>
+      <p style="font-size:13px;color:var(--ink)">✅ Low cost<br>✅ Easy maintenance<br>✅ Wide availability of spares<br>✅ Robust for open wells & sumps<br><br>⚠ Requires priming<br>⚠ Limited suction head (7 m)<br>⚠ Noisier than submersible<br>⚠ Not suitable for deep wells</p>
+    </div>
+    <div style="grid-column:1/-1">
+      <div class="alert success"><strong>Best For:</strong> Open wells &lt;7m, sump-to-overhead tank, agriculture near surface water sources, general domestic pumping.</div>
+    </div>
+  </div>
+
+  <!-- JET PUMP -->
+  <div class="pump-card" style="margin-bottom:20px;border-top:5px solid var(--accent2)">
+    <div class="pump-card-head">
+      <h2>JET PUMP (Ejector Pump)</h2>
+      <p>Uses a venturi jet ejector to create suction. Shallow jet: 0–8m. Deep jet: 8–25m. Motor stays on surface.</p>
+    </div>
+    <div>
+      <div class="pump-spec">
+        <div class="spec-row"><span class="spec-label">Shallow Jet Suction</span><span class="spec-val">up to 8 m</span></div>
+        <div class="spec-row"><span class="spec-label">Deep Jet Suction</span><span class="spec-val">8 – 25 m</span></div>
+        <div class="spec-row"><span class="spec-label">Flow Rate</span><span class="spec-val">800 – 3000 LPH</span></div>
+        <div class="spec-row"><span class="spec-label">Head Range</span><span class="spec-val">20 – 55 m</span></div>
+        <div class="spec-row"><span class="spec-label">Motor Rating</span><span class="spec-val">0.5 – 2 HP</span></div>
+        <div class="spec-row"><span class="spec-label">Self-priming</span><span class="spec-val">YES</span></div>
+      </div>
+    </div>
+    <div>
+      <p style="font-size:13px;color:var(--ink)">✅ Motor above ground — easy service<br>✅ Self-priming<br>✅ Can draw from 25m depth<br><br>⚠ Lower efficiency (~40–55%)<br>⚠ Recirculates water (energy loss)<br>⚠ Sensitive to air leaks in suction<br>⚠ Limited flow rate</p>
+    </div>
+    <div style="grid-column:1/-1">
+      <div class="alert warn"><strong>Best For:</strong> Open wells / shallow borewells 8–25m depth where submersible is not feasible. Good for domestic use where low flow is acceptable.</div>
+    </div>
+  </div>
+
+  <!-- NON-SUBMERSIBLE OPENWELL -->
+  <div class="pump-card" style="margin-bottom:20px;border-top:5px solid var(--phase3)">
+    <div class="pump-card-head">
+      <h2>OPENWELL SUBMERSIBLE (Dewatering Type)</h2>
+      <p>Submersible motor + pump designed for open wells, pits, or sumps — not for narrow borewells. Can pass small solids.</p>
+    </div>
+    <div>
+      <div class="pump-spec">
+        <div class="spec-row"><span class="spec-label">Installation</span><span class="spec-val">Submerged in open well / sump</span></div>
+        <div class="spec-row"><span class="spec-label">Flow Rate</span><span class="spec-val">3000 – 50000 LPH</span></div>
+        <div class="spec-row"><span class="spec-label">Head Range</span><span class="spec-val">5 – 25 m</span></div>
+        <div class="spec-row"><span class="spec-label">Motor Rating</span><span class="spec-val">0.5 – 5 HP</span></div>
+        <div class="spec-row"><span class="spec-label">Solid Passing</span><span class="spec-val">up to 10 mm</span></div>
+      </div>
+    </div>
+    <div>
+      <p style="font-size:13px;color:var(--ink)">✅ Handles slightly turbid water<br>✅ Large diameter — wide impeller<br>✅ High flow, low head<br>✅ Quiet, self-cooled<br><br>⚠ Not for deep/narrow borewells<br>⚠ Cannot handle very high head</p>
+    </div>
+    <div style="grid-column:1/-1">
+      <div class="alert success"><strong>Best For:</strong> Open wells, farm ponds, basement dewatering, large apartment sump transfer, construction dewatering.</div>
+    </div>
+  </div>
+
+  <div class="alert info">
+    <strong>Non-Submersible Centrifugal Pumps</strong> — These are the classic above-ground horizontal centrifugal pumps with flexible coupling between motor and pump. Used in industrial/agricultural settings where high flow is needed from surface water sources. Motor is external, easy to service.
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 2 — HEAD & FLOW
+════════════════════════════════════════════ -->
+<div class="page" id="p2">
+<div class="wrap">
+  <br>
+  <p class="section-title">Head <span>& Flow Calculation</span></p>
+  <p class="section-sub">The most critical step in pump selection — get this wrong and nothing else matters</p>
+
+  <div class="two-col">
+    <div>
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:12px">What is Total Dynamic Head (TDH)?</h3>
+      <p style="font-size:13.5px;color:var(--muted);line-height:1.8">TDH is the total equivalent height the pump must push water against. It combines static elevation difference, velocity losses in pipes, and friction in fittings.</p>
+      <br>
+      <div class="formula-box">
+TDH = Static Head + Friction Head + Velocity Head
+<br><br>
+Static Head  = Suction Lift + Delivery Height
+              <span class="comment">// vertical distance, source to outlet</span>
+
+Friction Head = f × (L/D) × (v²/2g)
+              <span class="comment">// Darcy-Weisbach formula</span>
+
+Practical thumb: Add 10–15% of static head
+              for friction in well-designed systems
+      </div>
+    </div>
+    <div>
+      <!-- Head SVG Diagram -->
+      <div class="head-diagram">
+        <p style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#7a9db0;margin-bottom:8px">System Head Diagram</p>
+        <svg viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
+          <!-- Ground line -->
+          <line x1="0" y1="180" x2="320" y2="180" stroke="#3a5a4a" stroke-width="2"/>
+          <!-- Well -->
+          <rect x="40" y="60" width="50" height="120" fill="none" stroke="#3a9a6a" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="65" y="50" fill="#7adb9a" font-size="10" text-anchor="middle" font-family="DM Mono">WATER</text>
+          <text x="65" y="62" fill="#7adb9a" font-size="10" text-anchor="middle" font-family="DM Mono">LEVEL</text>
+          <!-- Water in well -->
+          <rect x="41" y="100" width="48" height="79" fill="rgba(58,150,106,0.2)"/>
+          <!-- Pump symbol -->
+          <circle cx="65" cy="155" r="14" fill="#1a3a2a" stroke="#3a9a6a" stroke-width="2"/>
+          <text x="65" y="159" fill="#7adb9a" font-size="9" text-anchor="middle" font-family="DM Mono">PUMP</text>
+          <!-- Suction pipe -->
+          <line x1="65" y1="141" x2="65" y2="105" stroke="#3a9a6a" stroke-width="2"/>
+          <!-- Arrow suction lift -->
+          <line x1="20" y1="100" x2="20" y2="180" stroke="#f4a261" stroke-width="1.5"/>
+          <line x1="15" y1="105" x2="25" y2="105" stroke="#f4a261" stroke-width="1.5"/>
+          <line x1="15" y1="175" x2="25" y2="175" stroke="#f4a261" stroke-width="1.5"/>
+          <text x="10" y="145" fill="#f4a261" font-size="9" text-anchor="middle" font-family="DM Mono">SL</text>
+          <!-- Delivery pipe -->
+          <line x1="65" y1="141" x2="65" y2="30" stroke="#3a86ff" stroke-width="2"/>
+          <line x1="65" y1="30" x2="250" y2="30" stroke="#3a86ff" stroke-width="2"/>
+          <!-- Overhead tank -->
+          <rect x="230" y="10" width="60" height="35" fill="rgba(58,134,255,0.15)" stroke="#3a86ff" stroke-width="1.5"/>
+          <text x="260" y="32" fill="#7aaeff" font-size="9" text-anchor="middle" font-family="DM Mono">OHT</text>
+          <!-- Delivery head arrow -->
+          <line x1="300" y1="30" x2="300" y2="180" stroke="#3a86ff" stroke-width="1.5"/>
+          <line x1="295" y1="35" x2="305" y2="35" stroke="#3a86ff" stroke-width="1.5"/>
+          <line x1="295" y1="175" x2="305" y2="175" stroke="#3a86ff" stroke-width="1.5"/>
+          <text x="315" y="110" fill="#7aaeff" font-size="9" text-anchor="middle" font-family="DM Mono">DH</text>
+          <!-- TDH bracket -->
+          <line x1="135" y1="100" x2="135" y2="30" stroke="#e85d04" stroke-width="1" stroke-dasharray="3,2"/>
+          <line x1="135" y1="180" x2="135" y2="100" stroke="#e85d04" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="160" y="95" fill="#e85d04" font-size="10" font-family="DM Mono">TDH</text>
+          <text x="155" y="107" fill="#e85d04" font-size="9" font-family="DM Mono">= SL+DH</text>
+          <text x="155" y="118" fill="#e85d04" font-size="9" font-family="DM Mono">+ friction</text>
+          <!-- Labels -->
+          <text x="5" y="185" fill="#9bb0c0" font-size="9" font-family="DM Mono">Ground</text>
+        </svg>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:11px">
+          <span style="color:#f4a261">■ SL: Suction Lift</span>
+          <span style="color:#3a86ff">■ DH: Delivery Head</span>
+          <span style="color:#e85d04">■ TDH: Total Dynamic Head</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <p class="section-title" style="font-size:28px">Worked <span>Examples</span></p>
+  <br>
+
+  <div class="card-grid cols2">
+    <div class="card">
+      <h3>🏠 Case 1: Domestic Borewell — 2-storey house</h3>
+      <br>
+      <div class="pump-spec">
+        <div class="spec-row"><span class="spec-label">Water level (below ground)</span><span class="spec-val">30 m</span></div>
+        <div class="spec-row"><span class="spec-label">Submersible pump depth</span><span class="spec-val">45 m (pump is 15m below WL)</span></div>
+        <div class="spec-row"><span class="spec-label">OHT height (above ground)</span><span class="spec-val">8 m</span></div>
+        <div class="spec-row"><span class="spec-label">Pipe length (delivery)</span><span class="spec-val">60 m (1" GI)</span></div>
+        <div class="spec-row"><span class="spec-label">Friction allowance (10%)</span><span class="spec-val">~5 m</span></div>
+        <div class="spec-row" style="background:#fff8ee"><span class="spec-label"><strong>TDH</strong></span><span class="spec-val" style="color:var(--accent2)">30 + 8 + 5 = <strong>43 m</strong></span></div>
+        <div class="spec-row"><span class="spec-label">Flow required</span><span class="spec-val">1500 LPH (5 members)</span></div>
+      </div>
+      <div class="alert success" style="margin-top:12px">
+        → Select: <strong>1 HP Submersible, 45m head, 4" bore</strong><br>
+        e.g. CRI CRSN 4-14, Kirloskar KS4B-1512
+      </div>
+    </div>
+
+    <div class="card accent2">
+      <h3>🏢 Case 2: Apartment — 5 floors, 20 flats</h3>
+      <br>
+      <div class="pump-spec">
+        <div class="spec-row"><span class="spec-label">Sump depth (below ground)</span><span class="spec-val">3 m</span></div>
+        <div class="spec-row"><span class="spec-label">OHT height (above ground)</span><span class="spec-val">18 m (5 floors × 3.6m)</span></div>
+        <div class="spec-row"><span class="spec-label">Pipe: 80m run, 2" GI</span><span class="spec-val">friction ~4 m</span></div>
+        <div class="spec-row" style="background:#fff8ee"><span class="spec-label"><strong>TDH</strong></span><span class="spec-val" style="color:var(--accent2)">3 + 18 + 4 = <strong>25 m</strong></span></div>
+        <div class="spec-row"><span class="spec-label">Flow (20 flats × 300 LPH)</span><span class="spec-val">6000 LPH min</span></div>
+        <div class="spec-row"><span class="spec-label">Select 2 pumps (duty+standby)</span><span class="spec-val">2 × 3 HP mono</span></div>
+      </div>
+      <div class="alert warn" style="margin-top:12px">
+        → Select: <strong>3 HP Monoblock, 30m head, 6000 LPH</strong><br>
+        e.g. Kirloskar DB-49, Crompton Aquagold 3HP
+      </div>
+    </div>
+
+    <div class="card accent3">
+      <h3>🌾 Case 3: Agricultural — 5 acres paddy</h3>
+      <br>
+      <div class="pump-spec">
+        <div class="spec-row"><span class="spec-label">Open well depth</span><span class="spec-val">6 m</span></div>
+        <div class="spec-row"><span class="spec-label">Field elevation above well</span><span class="spec-val">3 m</span></div>
+        <div class="spec-row"><span class="spec-label">Pipe run (2.5")</span><span class="spec-val">150 m → friction ~8 m</span></div>
+        <div class="spec-row" style="background:#f0f9ff"><span class="spec-label"><strong>TDH</strong></span><span class="spec-val" style="color:var(--accent3)">6 + 3 + 8 = <strong>17 m</strong></span></div>
+        <div class="spec-row"><span class="spec-label">Flow needed (5 acres)</span><span class="spec-val">15,000 LPH</span></div>
+      </div>
+      <div class="alert info" style="margin-top:12px">
+        → Select: <strong>5 HP Monoblock / 3-phase Centrifugal</strong><br>
+        e.g. Kirloskar Star-3, CRI FF-50
+      </div>
+    </div>
+
+    <div class="card solar">
+      <h3>☀️ Case 4: Solar Pump — remote farm</h3>
+      <br>
+      <div class="pump-spec">
+        <div class="spec-row"><span class="spec-label">Borewell depth</span><span class="spec-val">80 m</span></div>
+        <div class="spec-row"><span class="spec-label">Static water level</span><span class="spec-val">50 m</span></div>
+        <div class="spec-row"><span class="spec-label">Delivery to OHT</span><span class="spec-val">5 m above ground</span></div>
+        <div class="spec-row" style="background:#fff8ee"><span class="spec-label"><strong>TDH</strong></span><span class="spec-val" style="color:var(--solar)">50 + 5 + 8 = <strong>63 m</strong></span></div>
+        <div class="spec-row"><span class="spec-label">Daily water need</span><span class="spec-val">10,000 L/day</span></div>
+        <div class="spec-row"><span class="spec-label">Peak sun hours</span><span class="spec-val">5.5 hrs (Kerala)</span></div>
+      </div>
+      <div class="alert solar" style="margin-top:12px">
+        → Select: <strong>2 HP Solar BLDC Submersible</strong><br>
+        Panel: 4 × 300W = 1200W, CRI / Lubi Solar
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <p class="section-title" style="font-size:28px">Flow Rate <span>Estimation</span></p>
+  <table class="data-table" style="margin-top:16px">
+    <thead><tr><th>Application</th><th>Per Unit</th><th>Typical Requirement</th><th>Daily Volume</th></tr></thead>
+    <tbody>
+      <tr><td>Domestic (Kerala climate)</td><td>Per person</td><td>135–200 LPD</td><td>5 members = 1000 L/day</td></tr>
+      <tr><td>Apartment flat</td><td>Per flat</td><td>600–800 LPD</td><td>20 flats = 15,000 L/day</td></tr>
+      <tr><td>Hotel / Commercial</td><td>Per room</td><td>150–250 LPD</td><td>50 rooms = 10,000 L/day</td></tr>
+      <tr><td>Hospital</td><td>Per bed</td><td>450 LPD</td><td>100 beds = 45,000 L/day</td></tr>
+      <tr><td>Agriculture — Paddy</td><td>Per acre</td><td>2000–3000 LPH (irrigating)</td><td>Intermittent</td></tr>
+      <tr><td>Agriculture — Drip</td><td>Per acre</td><td>500–1000 LPH</td><td>Low flow, long duration</td></tr>
+      <tr><td>Industry / Cooling tower</td><td>Per TR (ton of refrigeration)</td><td>~50 LPH recirculation</td><td>Continuous</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 3 — SELECTION GUIDE
+════════════════════════════════════════════ -->
+<div class="page" id="p3">
+<div class="wrap">
+  <br>
+  <p class="section-title">Step-by-Step <span>Selection Guide</span></p>
+  <p class="section-sub">Follow this decision process for any pumping application</p>
+
+  <div class="flow">
+    <div class="flow-step">1. Identify Source</div><div class="flow-arrow">→</div>
+    <div class="flow-step">2. Measure Head</div><div class="flow-arrow">→</div>
+    <div class="flow-step">3. Estimate Flow</div><div class="flow-arrow">→</div>
+    <div class="flow-step">4. Select Pump Type</div><div class="flow-arrow">→</div>
+    <div class="flow-step">5. Size Motor HP</div><div class="flow-arrow">→</div>
+    <div class="flow-step">6. Choose Phase</div><div class="flow-arrow">→</div>
+    <div class="flow-step">7. Select Brand/Model</div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="two-col">
+    <div>
+      <p class="section-title" style="font-size:24px">🏠 Domestic <span>Selection</span></p>
+      <br>
+      <ol class="num-list">
+        <li>Determine borewell/open-well depth and static water level</li>
+        <li>Add vertical delivery height (OHT or highest outlet)</li>
+        <li>Add 10–15% for pipe friction losses</li>
+        <li>Calculate daily water requirement (200 L/person/day)</li>
+        <li>Choose pump type: Submersible for borewell, Monoblock for openwell/sump</li>
+        <li>Select 1-phase motor if HP ≤ 2 (single-phase available), else 3-phase</li>
+        <li>Include pressure switch + dry-run protection relay</li>
+      </ol>
+      <br>
+      <div class="alert success">
+        <strong>Typical Domestic Setup (Kerala/South India):</strong><br>
+        Borewell 200–300 ft → 1 HP / 1.5 HP 4" Submersible → 1-phase → Pressure switch + DRP → 1" GI riser pipe
+      </div>
+    </div>
+    <div>
+      <p class="section-title" style="font-size:24px">🏢 Commercial <span>Selection</span></p>
+      <br>
+      <ol class="num-list">
+        <li>Conduct water audit — daily demand, peak demand, storage</li>
+        <li>Size OHT / underground sump appropriately (1.5× daily demand)</li>
+        <li>Calculate TDH including friction in distribution network</li>
+        <li>Use duty+standby pump configuration (2 pumps on auto-changeover)</li>
+        <li>3-phase motors preferred (>3 HP) for reliability and efficiency</li>
+        <li>Install auto-level controller + float valves</li>
+        <li>Consider VFD (Variable Frequency Drive) for energy saving in large buildings</li>
+      </ol>
+      <br>
+      <div class="alert warn">
+        <strong>Commercial Rule of Thumb:</strong><br>
+        Always size for 120% of calculated demand. Install 2 pumps with AMF panel for auto-changeover every 24 hours.
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <p class="section-title" style="font-size:24px">🏭 Industrial <span>Selection</span></p>
+  <div class="card-grid cols3" style="margin-top:16px">
+    <div class="card">
+      <h3>Process Water Supply</h3>
+      <p>Continuous duty. 3-phase motors mandatory. VFD for variable flow. Stainless steel pump bodies for chemical resistance. DOL or star-delta starter.</p>
+      <br><span class="badge green">3-phase</span> <span class="badge blue">VFD recommended</span>
+    </div>
+    <div class="card accent2">
+      <h3>Cooling Tower / HVAC</h3>
+      <p>High flow, low-medium head. Horizontal split-case centrifugal. 5–50 HP range. Closed-loop with expansion tank. Pump curves must be verified against system curve.</p>
+      <br><span class="badge purple">Centrifugal</span> <span class="badge orange">High flow</span>
+    </div>
+    <div class="card accent3">
+      <h3>Fire Fighting Pump</h3>
+      <p>Jockey + Main + Diesel standby. IS 15105 compliance. Minimum 2.8 bar at hydrant. Electric pump: DOL starter on dedicated circuit. Never throttle — always bypass.</p>
+      <br><span class="badge red">IS 15105</span> <span class="badge orange">Life Safety</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <p class="section-title" style="font-size:24px">HP Sizing <span>Formula</span></p>
+  <div class="formula-box">
+Motor Power (kW) = (Q × ρ × g × H) / (η_pump × η_motor × 1000)
+
+Where:
+  Q    = Flow rate (m³/s)          <span class="comment">// 1 LPS = 0.001 m³/s</span>
+  ρ    = Water density = 1000 kg/m³
+  g    = 9.81 m/s²
+  H    = TDH in metres
+  η_p  = Pump efficiency (~0.60–0.75)
+  η_m  = Motor efficiency (~0.88–0.92)
+
+Simplified:  HP = (Q_LPM × H_m) / (75 × η)
+
+Example: Q=100 LPM, H=40m, η=0.65
+  HP = (100 × 40) / (75 × 0.65 × 60) = 1.37 HP  → Select 1.5 HP
+  </div>
+
+  <table class="data-table" style="margin-top:20px">
+    <thead><tr><th>Application</th><th>TDH</th><th>Flow</th><th>Motor HP</th><th>Phase</th><th>Starter</th></tr></thead>
+    <tbody>
+      <tr><td>Domestic borewell</td><td>40–80 m</td><td>500–2000 LPH</td><td>0.5–1.5 HP</td><td>1φ</td><td>DOL / Pressure switch</td></tr>
+      <tr><td>Domestic open well</td><td>15–30 m</td><td>1000–3000 LPH</td><td>0.5–1 HP</td><td>1φ</td><td>DOL</td></tr>
+      <tr><td>Apartment (5–10 floors)</td><td>20–40 m</td><td>5000–15000 LPH</td><td>3–5 HP</td><td>3φ</td><td>Star-Delta</td></tr>
+      <tr><td>Commercial building</td><td>30–60 m</td><td>10000–30000 LPH</td><td>5–15 HP</td><td>3φ</td><td>Star-Delta / VFD</td></tr>
+      <tr><td>Small farm (2–5 acres)</td><td>15–25 m</td><td>6000–18000 LPH</td><td>3–7.5 HP</td><td>3φ</td><td>DOL / Star-Delta</td></tr>
+      <tr><td>Large farm (>10 acres)</td><td>15–30 m</td><td>30000–80000 LPH</td><td>10–25 HP</td><td>3φ</td><td>Star-Delta / Soft starter</td></tr>
+      <tr><td>Industrial process</td><td>40–120 m</td><td>10000–100000 LPH</td><td>15–75 HP</td><td>3φ</td><td>VFD / Soft starter</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 4 — ELECTRICAL & PANEL
+════════════════════════════════════════════ -->
+<div class="page" id="p4">
+<div class="wrap">
+  <br>
+  <p class="section-title">Electrical <span>& Panel Requirements</span></p>
+  <p class="section-sub">Single-phase, three-phase, starters, cable sizing, protection devices</p>
+
+  <div class="card-grid cols2" style="margin-bottom:24px">
+    <div class="card phase1">
+      <div class="card-icon">🔌</div>
+      <h3>Single Phase (1φ — 230V AC)</h3>
+      <ul>
+        <li>Used for motors up to 2 HP (max 3 HP with capacitor)</li>
+        <li>Domestic supply available everywhere</li>
+        <li>Capacitor-start-run (CSR) motor typical</li>
+        <li>Protection: MCB 2P, ELCB, voltage guard</li>
+        <li>Starting current: 6–7× full load current</li>
+        <li>Star-delta NOT applicable</li>
+        <li>Auto-transformer starter for larger 1φ motors</li>
+      </ul>
+    </div>
+    <div class="card phase3">
+      <div class="card-icon">⚡</div>
+      <h3>Three Phase (3φ — 415V AC)</h3>
+      <ul>
+        <li>Used for motors 2 HP and above (always preferred >3 HP)</li>
+        <li>Higher efficiency, lower running cost</li>
+        <li>Squirrel cage induction motor (SCIM)</li>
+        <li>Protection: MCCB 3P, overload relay, phase-failure relay</li>
+        <li>Starting methods: DOL, Star-Delta, VFD, Soft Starter</li>
+        <li>Balanced 3-phase supply mandatory — phase imbalance protection essential</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <p class="section-title" style="font-size:26px">Starter <span>Types</span></p>
+  <br>
+  <table class="data-table">
+    <thead><tr><th>Starter Type</th><th>Motor HP Range</th><th>Starting Torque</th><th>Starting Current</th><th>Best For</th></tr></thead>
+    <tbody>
+      <tr><td><strong>DOL (Direct Online)</strong></td><td>Up to 7.5 HP (3φ), any 1φ</td><td>Full (100%)</td><td>6–8× FLC <span class="badge red">High</span></td><td>Small motors, submersibles, pumps with low inertia</td></tr>
+      <tr><td><strong>Star-Delta</strong></td><td>7.5–75 HP</td><td>33% initial</td><td>2–3× FLC <span class="badge yellow">Medium</span></td><td>Centrifugal pumps (unloaded start), standard industrial use</td></tr>
+      <tr><td><strong>Auto-transformer</strong></td><td>15–150 HP</td><td>Adjustable 50–80%</td><td>3–4× FLC</td><td>High-inertia loads, large centrifugal pumps</td></tr>
+      <tr><td><strong>Soft Starter</strong></td><td>5–1000 HP</td><td>Adjustable</td><td>2–4× FLC <span class="badge green">Low</span></td><td>Frequent start/stop, pressure-sensitive systems, VFDs without regen</td></tr>
+      <tr class="highlight-row"><td><strong>VFD (Variable Frequency Drive)</strong></td><td>0.5–1000 HP</td><td>Full (adjustable)</td><td>~FLC <span class="badge green">Lowest</span></td><td>Variable flow, energy saving, HVAC, large commercial buildings</td></tr>
+    </tbody>
+  </table>
+
+  <hr class="divider">
+  <p class="section-title" style="font-size:26px">Panel <span>Requirements</span></p>
+
+  <div class="panel-grid">
+    <div class="panel-item">
+      <h4>🏠 Domestic 1-phase Panel</h4>
+      <div class="component"><span>MCB (2 Pole, 16A)</span><span class="badge blue">Must</span></div>
+      <div class="component"><span>ELCB / RCCB (30mA)</span><span class="badge blue">Must</span></div>
+      <div class="component"><span>Voltage Guard / Stabilizer</span><span class="badge orange">Recommended</span></div>
+      <div class="component"><span>Pressure Switch (auto)</span><span class="badge green">Recommended</span></div>
+      <div class="component"><span>Dry Run Protection Relay</span><span class="badge orange">Recommended</span></div>
+      <div class="component"><span>Float Switch (OHT)</span><span class="badge green">Recommended</span></div>
+    </div>
+
+    <div class="panel-item">
+      <h4>🏢 Apartment 3-phase Panel</h4>
+      <div class="component"><span>MCCB (3 Pole, rated)</span><span class="badge blue">Must</span></div>
+      <div class="component"><span>Contactor (3φ, AC3 duty)</span><span class="badge blue">Must</span></div>
+      <div class="component"><span>Thermal Overload Relay</span><span class="badge blue">Must</span></div>
+      <div class="component"><span>Phase Failure Relay</span><span class="badge blue">Must</span></div>
+      <div class="component"><span>Star-Delta Timer</span><span class="badge orange">If S-D starter</span></div>
+      <div class="component"><span>Auto Level Controller</span><span class="badge green">Recommended</span></div>
+      <div class="component"><span>AMF (Auto Mains Failure)</span><span class="badge orange">For dual pump</span></div>
+    </div>
+
+    <div class="panel-item">
+      <h4>🏭 Industrial MCC Panel</h4>
+      <div class="component"><span>Incomer MCCB with RCCB</span><span class="badge blue">Must</span></div>
+      <div class="component"><span>Motor Feeder with O/L Relay</span><span class="badge blue">Must</span></div>
+      <div class="component"><span>Phase Sequence Relay</span><span class="badge blue">Must</span></div>
+      <div class="component"><span>Earth Fault Relay</span><span class="badge blue">Must</span></div>
+      <div class="component"><span>Ammeter + Voltmeter</span><span class="badge orange">Recommended</span></div>
+      <div class="component"><span>Energy Meter (kWh)</span><span class="badge orange">Recommended</span></div>
+      <div class="component"><span>VFD / Soft Starter</span><span class="badge yellow">If required</span></div>
+    </div>
+
+    <div class="panel-item">
+      <h4>☀️ Solar Pump Panel</h4>
+      <div class="component"><span>Solar Pump Controller (MPPT)</span><span class="badge blue">Must</span></div>
+      <div class="component"><span>DC Fuse / MCB (Array side)</span><span class="badge blue">Must</span></div>
+      <div class="component"><span>DC SPD (Surge Protector)</span><span class="badge orange">Recommended</span></div>
+      <div class="component"><span>AC MCB (grid backup)</span><span class="badge orange">If hybrid</span></div>
+      <div class="component"><span>Dry Run Protection</span><span class="badge blue">Must</span></div>
+      <div class="component"><span>Remote monitoring module</span><span class="badge yellow">Optional</span></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <p class="section-title" style="font-size:26px">Cable <span>Sizing Guide</span></p>
+  <table class="data-table">
+    <thead><tr><th>Motor Rating</th><th>Phase</th><th>FLC (Approx.)</th><th>Cable Size (Cu XLPE)</th><th>Conduit / Pipe</th></tr></thead>
+    <tbody>
+      <tr><td>0.5 HP</td><td>1φ</td><td>4 A</td><td>1.5 mm²</td><td>20mm</td></tr>
+      <tr><td>1 HP</td><td>1φ</td><td>7 A</td><td>2.5 mm²</td><td>20mm</td></tr>
+      <tr><td>1.5 HP</td><td>1φ</td><td>10 A</td><td>2.5–4 mm²</td><td>25mm</td></tr>
+      <tr><td>2 HP</td><td>1φ</td><td>14 A</td><td>4 mm²</td><td>25mm</td></tr>
+      <tr><td>3 HP</td><td>3φ</td><td>6 A</td><td>2.5 mm²</td><td>20mm</td></tr>
+      <tr><td>5 HP</td><td>3φ</td><td>10 A</td><td>4 mm²</td><td>25mm</td></tr>
+      <tr><td>7.5 HP</td><td>3φ</td><td>14 A</td><td>6 mm²</td><td>32mm</td></tr>
+      <tr><td>10 HP</td><td>3φ</td><td>19 A</td><td>10 mm²</td><td>32mm</td></tr>
+      <tr><td>15 HP</td><td>3φ</td><td>28 A</td><td>16 mm²</td><td>40mm</td></tr>
+      <tr><td>20 HP</td><td>3φ</td><td>38 A</td><td>25 mm²</td><td>50mm</td></tr>
+    </tbody>
+  </table>
+  <div class="alert warn">Note: Cable sizes above are for runs up to 30m with ≤3% voltage drop. For longer runs, upsize one step. Submersible pump cables must be specifically rated for submersible use (waterproof insulation).</div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 5 — INDIAN BRANDS & MODELS
+════════════════════════════════════════════ -->
+<div class="page" id="p5">
+<div class="wrap">
+  <br>
+  <p class="section-title">Indian <span>Brands & Models</span></p>
+  <p class="section-sub">Trusted manufacturers with model recommendations by application category</p>
+
+  <!-- SUBMERSIBLE BORWELL -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:8px;color:var(--accent3)">SUBMERSIBLE BOREWELL PUMPS</h3>
+  <table class="data-table">
+    <thead><tr><th>Brand</th><th>Model</th><th>HP</th><th>Head (m)</th><th>Flow (LPH)</th><th>Phase</th><th>Price Range</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="brand">Kirloskar</td><td class="model">KS4B-1011</td><td>1 HP</td><td>10–84m</td><td>600–2200</td><td><span class="badge blue">1φ</span></td><td class="price">₹8,000–12,000</td><td class="note">Best seller; wide spares network</td></tr>
+      <tr><td class="brand">Kirloskar</td><td class="model">KS4B-1522</td><td>1.5 HP</td><td>15–100m</td><td>700–2500</td><td><span class="badge blue">1φ</span></td><td class="price">₹11,000–16,000</td><td class="note">Deep domestic borewells</td></tr>
+      <tr><td class="brand">CRI Pumps</td><td class="model">CRSN 4-14</td><td>1 HP</td><td>40–80m</td><td>900–2400</td><td><span class="badge blue">1φ</span></td><td class="price">₹9,000–14,000</td><td class="note">Tamil Nadu origin; excellent quality</td></tr>
+      <tr><td class="brand">CRI Pumps</td><td class="model">CRSN 4-22</td><td>1.5 HP</td><td>50–120m</td><td>800–2200</td><td><span class="badge blue">1φ</span></td><td class="price">₹12,000–18,000</td><td class="note">Ideal for 300–450 ft borewells</td></tr>
+      <tr><td class="brand">Grundfos</td><td class="model">SP 5A-12</td><td>1.1 kW</td><td>60–110m</td><td>1500–5000</td><td><span class="badge purple">3φ</span></td><td class="price">₹28,000–40,000</td><td class="note">Premium; Danish technology; stainless body</td></tr>
+      <tr><td class="brand">KSB Pumps</td><td class="model">Uniblock</td><td>1–5 HP</td><td>30–130m</td><td>1000–5000</td><td><span class="badge purple">3φ</span></td><td class="price">₹18,000–45,000</td><td class="note">Industrial grade; long MTBF</td></tr>
+      <tr><td class="brand">Lubi</td><td class="model">LSP-10</td><td>1 HP</td><td>45–90m</td><td>800–2000</td><td><span class="badge blue">1φ</span></td><td class="price">₹7,500–11,000</td><td class="note">Budget-friendly; Gujarat manufacturer</td></tr>
+      <tr><td class="brand">V-Guard</td><td class="model">VBS-15-1014</td><td>1.5 HP</td><td>50–110m</td><td>700–2200</td><td><span class="badge blue">1φ</span></td><td class="price">₹10,000–15,000</td><td class="note">Kerala brand; widely available locally</td></tr>
+      <tr><td class="brand">Texmo</td><td class="model">TWSM1020</td><td>1 HP</td><td>40–80m</td><td>600–2000</td><td><span class="badge blue">1φ</span></td><td class="price">₹7,000–11,000</td><td class="note">Coimbatore manufacturer; value pick</td></tr>
+    </tbody>
+  </table>
+
+  <br>
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:8px;color:var(--accent)">MONOBLOCK PUMPS</h3>
+  <table class="data-table">
+    <thead><tr><th>Brand</th><th>Model</th><th>HP</th><th>Head (m)</th><th>Flow (LPH)</th><th>Phase</th><th>Price Range</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="brand">Kirloskar</td><td class="model">Star-1++</td><td>1 HP</td><td>15–32m</td><td>1200–5000</td><td><span class="badge blue">1φ</span></td><td class="price">₹4,000–6,500</td><td class="note">Most popular mono in India</td></tr>
+      <tr><td class="brand">Kirloskar</td><td class="model">DB-49</td><td>3 HP</td><td>20–42m</td><td>3600–14400</td><td><span class="badge purple">3φ</span></td><td class="price">₹9,000–14,000</td><td class="note">Apartments & commercial</td></tr>
+      <tr><td class="brand">Crompton</td><td class="model">Aquagold-1</td><td>1 HP</td><td>14–28m</td><td>1500–5000</td><td><span class="badge blue">1φ</span></td><td class="price">₹3,800–5,500</td><td class="note">Budget domestic; good warranty</td></tr>
+      <tr><td class="brand">Crompton</td><td class="model">Mini Champ-II</td><td>0.5 HP</td><td>8–18m</td><td>800–2200</td><td><span class="badge blue">1φ</span></td><td class="price">₹2,500–3,500</td><td class="note">Garden/small domestic</td></tr>
+      <tr><td class="brand">CRI Pumps</td><td class="model">FF-50</td><td>5 HP</td><td>18–40m</td><td>6000–24000</td><td><span class="badge purple">3φ</span></td><td class="price">₹14,000–20,000</td><td class="note">Agriculture, high flow</td></tr>
+      <tr><td class="brand">Grundfos</td><td class="model">CM 5-4</td><td>0.9 kW</td><td>15–46m</td><td>1800–5400</td><td><span class="badge blue">1φ</span></td><td class="price">₹15,000–22,000</td><td class="note">Premium stainless; variable speed available</td></tr>
+      <tr><td class="brand">Lubi</td><td class="model">LMB 1HP</td><td>1 HP</td><td>12–26m</td><td>1200–4500</td><td><span class="badge blue">1φ</span></td><td class="price">₹3,200–4,800</td><td class="note">Value monoblock</td></tr>
+    </tbody>
+  </table>
+
+  <br>
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:8px;color:var(--accent2)">JET PUMPS & SPECIALTY</h3>
+  <table class="data-table">
+    <thead><tr><th>Brand</th><th>Model</th><th>Type</th><th>HP</th><th>Suction Depth</th><th>Flow</th><th>Price Range</th></tr></thead>
+    <tbody>
+      <tr><td class="brand">Kirloskar</td><td class="model">JALRAAJ 1HP</td><td>Shallow Jet</td><td>1 HP</td><td>7m</td><td>2000 LPH</td><td class="price">₹5,500–7,500</td></tr>
+      <tr><td class="brand">Grundfos</td><td class="model">JP 5</td><td>Jet Self-priming</td><td>0.85 kW</td><td>8m</td><td>2700 LPH</td><td class="price">₹12,000–18,000</td></tr>
+      <tr><td class="brand">CRI Pumps</td><td class="model">SMIPLUS</td><td>Self-priming</td><td>1 HP</td><td>7m</td><td>2500 LPH</td><td class="price">₹5,000–8,000</td></tr>
+      <tr><td class="brand">Crompton</td><td class="model">SP0.5</td><td>Self-priming</td><td>0.5 HP</td><td>6m</td><td>1200 LPH</td><td class="price">₹2,800–4,000</td></tr>
+    </tbody>
+  </table>
+
+  <br>
+  <div class="card-grid cols2">
+    <div class="card">
+      <h3>🏆 Brand Reputation Summary</h3>
+      <div class="pump-spec">
+        <div class="spec-row"><span class="spec-label">Premium / Industrial</span><span>Grundfos, KSB, Wilo</span></div>
+        <div class="spec-row"><span class="spec-label">Mid-range / Reliable</span><span>Kirloskar, CRI, Crompton</span></div>
+        <div class="spec-row"><span class="spec-label">Value / Domestic</span><span>V-Guard, Lubi, Texmo</span></div>
+        <div class="spec-row"><span class="spec-label">Agricultural</span><span>Kirloskar, CRI, Suguna</span></div>
+        <div class="spec-row"><span class="spec-label">Solar / BLDC</span><span>CRI Solar, Lubi Solar, Grundfos SQ Flex</span></div>
+        <div class="spec-row"><span class="spec-label">Kerala Popular</span><span>V-Guard, Kirloskar, CRI, Grundfos</span></div>
+      </div>
+    </div>
+    <div class="card accent2">
+      <h3>⚠️ Buying Checklist</h3>
+      <ul style="font-size:13px;padding-left:16px;line-height:2;color:var(--muted)">
+        <li>Verify ISI mark (IS 8034 for submersible)</li>
+        <li>Check bore size compatibility (4" bore needs 4" pump)</li>
+        <li>Confirm phase voltage at site before ordering</li>
+        <li>Insist on test certificate (flow-head curve)</li>
+        <li>Confirm spare availability in your district</li>
+        <li>Check warranty: 12–24 months typical; Grundfos 5 yr</li>
+        <li>Stainless steel impeller for hard water areas</li>
+        <li>Get PE (polyethylene) column pipe for solar pumps</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 6 — SOLAR PUMPS
+════════════════════════════════════════════ -->
+<div class="page" id="p6">
+<div class="wrap">
+  <br>
+  <p class="section-title">Solar <span>Pump Solutions</span></p>
+  <p class="section-sub">Off-grid pumping using photovoltaic energy — BLDC and inverter-based AC systems</p>
+
+  <div class="solar-block">
+    <h3>☀️ WHY SOLAR PUMPING?</h3>
+    <p style="color:#c8d8e4;font-size:14px;line-height:1.8">Solar pumps eliminate running costs, are ideal for remote farms and borewells with no grid access, qualify for MNRE subsidies (up to 60–90% under PM-KUSUM), and with BLDC motors achieve 15–30% better efficiency than equivalent AC motors.</p>
+    <div class="solar-grid">
+      <div class="solar-stat"><div class="num">₹0</div><div class="lbl">Running Cost</div></div>
+      <div class="solar-stat"><div class="num">90%</div><div class="lbl">Max KUSUM Subsidy</div></div>
+      <div class="solar-stat"><div class="num">5.5 hrs</div><div class="lbl">Peak Sun (Kerala)</div></div>
+      <div class="solar-stat"><div class="num">25 yrs</div><div class="lbl">Panel Life</div></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="two-col">
+    <div>
+      <h3 style="font-size:18px;font-weight:600;margin-bottom:12px">Types of Solar Pump Systems</h3>
+
+      <div class="card" style="margin-bottom:12px">
+        <h3>BLDC Solar Submersible</h3>
+        <p>Brushless DC motor driven directly by solar panels via MPPT controller. Most efficient for low-to-medium power (0.5–5 HP). No battery needed. Pumps only when sun shines.</p>
+        <br><span class="badge green">Best choice ≤5 HP</span>
+      </div>
+      <div class="card accent2" style="margin-bottom:12px">
+        <h3>AC Inverter-based Solar Pump</h3>
+        <p>Solar panels → MPPT inverter → Standard 3-phase AC motor. For >5 HP where BLDC not available. Grid-hybrid option available. Higher system cost.</p>
+        <br><span class="badge orange">>5 HP applications</span>
+      </div>
+      <div class="card solar">
+        <h3>Battery-backed Solar Pump</h3>
+        <p>Solar + battery bank → inverter → pump. Allows pumping at night or cloudy days. Significantly higher cost. Only when grid completely unavailable and storage needed.</p>
+        <br><span class="badge yellow">Only if critical</span>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:18px;font-weight:600;margin-bottom:12px">Solar Panel Sizing</h3>
+      <div class="formula-box">
+Panel Capacity (Wp) = (Motor kW × Safety Factor) / System Efficiency
+
+Where:
+  Safety Factor = 1.25 (losses, temperature)
+  System Efficiency = 0.85 (MPPT × cable)
+
+For 1 HP (0.75 kW) BLDC:
+  Panels = (0.75 × 1.25) / 0.85 = 1.1 kW
+  → Use 4 × 300 Wp panels (1200 Wp)
+
+Daily output:
+  1200 Wp × 5.5 hrs = 6.6 kWh
+  = ~10,000 L/day at 65m TDH
+      </div>
+
+      <table class="data-table" style="margin-top:12px">
+        <thead><tr><th>Motor HP</th><th>kW</th><th>Panels (300W)</th><th>Total Wp</th><th>Daily Output</th></tr></thead>
+        <tbody>
+          <tr><td>0.5 HP</td><td>0.37</td><td>2</td><td>600 Wp</td><td>4,000–6,000 L</td></tr>
+          <tr><td>1 HP</td><td>0.75</td><td>4</td><td>1200 Wp</td><td>8,000–12,000 L</td></tr>
+          <tr><td>2 HP</td><td>1.5</td><td>6–7</td><td>2000 Wp</td><td>15,000–25,000 L</td></tr>
+          <tr><td>3 HP</td><td>2.2</td><td>9–10</td><td>3000 Wp</td><td>25,000–40,000 L</td></tr>
+          <tr><td>5 HP</td><td>3.7</td><td>14–16</td><td>5000 Wp</td><td>40,000–70,000 L</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <p class="section-title" style="font-size:24px">Solar Pump <span>Indian Brands</span></p>
+
+  <table class="data-table">
+    <thead><tr><th>Brand</th><th>Model</th><th>HP</th><th>Type</th><th>Max Head</th><th>Price (System)</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="brand">CRI Solar</td><td class="model">CSSP-4-1009</td><td>1 HP</td><td>BLDC Submersible</td><td>80m</td><td class="price">₹35,000–45,000</td><td class="note">CRI Solar series; MNRE approved</td></tr>
+      <tr><td class="brand">CRI Solar</td><td class="model">CSSP-4-2011</td><td>2 HP</td><td>BLDC Submersible</td><td>100m</td><td class="price">₹55,000–70,000</td><td class="note">Most popular in South India</td></tr>
+      <tr><td class="brand">Lubi Solar</td><td class="model">LSP3-4-1HP</td><td>1 HP</td><td>BLDC Submersible</td><td>70m</td><td class="price">₹30,000–42,000</td><td class="note">Cost-effective; Gujarat</td></tr>
+      <tr><td class="brand">Grundfos</td><td class="model">SQFlex 3-35</td><td>~1.1 kW</td><td>BLDC Flex (AC/DC)</td><td>110m</td><td class="price">₹80,000–1,20,000</td><td class="note">World-class; works on wind too</td></tr>
+      <tr><td class="brand">Kirloskar</td><td class="model">KSTP-1030</td><td>1 HP</td><td>BLDC Submersible</td><td>80m</td><td class="price">₹38,000–50,000</td><td class="note">Kirloskar solar range; 2023 launch</td></tr>
+      <tr><td class="brand">Shakti Pumps</td><td class="model">SSFS 108-15</td><td>15 HP</td><td>AC 3φ Solar</td><td>120m</td><td class="price">₹2,80,000–3,50,000</td><td class="note">KUSUM compliant; large agriculture</td></tr>
+      <tr><td class="brand">Jain Irrigation</td><td class="model">JL-SP-2HP</td><td>2 HP</td><td>BLDC Submersible</td><td>90m</td><td class="price">₹52,000–65,000</td><td class="note">Agri focused; drip integration</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert solar" style="margin-top:20px">
+    <strong>PM-KUSUM Scheme (Component B):</strong> GoI provides 30% subsidy, State adds 30%, farmer pays only 40% for standalone solar pump up to 7.5 HP. Apply via State DISCOM / KSEB in Kerala. MNRE list of approved vendors mandatory for subsidy eligibility.
+  </div>
+
+  <div class="alert success">
+    <strong>For Kerala conditions:</strong> 4–5 peak sun hours/day. Average system generates water July–September at lower output due to monsoon. Size panels for 25% extra Wp for Kerala. Tilt angle: 10° south-facing optimal.
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 7 — BOM
+════════════════════════════════════════════ -->
+<div class="page" id="p7">
+<div class="wrap">
+  <br>
+  <p class="section-title">Bill of <span>Materials (BOM)</span></p>
+  <p class="section-sub">Four complete BOMs: Domestic Borewell | Apartment | Agricultural | Solar Farm</p>
+
+  <!-- BOM 1 -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--accent3);margin-bottom:6px">BOM 1 — DOMESTIC BOREWELL (1 HP, 1-Phase)</h3>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Scenario: 4" borewell, 200ft depth, 5-member household, overhead tank 8m above ground, 60m pipe run</p>
+  <table class="bom-table">
+    <thead><tr><th>Item</th><th>Description / Spec</th><th>Brand / Make</th><th class="qty">Qty</th><th>Unit</th><th class="price">Unit Rate (₹)</th><th class="price">Total (₹)</th></tr></thead>
+    <tbody>
+      <tr class="section-row"><td colspan="7">PUMP & MOTOR</td></tr>
+      <tr><td>Submersible pump set</td><td>1 HP, 1φ, 4", 60m head, IS 8034</td><td>CRI CRSN 4-14 / V-Guard VBS</td><td class="qty">1 Set</td><td>Set</td><td class="price">11,000</td><td class="price">11,000</td></tr>
+      <tr><td>SS Column pipe</td><td>1" dia, SS 304, with couplings</td><td>Surya / Jindal SS</td><td class="qty">70</td><td>m</td><td class="price">280</td><td class="price">19,600</td></tr>
+      <tr><td>Safety rope (HDPE)</td><td>12mm, 80m length</td><td>Standard</td><td class="qty">1</td><td>Coil</td><td class="price">800</td><td class="price">800</td></tr>
+      <tr><td>Submersible cable</td><td>3-core 2.5mm², flat, 80m</td><td>Polycab / Finolex</td><td class="qty">80</td><td>m</td><td class="price">65</td><td class="price">5,200</td></tr>
+
+      <tr class="section-row"><td colspan="7">ELECTRICAL PANEL & PROTECTION</td></tr>
+      <tr><td>MCB 2-Pole</td><td>16A, 230V, C-curve</td><td>Legrand / Hager / ABB</td><td class="qty">1</td><td>Nos</td><td class="price">350</td><td class="price">350</td></tr>
+      <tr><td>ELCB / RCCB</td><td>2P, 25A, 30mA sensitivity</td><td>Schneider / Legrand</td><td class="qty">1</td><td>Nos</td><td class="price">650</td><td class="price">650</td></tr>
+      <tr><td>Voltage stabilizer / guard</td><td>For pump, 1-phase, auto cut-off</td><td>V-Guard / Servokon</td><td class="qty">1</td><td>Nos</td><td class="price">1,800</td><td class="price">1,800</td></tr>
+      <tr><td>Dry run protection relay</td><td>Sensor-based / current sensing, 1φ</td><td>AMPS / Mikro</td><td class="qty">1</td><td>Nos</td><td class="price">900</td><td class="price">900</td></tr>
+      <tr><td>Pressure switch (auto start)</td><td>1/4" BSP, 1.5–4 bar adjustable</td><td>FS Curtis / Generic</td><td class="qty">1</td><td>Nos</td><td class="price">450</td><td class="price">450</td></tr>
+      <tr><td>Float switch (OHT)</td><td>Vertical, PP body, 5A</td><td>Anchor / Prayag</td><td class="qty">2</td><td>Nos</td><td class="price">200</td><td class="price">400</td></tr>
+      <tr><td>Control panel enclosure</td><td>IP54, surface mount, 300×250mm</td><td>Legrand / Hensel</td><td class="qty">1</td><td>Nos</td><td class="price">800</td><td class="price">800</td></tr>
+      <tr><td>PVC armoured cable (power)</td><td>2-core 4mm² CU, 15m (board to pump panel)</td><td>Polycab</td><td class="qty">15</td><td>m</td><td class="price">80</td><td class="price">1,200</td></tr>
+
+      <tr class="section-row"><td colspan="7">PIPING (DELIVERY — BOREWELL TO OHT)</td></tr>
+      <tr><td>PVC pipe (overhead delivery)</td><td>1" dia, Class 6 UPVC</td><td>Finolex / Astral</td><td class="qty">30</td><td>m</td><td class="price">65</td><td class="price">1,950</td></tr>
+      <tr><td>Gate valve</td><td>1" BSP, gunmetal</td><td>Leader / Sant</td><td class="qty">2</td><td>Nos</td><td class="price">220</td><td class="price">440</td></tr>
+      <tr><td>Non-return valve</td><td>1" spring type, SS disc</td><td>Leader / Zoloto</td><td class="qty">1</td><td>Nos</td><td class="price">280</td><td class="price">280</td></tr>
+      <tr><td>Pressure gauge</td><td>0–10 bar, 63mm dial</td><td>H. Guru / Fiebig</td><td class="qty">1</td><td>Nos</td><td class="price">350</td><td class="price">350</td></tr>
+      <tr><td>Pipe fittings (elbows, unions)</td><td>1" UPVC / GI assorted</td><td>Astral / Neeraj</td><td class="qty">1</td><td>Lot</td><td class="price">800</td><td class="price">800</td></tr>
+
+      <tr class="section-row"><td colspan="7">CIVIL & INSTALLATION</td></tr>
+      <tr><td>Well cap (casing seal)</td><td>4" dia SS borewell cap</td><td>Standard SS</td><td class="qty">1</td><td>Nos</td><td class="price">650</td><td class="price">650</td></tr>
+      <tr><td>Earthing electrode</td><td>Copper bonded, 1.5m</td><td>Erico / Galmar</td><td class="qty">1</td><td>Set</td><td class="price">1,200</td><td class="price">1,200</td></tr>
+      <tr><td>Installation & labour</td><td>Pump lowering, panel wiring, testing</td><td>Local electrician</td><td class="qty">1</td><td>LS</td><td class="price">3,500</td><td class="price">3,500</td></tr>
+      <tr class="total-row"><td colspan="6"><strong>TOTAL — BOM 1 (DOMESTIC BOREWELL)</strong></td><td class="price"><strong>₹50,320</strong></td></tr>
+    </tbody>
+  </table>
+
+  <br><br>
+
+  <!-- BOM 2 -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--accent);margin-bottom:6px">BOM 2 — APARTMENT PUMP ROOM (3 HP × 2, 3-Phase, Duty+Standby)</h3>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Scenario: 10-floor apartment, 20 flats, sump-to-OHT, 25m TDH, 6000 LPH, star-delta starter, auto-changeover</p>
+  <table class="bom-table">
+    <thead><tr><th>Item</th><th>Description / Spec</th><th>Brand</th><th class="qty">Qty</th><th>Unit</th><th class="price">Unit Rate (₹)</th><th class="price">Total (₹)</th></tr></thead>
+    <tbody>
+      <tr class="section-row"><td colspan="7">PUMPS</td></tr>
+      <tr><td>Monoblock pump 3 HP</td><td>3 HP, 3φ, 415V, 25m head, 6000 LPH</td><td>Kirloskar DB-49 / CRI FF-30</td><td class="qty">2</td><td>Set</td><td class="price">12,000</td><td class="price">24,000</td></tr>
+      <tr><td>Flexible coupling</td><td>3 HP rating, spider type</td><td>Fenner / Standard</td><td class="qty">2</td><td>Nos</td><td class="price">600</td><td class="price">1,200</td></tr>
+      <tr><td>Anti-vibration pad</td><td>Rubber, 300×300mm</td><td>Dunlop</td><td class="qty">2</td><td>Set</td><td class="price">400</td><td class="price">800</td></tr>
+      <tr class="section-row"><td colspan="7">ELECTRICAL — STAR-DELTA STARTER × 2</td></tr>
+      <tr><td>MCCB 3-pole</td><td>32A, 415V, 10kA</td><td>Schneider / L&T</td><td class="qty">2</td><td>Nos</td><td class="price">1,800</td><td class="price">3,600</td></tr>
+      <tr><td>Main contactor (AC3)</td><td>12A, 3φ coil 230V</td><td>Siemens / L&T</td><td class="qty">2</td><td>Nos</td><td class="price">800</td><td class="price">1,600</td></tr>
+      <tr><td>Star contactor</td><td>12A, 3φ</td><td>Siemens / L&T</td><td class="qty">2</td><td>Nos</td><td class="price">650</td><td class="price">1,300</td></tr>
+      <tr><td>Delta contactor</td><td>12A, 3φ</td><td>Siemens / L&T</td><td class="qty">2</td><td>Nos</td><td class="price">650</td><td class="price">1,300</td></tr>
+      <tr><td>Timer relay (star-delta)</td><td>0–30s adjustable</td><td>Omron / Autonics</td><td class="qty">2</td><td>Nos</td><td class="price">550</td><td class="price">1,100</td></tr>
+      <tr><td>Thermal overload relay</td><td>4–6A range, manual reset</td><td>Schneider / L&T</td><td class="qty">2</td><td>Nos</td><td class="price">700</td><td class="price">1,400</td></tr>
+      <tr><td>Phase failure relay</td><td>3φ, manual reset, LED indicator</td><td>SELEC / Omron</td><td class="qty">1</td><td>Nos</td><td class="price">1,200</td><td class="price">1,200</td></tr>
+      <tr><td>Auto changeover relay (AMF)</td><td>Duty-standby alternating, 3φ input</td><td>SELEC / AMPS</td><td class="qty">1</td><td>Nos</td><td class="price">2,200</td><td class="price">2,200</td></tr>
+      <tr><td>Auto level controller</td><td>Sump low + OHT high sensor, relay output</td><td>Prayag / Anchor</td><td class="qty">1</td><td>Set</td><td class="price">1,800</td><td class="price">1,800</td></tr>
+      <tr><td>Ammeter + CT</td><td>0–10A panel type, 72mm</td><td>Meco / AE</td><td class="qty">2</td><td>Set</td><td class="price">550</td><td class="price">1,100</td></tr>
+      <tr><td>Panel (MCC-type box)</td><td>IP55, 600×500×250mm, SS door</td><td>Rittal / Hensel</td><td class="qty">1</td><td>Nos</td><td class="price">6,500</td><td class="price">6,500</td></tr>
+      <tr><td>Power cable 4mm² 4-core</td><td>15m run per pump, armoured</td><td>Polycab / Finolex</td><td class="qty">30</td><td>m</td><td class="price">120</td><td class="price">3,600</td></tr>
+      <tr class="section-row"><td colspan="7">PIPING (PUMP ROOM)</td></tr>
+      <tr><td>Delivery header (MS ERW)</td><td>2.5" dia, 4m common header</td><td>TATA / Jindal</td><td class="qty">4</td><td>m</td><td class="price">450</td><td class="price">1,800</td></tr>
+      <tr><td>Gate valve 2.5"</td><td>Gunmetal, PN16</td><td>Zoloto / Leader</td><td class="qty">4</td><td>Nos</td><td class="price">780</td><td class="price">3,120</td></tr>
+      <tr><td>Non-return valve 2.5"</td><td>Wafer type, PN16</td><td>Zoloto / AVK</td><td class="qty">2</td><td>Nos</td><td class="price">950</td><td class="price">1,900</td></tr>
+      <tr><td>Pressure gauge 0–10 bar</td><td>100mm dial</td><td>H. Guru</td><td class="qty">1</td><td>Nos</td><td class="price">450</td><td class="price">450</td></tr>
+      <tr><td>Installation & commissioning</td><td>Electrical + plumbing + testing</td><td>Contractor</td><td class="qty">1</td><td>LS</td><td class="price">12,000</td><td class="price">12,000</td></tr>
+      <tr class="total-row"><td colspan="6"><strong>TOTAL — BOM 2 (APARTMENT)</strong></td><td class="price"><strong>₹72,970</strong></td></tr>
+    </tbody>
+  </table>
+
+  <br><br>
+
+  <!-- BOM 3 SOLAR -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--solar);margin-bottom:6px">BOM 3 — SOLAR BLDC PUMP SYSTEM (2 HP, Borewell, Off-Grid)</h3>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Scenario: Remote farm, borewell 80m depth, 65m TDH, 10,000 L/day, no grid access, Kerala conditions</p>
+  <table class="bom-table">
+    <thead><tr><th>Item</th><th>Description / Spec</th><th>Brand</th><th class="qty">Qty</th><th>Unit</th><th class="price">Unit Rate (₹)</th><th class="price">Total (₹)</th></tr></thead>
+    <tbody>
+      <tr class="section-row"><td colspan="7">SOLAR PUMP SET</td></tr>
+      <tr><td>Solar BLDC submersible pump</td><td>2 HP, 4", 100m head, MPPT controller incl.</td><td>CRI CSSP-4-2011 / Lubi LSP2</td><td class="qty">1</td><td>Set</td><td class="price">55,000</td><td class="price">55,000</td></tr>
+      <tr><td>MPPT Solar Pump Controller</td><td>2 HP, BLDC drive, dry-run protection, MPPT</td><td>Included in pump set above</td><td class="qty">—</td><td>—</td><td class="price">—</td><td class="price">Included</td></tr>
+      <tr class="section-row"><td colspan="7">SOLAR PANELS & MOUNTING</td></tr>
+      <tr><td>Solar PV panel 300 Wp</td><td>Monocrystalline, 24V, Tier-1, MNRE approved</td><td>Waaree / Adani / Vikram Solar</td><td class="qty">8</td><td>Nos</td><td class="price">7,500</td><td class="price">60,000</td></tr>
+      <tr><td>Mounting structure (GI hot-dip)</td><td>Fixed tilt 10°, for 8 panels, ground mount</td><td>Novergy / Photon Energy</td><td class="qty">1</td><td>Set</td><td class="price">12,000</td><td class="price">12,000</td></tr>
+      <tr><td>DC cable 4mm² (array to controller)</td><td>UV-resistant, dual-core, 20m run</td><td>Polycab Solar / Helukabel</td><td class="qty">40</td><td>m</td><td class="price">55</td><td class="price">2,200</td></tr>
+      <tr><td>MC4 connectors</td><td>Male + female pair, IP68</td><td>Staubli / Generic</td><td class="qty">10</td><td>Pairs</td><td class="price">80</td><td class="price">800</td></tr>
+      <tr><td>DC string fuse holder + fuse</td><td>15A, 1000V DC, 2-pole</td><td>Mersen / OBO</td><td class="qty">2</td><td>Set</td><td class="price">350</td><td class="price">700</td></tr>
+      <tr><td>DC surge protector (SPD)</td><td>Type II, 1000V DC, 40kA</td><td>Phoenix Contact / OBO</td><td class="qty">1</td><td>Nos</td><td class="price">1,800</td><td class="price">1,800</td></tr>
+      <tr class="section-row"><td colspan="7">COLUMN PIPE & CABLING</td></tr>
+      <tr><td>HDPE column pipe 1.25"</td><td>PN10, 90m (10m below pump)</td><td>Finolex / Jain</td><td class="qty">90</td><td>m</td><td class="price">95</td><td class="price">8,550</td></tr>
+      <tr><td>Safety rope HDPE</td><td>12mm, 95m</td><td>Standard</td><td class="qty">1</td><td>Coil</td><td class="price">900</td><td class="price">900</td></tr>
+      <tr><td>BLDC pump cable</td><td>3-core 2.5mm² flat submersible, 90m</td><td>Polycab</td><td class="qty">90</td><td>m</td><td class="price">70</td><td class="price">6,300</td></tr>
+      <tr class="section-row"><td colspan="7">CIVIL, STORAGE & ACCESSORIES</td></tr>
+      <tr><td>PVC delivery pipe 1.25"</td><td>Class 6, from wellhead to OHT, 40m</td><td>Finolex</td><td class="qty">40</td><td>m</td><td class="price">75</td><td class="price">3,000</td></tr>
+      <tr><td>Float valve 1.25"</td><td>SS ball float, for OHT</td><td>Sant / Leader</td><td class="qty">1</td><td>Nos</td><td class="price">380</td><td class="price">380</td></tr>
+      <tr><td>Non-return valve 1.25"</td><td>Horizontal, spring type</td><td>Zoloto</td><td class="qty">1</td><td>Nos</td><td class="price">320</td><td class="price">320</td></tr>
+      <tr><td>Borewell cap (SS)</td><td>4" diameter</td><td>Standard</td><td class="qty">1</td><td>Nos</td><td class="price">650</td><td class="price">650</td></tr>
+      <tr><td>Remote monitoring (GSM/IoT)</td><td>Solar pump remote ON/OFF, flow meter</td><td>Pumpstory / Kirloskar IoT</td><td class="qty">1</td><td>Set</td><td class="price">4,500</td><td class="price">4,500</td></tr>
+      <tr><td>Installation & commissioning</td><td>Panel mounting, pump lowering, testing</td><td>Solar installer + electrician</td><td class="qty">1</td><td>LS</td><td class="price">8,000</td><td class="price">8,000</td></tr>
+      <tr class="total-row"><td colspan="6"><strong>TOTAL — BOM 3 (SOLAR 2HP SYSTEM)</strong></td><td class="price"><strong>₹1,65,100</strong></td></tr>
+      <tr><td colspan="6" style="padding:8px 12px;font-size:12px;color:var(--muted)">After 60% KUSUM/MNRE subsidy (if eligible)</td><td class="price" style="font-weight:600;color:var(--accent)">₹66,040</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert solar" style="margin-top:20px">
+    <strong>Payback Analysis:</strong> Grid pump running cost for 2 HP at 6 hrs/day = ~₹12,000/year (₹7/unit × 5.5 kWh/day × 365). Solar system pays back in 5–6 years without subsidy, under 3 years with KUSUM subsidy. Panel life: 25 years. Pump life: 8–12 years.
+  </div>
+</div>
+</div>
+
+<script>
+const pages = document.querySelectorAll('.page');
+const btns = document.querySelectorAll('.nav-btn');
+function show(i){
+  pages.forEach((p,idx)=>{p.classList.toggle('active',idx===i)});
+  btns.forEach((b,idx)=>{b.classList.toggle('active',idx===i)});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Domestic Induction Cooker</title>
+<meta name="section" content="Installation, Estimation &amp; Appliances">
+<meta name="section-order" content="4">
+<meta name="order" content="6">
+<meta name="description" content="Working principle and troubleshooting">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&family=Noto+Sans+Malayalam:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&display=swap');
+:root{--bg:#f5f6fa;--surface:#fff;--card:#fff;--border:#e0e6f0;--accent:#b71c1c;--accent2:#e65100;--accent3:#1565c0;--accent4:#2e7d32;--muted:#607080;--text:#1a2535;--sub:#445566;--shadow:0 2px 18px rgba(183,28,28,0.07);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;}
+.lang-ml{font-family:'Noto Sans Malayalam','Nunito',sans-serif;}
+.lang-hi{font-family:'Noto Sans Devanagari','Nunito',sans-serif;}
+header{background:linear-gradient(135deg,#b71c1c 0%,#e53935 45%,#e65100 100%);color:#fff;text-align:center;padding:44px 20px 32px;position:relative;overflow:hidden;}
+header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:30px;background:var(--bg);clip-path:ellipse(55% 100% at 50% 100%);}
+header h1{font-size:clamp(1.7rem,4.5vw,2.9rem);font-weight:900;position:relative;}
+header p{margin-top:6px;opacity:0.78;font-family:'Space Mono',monospace;font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;position:relative;}
+.lang-bar{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 20px;background:#fff;border-bottom:1px solid var(--border);}
+.lang-bar label{font-weight:700;font-size:0.84rem;color:var(--muted);}
+#langSelect{border:1.5px solid var(--accent);border-radius:8px;padding:6px 14px;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.87rem;color:var(--accent);background:#fff5f5;cursor:pointer;}
+nav{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;padding:12px 20px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.06);}
+nav button{background:transparent;border:1.5px solid var(--border);color:var(--muted);padding:6px 13px;border-radius:22px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.77rem;transition:all 0.22s;}
+nav button:hover{border-color:var(--accent);color:var(--accent);}
+nav button.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+section{display:none;padding:32px 18px;max-width:980px;margin:0 auto;}
+section.active{display:block;animation:fadeUp 0.35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:var(--shadow);}
+.card h2{font-size:1.18rem;font-weight:900;color:var(--accent);margin-bottom:10px;}
+.card h3{font-size:0.95rem;font-weight:700;color:var(--accent2);margin:12px 0 5px;}
+.card p,.card li{color:var(--sub);line-height:1.85;font-size:0.92rem;}
+.card ul,.card ol{padding-left:20px;}.card li{margin-bottom:4px;}
+strong{color:var(--accent);}
+.tbl{width:100%;border-collapse:collapse;font-size:0.85rem;}
+.tbl th{background:var(--accent);color:#fff;padding:9px 12px;text-align:left;font-weight:700;}
+.tbl td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--sub);}
+.tbl tr:nth-child(even) td{background:#fdf5f5;}
+.good{color:#2e7d32;font-weight:700;}.bad{color:#c62828;}.warn{color:#e65100;font-weight:700;}
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:11px;margin-top:12px;}
+.badge{background:#fff5f5;border:1.5px solid #f8caca;border-radius:13px;padding:13px;text-align:center;transition:all 0.22s;}
+.badge:hover{border-color:var(--accent);transform:translateY(-2px);}
+.badge .icon{font-size:1.7rem;margin-bottom:4px;}.badge .label{font-size:0.7rem;color:var(--muted);font-family:'Space Mono',monospace;}.badge .val{font-size:0.9rem;font-weight:800;color:var(--accent);}
+.formula{background:#fff5f5;border-left:4px solid var(--accent);border-radius:8px;padding:10px 16px;font-family:'Space Mono',monospace;font-size:0.84rem;color:#7a0e0e;margin:10px 0;white-space:pre-wrap;}
+.step-box{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;}
+.step-num{background:var(--accent);color:#fff;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.9rem;flex-shrink:0;margin-top:2px;}
+.step-content p{color:var(--sub);font-size:0.91rem;line-height:1.7;}
+.ctrl-btn{background:#fff5f5;border:1.5px solid #f8caca;color:var(--accent);padding:6px 16px;border-radius:8px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.82rem;transition:all 0.22s;}
+.ctrl-btn:hover{border-color:var(--accent);background:#ffe8e8;}
+.ctrl-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.ctrl-row{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-bottom:11px;}
+.fault-tbl{width:100%;border-collapse:collapse;font-size:0.84rem;}
+.fault-tbl th{background:#e65100;color:#fff;padding:8px 12px;text-align:left;font-weight:700;}
+.fault-tbl td{padding:7px 11px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--sub);}
+.fault-tbl tr:nth-child(even) td{background:#fff8f5;}
+.fault-tbl .symptom{color:#b71c1c;font-weight:700;}.fault-tbl .remedy{color:#2e7d32;}
+canvas{display:block;margin:0 auto;max-width:100%;border-radius:12px;border:1px solid var(--border);}
+.q-card{background:#fff;border:1.5px solid var(--border);border-radius:13px;padding:20px;margin-bottom:13px;box-shadow:var(--shadow);}
+.q-text{font-size:0.93rem;color:var(--text);margin-bottom:10px;font-weight:700;}
+.q-opts{display:flex;flex-direction:column;gap:7px;}
+.q-opt{background:#fdf5f5;border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;cursor:pointer;font-size:0.88rem;color:var(--sub);transition:all 0.2s;text-align:left;font-family:'Nunito',sans-serif;}
+.q-opt:hover{border-color:var(--accent);color:var(--accent);}
+.q-opt.correct{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20;font-weight:700;}
+.q-opt.wrong{background:#ffebee;border-color:#c62828;color:#b71c1c;}
+.q-feedback{margin-top:7px;font-size:0.8rem;font-family:'Space Mono',monospace;min-height:15px;}
+#mcq-score{text-align:center;font-size:1.1rem;color:var(--accent);font-weight:800;margin-top:16px;}
+@media(max-width:600px){section{padding:16px 8px;}}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="hTitle">🔥 Domestic Induction Cooker</h1>
+  <p id="hSub">Working Principle · Construction · Operation · Testing · Troubleshooting</p>
+</header>
+
+<div class="lang-bar">
+  <label>🌐 Language / भाषा / ഭാഷ:</label>
+  <select id="langSelect" onchange="setLang(this.value)">
+    <option value="en">English</option>
+    <option value="hi">हिन्दी (Hindi)</option>
+    <option value="ml">മലയാളം (Malayalam)</option>
+  </select>
+</div>
+
+<nav>
+  <button class="active" onclick="showTab('intro',this)" data-key="navIntro">Introduction</button>
+  <button onclick="showTab('construction',this)" data-key="navConst">Construction</button>
+  <button onclick="showTab('working',this)" data-key="navWork">Working</button>
+  <button onclick="showTab('animation',this)" data-key="navAnim">⚡ Animations</button>
+  <button onclick="showTab('operation',this)" data-key="navOp">Operation</button>
+  <button onclick="showTab('testing',this)" data-key="navTest">Testing</button>
+  <button onclick="showTab('troubleshoot',this)" data-key="navTs">Troubleshooting</button>
+  <button onclick="showTab('quiz',this)" data-key="navQuiz">Quiz</button>
+</nav>
+
+<!-- INTRO -->
+<section id="intro" class="active">
+  <div class="card">
+    <h2 data-key="introH">What is an Induction Cooker?</h2>
+    <p data-key="introP1">An <strong>induction cooker</strong> heats cookware directly through <strong>electromagnetic induction</strong>. The glass-ceramic surface stays cool — only the ferromagnetic pot gets hot via eddy currents.</p>
+    <h3 data-key="introH2">Core Principle</h3>
+    <p data-key="introP2">High-frequency AC through a flat coil generates a rapidly alternating magnetic field → induces <strong>eddy currents</strong> in the ferromagnetic pan base → eddy currents heat the pan by Joule heating (I²R).</p>
+    <h3 data-key="introH3">Key Requirements</h3>
+    <ul>
+      <li data-key="introL1">Cookware must be <strong>ferromagnetic</strong> (cast iron, magnetic stainless steel).</li>
+      <li data-key="introL2">Flat bottom, diameter ≥ 12 cm for pan detection.</li>
+      <li data-key="introL3">Mains supply: 230 V AC, 50 Hz.</li>
+    </ul>
+  </div>
+  <div class="badge-grid">
+    <div class="badge"><div class="icon">⚡</div><div class="val">1200–2000 W</div><div class="label" data-key="b1">Rated Power</div></div>
+    <div class="badge"><div class="icon">📶</div><div class="val">20–40 kHz</div><div class="label" data-key="b2">Working Freq.</div></div>
+    <div class="badge"><div class="icon">🧲</div><div class="val">Ferromagnetic</div><div class="label" data-key="b3">Pan Required</div></div>
+    <div class="badge"><div class="icon">🌡️</div><div class="val">~85%</div><div class="label" data-key="b4">Efficiency</div></div>
+    <div class="badge"><div class="icon">❄️</div><div class="val" data-key="b5v">Cool Surface</div><div class="label" data-key="b5">Ceramic Top</div></div>
+    <div class="badge"><div class="icon">⏱️</div><div class="val" data-key="b6v">Fast Heat-up</div><div class="label" data-key="b6">2–3 min to boil</div></div>
+  </div>
+  <div class="card" style="margin-top:16px;overflow-x:auto;">
+    <h2 data-key="cmpH">Induction vs Other Cooking Methods</h2>
+    <table class="tbl">
+      <tr><th data-key="cmpT1">Feature</th><th data-key="cmpT2">Induction</th><th data-key="cmpT3">Electric Coil</th><th data-key="cmpT4">Gas</th></tr>
+      <tr><td data-key="cmp1a">Heat source</td><td class="good" data-key="cmp1b">Eddy currents in pan</td><td data-key="cmp1c">Resistive coil</td><td data-key="cmp1d">Flame</td></tr>
+      <tr><td data-key="cmp2a">Efficiency</td><td class="good">~85%</td><td>~70%</td><td class="bad">~40%</td></tr>
+      <tr><td data-key="cmp3a">Surface temp</td><td class="good" data-key="cmp3b">Cool (ceramic)</td><td class="bad" data-key="cmp3c">Very hot</td><td class="bad" data-key="cmp3d">Flame + hot grate</td></tr>
+      <tr><td data-key="cmp4a">Safety</td><td class="good" data-key="cmp4b">No open flame</td><td data-key="cmp4c">Burn risk</td><td class="bad" data-key="cmp4d">Gas leak risk</td></tr>
+      <tr><td data-key="cmp5a">Pan type</td><td class="warn" data-key="cmp5b">Ferromagnetic only</td><td data-key="cmp5c">Any</td><td data-key="cmp5d">Any</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- CONSTRUCTION -->
+<section id="construction">
+  <div class="card">
+    <h2 data-key="conH">Construction &amp; Components</h2>
+    <svg viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:600px;display:block;margin:0 auto 16px;">
+      <rect x="28" y="58" width="544" height="248" rx="16" fill="#f5f6fa" stroke="#b0b8cc" stroke-width="2"/>
+      <rect x="28" y="58" width="544" height="36" rx="12" fill="#d0d8e8" stroke="#8090a8" stroke-width="1.5"/>
+      <text x="300" y="80" text-anchor="middle" fill="#3a4a6a" font-family="Nunito,sans-serif" font-weight="700" font-size="11">Glass-Ceramic Plate</text>
+      <rect x="148" y="18" width="304" height="48" rx="11" fill="#607080" stroke="#445566" stroke-width="2"/>
+      <text x="300" y="47" text-anchor="middle" fill="#fff" font-family="Nunito,sans-serif" font-weight="700" font-size="11">Ferromagnetic Cookware (Pan / Pot)</text>
+      <ellipse cx="300" cy="122" rx="182" ry="17" fill="#fff8e1" stroke="#e65100" stroke-width="2" stroke-dasharray="6,3"/>
+      <ellipse cx="300" cy="129" rx="170" ry="15" fill="none" stroke="#e65100" stroke-width="1.3" opacity="0.55"/>
+      <ellipse cx="300" cy="136" rx="156" ry="13" fill="none" stroke="#e65100" stroke-width="1" opacity="0.35"/>
+      <text x="300" y="153" text-anchor="middle" fill="#bf360c" font-family="Nunito,sans-serif" font-weight="700" font-size="10">Induction Coil (Litz wire, 20–40 kHz)</text>
+      <rect x="116" y="162" width="368" height="13" rx="4" fill="#37474f" opacity="0.65"/>
+      <text x="300" y="172" text-anchor="middle" fill="#eceff1" font-family="Space Mono,monospace" font-size="8">Ferrite Core</text>
+      <ellipse cx="300" cy="222" rx="36" ry="11" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.3"/>
+      <text x="300" y="225" text-anchor="middle" fill="#0d47a1" font-family="Space Mono,monospace" font-size="8">Cooling Fan</text>
+      <rect x="72" y="196" width="86" height="48" rx="7" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.3"/>
+      <text x="115" y="217" text-anchor="middle" fill="#1b5e20" font-family="Nunito,sans-serif" font-weight="700" font-size="10">IGBT</text>
+      <text x="115" y="231" text-anchor="middle" fill="#607080" font-family="Space Mono,monospace" font-size="7">Power Switch</text>
+      <rect x="430" y="190" width="112" height="58" rx="7" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.3"/>
+      <text x="486" y="212" text-anchor="middle" fill="#0d47a1" font-family="Nunito,sans-serif" font-weight="700" font-size="10">Control PCB</text>
+      <text x="486" y="226" text-anchor="middle" fill="#607080" font-family="Space Mono,monospace" font-size="7">MCU + Driver</text>
+      <text x="486" y="239" text-anchor="middle" fill="#607080" font-family="Space Mono,monospace" font-size="7">Display + Input</text>
+      <rect x="72" y="260" width="192" height="32" rx="7" fill="#fff3e0" stroke="#e65100" stroke-width="1.3"/>
+      <text x="168" y="279" text-anchor="middle" fill="#bf360c" font-family="Nunito,sans-serif" font-weight="700" font-size="9">Rectifier + DC Bus Cap</text>
+      <rect x="325" y="260" width="136" height="32" rx="7" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.3"/>
+      <text x="393" y="279" text-anchor="middle" fill="#4a148c" font-family="Nunito,sans-serif" font-weight="700" font-size="9">Resonant Capacitor</text>
+      <defs>
+        <marker id="a1" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="#e65100"/></marker>
+        <marker id="a2" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="#2e7d32"/></marker>
+        <marker id="a3" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="#1565c0"/></marker>
+      </defs>
+      <line x1="168" y1="260" x2="168" y2="246" stroke="#e65100" stroke-width="1.3" marker-end="url(#a1)"/>
+      <line x1="115" y1="196" x2="162" y2="163" stroke="#2e7d32" stroke-width="1.3" marker-end="url(#a2)"/>
+      <line x1="486" y1="190" x2="414" y2="163" stroke="#1565c0" stroke-width="1.3" marker-end="url(#a3)"/>
+    </svg>
+    <h3 data-key="con1H">1. Glass-Ceramic Plate</h3>
+    <ul><li data-key="con1L1">Schott Ceran® — low thermal expansion, withstands 700°C.</li><li data-key="con1L2">Transparent to magnetic field; cool to touch during cooking.</li></ul>
+    <h3 data-key="con2H">2. Induction Coil</h3>
+    <ul><li data-key="con2L1">Flat spiral of <strong>Litz wire</strong> — reduces skin effect at high frequency.</li><li data-key="con2L2">Diameter 140–180 mm; Inductance 50–200 µH.</li></ul>
+    <h3 data-key="con3H">3. Ferrite Core</h3>
+    <ul><li data-key="con3L1">Concentrates magnetic flux upward into pan; prevents coil overheating.</li></ul>
+    <h3 data-key="con4H">4. IGBT</h3>
+    <ul><li data-key="con4L1">Main power switch; switches coil current at 20–40 kHz. Rated 600 V, 20–40 A.</li></ul>
+    <h3 data-key="con5H">5. Resonant Capacitor</h3>
+    <ul><li data-key="con5L1">Forms LC resonant circuit with coil; enables soft-switching (ZVS).</li><li data-key="con5L2">Typical: 0.27–0.47 µF, 1200 V AC polypropylene.</li></ul>
+    <h3 data-key="con6H">6. Control PCB + MCU</h3>
+    <ul><li data-key="con6L1">Generates PWM for IGBT; pan detection; NTC temperature monitoring; display &amp; input.</li></ul>
+  </div>
+</section>
+
+<!-- WORKING -->
+<section id="working">
+  <div class="card">
+    <h2 data-key="wrkH">Working Principle — Step by Step</h2>
+    <div id="stepsContainer"></div>
+  </div>
+  <div class="card">
+    <h2 data-key="wrkFH">Key Formulae</h2>
+    <div class="formula">Faraday's Law:   EMF = −N × dΦ/dt
+Eddy heating:    P = I² × R_pan
+Resonant freq:   f₀ = 1 / (2π√LC)
+Speed control:   P ∝ Duty Cycle</div>
+    <h3 data-key="wrkLitzH">Why Litz Wire?</h3>
+    <p data-key="wrkLitzP">At 20–40 kHz, the <strong>skin effect</strong> forces current to the conductor surface. Litz wire (many fine insulated strands) maximises surface area, drastically reducing AC resistance and coil heating.</p>
+    <h3 data-key="wrkFerroH">Why Ferromagnetic Pan Only?</h3>
+    <p data-key="wrkFerroP">Ferromagnetic materials (µr >> 1) intensify magnetic flux and increase eddy current density. Non-ferrous pans (aluminium, copper) have µr ≈ 1 — negligible eddy currents → no useful heating.</p>
+  </div>
+</section>
+
+<!-- ANIMATION -->
+<section id="animation">
+  <div class="card">
+    <h2 data-key="animH">⚡ Live Induction Heating Simulation</h2>
+    <p data-key="animP" style="color:var(--sub);font-size:0.88rem;margin-bottom:12px;">Select power and pan type to see magnetic field, eddy currents, and heat build-up.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:6px;">
+      <div>
+        <div style="text-align:center;font-weight:700;font-size:0.76rem;color:var(--muted);margin-bottom:5px;font-family:'Space Mono',monospace;" data-key="animPowLabel">POWER LEVEL</div>
+        <div class="ctrl-row" id="powBtns">
+          <button class="ctrl-btn" onclick="setPower('off',this)" data-key="pOff">⏹ OFF</button>
+          <button class="ctrl-btn active" onclick="setPower('low',this)" data-key="pLow">① LOW</button>
+          <button class="ctrl-btn" onclick="setPower('med',this)" data-key="pMed">② MEDIUM</button>
+          <button class="ctrl-btn" onclick="setPower('high',this)" data-key="pHigh">③ HIGH</button>
+        </div>
+      </div>
+      <div>
+        <div style="text-align:center;font-weight:700;font-size:0.76rem;color:var(--muted);margin-bottom:5px;font-family:'Space Mono',monospace;" data-key="animPanLabel">PAN TYPE</div>
+        <div class="ctrl-row">
+          <button class="ctrl-btn active" id="panFe" onclick="setPan('ferro',this)" data-key="panFe">🍳 Cast Iron (Works)</button>
+          <button class="ctrl-btn" id="panAl" onclick="setPan('alum',this)" data-key="panAl">🥘 Aluminium (Fails)</button>
+        </div>
+      </div>
+    </div>
+    <canvas id="inductCanvas" width="700" height="440" style="background:#f8f9fc;width:100%;"></canvas>
+    <div id="inductStats" style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:12px;">
+      <div style="text-align:center;"><div style="font-size:0.7rem;color:var(--muted);font-family:'Space Mono',monospace;" data-key="sFreq">FREQUENCY</div><div id="statFreq2" style="font-size:1.15rem;font-weight:800;color:var(--accent);">25 kHz</div></div>
+      <div style="text-align:center;"><div style="font-size:0.7rem;color:var(--muted);font-family:'Space Mono',monospace;" data-key="sPow">POWER</div><div id="statPow" style="font-size:1.15rem;font-weight:800;color:var(--accent2);">600 W</div></div>
+      <div style="text-align:center;"><div style="font-size:0.7rem;color:var(--muted);font-family:'Space Mono',monospace;" data-key="sTemp">PAN TEMP</div><div id="statTemp" style="font-size:1.15rem;font-weight:800;color:#c62828;">---</div></div>
+      <div style="text-align:center;"><div style="font-size:0.7rem;color:var(--muted);font-family:'Space Mono',monospace;" data-key="sDuty">IGBT DUTY</div><div id="statDuty2" style="font-size:1.15rem;font-weight:800;color:var(--accent3);">45%</div></div>
+      <div style="text-align:center;"><div style="font-size:0.7rem;color:var(--muted);font-family:'Space Mono',monospace;" data-key="sStat">STATUS</div><div id="statStatus" style="font-size:1rem;font-weight:800;color:#2e7d32;" data-key="statHeat">HEATING</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2 data-key="waveH">IGBT Gate &amp; Coil Current Waveforms</h2>
+    <canvas id="waveCanvas" width="700" height="175" style="background:#f8f9fc;width:100%;"></canvas>
+    <p style="margin-top:9px;font-size:0.83rem;color:var(--muted);" data-key="waveP">Gate drive pulse (orange) switches the IGBT at ~25 kHz. Coil current (blue) is quasi-sinusoidal via LC resonance.</p>
+  </div>
+</section>
+
+<!-- OPERATION -->
+<section id="operation">
+  <div class="card">
+    <h2 data-key="opH">Operating the Induction Cooker</h2>
+    <h3 data-key="opH1">Before First Use</h3>
+    <ul>
+      <li data-key="opL1">Place on a flat, stable, heat-resistant surface with ≥10 cm clearance on all sides.</li>
+      <li data-key="opL2">Verify supply voltage matches nameplate (230 V ± 10%).</li>
+      <li data-key="opL3">Test pan with a magnet — it must stick to the base firmly.</li>
+    </ul>
+    <h3 data-key="opH2">Starting Up</h3>
+    <ol style="padding-left:20px;color:var(--sub);line-height:2.1;" id="startupSteps"></ol>
+    <h3 data-key="opH3">Power Settings</h3>
+    <div style="overflow-x:auto;">
+    <table class="tbl" id="powerTable">
+      <tr><th data-key="ptH1">Level</th><th data-key="ptH2">Power (W)</th><th data-key="ptH3">Freq. (kHz)</th><th data-key="ptH4">Use</th></tr>
+      <tr><td data-key="pt1a">Keep Warm</td><td>200–300</td><td>38–40</td><td data-key="pt1b">Maintaining serving temp</td></tr>
+      <tr><td data-key="pt2a">Simmer</td><td>400–600</td><td>32–36</td><td data-key="pt2b">Slow cooking, sauces</td></tr>
+      <tr><td data-key="pt3a">Medium</td><td>800–1200</td><td>26–30</td><td data-key="pt3b">General cooking</td></tr>
+      <tr><td data-key="pt4a">High / Boil</td><td>1500–2000</td><td>20–25</td><td data-key="pt4b">Rapid boiling, stir-fry</td></tr>
+    </table>
+    </div>
+    <h3 data-key="opH4">Safety Features</h3>
+    <ul id="safetyList"></ul>
+  </div>
+</section>
+
+<!-- TESTING -->
+<section id="testing">
+  <div class="card">
+    <h2 data-key="testH">Testing Procedures</h2>
+    <h3 data-key="testH1">A. Pan Compatibility Test</h3>
+    <ul id="panTestList"></ul>
+    <h3 data-key="testH2">B. Input Voltage &amp; Current Test</h3>
+    <div style="overflow-x:auto;">
+    <table class="tbl">
+      <tr><th data-key="vth1">Test Point</th><th data-key="vth2">Instrument</th><th data-key="vth3">Expected</th><th data-key="vth4">Action if Abnormal</th></tr>
+      <tr><td data-key="vt1a">Mains supply</td><td data-key="vt1b">Voltmeter AC</td><td>230 V ± 10%</td><td data-key="vt1c">Check supply; use stabiliser</td></tr>
+      <tr><td data-key="vt2a">Input current (full power)</td><td data-key="vt2b">Clamp meter AC</td><td>7–9 A at 2000 W</td><td data-key="vt2c">High current → IGBT/coil fault</td></tr>
+    </table>
+    </div>
+    <h3 data-key="testH3">C. IGBT Health Check</h3>
+    <ul id="igbtList"></ul>
+    <h3 data-key="testH4">D. NTC Thermistor Test</h3>
+    <ul id="ntcList"></ul>
+    <h3 data-key="testH5">E. Functional Heating Test</h3>
+    <ul id="funcList"></ul>
+  </div>
+</section>
+
+<!-- TROUBLESHOOT -->
+<section id="troubleshoot">
+  <div class="card" style="overflow-x:auto;">
+    <h2 data-key="tsH">Troubleshooting Guide</h2>
+    <table class="fault-tbl">
+      <tr><th data-key="fth1">Symptom</th><th data-key="fth2">Probable Cause</th><th data-key="fth3">Test / Check</th><th data-key="fth4">Remedy</th></tr>
+      <tbody id="faultBody"></tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h2 data-key="safetyH">⚠ Safety Precautions During Servicing</h2>
+    <ul id="safetyServList"></ul>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz">
+  <div style="max-width:700px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:22px;">
+      <h2 style="color:var(--accent);font-size:1.4rem;font-weight:900;" data-key="quizH">Knowledge Check</h2>
+      <p style="color:var(--muted);font-family:'Space Mono',monospace;font-size:0.75rem;" data-key="quizSub">10 QUESTIONS — INDUCTION COOKER</p>
+    </div>
+    <div id="quiz-container"></div>
+    <div id="mcq-score"></div>
+  </div>
+</section>
+
+<script>
+/* ════════ TRANSLATION DATA ════════ */
+const T={
+en:{
+  hTitle:"🔥 Domestic Induction Cooker",hSub:"Working Principle · Construction · Operation · Testing · Troubleshooting",
+  navIntro:"Introduction",navConst:"Construction",navWork:"Working",navAnim:"⚡ Animations",navOp:"Operation",navTest:"Testing",navTs:"Troubleshooting",navQuiz:"Quiz",
+  introH:"What is an Induction Cooker?",introP1:"An <strong>induction cooker</strong> heats cookware directly through <strong>electromagnetic induction</strong>. The glass-ceramic surface stays cool — only the ferromagnetic pot gets hot via eddy currents.",
+  introH2:"Core Principle",introP2:"High-frequency AC through a flat coil generates a rapidly alternating magnetic field → induces <strong>eddy currents</strong> in the ferromagnetic pan base → eddy currents heat the pan by Joule heating (I²R).",
+  introH3:"Key Requirements",introL1:"Cookware must be <strong>ferromagnetic</strong> (cast iron, magnetic stainless steel).",introL2:"Flat bottom, diameter ≥ 12 cm for pan detection.",introL3:"Mains supply: 230 V AC, 50 Hz.",
+  b1:"Rated Power",b2:"Working Freq.",b3:"Pan Required",b4:"Efficiency",b5:"Ceramic Top",b5v:"Cool Surface",b6:"Time to boil",b6v:"Fast Heat-up",
+  cmpH:"Induction vs Other Cooking",cmpT1:"Feature",cmpT2:"Induction",cmpT3:"Electric Coil",cmpT4:"Gas",cmp1a:"Heat source",cmp1b:"Eddy currents in pan",cmp1c:"Resistive coil",cmp1d:"Flame",cmp2a:"Efficiency",cmp3a:"Surface temp",cmp3b:"Cool (ceramic)",cmp3c:"Very hot",cmp3d:"Flame+grate",cmp4a:"Safety",cmp4b:"No open flame",cmp4c:"Burn risk",cmp4d:"Gas leak risk",cmp5a:"Pan type",cmp5b:"Ferromagnetic only",cmp5c:"Any",cmp5d:"Any",
+  conH:"Construction & Components",con1H:"1. Glass-Ceramic Plate",con1L1:"Schott Ceran® — low thermal expansion, withstands 700°C.",con1L2:"Transparent to magnetic field; cool to touch during cooking.",con2H:"2. Induction Coil",con2L1:"Flat spiral of <strong>Litz wire</strong> — reduces skin effect at high frequency.",con2L2:"Diameter 140–180 mm; Inductance 50–200 µH.",con3H:"3. Ferrite Core",con3L1:"Concentrates magnetic flux upward into pan; prevents coil overheating.",con4H:"4. IGBT",con4L1:"Main power switch; switches coil current at 20–40 kHz. Rated 600 V, 20–40 A.",con5H:"5. Resonant Capacitor",con5L1:"Forms LC resonant circuit with coil; enables soft-switching (ZVS).",con5L2:"Typical: 0.27–0.47 µF, 1200 V AC polypropylene.",con6H:"6. Control PCB + MCU",con6L1:"Generates PWM for IGBT; pan detection; NTC temperature monitoring; display & input.",
+  wrkH:"Working Principle — Step by Step",
+  steps:["AC mains → Rectifier + Filter → ~300 V DC bus.","MCU-driven IGBT switches at 20–40 kHz → high-frequency AC to coil.","LC resonance amplifies coil current → strong alternating magnetic field.","Alternating field directed upward through ceramic plate into pan base.","Faraday's law: changing flux → EMF → large eddy currents in pan base.","Eddy currents × pan resistance → Joule heating (P = I²R) → pan heats up.","MCU varies IGBT duty cycle → varies average voltage → controls power (200–2000 W).","No pan detected → MCU detects low coil loading → cuts power in 60 s."],
+  wrkFH:"Key Formulae",wrkLitzH:"Why Litz Wire?",wrkLitzP:"At 20–40 kHz, the <strong>skin effect</strong> forces current to the conductor surface. Litz wire (many fine insulated strands) maximises surface area, drastically reducing AC resistance and coil heating.",wrkFerroH:"Why Ferromagnetic Pan Only?",wrkFerroP:"Ferromagnetic materials (µr >> 1) intensify magnetic flux and increase eddy current density. Non-ferrous pans (aluminium, copper) have µr ≈ 1 — negligible eddy currents → no useful heating.",
+  animH:"⚡ Live Induction Heating Simulation",animP:"Select power and pan type to see magnetic field, eddy currents, and heat build-up.",animPowLabel:"POWER LEVEL",animPanLabel:"PAN TYPE",pOff:"⏹ OFF",pLow:"① LOW",pMed:"② MEDIUM",pHigh:"③ HIGH",panFe:"🍳 Cast Iron (Works)",panAl:"🥘 Aluminium (Fails)",sFreq:"FREQUENCY",sPow:"POWER",sTemp:"PAN TEMP",sDuty:"IGBT DUTY",sStat:"STATUS",statHeat:"HEATING",statOff:"OFF",statFail:"NO PAN / FAIL",statBoil:"BOILING",
+  waveH:"IGBT Gate & Coil Current Waveforms",waveP:"Gate drive pulse (orange) switches the IGBT at ~25 kHz. Coil current (blue) is quasi-sinusoidal via LC resonance.",
+  opH:"Operating the Induction Cooker",opH1:"Before First Use",opL1:"Place on flat, stable surface with ≥10 cm clearance.",opL2:"Verify supply voltage: 230 V ± 10%.",opL3:"Test pan with magnet — must stick firmly.",opH2:"Starting Up",
+  startupSteps:["Place (food-loaded) pan centrally on cooking zone.","Press Power button — display lights up, fan starts.","Select cooking mode or manual wattage.","Adjust power using +/− buttons. Pan heats immediately.","Set timer if required."],
+  opH3:"Power Settings",ptH1:"Level",ptH2:"Power (W)",ptH3:"Freq. (kHz)",ptH4:"Use",pt1a:"Keep Warm",pt1b:"Maintaining serving temp",pt2a:"Simmer",pt2b:"Slow cooking, sauces",pt3a:"Medium",pt3b:"General cooking",pt4a:"High / Boil",pt4b:"Rapid boiling, stir-fry",
+  opH4:"Safety Features",safetyItems:["Auto pan detection: no pan → power off in 60 s.","Overheat protection: NTC on ceramic → cuts off > 280°C.","IGBT overtemp: heatsink NTC → reduces power or shuts off.","Child lock: 3-second hold to lock/unlock.","Timer auto-off: cuts power when timer expires.","Residual heat indicator 'H' on display."],
+  testH:"Testing Procedures",testH1:"A. Pan Compatibility Test",panTestItems:["Hold a permanent magnet to the pan base.","Magnet sticks firmly → ferromagnetic → suitable.","Magnet does not stick → aluminium/copper/glass → NOT suitable.","Quick test: switch on cooker with pan → 'E0' or '---' → incompatible pan."],
+  testH2:"B. Input Voltage & Current Test",vth1:"Test Point",vth2:"Instrument",vth3:"Expected",vth4:"Action if Abnormal",vt1a:"Mains supply",vt1b:"Voltmeter AC",vt1c:"Check supply; use stabiliser",vt2a:"Input current (full power)",vt2b:"Clamp meter AC",vt2c:"High current → IGBT/coil fault",
+  testH3:"C. IGBT Health Check",igbtItems:["Power OFF, capacitor discharged. Use multimeter in diode test mode.","C→E (G open): ~0.5–0.7 V (body diode) in one direction, OL in reverse.","Any reading near 0 Ω between C and E → IGBT shorted — replace."],
+  testH4:"D. NTC Thermistor Test",ntcItems:["Remove thermistor; measure resistance at ~25°C — expect 10 kΩ.","Heat gently — resistance should decrease steadily.","Open circuit (OL) or no change → replace thermistor."],
+  testH5:"E. Functional Heating Test",funcItems:["Place 1 litre of water in suitable pot; set to maximum power.","Water should begin boiling within 3–4 minutes.","Ceramic top should remain < 60°C while pot is actively boiling."],
+  tsH:"Troubleshooting Guide",fth1:"Symptom",fth2:"Probable Cause",fth3:"Test / Check",fth4:"Remedy",
+  faults:[
+    {s:"No display, completely dead",c:"No mains supply; blown fuse; dead PSU",t:"Check mains voltage; check 5A fuse; check 5V/12V on PCB",r:"Replace fuse; repair/replace power supply"},
+    {s:"Display on, no heating",c:"IGBT blown; gate driver fault; coil open",t:"Diode-test IGBT; check gate drive signal; measure coil resistance",r:"Replace IGBT; replace gate driver IC; replace coil"},
+    {s:"Error E0/E1 (pan error)",c:"No pan; incompatible pan; pan < 12 cm",t:"Magnet test on pan base; check pan diameter",r:"Use correct ferromagnetic cookware ≥12 cm"},
+    {s:"Error E2 (over temperature)",c:"NTC open; insufficient ventilation",t:"Measure NTC resistance; check ventilation clearance",r:"Clean vents; replace NTC; allow cooling"},
+    {s:"Error E3/E4 (IGBT overtemp)",c:"Fan failed; heatsink NTC fault; dry thermal paste",t:"Check fan runs; measure heatsink NTC",r:"Replace fan; replace thermal paste; replace NTC"},
+    {s:"Loud humming noise",c:"Loose capacitor or coil; pan vibrating",t:"Inspect all fasteners; try different cookware",r:"Tighten screws; apply silicone damper under coil"},
+    {s:"Trips MCB / blows fuses",c:"IGBT shorted; rectifier diode shorted; cap shorted",t:"Diode-test rectifier; ESR-test cap; C-E test IGBT",r:"Replace shorted component; find root cause"},
+    {s:"Cracked glass-ceramic top",c:"Mechanical impact; thermal shock",t:"Visual inspection — even hairline crack is dangerous",r:"Replace immediately — do NOT use cracked unit"}
+  ],
+  safetyH:"⚠ Safety Precautions During Servicing",safetyServItems:["Never work on live circuits. DC bus holds ~300 V — discharge capacitor via 10 kΩ / 5 W resistor before touching internal components.","IGBT heatsink may be at mains potential — verify isolation before touching.","Use GFI/ELCB-protected outlet during testing.","High-frequency magnetic fields from coil — keep metallic tools and pacemakers away during energised testing.","Cracked ceramic top is a shock hazard — do not use or test with a cracked plate.","Always replace fuses with identical type and rating."],
+  quizH:"Knowledge Check",quizSub:"10 QUESTIONS — INDUCTION COOKER",correct:"✔ Correct!",wrongPre:"✘ Correct: ",
+  questions:[
+    {q:"What is the heating element in an induction cooker?",opts:["The glass-ceramic plate","The induction coil wire","Eddy currents in the pan base","A resistive element"],ans:2},
+    {q:"Which pan type works on an induction cooker?",opts:["Aluminium","Copper","Glass","Cast iron"],ans:3},
+    {q:"Typical switching frequency of an induction cooker?",opts:["50 Hz","1 kHz","20–40 kHz","1 MHz"],ans:2},
+    {q:"Which law explains EMF induction in the pan?",opts:["Ohm's Law","Faraday's Law","Newton's Third Law","Coulomb's Law"],ans:1},
+    {q:"Litz wire is used in the coil to:",opts:["Increase DC resistance","Reduce skin effect losses","Waterproof the coil","Increase inductance"],ans:1},
+    {q:"Main power switch in a domestic induction cooker:",opts:["SCR (Thyristor)","Triac","IGBT","Resistor"],ans:2},
+    {q:"Pan detection works by monitoring:",opts:["Pan weight","Ceramic temperature","Coil loading (current/frequency shift)","Infrared sensor"],ans:2},
+    {q:"DC bus voltage inside induction cooker (from 230V AC):",opts:["12 V","48 V","120 V","~300 V"],ans:3},
+    {q:"Error E2 usually indicates:",opts:["No pan detected","IGBT short","Over-temperature on ceramic sensor","Supply voltage fault"],ans:2},
+    {q:"Resonant capacitor's main purpose:",opts:["Filter mains supply","Enable soft switching and amplify coil current","Power the MCU","Detect the pan"],ans:1}
+  ]
+},
+hi:{
+  hTitle:"🔥 घरेलू इंडक्शन कुकर",hSub:"कार्य-सिद्धांत · निर्माण · संचालन · परीक्षण · समस्या निवारण",
+  navIntro:"परिचय",navConst:"निर्माण",navWork:"कार्य-सिद्धांत",navAnim:"⚡ एनिमेशन",navOp:"संचालन",navTest:"परीक्षण",navTs:"समस्या निवारण",navQuiz:"प्रश्नोत्तरी",
+  introH:"इंडक्शन कुकर क्या है?",introP1:"एक <strong>इंडक्शन कुकर</strong> <strong>विद्युत चुम्बकीय प्रेरण</strong> द्वारा सीधे बर्तन को गर्म करता है। कांच-सिरेमिक सतह ठंडी रहती है — केवल लौह-चुम्बकीय बर्तन भंवर धाराओं से गर्म होता है।",
+  introH2:"मूल सिद्धांत",introP2:"सपाट कुंडली से उच्च-आवृत्ति AC → तेज़ी से बदलता चुम्बकीय क्षेत्र → बर्तन में <strong>भंवर धाराएँ</strong> → जूल ताप (I²R) से बर्तन गर्म।",
+  introH3:"मुख्य आवश्यकताएँ",introL1:"बर्तन <strong>लौह-चुम्बकीय</strong> होना चाहिए (ढलवाँ लोहा, चुम्बकीय स्टेनलेस स्टील)।",introL2:"सपाट तला, व्यास ≥ 12 सेमी (बर्तन पहचान के लिए)।",introL3:"मुख्य आपूर्ति: 230 V AC, 50 Hz।",
+  b1:"रेटेड शक्ति",b2:"कार्य आवृत्ति",b3:"आवश्यक बर्तन",b4:"दक्षता",b5:"सिरेमिक शीर्ष",b5v:"ठंडी सतह",b6:"उबलने का समय",b6v:"त्वरित गर्मी",
+  cmpH:"इंडक्शन बनाम अन्य विधियाँ",cmpT1:"विशेषता",cmpT2:"इंडक्शन",cmpT3:"इलेक्ट्रिक कॉइल",cmpT4:"गैस",cmp1a:"ताप स्रोत",cmp1b:"बर्तन में भंवर धाराएँ",cmp1c:"प्रतिरोधक कुंडली",cmp1d:"ज्वाला",cmp2a:"दक्षता",cmp3a:"सतह तापमान",cmp3b:"ठंडी (सिरेमिक)",cmp3c:"बहुत गर्म",cmp3d:"ज्वाला+जाली",cmp4a:"सुरक्षा",cmp4b:"खुली आग नहीं",cmp4c:"जलने का खतरा",cmp4d:"गैस रिसाव खतरा",cmp5a:"बर्तन प्रकार",cmp5b:"केवल लौह-चुम्बकीय",cmp5c:"कोई भी",cmp5d:"कोई भी",
+  conH:"निर्माण और घटक",con1H:"1. काँच-सिरेमिक प्लेट",con1L1:"Schott Ceran® — कम ऊष्मीय विस्तार, 700°C तक सहनीय।",con1L2:"चुम्बकीय क्षेत्र के लिए पारदर्शी; खाना पकाते समय स्पर्श पर ठंडी।",con2H:"2. इंडक्शन कुंडली",con2L1:"<strong>लिट्ज़ तार</strong> की सपाट कुण्डली — उच्च आवृत्ति पर त्वचा प्रभाव कम।",con2L2:"व्यास 140–180 मिमी; प्रेरकत्व 50–200 µH।",con3H:"3. फेराइट कोर",con3L1:"चुम्बकीय प्रवाह को ऊपर बर्तन में केंद्रित करता है।",con4H:"4. IGBT",con4L1:"मुख्य बिजली स्विच; 20–40 kHz पर कुंडली धारा स्विच करता है।",con5H:"5. अनुनाद संधारित्र",con5L1:"कुंडली के साथ LC अनुनाद सर्किट; शून्य-वोल्टेज स्विचिंग सक्षम।",con5L2:"सामान्यतः: 0.27–0.47 µF, 1200 V AC।",con6H:"6. नियंत्रण PCB + MCU",con6L1:"IGBT के लिए PWM; बर्तन पहचान; NTC तापमान निगरानी; डिस्प्ले।",
+  wrkH:"कार्य-सिद्धांत — चरण दर चरण",
+  steps:["AC मेन्स → रेक्टिफायर + फिल्टर → ~300 V DC बस।","MCU-चालित IGBT 20–40 kHz पर स्विच → कुंडली को उच्च-आवृत्ति AC।","LC अनुनाद कुंडली धारा बढ़ाता है → प्रबल बदलता चुम्बकीय क्षेत्र।","बदलता क्षेत्र सिरेमिक प्लेट से बर्तन के तल में जाता है।","फैराडे का नियम: बदलता प्रवाह → EMF → बर्तन में बड़ी भंवर धाराएँ।","भंवर धाराएँ × प्रतिरोध → जूल ताप → बर्तन गर्म होता है।","MCU IGBT ड्यूटी साइकिल बदलता है → शक्ति 200–2000 W नियंत्रित।","कोई बर्तन नहीं → MCU कम लोडिंग पहचानता है → 60 सेकंड में शक्ति काटता है।"],
+  wrkFH:"मुख्य सूत्र",wrkLitzH:"लिट्ज़ तार क्यों?",wrkLitzP:"20–40 kHz पर <strong>त्वचा प्रभाव</strong> धारा को चालक की सतह पर धकेलता है। लिट्ज़ तार (कई पतले अछूते तार) सतह क्षेत्र बढ़ाता है, AC प्रतिरोध घटाता है।",wrkFerroH:"केवल लौह-चुम्बकीय बर्तन क्यों?",wrkFerroP:"लौह-चुम्बकीय सामग्री (µr >> 1) चुम्बकीय प्रवाह तीव्र करती है। एल्युमिनियम/तांबे के बर्तन µr ≈ 1 — नगण्य भंवर धाराएँ → उपयोगी ताप नहीं।",
+  animH:"⚡ लाइव इंडक्शन हीटिंग सिमुलेशन",animP:"शक्ति और बर्तन प्रकार चुनें — चुम्बकीय क्षेत्र, भंवर धाराएँ और ताप देखें।",animPowLabel:"शक्ति स्तर",animPanLabel:"बर्तन प्रकार",pOff:"⏹ बंद",pLow:"① कम",pMed:"② मध्यम",pHigh:"③ अधिक",panFe:"🍳 ढलवाँ लोहा (काम करता है)",panAl:"🥘 एल्युमिनियम (नहीं चलता)",sFreq:"आवृत्ति",sPow:"शक्ति",sTemp:"बर्तन तापमान",sDuty:"IGBT ड्यूटी",sStat:"स्थिति",statHeat:"गर्म हो रहा है",statOff:"बंद",statFail:"बर्तन नहीं / विफल",statBoil:"उबल रहा है",
+  waveH:"IGBT गेट और कुंडली धारा वेवफॉर्म",waveP:"गेट पल्स (नारंगी) ~25 kHz पर IGBT स्विच करता है। कुंडली धारा (नीला) LC अनुनाद से अर्ध-साइनुसॉइडल है।",
+  opH:"इंडक्शन कुकर का संचालन",opH1:"पहले उपयोग से पहले",opL1:"स्थिर, सपाट, गर्मी-रोधी सतह पर रखें, चारों तरफ ≥10 सेमी जगह।",opL2:"आपूर्ति वोल्टेज जाँचें: 230 V ± 10%।",opL3:"बर्तन को चुम्बक से परखें — मजबूती से चिपकना चाहिए।",opH2:"शुरुआत",
+  startupSteps:["बर्तन (भोजन सहित) केंद्र में रखें।","पावर बटन दबाएँ — डिस्प्ले जलेगा, पंखा चलेगा।","खाना पकाने का मोड या मैन्युअल वाट चुनें।","+/− बटन से शक्ति समायोजित करें। बर्तन तुरंत गर्म होगा।","यदि आवश्यक हो तो टाइमर सेट करें।"],
+  opH3:"शक्ति सेटिंग",ptH1:"स्तर",ptH2:"शक्ति (W)",ptH3:"आवृत्ति (kHz)",ptH4:"उपयोग",pt1a:"गर्म रखें",pt1b:"परोसने का तापमान बनाए रखें",pt2a:"धीमा उबाल",pt2b:"धीमा पकाना, चटनी",pt3a:"मध्यम",pt3b:"सामान्य खाना पकाना",pt4a:"तेज़ / उबाल",pt4b:"तेज़ उबाल, भूनना",
+  opH4:"सुरक्षा सुविधाएँ",safetyItems:["स्वत: बर्तन पहचान: कोई बर्तन नहीं → 60 सेकंड में बंद।","अधिक ताप सुरक्षा: NTC सेंसर → > 280°C पर बंद।","IGBT अधिक तापमान: हीटसिंक NTC → शक्ति कम/बंद।","बाल सुरक्षा: 3 सेकंड दबाकर लॉक/अनलॉक।","टाइमर स्वत: बंद।","अवशिष्ट ताप सूचक 'H' डिस्प्ले पर।"],
+  testH:"परीक्षण प्रक्रियाएँ",testH1:"A. बर्तन संगतता परीक्षण",panTestItems:["बर्तन के तले पर स्थायी चुम्बक लगाएँ।","चुम्बक मजबूती से चिपके → लौह-चुम्बकीय → उपयुक्त।","चुम्बक न चिपके → एल्युमिनियम/तांबा/काँच → अनुपयुक्त।","कुकर चालू करें — 'E0' या '---' → असंगत बर्तन।"],
+  testH2:"B. इनपुट वोल्टेज और धारा परीक्षण",vth1:"परीक्षण बिंदु",vth2:"उपकरण",vth3:"अपेक्षित",vth4:"असामान्य होने पर",vt1a:"मुख्य आपूर्ति",vt1b:"AC वोल्टमीटर",vt1c:"आपूर्ति जाँचें; स्टेबलाइज़र",vt2a:"इनपुट धारा (पूर्ण शक्ति)",vt2b:"क्लैम्प मीटर AC",vt2c:"अधिक धारा → IGBT/कुंडली दोष",
+  testH3:"C. IGBT स्वास्थ्य जाँच",igbtItems:["पावर बंद, संधारित्र डिस्चार्ज। मल्टीमीटर डायोड परीक्षण मोड।","C→E: ~0.5–0.7 V (बॉडी डायोड), विपरीत में OL।","C-E के बीच 0 Ω → IGBT शॉर्ट — बदलें।"],
+  testH4:"D. NTC थर्मिस्टर परीक्षण",ntcItems:["~25°C पर प्रतिरोध मापें — 10 kΩ अपेक्षित।","धीरे गर्म करें — प्रतिरोध घटना चाहिए।","OL या कोई बदलाव नहीं → बदलें।"],
+  testH5:"E. कार्यात्मक ताप परीक्षण",funcItems:["1 लीटर पानी उपयुक्त बर्तन में; अधिकतम शक्ति पर रखें।","3–4 मिनट में उबलना चाहिए।","सिरेमिक शीर्ष < 60°C रहनी चाहिए।"],
+  tsH:"समस्या निवारण मार्गदर्शिका",fth1:"लक्षण",fth2:"संभावित कारण",fth3:"परीक्षण / जाँच",fth4:"उपाय",
+  faults:[
+    {s:"कोई डिस्प्ले नहीं, पूरी तरह बंद",c:"मुख्य आपूर्ति नहीं; फ्यूज उड़ा; मृत PSU",t:"मेन्स वोल्टेज जाँचें; 5A फ्यूज; PCB पर 5V/12V",r:"फ्यूज बदलें; PSU की मरम्मत"},
+    {s:"डिस्प्ले चालू, ताप नहीं",c:"IGBT खराब; गेट ड्राइवर दोष; कुंडली टूटी",t:"IGBT डायोड परीक्षण; गेट ड्राइव; कुंडली प्रतिरोध",r:"IGBT बदलें; गेट ड्राइवर IC; कुंडली"},
+    {s:"Error E0/E1 (बर्तन त्रुटि)",c:"कोई बर्तन नहीं; असंगत; < 12 सेमी",t:"चुम्बक परीक्षण; व्यास जाँचें",r:"सही लौह-चुम्बकीय बर्तन ≥12 सेमी"},
+    {s:"Error E2 (अधिक तापमान)",c:"NTC खुला; अपर्याप्त वायु संचरण",t:"NTC प्रतिरोध मापें; वायु निकास जाँचें",r:"वेंट साफ करें; NTC बदलें"},
+    {s:"तेज़ भिनभिनाहट",c:"ढीला संधारित्र या कुंडली; बर्तन कंपन",t:"सभी पेंच जाँचें; अलग बर्तन आजमाएँ",r:"पेंच कसें; सिलिकॉन डैम्पर लगाएँ"},
+    {s:"MCB ट्रिप / फ्यूज बार-बार उड़ना",c:"IGBT शॉर्ट; रेक्टिफायर शॉर्ट; कैप शॉर्ट",t:"डायोड परीक्षण; ESR परीक्षण; IGBT C-E परीक्षण",r:"शॉर्ट घटक बदलें"},
+    {s:"काँच-सिरेमिक शीर्ष टूटी",c:"यांत्रिक आघात; तापीय झटका",t:"दृश्य निरीक्षण — बाल-दरार भी खतरनाक",r:"तुरंत बदलें — टूटी इकाई न चलाएँ"}
+  ],
+  safetyH:"⚠ सर्विसिंग के दौरान सुरक्षा",safetyServItems:["जीवित सर्किट पर काम न करें। DC बस ~300 V — अंदर छूने से पहले 10 kΩ/5W प्रतिरोधक से कैपेसिटर डिस्चार्ज करें।","IGBT हीटसिंक मेन्स पोटेंशियल पर हो सकता है — पहले आइसोलेशन सत्यापित करें।","परीक्षण के दौरान GFI/ELCB-सुरक्षित आउटलेट उपयोग करें।","ऊर्जित परीक्षण के दौरान पेसमेकर और धातु उपकरण दूर रखें।","टूटी सिरेमिक प्लेट बिजली के झटके का खतरा — उपयोग न करें।","फ्यूज हमेशा समान प्रकार और रेटिंग से बदलें।"],
+  quizH:"ज्ञान जाँच",quizSub:"10 प्रश्न — इंडक्शन कुकर",correct:"✔ सही!",wrongPre:"✘ सही उत्तर: ",
+  questions:[
+    {q:"इंडक्शन कुकर में ताप तत्व क्या है?",opts:["काँच-सिरेमिक प्लेट","इंडक्शन कुंडली तार","बर्तन में भंवर धाराएँ","प्रतिरोधक तत्व"],ans:2},
+    {q:"इंडक्शन कुकर पर कौन सा बर्तन काम करता है?",opts:["एल्युमिनियम","तांबा","काँच","ढलवाँ लोहा"],ans:3},
+    {q:"इंडक्शन कुकर की सामान्य स्विचिंग आवृत्ति?",opts:["50 Hz","1 kHz","20–40 kHz","1 MHz"],ans:2},
+    {q:"बर्तन में EMF प्रेरण कौन से नियम से होता है?",opts:["ओम का नियम","फैराडे का नियम","न्यूटन का तीसरा नियम","कूलम्ब का नियम"],ans:1},
+    {q:"लिट्ज़ तार का उद्देश्य:",opts:["DC प्रतिरोध बढ़ाना","त्वचा प्रभाव हानि कम करना","कुंडली जलरोधक करना","प्रेरकत्व बढ़ाना"],ans:1},
+    {q:"इंडक्शन कुकर का मुख्य बिजली स्विच:",opts:["SCR","ट्राइएक","IGBT","प्रतिरोधक"],ans:2},
+    {q:"बर्तन पहचान किस पर निगरानी करके होती है?",opts:["बर्तन का वजन","सिरेमिक तापमान","कुंडली लोडिंग","इन्फ्रारेड सेंसर"],ans:2},
+    {q:"इंडक्शन कुकर के अंदर DC बस वोल्टेज:",opts:["12 V","48 V","120 V","~300 V"],ans:3},
+    {q:"Error E2 सामान्यतः दर्शाता है:",opts:["कोई बर्तन नहीं","IGBT शॉर्ट","सिरेमिक पर अधिक तापमान","वोल्टेज दोष"],ans:2},
+    {q:"अनुनाद संधारित्र का मुख्य उद्देश्य:",opts:["मेन्स फिल्टर करना","सॉफ्ट-स्विचिंग और धारा बढ़ाना","MCU को शक्ति देना","बर्तन पहचानना"],ans:1}
+  ]
+},
+ml:{
+  hTitle:"🔥 ഗാർഹിക ഇൻഡക്ഷൻ കുക്കർ",hSub:"പ്രവർത്തന തത്ത്വം · നിർമ്മാണം · പ്രവർത്തനം · പരീക്ഷണം · തകരാർ പരിഹാരം",
+  navIntro:"ആമുഖം",navConst:"നിർമ്മാണം",navWork:"പ്രവർത്തന തത്ത്വം",navAnim:"⚡ ആനിമേഷൻ",navOp:"പ്രവർത്തനം",navTest:"പരീക്ഷണം",navTs:"തകരാർ പരിഹാരം",navQuiz:"ക്വിസ്",
+  introH:"ഇൻഡക്ഷൻ കുക്കർ എന്താണ്?",introP1:"ഒരു <strong>ഇൻഡക്ഷൻ കുക്കർ</strong> <strong>വൈദ്യുതകാന്തിക ഇൻഡക്ഷൻ</strong> വഴി നേരിട്ട് പാത്രം ചൂടാക്കുന്നു. ഗ്ലാസ്-സെറാമിക് പ്രതലം തണുത്തതായി തുടരുന്നു — ഫെറോ മാഗ്നറ്റിക് പാത്രം മാത്രം എഡ്ഡി കറന്റ് വഴി ചൂടാകുന്നു.",
+  introH2:"അടിസ്ഥാന തത്ത്വം",introP2:"ഫ്ലാറ്റ് കോയിലിലൂടെ ഉയർന്ന ആവൃത്തിയിൽ AC → വേഗത്തിൽ മാറുന്ന കാന്തിക ക്ഷേത്രം → പാത്രത്തിൽ <strong>എഡ്ഡി കറന്റ്</strong> → ജൂൾ താപനം (I²R) → പാത്രം ചൂടാകുന്നു.",
+  introH3:"പ്രധാന ആവശ്യകതകൾ",introL1:"പാത്രം <strong>ഫെറോ മാഗ്നറ്റിക്</strong> ആയിരിക്കണം (കാസ്റ്റ് ഇരുമ്പ്, കാന്തിക സ്റ്റെയിൻലെസ് സ്റ്റീൽ).",introL2:"പരന്ന അടിഭാഗം, വ്യാസം ≥ 12 cm (പാത്ര തിരിച്ചറിയലിന്).",introL3:"മെയിൻസ്: 230 V AC, 50 Hz.",
+  b1:"റേറ്റഡ് ശക്തി",b2:"പ്രവർത്തന ആവൃത്തി",b3:"ആവശ്യമായ പാത്രം",b4:"കാര്യക്ഷമത",b5:"സെറാമിക് ടോപ്",b5v:"ശാന്തമായ പ്രതലം",b6:"തിളയ്ക്കാൻ സമയം",b6v:"വേഗ ചൂടാക്കൽ",
+  cmpH:"ഇൻഡക്ഷൻ vs മറ്റ് പാചക രീതികൾ",cmpT1:"സവിശേഷത",cmpT2:"ഇൻഡക്ഷൻ",cmpT3:"ഇലക്ട്രിക് കോയിൽ",cmpT4:"ഗ്യാസ്",cmp1a:"ഉഷ്മ സ്രോതസ്സ്",cmp1b:"പാത്രത്തിലെ എഡ്ഡി കറന്റ്",cmp1c:"റെസിസ്റ്റീവ് കോയിൽ",cmp1d:"ജ്വാല",cmp2a:"കാര്യക്ഷമത",cmp3a:"പ്രതല താപനില",cmp3b:"ശാന്തം (സെറാമിക്)",cmp3c:"വളരെ ചൂടുള്ളത്",cmp3d:"ജ്വാല+ഗ്രേറ്റ്",cmp4a:"സുരക്ഷ",cmp4b:"തുറന്ന തീ ഇല്ല",cmp4c:"പൊള്ളൽ അപകടം",cmp4d:"ഗ്യാസ് ചോർച്ച",cmp5a:"പാത്ര തരം",cmp5b:"ഫെറോ മാഗ്നറ്റിക് മാത്രം",cmp5c:"ഏതും",cmp5d:"ഏതും",
+  conH:"നിർമ്മാണവും ഘടകങ്ങളും",con1H:"1. ഗ്ലാസ്-സെറാമിക് പ്ലേറ്റ്",con1L1:"Schott Ceran® — കുറഞ്ഞ താപ വ്യാകോചം, 700°C വരെ സഹിക്കും.",con1L2:"കാന്തിക ക്ഷേത്രത്തിന് സുതാര്യം; പാചക സമയം സ്പർശനത്തിൽ ശാന്തം.",con2H:"2. ഇൻഡക്ഷൻ കോയിൽ",con2L1:"<strong>ലിറ്റ്സ് വയർ</strong> — ഉയർന്ന ആവൃത്തിയിൽ സ്കിൻ ഇഫക്ട് കുറയ്ക്കുന്നു.",con2L2:"വ്യാസം 140–180 mm; ഇൻഡക്റ്റൻസ് 50–200 µH.",con3H:"3. ഫെറൈറ്റ് കോർ",con3L1:"കാന്തിക ഫ്ലക്സ് മുകളിലേക്ക് പാത്രത്തിലേക്ക് കേന്ദ്രീകരിക്കുന്നു.",con4H:"4. IGBT",con4L1:"പ്രധാന പവർ സ്വിച്ച്; 20–40 kHz-ൽ കോയിൽ കറന്റ് സ്വിച്ച് ചെയ്യുന്നു.",con5H:"5. റെസൊണന്റ് കപ്പാസിറ്റർ",con5L1:"കോയിലുമായി LC റെസൊണന്റ് സർക്യൂട്ട്; സോഫ്റ്റ് സ്വിച്ചിംഗ് (ZVS).",con5L2:"സാധാരണ: 0.27–0.47 µF, 1200 V AC.",con6H:"6. കൺട്രോൾ PCB + MCU",con6L1:"IGBT-ക്ക് PWM; പാത്ര തിരിച്ചറിയൽ; NTC താപ നിരീക്ഷണം; ഡിസ്പ്ലേ.",
+  wrkH:"പ്രവർത്തന തത്ത്വം — ഘട്ടം ഘട്ടമായി",
+  steps:["AC മെയിൻസ് → റെക്ടിഫയർ + ഫിൽട്ടർ → ~300 V DC ബസ്.","MCU ഡ്രൈവ് IGBT 20–40 kHz-ൽ സ്വിച്ച് → കോയിലിന് ഉയർന്ന ആവൃത്തി AC.","LC റെസൊണൻസ് കോയിൽ കറന്റ് വർദ്ധിപ്പിക്കുന്നു → ശക്തമായ മാറ്റൽ കാന്തിക ക്ഷേത്രം.","മാറ്റൽ ക്ഷേത്രം സെറാമിക് പ്ലേറ്റ് വഴി പാത്ര അടിഭാഗത്തേക്ക്.","ഫാരഡേ നിയമം: മാറുന്ന ഫ്ലക്സ് → EMF → വലിയ എഡ്ഡി കറന്റ്.","എഡ്ഡി കറന്റ് × റെസിസ്റ്റൻസ് → ജൂൾ ചൂട് → പാത്രം ചൂടാകുന്നു.","MCU IGBT ഡ്യൂട്ടി സൈക്കിൾ → ശക്തി 200–2000 W നിയന്ത്രണം.","പാത്രം ഇല്ല → MCU കോയിൽ ലോഡിംഗ് കണ്ടെത്തുന്നു → 60 s-ൽ ശക്തി നിർത്തുന്നു."],
+  wrkFH:"പ്രധാന സൂത്രങ്ങൾ",wrkLitzH:"ലിറ്റ്സ് വയർ എന്തുകൊണ്ട്?",wrkLitzP:"20–40 kHz-ൽ <strong>സ്കിൻ ഇഫക്ട്</strong> കറന്റ് ചാലകത്തിന്റെ പ്രതലത്തിലേക്ക് ഉന്തുന്നു. ലിറ്റ്സ് വയർ (ഇൻസുലേറ്റഡ് നൂലുകൾ) പ്രതലം വർദ്ധിപ്പിക്കുന്നു, AC പ്രതിരോധം കുറയ്ക്കുന്നു.",wrkFerroH:"ഫെറോ മാഗ്നറ്റിക് പാത്രം മാത്രം എന്തുകൊണ്ട്?",wrkFerroP:"ഫെറോ മാഗ്നറ്റിക് വസ്തുക്കൾ (µr >> 1) കാന്തിക ഫ്ലക്സ് ശക്തിപ്പെടുത്തുന്നു. അലുമിനിയം/ചെമ്പ് µr ≈ 1 — നിസ്സാര എഡ്ഡി കറന്റ് → ഉപകാരപ്രദ ചൂട് ഇല്ല.",
+  animH:"⚡ തൽസമയ ഇൻഡക്ഷൻ ഹീറ്റിംഗ് സിമുലേഷൻ",animP:"ശക്തി, പാത്ര തരം തിരഞ്ഞെടുക്കുക — കാന്തിക ക്ഷേത്രം, എഡ്ഡി കറന്റ്, ചൂട് കാണുക.",animPowLabel:"ശക്തി നില",animPanLabel:"പാത്ര തരം",pOff:"⏹ ഓഫ്",pLow:"① കുറഞ്ഞ",pMed:"② മധ്യം",pHigh:"③ ഉയർന്ന",panFe:"🍳 കാസ്റ്റ് ഇരുമ്പ് (പ്രവർത്തിക്കും)",panAl:"🥘 അലുമിനിയം (പ്രവർത്തിക്കില്ല)",sFreq:"ആവൃത്തി",sPow:"ശക്തി",sTemp:"പാത്ര താപം",sDuty:"IGBT ഡ്യൂട്ടി",sStat:"സ്ഥിതി",statHeat:"ചൂടാകുന്നു",statOff:"ഓഫ്",statFail:"പാത്രം ഇല്ല",statBoil:"തിളയ്ക്കുന്നു",
+  waveH:"IGBT ഗേറ്റ് & കോയിൽ കറന്റ് തരംഗരൂപം",waveP:"ഗേറ്റ് പൾസ് (ഓറഞ്ച്) ~25 kHz-ൽ IGBT സ്വിച്ച് ചെയ്യുന്നു. കോയിൽ കറന്റ് (നീല) LC വഴി അർദ്ധ-സൈനുസോയ്ഡൽ.",
+  opH:"ഇൻഡക്ഷൻ കുക്കർ പ്രവർത്തിപ്പിക്കൽ",opH1:"ആദ്യ ഉപയോഗത്തിന് മുൻപ്",opL1:"പരന്ന, സ്ഥിരമായ, ചൂട്-പ്രതിരോധ പ്രതലത്തിൽ ≥10 cm ഇടം.",opL2:"വോൾട്ടേജ് പരിശോധിക്കുക: 230 V ± 10%.",opL3:"ചുംബകം ഉപയോഗിച്ച് പരിശോധിക്കുക — ദൃഢമായി ഒട്ടണം.",opH2:"ആരംഭിക്കൽ",
+  startupSteps:["പാത്രം (ഭക്ഷണം സഹിതം) കേന്ദ്രത്തിൽ വയ്ക്കുക.","പവർ ബട്ടൺ അമർത്തുക — ഡിസ്പ്ലേ തെളിയും, ഫാൻ ആരംഭിക്കും.","പാചക മോഡ് അല്ലെങ്കിൽ വാട്ട് തിരഞ്ഞെടുക്കുക.","+/− ബട്ടൺ ഉപയോഗിച്ച് ശക്തി ക്രമീകരിക്കുക.","ആവശ്യമെങ്കിൽ ടൈമർ സജ്ജമാക്കുക."],
+  opH3:"ശക്തി ക്രമീകരണം",ptH1:"നില",ptH2:"ശക്തി (W)",ptH3:"ആവൃത്തി (kHz)",ptH4:"ഉപയോഗം",pt1a:"ചൂടോടെ സൂക്ഷിക്കൽ",pt1b:"സർവ്വ ഊഷ്മാവ്",pt2a:"സ്ലോ കുക്ക്",pt2b:"ഇള‌ം‌ പാചകം",pt3a:"മധ്യം",pt3b:"സാധാരണ പാചകം",pt4a:"ഉയർന്ന / തിളപ്പ്",pt4b:"വേഗ തിളപ്പ്",
+  opH4:"സുരക്ഷ സവിശേഷതകൾ",safetyItems:["ഓട്ടോ പാത്ര തിരിച്ചറിയൽ: പാത്രം ഇല്ലെങ്കിൽ 60 s-ൽ ഓഫ്.","അധിക ചൂട് സംരക്ഷണം: NTC > 280°C → ഓഫ്.","IGBT ഓവർടെമ്പ്: ഹീറ്റ്സിങ്ക് NTC → ശക്തി കുറയ്ക്കൽ.","ചൈൽഡ് ലോക്ക്: 3 സെക്കൻഡ് അമർത്തൽ.","ടൈമർ ഓട്ടോ ഓഫ്.","അവശേഷ ചൂട് 'H' ഡിസ്പ്ലേ."],
+  testH:"പരീക്ഷണ നടപടിക്രമങ്ങൾ",testH1:"A. പാത്ര അനുയോജ്യത പരീക്ഷണം",panTestItems:["പാത്രത്തിന്റെ അടിഭാഗത്ത് ചുംബകം വയ്ക്കുക.","ദൃഢമായി ഒട്ടും → ഫെറോ മാഗ്നറ്റിക് → അനുയോജ്യം.","ഒട്ടില്ല → അലുമിനിയം/ചെമ്പ്/ഗ്ലാസ് → അനുചിതം.","'E0' അല്ലെങ്കിൽ '---' → അനുചിത പാത്രം."],
+  testH2:"B. ഇൻപുട്ട് വോൾട്ടേജ് & കറന്റ് പരീക്ഷണം",vth1:"പരീക്ഷണ പോയിന്റ്",vth2:"ഉപകരണം",vth3:"പ്രതീക്ഷിത",vth4:"അസ്വാഭാവികമെങ്കിൽ",vt1a:"മെയിൻസ്",vt1b:"AC വോൾട്ട്മീറ്റർ",vt1c:"സ്ഥിരീകരണം; സ്റ്റബിലൈസർ",vt2a:"ഇൻപുട്ട് കറന്റ്",vt2b:"ക്ലാമ്പ് മീറ്റർ",vt2c:"IGBT/കോയിൽ തകരാർ",
+  testH3:"C. IGBT ആരോഗ്യ പരിശോധന",igbtItems:["പവർ ഓഫ്, കപ്പാസിറ്റർ ഡിസ്‌ചാർജ്. ഡയോഡ് ടെസ്റ്റ് മോഡ്.","C→E: ~0.5–0.7 V ഒരു ദിശയിൽ, OL തിരിച്ചും.","0 Ω C-E ഇടയിൽ → IGBT ഷോർട്ട് — മാറ്റുക."],
+  testH4:"D. NTC തെർമിസ്റ്റർ പരീക്ഷണം",ntcItems:["~25°C-ൽ 10 kΩ പ്രതീക്ഷിക്കുക.","ചൂടാക്കുമ്പോൾ പ്രതിരോധം കുറയണം.","OL അല്ലെങ്കിൽ മാറ്റമില്ല → മാറ്റുക."],
+  testH5:"E. ഫങ്ഷണൽ ഹീറ്റിംഗ് ടെസ്റ്റ്",funcItems:["1 ലിറ്റർ വെള്ളം; പരമാവധി ശക്തി.","3–4 മിനിറ്റിൽ തിളക്കണം.","സെറാമിക് < 60°C ആയിരിക്കണം."],
+  tsH:"തകരാർ പരിഹാര ഗൈഡ്",fth1:"ലക്ഷണം",fth2:"സാധ്യ കാരണം",fth3:"പരിശോധന",fth4:"പരിഹാരം",
+  faults:[
+    {s:"ഡിസ്പ്ലേ ഇല്ല, പൂർണ ഓഫ്",c:"മെയിൻസ് ഇല്ല; ഫ്യൂസ് പോയി; PSU",t:"വോൾട്ടേജ്; 5A ഫ്യൂസ്; PCB 5V/12V",r:"ഫ്യൂസ് മാറ്റുക; PSU"},
+    {s:"ഡിസ്പ്ലേ ഉണ്ട്, ചൂടാകില്ല",c:"IGBT പൊട്ടി; ഗേറ്റ് ഡ്രൈവർ; കോയിൽ",t:"IGBT ഡയോഡ് ടെസ്റ്റ്; ഗേറ്റ് സിഗ്നൽ; കോയിൽ",r:"IGBT; ഗേറ്റ് ഡ്രൈവർ IC; കോയിൽ"},
+    {s:"Error E0/E1 (പാത്ര പിശക്)",c:"പാത്രം ഇല്ല; < 12 cm",t:"ചുംബക ടെസ്റ്റ്; വ്യാസം",r:"ഫെറോ മാഗ്നറ്റിക് ≥12 cm"},
+    {s:"Error E2 (അധിക ചൂട്)",c:"NTC ഓപ്പൺ; വെൻ്റിലേഷൻ",t:"NTC; വായൂ സഞ്ചാര പരിശോധന",r:"വെൻ്റ് വൃത്തിയാക്കൽ; NTC"},
+    {s:"ഉച്ചത്തിലുള്ള മൂളൽ",c:"ഒളിഞ്ഞ കപ്പാസിറ്റർ; കോയിൽ; പാത്ര കമ്പനം",t:"ഒറ്റയ്ക്ക് പരിശോധന; വ്യത്യസ്ത പാത്രം",r:"സ്ക്രൂ മുറുക്കൽ"},
+    {s:"MCB ട്രിപ്പ്",c:"IGBT ഷോർട്ട്; ഡയോഡ്; കപ്പ്",t:"ഡയോഡ് ടെസ്റ്റ്; ESR; IGBT",r:"ഷോർട്ട് ഘടകം മാറ്റുക"},
+    {s:"സെറാമിക് ടോപ് പൊട്ടൽ",c:"ആഘാതം; ഉഷ്മ ഞെട്ടൽ",t:"ദൃശ്യ പരിശോധന — ഒരു ഒടിവും അപകടകരം",r:"ഉടൻ മാറ്റുക — ഉടഞ്ഞ ഉപകരണം ഉപയോഗിക്കരുത്"}
+  ],
+  safetyH:"⚠ സർവ്വീസ് ചെയ്യുന്ന സമയം സുരക്ഷ",safetyServItems:["ജീവ സർക്കീട്ടിൽ ഒരിക്കലും ജോലി ചെയ്യരുത്. DC ബസ് ~300 V — 10 kΩ/5W റെസിസ്റ്റർ ഉപയോഗിച്ച് കപ്പ് ഡിസ്‌ചാർജ് ചെയ്യുക.","IGBT ഹീറ്റ്സിങ്ക് മെയിൻസ് പൊട്ടൻഷ്യലിൽ ആകാം.","GFI/ELCB-സംരക്ഷിത ഔട്ട്ലെറ്റ് ഉപയോഗിക്കുക.","ഹൈ-ഫ്രീക്വൻസി കാന്തിക ക്ഷേത്രം — പേസ്‌മേക്കർ, ലോഹ ഉപകരണം ദൂരെ.","ഒടിഞ്ഞ സെറാമിക് ടോപ് ഇലക്ട്രിക് ഷോക്ക് അപകടം — ഉപയോഗിക്കരുത്.","ഫ്യൂസ് ഒരേ ടൈപ്പും റേറ്റിംഗും ഉള്ളതു മാത്രം."],
+  quizH:"അറിവ് പരിശോധന",quizSub:"10 ചോദ്യങ്ങൾ — ഇൻഡക്ഷൻ കുക്കർ",correct:"✔ ശരി!",wrongPre:"✘ ശരിയുത്തരം: ",
+  questions:[
+    {q:"ഇൻഡക്ഷൻ കുക്കറിൽ ഉഷ്മ ഘടകം ഏത്?",opts:["ഗ്ലാസ്-സെറാമിക് പ്ലേറ്റ്","ഇൻഡക്ഷൻ കോയിൽ വയർ","പാത്ര അടിഭാഗത്ത് എഡ്ഡി കറന്റ്","റെസിസ്റ്റീവ് ഘടകം"],ans:2},
+    {q:"ഇൻഡക്ഷൻ കുക്കറിൽ ഏത് പാത്രം പ്രവർത്തിക്കും?",opts:["അലുമിനിയം","ചെമ്പ്","ഗ്ലാസ്","കാസ്റ്റ് ഇരുമ്പ്"],ans:3},
+    {q:"ഇൻഡക്ഷൻ കുക്കറിന്റെ സ്വിച്ചിംഗ് ആവൃത്തി?",opts:["50 Hz","1 kHz","20–40 kHz","1 MHz"],ans:2},
+    {q:"പാത്രത്തിൽ EMF ഉണ്ടാക്കുന്നത് ഏത് നിയമം?",opts:["ഓം നിയമം","ഫാരഡേ നിയമം","ന്യൂട്ടൻ 3-ആം","കൂലോം നിയമം"],ans:1},
+    {q:"ലിറ്റ്സ് വയർ ഉദ്ദേശം:",opts:["DC പ്രതിരോധം കൂട്ടൽ","സ്കിൻ ഇഫക്ട് നഷ്ടം കുറയ്ക്കൽ","വോട്ടർപ്രൂഫ്","ഇൻഡക്റ്റൻസ് കൂട്ടൽ"],ans:1},
+    {q:"ഇൻഡക്ഷൻ കുക്കറിന്റെ പ്രധാന സ്വിച്ച്:",opts:["SCR","ട്രൈയാക്","IGBT","റെസിസ്റ്റർ"],ans:2},
+    {q:"പാത്ര തിരിച്ചറിയൽ:",opts:["പാത്ര ഭാരം","സെറാമിക് ടെമ്പ്","കോയിൽ ലോഡിംഗ്","ഇൻഫ്രാ-റെഡ്"],ans:2},
+    {q:"DC ബസ് വോൾട്ടേജ്:",opts:["12 V","48 V","120 V","~300 V"],ans:3},
+    {q:"Error E2 അർഥം:",opts:["പാത്രം ഇല്ല","IGBT ഷോർട്ട്","സെറാമിക് ഓവർടെമ്പ്","വോൾട്ടേജ് പ്രശ്നം"],ans:2},
+    {q:"റെസൊണന്റ് കപ്പ് ഉദ്ദേശം:",opts:["മെയിൻസ് ഫിൽട്ടർ","സോഫ്റ്റ് സ്വിച്ചിംഗ്, കോയിൽ കറന്റ്","MCU ശക്തി","പാത്ര തിരിച്ചറിയൽ"],ans:1}
+  ]
+}
+};
+
+/* ════════ STATE ════════ */
+let currentLang='en', powerLevel='low', panType='ferro';
+let panTemp=25, animTime2=0, lastTs2=null, animId2=null, animInit2=false;
+let answered=0, correct=0;
+
+const powerParams={
+  off:{duty:0,freq:40,watts:0,heatRate:0},
+  low:{duty:0.3,freq:35,watts:600,heatRate:0.8},
+  med:{duty:0.6,freq:28,watts:1200,heatRate:2.0},
+  high:{duty:1.0,freq:22,watts:2000,heatRate:3.5}
+};
+
+/* ════════ LANG ════════ */
+function setLang(lang){
+  currentLang=lang;
+  const t=T[lang];
+  document.body.className=lang==='ml'?'lang-ml':lang==='hi'?'lang-hi':'';
+  document.querySelectorAll('[data-key]').forEach(el=>{
+    const k=el.getAttribute('data-key');
+    if(t[k]!==undefined) el.innerHTML=t[k];
+  });
+  document.getElementById('hTitle').textContent=t.hTitle;
+  document.getElementById('hSub').textContent=t.hSub;
+  buildDynamic();
+  rebuildQuiz();
+  updateStats2();
+}
+
+/* ════════ DYNAMIC BUILD ════════ */
+function buildDynamic(){
+  const t=T[currentLang];
+  // Working steps
+  const sc=document.getElementById('stepsContainer'); if(sc){sc.innerHTML='';
+    t.steps.forEach((s,i)=>{
+      sc.innerHTML+=`<div class="step-box"><div class="step-num">${i+1}</div><div class="step-content"><p>${s}</p></div></div>`;
+    });
+  }
+  // Startup steps
+  const ss=document.getElementById('startupSteps'); if(ss){ss.innerHTML='';
+    t.startupSteps.forEach(s=>ss.innerHTML+=`<li>${s}</li>`);
+  }
+  // Safety features
+  const sf=document.getElementById('safetyList'); if(sf){sf.innerHTML='';
+    t.safetyItems.forEach(s=>sf.innerHTML+=`<li>${s}</li>`);
+  }
+  // Pan test
+  const pt=document.getElementById('panTestList'); if(pt){pt.innerHTML='';
+    t.panTestItems.forEach(s=>pt.innerHTML+=`<li>${s}</li>`);
+  }
+  // IGBT list
+  const il=document.getElementById('igbtList'); if(il){il.innerHTML='';
+    t.igbtItems.forEach(s=>il.innerHTML+=`<li>${s}</li>`);
+  }
+  // NTC list
+  const nl=document.getElementById('ntcList'); if(nl){nl.innerHTML='';
+    t.ntcItems.forEach(s=>nl.innerHTML+=`<li>${s}</li>`);
+  }
+  // Func list
+  const fl=document.getElementById('funcList'); if(fl){fl.innerHTML='';
+    t.funcItems.forEach(s=>fl.innerHTML+=`<li>${s}</li>`);
+  }
+  // Fault table
+  const fb=document.getElementById('faultBody'); if(fb){fb.innerHTML='';
+    t.faults.forEach(f=>fb.innerHTML+=`<tr><td class="symptom">${f.s}</td><td>${f.c}</td><td>${f.t}</td><td class="remedy">${f.r}</td></tr>`);
+  }
+  // Safety servicing
+  const sl=document.getElementById('safetyServList'); if(sl){sl.innerHTML='';
+    t.safetyServItems.forEach(s=>sl.innerHTML+=`<li>${s}</li>`);
+  }
+}
+
+/* ════════ TAB ════════ */
+function showTab(id,btn){
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='animation'){initAnim();drawWave();}
+  if(id==='working'||id==='operation'||id==='testing'||id==='troubleshoot') buildDynamic();
+}
+
+/* ════════ ANIMATION ════════ */
+function setPower(level,btn){
+  powerLevel=level;
+  document.querySelectorAll('#powBtns .ctrl-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); updateStats2();
+}
+function setPan(type,btn){
+  panType=type;
+  document.getElementById('panFe').classList.remove('active');
+  document.getElementById('panAl').classList.remove('active');
+  btn.classList.add('active'); updateStats2();
+}
+function updateStats2(){
+  const p=powerParams[powerLevel], t=T[currentLang];
+  const conducting=panType==='ferro';
+  document.getElementById('statFreq2').textContent=p.freq+' kHz';
+  document.getElementById('statPow').textContent=(conducting?p.watts:0)+' W';
+  document.getElementById('statTemp').textContent=panTemp>30?Math.round(panTemp)+'°C':'---';
+  document.getElementById('statDuty2').textContent=Math.round(p.duty*100)+'%';
+  const stat=p.watts===0?t.statOff:!conducting?t.statFail:panTemp>200?t.statBoil:t.statHeat;
+  document.getElementById('statStatus').textContent=stat;
+  document.getElementById('statStatus').style.color=p.watts===0?'#607080':!conducting?'#c62828':panTemp>200?'#e65100':'#2e7d32';
+}
+function initAnim(){
+  if(animInit2)return; animInit2=true; updateStats2();
+  function loop(ts){
+    if(!lastTs2)lastTs2=ts;
+    const dt=(ts-lastTs2)/1000; lastTs2=ts;
+    animTime2+=dt;
+    const p=powerParams[powerLevel];
+    if(panType==='ferro'&&p.heatRate>0) panTemp=Math.min(300,panTemp+p.heatRate*dt*5);
+    else panTemp=Math.max(25,panTemp-0.5*dt*5);
+    updateStats2(); drawInductCanvas();
+    animId2=requestAnimationFrame(loop);
+  }
+  animId2=requestAnimationFrame(loop);
+}
+function drawInductCanvas(){
+  const canvas=document.getElementById('inductCanvas'); if(!canvas)return;
+  const ctx=canvas.getContext('2d'); const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#f8f9fc'; ctx.fillRect(0,0,W,H);
+  const p=powerParams[powerLevel], conducting=panType==='ferro';
+  const cx=W/2, coilY=240, panY=142;
+  // Cooker body
+  ctx.fillStyle='#e8edf5'; ctx.strokeStyle='#b0bcd0'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.roundRect(78,coilY-30,W-156,175,12); ctx.fill(); ctx.stroke();
+  // Glass plate
+  ctx.fillStyle='#d4dce8'; ctx.strokeStyle='#8090a8'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.roundRect(63,coilY-32,W-126,18,8); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#5a6a7a'; ctx.font='bold 10px Nunito,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('Glass-Ceramic Plate',cx,coilY-20);
+  // Coil rings
+  for(let i=6;i>=1;i--){
+    const r=38+i*21;
+    ctx.strokeStyle=`rgba(230,81,0,${p.duty>0?0.5+0.5*(i/6):0.15})`;
+    ctx.lineWidth=2.8-i*0.22;
+    ctx.beginPath(); ctx.ellipse(cx,coilY,r,r*0.19,0,0,2*Math.PI); ctx.stroke();
+  }
+  ctx.fillStyle='#bf360c'; ctx.font='bold 10px Nunito,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('Induction Coil ('+p.freq+' kHz)',cx,coilY+26);
+  // Magnetic field lines
+  if(p.duty>0){
+    for(let i=0;i<10;i++){
+      const phase=animTime2*p.freq*0.3+i*(2*Math.PI/10);
+      const intensity=Math.abs(Math.sin(phase));
+      const x=cx-170+i*34;
+      ctx.strokeStyle=`rgba(21,101,192,${intensity*p.duty*0.65})`;
+      ctx.lineWidth=1.3; ctx.setLineDash([4,4]);
+      ctx.beginPath(); ctx.moveTo(x,coilY-8); ctx.bezierCurveTo(x-9,coilY-46,x+9,panY+44,x,panY+10); ctx.stroke();
+      ctx.setLineDash([]);
+      if(intensity*p.duty>0.25){
+        ctx.fillStyle=`rgba(21,101,192,${intensity*p.duty*0.65})`;
+        ctx.beginPath(); ctx.moveTo(x,panY+10); ctx.lineTo(x-4,panY+18); ctx.lineTo(x+4,panY+18); ctx.closePath(); ctx.fill();
+      }
+    }
+  }
+  // Pan
+  const panW=320, panH=52;
+  const panX=cx-panW/2;
+  let hr=180,hg=180,hb=190;
+  if(conducting&&panTemp>30){const t2=Math.min(1,(panTemp-30)/270);hr=180+Math.round(t2*72);hg=Math.round(180-t2*128);hb=Math.round(190-t2*155);}
+  ctx.fillStyle=`rgb(${hr},${hg},${hb})`; ctx.strokeStyle='#445566'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.roundRect(panX,panY-8,panW,panH,10); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#fff'; ctx.font='bold 11px Nunito,sans-serif'; ctx.textAlign='center';
+  ctx.fillText(panType==='ferro'?'Ferromagnetic Pan (Cast Iron)':'Aluminium Pan (Non-ferromagnetic)',cx,panY+20);
+  if(panTemp>30&&conducting){ctx.fillStyle='#fff'; ctx.font='bold 10px Space Mono'; ctx.fillText(Math.round(panTemp)+'°C',cx,panY+38);}
+  // Eddy currents
+  if(p.duty>0&&conducting){
+    for(let i=0;i<6;i++){
+      const ex=panX+38+i*(panW-76)/6;
+      const ph=animTime2*p.freq*0.6+i*(Math.PI/6);
+      const ea=Math.abs(Math.sin(ph))*p.duty*0.75;
+      const er=12+p.duty*5;
+      ctx.strokeStyle=`rgba(255,87,34,${ea})`; ctx.lineWidth=1.8;
+      ctx.beginPath(); ctx.ellipse(ex,panY+15,er,er*0.42,0,0,2*Math.PI); ctx.stroke();
+    }
+    ctx.fillStyle='rgba(180,40,0,0.8)'; ctx.font='bold 10px Nunito,sans-serif'; ctx.textAlign='right';
+    ctx.fillText('Eddy Currents → Heat (I²R)',panX+panW-4,panY-12);
+  }
+  if(!conducting&&p.duty>0){
+    ctx.fillStyle='rgba(198,40,40,0.11)';
+    ctx.beginPath(); ctx.roundRect(panX,panY-8,panW,panH,10); ctx.fill();
+    ctx.fillStyle='#c62828'; ctx.font='bold 13px Nunito,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('⚠ No eddy currents — Pan not heated!',cx,panY+16);
+    ctx.font='11px Nunito'; ctx.fillText('Cooker will cut power within 60 s',cx,panY+34);
+  }
+  if(conducting&&panTemp>100&&p.duty>0){
+    for(let i=0;i<5;i++){
+      const sx=panX+56+i*(panW-112)/5;
+      const wy=Math.sin(animTime2*4+i)*5;
+      const sa=Math.min(1,(panTemp-100)/200)*p.duty*0.55;
+      ctx.strokeStyle=`rgba(230,81,0,${sa})`; ctx.lineWidth=1.3; ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(sx,panY-8); ctx.bezierCurveTo(sx-7,panY-20+wy,sx+7,panY-33+wy,sx,panY-46); ctx.stroke(); ctx.setLineDash([]);
+    }
+  }
+  // IGBT block
+  ctx.fillStyle='#e8f5e9'; ctx.strokeStyle='#2e7d32'; ctx.lineWidth=1.3;
+  ctx.beginPath(); ctx.roundRect(88,coilY+48,88,46,7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#1b5e20'; ctx.font='bold 10px Nunito,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('IGBT',132,coilY+70); ctx.fillStyle='#607080'; ctx.font='8px Space Mono';
+  ctx.fillText(Math.round(p.duty*100)+'% duty',132,coilY+83);
+  if(p.duty>0){const pOn=Math.sin(animTime2*p.freq*2)>0;ctx.fillStyle=pOn?'#2e7d32':'#c62828';ctx.beginPath();ctx.arc(132,coilY+50,4,0,2*Math.PI);ctx.fill();}
+  // Resonant cap
+  ctx.fillStyle='#f3e5f5'; ctx.strokeStyle='#7b1fa2'; ctx.lineWidth=1.3;
+  ctx.beginPath(); ctx.roundRect(W-198,coilY+48,98,46,7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#4a148c'; ctx.font='bold 10px Nunito,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('Resonant Cap',W-149,coilY+70); ctx.fillStyle='#607080'; ctx.font='8px Space Mono';
+  ctx.fillText('0.27–0.47 µF',W-149,coilY+83);
+  // PWM bar
+  const bx=80,by=H-24,bw=W-160,bh=11;
+  ctx.fillStyle='#e0e6f0'; ctx.beginPath(); ctx.roundRect(bx,by,bw,bh,5); ctx.fill();
+  if(p.duty>0){const gr=ctx.createLinearGradient(bx,0,bx+bw,0);gr.addColorStop(0,'#ffab40');gr.addColorStop(1,'#b71c1c');ctx.fillStyle=gr;ctx.beginPath();ctx.roundRect(bx,by,bw*p.duty,bh,5);ctx.fill();}
+  ctx.fillStyle='#445566'; ctx.font='bold 9px Space Mono'; ctx.textAlign='left'; ctx.fillText('IGBT Duty: '+Math.round(p.duty*100)+'%',bx,by-4);
+  ctx.textAlign='right'; ctx.fillText('Power: '+p.watts+' W',bx+bw,by-4);
+}
+function drawWave(){
+  const canvas=document.getElementById('waveCanvas'); if(!canvas)return;
+  const ctx=canvas.getContext('2d'); const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#f8f9fc'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#e0e6f0'; ctx.lineWidth=0.7;
+  for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=24){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  const T2=80;
+  ctx.strokeStyle='#e65100'; ctx.lineWidth=2; ctx.beginPath();
+  for(let x=0;x<W;x++){const t=(x%T2)/T2;const y=t<0.45?(H*0.19):(H*0.44);x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.stroke();
+  ctx.strokeStyle='#1565c0'; ctx.lineWidth=2; ctx.beginPath();
+  const mid=H*0.72,amp=H*0.21;
+  for(let x=0;x<W;x++){const t=(x%T2)/T2;const y=mid-amp*Math.sin(2*Math.PI*t)*Math.exp(-t*1.2);x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.stroke();
+  ctx.font='11px Space Mono'; ctx.fillStyle='#e65100'; ctx.textAlign='left'; ctx.fillText('IGBT Gate Pulse',10,14);
+  ctx.fillStyle='#1565c0'; ctx.fillText('Coil Current (quasi-sine via LC)',10,H-8);
+}
+
+/* ════════ QUIZ ════════ */
+function rebuildQuiz(){
+  const qc=document.getElementById('quiz-container'); qc.innerHTML='';
+  answered=0; correct=0; document.getElementById('mcq-score').innerHTML='';
+  const t=T[currentLang];
+  t.questions.forEach((q,qi)=>{
+    const div=document.createElement('div'); div.className='q-card';
+    div.innerHTML=`<div class="q-text">${qi+1}. ${q.q}</div>
+    <div class="q-opts">${q.opts.map((o,oi)=>`<button class="q-opt" onclick="checkAns(this,${qi},${oi})">${String.fromCharCode(65+oi)}. ${o}</button>`).join('')}</div>
+    <div class="q-feedback" id="fb${qi}"></div>`;
+    qc.appendChild(div);
+  });
+}
+function checkAns(btn,qi,sel){
+  const t=T[currentLang];
+  const btns=btn.parentElement.querySelectorAll('.q-opt');
+  if([...btns].some(b=>b.classList.contains('correct')||b.classList.contains('wrong')))return;
+  answered++; const ok=sel===t.questions[qi].ans;
+  if(ok){btn.classList.add('correct');correct++;}else{btn.classList.add('wrong');btns[t.questions[qi].ans].classList.add('correct');}
+  const fb=document.getElementById('fb'+qi);
+  fb.textContent=ok?t.correct:t.wrongPre+String.fromCharCode(65+t.questions[qi].ans)+'. '+t.questions[qi].opts[t.questions[qi].ans];
+  fb.style.color=ok?'#2e7d32':'#c62828';
+  if(answered===t.questions.length)
+    document.getElementById('mcq-score').innerHTML=`<br>Score: <b style="color:var(--accent)">${correct}</b> / ${t.questions.length} (${Math.round(correct/t.questions.length*100)}%)`;
+}
+/* Init */
+buildDynamic();
+rebuildQuiz();
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

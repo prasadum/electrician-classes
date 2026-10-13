@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logic Gates</title>
+<meta name="section" content="Electronics">
+<meta name="section-order" content="3">
+<meta name="order" content="10">
+<meta name="description" content="74xx series logic gate IC trainer">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Black+Han+Sans&family=Baloo+2:wght@400;600;700;800&display=swap');
+
+:root {
+  --bg: #f5f7fa;
+  --white: #ffffff;
+  --panel: #ffffff;
+  --border: #d0d8e8;
+  --accent: #1a56db;
+  --accent2: #e05a00;
+  --text: #12202e;
+  --muted: #4a5568;
+  --yellow: #b35c00;
+  --red: #c0001a;
+  --green: #006b2b;
+  --purple: #5a1e96;
+  --shadow: 0 2px 12px rgba(0,0,0,0.10);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 18px;
+  min-height: 100vh;
+}
+
+/* ===================== LANG FONTS ===================== */
+.lang-ml { font-family: 'Noto Sans Malayalam', 'Baloo 2', sans-serif; }
+.lang-hi { font-family: 'Noto Sans Devanagari', 'Baloo 2', sans-serif; }
+.lang-en { font-family: 'Baloo 2', sans-serif; }
+
+.container { max-width: 1140px; margin: 0 auto; padding: 16px 20px 40px; }
+
+/* ===================== HEADER ===================== */
+header {
+  background: var(--accent);
+  color: #fff;
+  padding: 18px 28px 14px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  box-shadow: var(--shadow);
+}
+.header-left {}
+.header-title {
+  font-size: clamp(22px, 3.5vw, 34px);
+  font-weight: 800;
+  letter-spacing: 1px;
+  line-height: 1.1;
+}
+.header-sub { font-size: 15px; opacity: 0.85; margin-top: 4px; }
+
+/* LANGUAGE DROPDOWN */
+.lang-selector-wrap { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.lang-label { font-size: 14px; opacity: 0.85; white-space: nowrap; }
+select#lang-select {
+  background: #fff;
+  color: var(--accent);
+  border: none;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Baloo 2', sans-serif;
+  cursor: pointer;
+  outline: none;
+  min-width: 160px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* ===================== TAB NAV ===================== */
+.tab-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.tab-btn {
+  background: var(--white);
+  border: 2px solid var(--border);
+  color: var(--muted);
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  transition: all 0.18s;
+  line-height: 1.3;
+}
+.tab-btn:hover { border-color: var(--accent); color: var(--accent); background: #eef2ff; }
+.tab-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(26,86,219,0.25);
+}
+
+/* ===================== SECTIONS ===================== */
+.section { display: none; }
+.section.active { display: block; animation: fadeUp 0.25s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* ===================== IC SELECTOR ===================== */
+.ic-selector { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.ic-btn {
+  background: var(--white);
+  border: 2.5px solid var(--border);
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Baloo 2', sans-serif;
+  text-align: center;
+  transition: all 0.18s;
+  min-width: 90px;
+}
+.ic-btn .ic-num { font-size: 20px; font-weight: 800; color: var(--accent); display: block; }
+.ic-btn .ic-name-en { font-size: 13px; color: var(--muted); font-weight: 600; display: block; }
+.ic-btn:hover, .ic-btn.active {
+  border-color: var(--accent);
+  background: #eef2ff;
+  box-shadow: 0 3px 10px rgba(26,86,219,0.15);
+}
+
+/* ===================== CARDS ===================== */
+.card {
+  background: var(--panel);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 22px 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--border);
+}
+
+/* ===================== PIN TABLE ===================== */
+.pin-table { width: 100%; border-collapse: collapse; font-size: 16px; }
+.pin-table th { background: #eef2ff; color: var(--accent); border: 1.5px solid var(--border); padding: 9px 12px; text-align: left; font-weight: 800; }
+.pin-table td { padding: 8px 12px; border: 1.5px solid var(--border); font-weight: 600; }
+.pin-table tr:nth-child(even) td { background: #f8faff; }
+.pin-vcc { color: var(--red); font-weight: 800; }
+.pin-gnd { color: var(--green); font-weight: 800; }
+.pin-in { color: #b35c00; font-weight: 700; }
+.pin-out { color: var(--accent); font-weight: 700; }
+
+/* ===================== TRUTH TABLE ===================== */
+.truth-table { border-collapse: collapse; font-size: 20px; margin: 0 auto; }
+.truth-table th { background: var(--accent); color: #fff; padding: 12px 28px; border: 2px solid var(--border); font-weight: 800; }
+.truth-table td { padding: 11px 28px; border: 2px solid var(--border); text-align: center; font-weight: 700; }
+.bit-0 { color: var(--red); font-size: 22px; }
+.bit-1 { color: var(--green); font-size: 22px; }
+
+/* ===================== SWITCH / OUTPUT ===================== */
+.switch-controls { display: flex; gap: 28px; align-items: center; margin-top: 18px; flex-wrap: wrap; }
+.switch-group { display: flex; align-items: center; gap: 12px; }
+.switch-label { font-size: 20px; font-weight: 700; color: var(--yellow); }
+.toggle-switch { position: relative; width: 66px; height: 34px; cursor: pointer; }
+.toggle-switch input { display: none; }
+.toggle-track {
+  position: absolute; inset: 0;
+  background: #dde3ef;
+  border: 2px solid var(--border);
+  border-radius: 17px; transition: 0.25s;
+}
+.toggle-thumb {
+  position: absolute; top: 4px; left: 4px;
+  width: 22px; height: 22px;
+  background: #aab4c8;
+  border-radius: 50%; transition: 0.25s;
+}
+.toggle-switch input:checked ~ .toggle-track { background: #c7d7ff; border-color: var(--accent); }
+.toggle-switch input:checked ~ .toggle-thumb { transform: translateX(32px); background: var(--accent); box-shadow: 0 0 8px rgba(26,86,219,0.4); }
+
+.output-display {
+  display: flex; align-items: center; gap: 16px;
+  margin-top: 18px; padding: 14px 22px;
+  background: #f0f4ff; border: 2px solid var(--border);
+  border-radius: 10px; font-size: 20px; font-weight: 700;
+}
+.output-led {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: #e0e5f0; border: 3px solid #bbc;
+  transition: all 0.3s; flex-shrink: 0;
+}
+.output-led.on { background: #00c853; border-color: #007a30; box-shadow: 0 0 16px rgba(0,200,83,0.5); }
+.output-led.off { background: #ffd0d0; border-color: var(--red); }
+.out-1 { color: var(--green); font-size: 26px; }
+.out-0 { color: var(--red); font-size: 26px; }
+
+/* ===================== COMPARE TABLE ===================== */
+.compare-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.compare-table th { background: var(--accent); color: #fff; padding: 11px 10px; border: 2px solid var(--border); font-weight: 800; }
+.compare-table td { padding: 10px 10px; border: 1.5px solid var(--border); font-weight: 600; }
+.compare-table tr:nth-child(even) td { background: #f6f8ff; }
+.compare-table tr:hover td { background: #eef2ff; }
+.ic-highlight { color: var(--accent); font-weight: 800; font-size: 17px; }
+.yes { color: var(--green); font-weight: 800; }
+.no { color: var(--red); }
+
+/* ===================== MEMORY TIPS ===================== */
+.tip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 16px; }
+.tip-card { background: #fff; border: 2px solid var(--border); border-left: 6px solid var(--accent); border-radius: 10px; padding: 16px; }
+.tip-card.nand { border-left-color: #c0001a; }
+.tip-card.and  { border-left-color: #006b2b; }
+.tip-card.or   { border-left-color: #b35c00; }
+.tip-card.not  { border-left-color: #5a1e96; }
+.tip-card.nor  { border-left-color: #e05a00; }
+.tip-card.xor  { border-left-color: #1a56db; }
+.tip-card.xnor { border-left-color: #b5006e; }
+.tip-ic   { font-size: 28px; font-weight: 800; color: var(--accent); }
+.tip-gate { font-size: 16px; font-weight: 800; color: var(--muted); margin: 4px 0 8px; }
+.tip-mnemonic { font-size: 15px; color: var(--text); line-height: 1.65; }
+.tip-mnemonic strong { color: var(--yellow); }
+
+/* ===================== WIRING NOTE ===================== */
+.wiring-note {
+  background: #fff8f0; border: 2px solid #f0a050;
+  border-radius: 8px; padding: 13px 16px;
+  margin-top: 14px; font-size: 15px; line-height: 1.7; color: var(--text);
+}
+.wiring-note strong { color: var(--accent2); }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width:680px) { .two-col { grid-template-columns:1fr; } }
+
+/* ===================== MINDMAP ===================== */
+.mindmap-container { overflow-x: auto; background: #fff; border-radius: 10px; border: 1.5px solid var(--border); padding: 10px; }
+
+/* ===================== INFO BOX ===================== */
+.info-box {
+  background: #f0f7ff; border-left: 5px solid var(--accent);
+  border-radius: 8px; padding: 13px 18px;
+  font-size: 15px; line-height: 1.7; color: var(--text); margin-bottom: 14px;
+}
+.info-box .label { font-weight: 800; color: var(--accent); font-size: 16px; }
+
+/* ===================== PINOUT LAYOUT ===================== */
+.pinout-wrap { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+.pinout-svg-wrap { flex: 0 0 auto; }
+.pinout-info { flex: 1; min-width: 230px; }
+
+/* ===================== SCROLLBAR ===================== */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: #eee; }
+::-webkit-scrollbar-thumb { background: #bbc; border-radius: 4px; }
+
+footer {
+  text-align: center; padding: 22px; color: var(--muted);
+  font-size: 14px; border-top: 2px solid var(--border); margin-top: 30px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ========== HEADER ========== -->
+<header>
+  <div class="header-left">
+    <div class="header-title" id="h-title">⚡ Logic Gate IC Lab</div>
+    <div class="header-sub" id="h-sub">74xx Series · Pinouts · Circuits · Truth Tables · Memory Tricks</div>
+  </div>
+  <div class="lang-selector-wrap">
+    <span class="lang-label" id="h-langlab">🌐 Language:</span>
+    <select id="lang-select" onchange="setLang(this.value)">
+      <option value="en">🇬🇧 English</option>
+      <option value="ml">🇮🇳 മലയാളം</option>
+      <option value="hi">🇮🇳 हिन्दी</option>
+    </select>
+  </div>
+</header>
+
+<!-- ========== TAB NAV ========== -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('pinout',this)" id="tnav-pinout">📌 Pinouts</button>
+  <button class="tab-btn" onclick="showTab('circuit',this)" id="tnav-circuit">⚡ Live Circuit</button>
+  <button class="tab-btn" onclick="showTab('truth',this)" id="tnav-truth">📊 Truth Tables</button>
+  <button class="tab-btn" onclick="showTab('compare',this)" id="tnav-compare">🔍 IC Comparison</button>
+  <button class="tab-btn" onclick="showTab('memory',this)" id="tnav-memory">🧠 Memory Tricks</button>
+  <button class="tab-btn" onclick="showTab('mindmap',this)" id="tnav-mindmap">🗺️ Mind Map</button>
+</div>
+
+<!-- ========== PINOUT TAB ========== -->
+<div id="tab-pinout" class="section active">
+  <div class="ic-selector" id="pinout-ic-selector"></div>
+  <div id="pinout-content"></div>
+</div>
+
+<!-- ========== CIRCUIT TAB ========== -->
+<div id="tab-circuit" class="section">
+  <div class="ic-selector" id="circuit-ic-selector"></div>
+  <div id="circuit-content"></div>
+</div>
+
+<!-- ========== TRUTH TABLE TAB ========== -->
+<div id="tab-truth" class="section">
+  <div class="ic-selector" id="truth-ic-selector"></div>
+  <div id="truth-content"></div>
+</div>
+
+<!-- ========== COMPARE TAB ========== -->
+<div id="tab-compare" class="section">
+  <div class="card">
+    <div class="card-title" id="cmp-title">⚡ All 7 IC Quick Comparison</div>
+    <div style="overflow-x:auto">
+    <table class="compare-table" id="cmp-table">
+      <thead><tr>
+        <th id="cth-ic">IC No.</th><th id="cth-gate">Gate</th><th id="cth-in">Inputs</th>
+        <th id="cth-count">Gates/IC</th><th id="cth-out">Output HIGH when...</th>
+        <th id="cth-feat">Key Feature</th><th id="cth-vcc">VCC Pin</th><th id="cth-gnd">GND Pin</th>
+      </tr></thead>
+      <tbody id="cmp-tbody"></tbody>
+    </table>
+    </div>
+    <div class="wiring-note" id="cmp-note"></div>
+  </div>
+  <div class="card">
+    <div class="card-title" id="rel-title">🔁 Gate Relationships</div>
+    <div style="overflow-x:auto">
+    <table class="compare-table">
+      <thead><tr>
+        <th id="rth-gate">Gate</th><th id="rth-uni">Universal?</th>
+        <th id="rth-nand">Built from NAND?</th><th id="rth-nor">Built from NOR?</th><th id="rth-comp">Complement of</th>
+      </tr></thead>
+      <tbody id="rel-tbody"></tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MEMORY TAB ========== -->
+<div id="tab-memory" class="section">
+  <div class="card">
+    <div class="card-title" id="mem-title">🧠 Mnemonics & Memory Methods</div>
+    <div class="tip-grid" id="mem-grid"></div>
+  </div>
+  <div class="card" style="margin-top:0">
+    <div class="card-title" id="memcode-title">🎯 IC Number Pattern — The Master Code</div>
+    <div id="memcode-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;"></div>
+  </div>
+</div>
+
+<!-- ========== MINDMAP TAB ========== -->
+<div id="tab-mindmap" class="section">
+  <div class="card">
+    <div class="card-title" id="mm-title">🗺️ Visual Mind Map — 74xx IC Family</div>
+    <div class="mindmap-container">
+      <svg id="mindmap-svg" viewBox="0 0 900 580" style="width:100%;min-width:580px;font-family:'Baloo 2',sans-serif;"></svg>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" id="pinrule-title">📐 Pin Counting Rule — Same for ALL 74xx ICs</div>
+    <svg viewBox="0 0 540 190" style="width:100%;max-width:520px;display:block;margin:0 auto;font-family:'Baloo 2',sans-serif;">
+      <rect x="160" y="30" width="220" height="130" rx="10" fill="#fff" stroke="#1a56db" stroke-width="2.5"/>
+      <text x="270" y="105" text-anchor="middle" fill="#1a56db" font-size="22" font-weight="bold">74xx IC</text>
+      <text x="270" y="125" text-anchor="middle" fill="#888" font-size="13">DIP-14 Package</text>
+      <path d="M220,30 Q270,16 320,30" fill="#f5f7fa" stroke="#1a56db" stroke-width="2"/>
+      <!-- Left pins -->
+      <g stroke="#b35c00" stroke-width="2" fill="none">
+        <line x1="100" y1="52" x2="160" y2="52"/><line x1="100" y1="74" x2="160" y2="74"/>
+        <line x1="100" y1="96" x2="160" y2="96"/><line x1="100" y1="118" x2="160" y2="118"/>
+        <line x1="100" y1="140" x2="160" y2="140"/>
+      </g>
+      <line x1="100" y1="160" x2="160" y2="160" stroke="#006b2b" stroke-width="2.5"/>
+      <!-- Right pins -->
+      <g stroke="#b35c00" stroke-width="2" fill="none">
+        <line x1="380" y1="74" x2="440" y2="74"/><line x1="380" y1="96" x2="440" y2="96"/>
+        <line x1="380" y1="118" x2="440" y2="118"/><line x1="380" y1="140" x2="440" y2="140"/>
+        <line x1="380" y1="160" x2="440" y2="160"/>
+      </g>
+      <line x1="380" y1="52" x2="440" y2="52" stroke="#c0001a" stroke-width="2.5"/>
+      <!-- Pin numbers -->
+      <g fill="#444" font-size="11" font-family="Baloo 2,sans-serif">
+        <text x="92" y="56" text-anchor="end">1</text><text x="92" y="78" text-anchor="end">2</text>
+        <text x="92" y="100" text-anchor="end">3</text><text x="92" y="122" text-anchor="end">4</text>
+        <text x="92" y="142" text-anchor="end">5</text><text x="92" y="162" text-anchor="end">6</text>
+        <text x="448" y="56">14</text><text x="448" y="78">13</text>
+        <text x="448" y="100">12</text><text x="448" y="122">11</text>
+        <text x="448" y="142">10</text><text x="448" y="162">9</text>
+      </g>
+      <!-- Special pin labels -->
+      <text x="82" y="164" text-anchor="end" fill="#006b2b" font-size="12" font-weight="bold">GND(7)</text>
+      <text x="448" y="56" dx="28" fill="#c0001a" font-size="12" font-weight="bold">VCC(14)</text>
+      <!-- Bottom pin 7 -->
+      <line x1="100" y1="160" x2="160" y2="160" stroke="#006b2b" stroke-width="3"/>
+      <!-- Arrows -->
+      <text x="270" y="185" text-anchor="middle" fill="#555" font-size="12" font-style="italic" id="pinrule-sub">Pin 14=VCC(+5V) always top-right · Pin 7=GND always bottom-left</text>
+    </svg>
+  </div>
+</div>
+
+</div><!-- end container -->
+<footer id="footer-text">Logic Gate IC Trainer · 74xx Series · For Electrician Training · Projector Ready</footer>
+
+<script>
+// ============================================================
+//  TRILINGUAL DATA
+// ============================================================
+const LANGS = {
+  en: {
+    fontClass: 'lang-en',
+    headerTitle: '⚡ Logic Gate IC Lab',
+    headerSub: '74xx Series · Pinouts · Circuits · Truth Tables · Memory Tricks',
+    langLabel: '🌐 Language:',
+    tabs: ['📌 Pinouts','⚡ Live Circuit','📊 Truth Tables','🔍 IC Comparison','🧠 Memory Tricks','🗺️ Mind Map'],
+    pinCardTitle: ic => `📌 ${ic} — Pin Diagram`,
+    pinTypeLabel: { in:'Input', out:'Output', vcc:'Power +5V', gnd:'Ground 0V' },
+    pinTableHead: ['Pin #','Label','Function'],
+    powerNote: '<strong>⚡ Power Connection:</strong> Pin 14 → +5V (VCC). Pin 7 → GND. Add 100nF capacitor between Pin 14 & Pin 7.',
+    gateLayoutTitle: '🔌 Gate Layout inside IC',
+    circuitTitle: ic => `⚡ ${ic} — Interactive Circuit Demo`,
+    inputLabels: ['Input A','Input B'],
+    outputLabel: 'Output Y =',
+    highLow: ['HIGH (~5V)','LOW (0V)'],
+    switchOnOff: ['ON','OFF'],
+    truthTitle: ic => `📊 ${ic} Truth Table`,
+    gateSymTitle: '🔣 Gate Symbol',
+    cmpTitle: '⚡ All 7 IC Quick Comparison',
+    cmpNote: '<strong>⚠️ Important for ALL 74xx ICs:</strong> VCC (Pin 14) = +5V DC always. GND (Pin 7) = 0V always. Logic HIGH = 2.4V–5V. Logic LOW = 0–0.8V. Unused inputs must NOT be left floating — tie to VCC or GND!',
+    cmpHead: ['IC No.','Gate','Inputs','Gates/IC','Output HIGH when...','Key Feature','VCC','GND'],
+    relTitle: '🔁 Gate Relationships',
+    relHead: ['Gate','Universal?','Built from NAND?','Built from NOR?','Complement of'],
+    memTitle: '🧠 Mnemonics & Memory Methods',
+    memCodeTitle: '🎯 IC Number Pattern — The Master Code',
+    mmTitle: '🗺️ Visual Mind Map — 74xx IC Family',
+    pinruleTitle: '📐 Pin Counting Rule — Same for ALL 74xx ICs',
+    pinruleSub: 'Pin 14 = VCC (+5V) · Pin 7 = GND · Count anti-clockwise from notch',
+    footerText: 'Logic Gate IC Trainer · 74xx Series · For Electrician Training · Projector Ready',
+    gateDescs: {
+      '7400': 'Output is LOW (0) only when BOTH inputs are HIGH. Otherwise output stays HIGH. NAND = NOT AND.',
+      '7408': 'Output is HIGH (1) only when BOTH inputs are HIGH. Like two switches in series.',
+      '7432': 'Output is HIGH (1) when ANY input is HIGH. Like two switches in parallel.',
+      '7404': 'Output is always OPPOSITE of input. 6 inverters in one IC.',
+      '7402': 'Output HIGH only when BOTH inputs are LOW. NOR = NOT OR. ⚠️ Output pin comes FIRST in pin order!',
+      '7486': 'Output HIGH when inputs are DIFFERENT. XOR = eXclusive OR.',
+      '7426': 'Output HIGH when inputs are SAME. XNOR = eXclusive NOR. Equality detector.',
+    },
+    gateUse: {
+      '7400':'Universal gate — can make any other gate using only NANDs.',
+      '7408':'Control circuits — multiple conditions must be met.',
+      '7432':'Alarm systems — any sensor triggers the alarm.',
+      '7404':'Signal inversion, oscillators, level shifters.',
+      '7402':'Universal gate. Used in latches and flip-flops.',
+      '7486':'Parity checkers, binary adders, encryption.',
+      '7426':'Comparators, error detection, equality checks.',
+    },
+    boolExpr:{ AND:'Y = A · B', NAND:'Y = (A·B)\'', OR:'Y = A + B', NOR:"Y = (A+B)\'", NOT:"Y = A'", XOR:'Y = A ⊕ B', XNOR:'Y = (A⊕B)\'' },
+    outputConditions:{
+      '7400':'NOT (A AND B)', '7408':'A=1 AND B=1', '7432':'A=1 OR B=1',
+      '7404':'Input = 0', '7402':'A=0 AND B=0', '7486':'A ≠ B', '7426':'A = B'
+    },
+    keyFeats:{
+      '7400':'Universal Gate','7408':'Both HIGH','7432':'Any HIGH',
+      '7404':'Inverter (6 gates)','7402':'Universal Gate','7486':'Inequality detector','7426':'Equality detector'
+    },
+    tips: [
+      { ic:'7400', gate:'NAND Gate', cls:'nand', mnem:'<strong>7400 → "Zero-Zero"</strong><br>NAND = "Not AND" — Opposite of AND.<br>🏏 Cricket: NAND gives wicket (0) only when BOTH batsmen score. Otherwise boundary (1)!<br><em>Pin trick: Quad 2-input = 4 gates</em>' },
+      { ic:'7408', gate:'AND Gate', cls:'and', mnem:'<strong>7408 → "AND = All must be 1"</strong><br>AND = "Both must be HIGH" — Like a lock needing TWO keys. Both keys → door opens (1).<br>🔒 Missing one key = stays locked (0).<br><em>Output=1 only when A=1 AND B=1</em>' },
+      { ic:'7432', gate:'OR Gate', cls:'or', mnem:'<strong>7432 → "OR = Open with any one"</strong><br>OR = "Any one is enough" — Like a door with TWO doorbells. Either bell rings → you open it.<br>🔔 Output=1 when A=1 OR B=1 or both.<br><em>Like two switches in parallel</em>' },
+      { ic:'7404', gate:'NOT / Inverter', cls:'not', mnem:'<strong>7404 → "04 flips to opposite"</strong><br>NOT = "Always opposite" — Like a switch: press=Light OFF, release=Light ON.<br>💡 Only 1 input, always inverts.<br><strong>Special:</strong> 7404 has 6 inverters (HEX=6), not 4!' },
+      { ic:'7402', gate:'NOR Gate', cls:'nor', mnem:'<strong>7402 → "NOR = None must be 1"</strong><br>NOR = "Not OR" — Like a quiet room sensor: alarm (1) only when BOTH people are SILENT (0).<br>🔇 Output=1 only when A=0 AND B=0.<br><em>⚠️ Output pin comes FIRST in pinout!</em>' },
+      { ic:'7486', gate:'XOR Gate', cls:'xor', mnem:'<strong>7486 → "86 = fight = DIFFERENT!"</strong><br>XOR = eXclusive OR — Output=1 when inputs DIFFER.<br>🥊 Like an argument: fight (1) only when two people DISAGREE (different values).<br><em>XOR = eXact Opposite Reads</em>' },
+      { ic:'7426', gate:'XNOR Gate', cls:'xnor', mnem:'<strong>7426 → "26 = pair = SAME!"</strong><br>XNOR = eXclusive NOR — Output=1 when inputs are SAME.<br>🤝 Like two friends who agree: happy (1) when both match.<br><em>XNOR = eXact Normal = equality detector</em>' },
+    ],
+    codes: [
+      { ic:'7400', hint:'NAND → "Zero-Zero = Z shape = N in NAND"' },
+      { ic:'7408', hint:'AND → "08 looks like ∞ = AND needs ALL conditions (both=1)"' },
+      { ic:'7432', hint:'OR → "32 = 3+2 = any combination = OR is generous"' },
+      { ic:'7404', hint:'NOT → "04 flips everything — 0 becomes 1, 1 becomes 0"' },
+      { ic:'7402', hint:'NOR → "02 = lowest = NOR outputs 1 at the lowest state (00)"' },
+      { ic:'7486', hint:'XOR → "86 = eighty-SIX someone = kick out same inputs = XOR loves difference"' },
+      { ic:'7426', hint:'XNOR → "26 = 2+6=8 = ∞ = XNOR loves equal pairs forever"' },
+    ],
+    relRows: [
+      ['NAND (7400)','✅ Universal','—','Complex','AND'],
+      ['AND (7408)','Basic','2 NANDs','3 NORs','NAND'],
+      ['OR (7432)','Basic','3 NANDs','2 NORs','NOR'],
+      ['NOT (7404)','Basic','1 NAND (tie inputs)','1 NOR (tie inputs)','Buffer'],
+      ['NOR (7402)','✅ Universal','Complex','—','OR'],
+      ['XOR (7486)','Derived','4 NANDs','4 NORs','XNOR'],
+      ['XNOR (7426)','Derived','5 NANDs','5 NORs','XOR'],
+    ],
+    truthHeader1in:['Input A','Output Y'],
+    truthHeader2in:['Input A','Input B','Output Y'],
+    explainMap:{
+      AND:'Output = 1 only when A=1 <strong>AND</strong> B=1 (both HIGH — like two switches in series)',
+      NAND:'Output = 0 only when A=1 <strong>AND</strong> B=1. All other combinations give output = 1',
+      OR:'Output = 1 when A=1 <strong>OR</strong> B=1 (any one HIGH — like two switches in parallel)',
+      NOR:'Output = 1 only when A=0 <strong>AND</strong> B=0 (both LOW — the only silent state)',
+      NOT:'Output is always <strong>opposite</strong> of input (0→1 and 1→0)',
+      XOR:'Output = 1 when A and B are <strong>different</strong> (one 0, one 1)',
+      XNOR:'Output = 1 when A and B are <strong>same</strong> (both 0 or both 1)',
+    },
+  },
+
+  ml: {
+    fontClass: 'lang-ml',
+    headerTitle: '⚡ ലോജിക് ഗേറ്റ് IC ലാബ്',
+    headerSub: '74xx സീരീസ് · പിൻ ഡയഗ്രം · സർക്കീട്ട് · ട്രൂത്ത് ടേബിൾ · ഓർമ്മ തന്ത്രങ്ങൾ',
+    langLabel: '🌐 ഭാഷ:',
+    tabs: ['📌 പിൻ ഡയഗ്രം','⚡ ലൈവ് സർക്കീട്ട്','📊 ട്രൂത്ത് ടേബിൾ','🔍 IC താരതമ്യം','🧠 ഓർമ്മ തന്ത്രം','🗺️ മൈൻഡ് മാപ്പ്'],
+    pinCardTitle: ic => `📌 ${ic} — പിൻ ഡയഗ്രം`,
+    pinTypeLabel: { in:'ഇൻപുട്ട്', out:'ഔട്ട്പുട്ട്', vcc:'+5V പവർ', gnd:'GND (0V)' },
+    pinTableHead: ['പിൻ #','ലേബൽ','ഫംഗ്ഷൻ'],
+    powerNote: '<strong>⚡ പവർ കണക്ഷൻ:</strong> പിൻ 14 → +5V (VCC). പിൻ 7 → GND. പിൻ 14-നും 7-നും ഇടയിൽ 100nF കപ്പാസിറ്റർ ഉപയോഗിക്കുക.',
+    gateLayoutTitle: '🔌 IC-ക്കകത്തെ ഗേറ്റ് ലേഔട്ട്',
+    circuitTitle: ic => `⚡ ${ic} — ഇന്ററാക്ടീവ് സർക്കീട്ട്`,
+    inputLabels: ['ഇൻപുട്ട് A','ഇൻപുട്ട് B'],
+    outputLabel: 'ഔട്ട്പുട്ട് Y =',
+    highLow: ['HIGH (~5V)','LOW (0V)'],
+    switchOnOff: ['ON','OFF'],
+    truthTitle: ic => `📊 ${ic} ട്രൂത്ത് ടേബിൾ`,
+    gateSymTitle: '🔣 ഗേറ്റ് ചിഹ്നം',
+    cmpTitle: '⚡ 7 IC-കളുടെ താരതമ്യം',
+    cmpNote: '<strong>⚠️ എല്ലാ 74xx IC-കൾക്കും:</strong> VCC (പിൻ 14) = +5V DC. GND (പിൻ 7) = 0V. ഉപയോഗിക്കാത്ത ഇൻപുട്ടുകൾ VCC അല്ലെങ്കിൽ GND-ലേക്ക് ബന്ധിക്കുക — ഫ്ലോട്ടിങ് വേണ്ട!',
+    cmpHead: ['IC നം.','ഗേറ്റ്','ഇൻപുട്ട്','ഗേറ്റ്/IC','ഔട്ട്പുട്ട് HIGH ആകുന്നത്...','പ്രത്യേകത','VCC','GND'],
+    relTitle: '🔁 ഗേറ്റ് ബന്ധങ്ങൾ',
+    relHead: ['ഗേറ്റ്','യൂണിവേഴ്സൽ?','NAND ഉപയോഗിച്ച്?','NOR ഉപയോഗിച്ച്?','വിപരീതം'],
+    memTitle: '🧠 ഓർമ്മ തന്ത്രങ്ങൾ',
+    memCodeTitle: '🎯 IC നമ്പർ ഓർക്കാനുള്ള വഴി',
+    mmTitle: '🗺️ 74xx IC ഫാമിലി മൈൻഡ് മാപ്പ്',
+    pinruleTitle: '📐 എല്ലാ 74xx IC-കൾക്കും ഒരേ പിൻ നിയമം',
+    pinruleSub: 'പിൻ 14 = VCC (+5V) · പിൻ 7 = GND · നോച്ചിൽ നിന്ന് anti-clockwise ആയി എണ്ണുക',
+    footerText: 'ലോജിക് ഗേറ്റ് IC ട്രെയ്‌നർ · 74xx സീരീസ് · ഇലക്ട്രീഷ്യൻ പരിശീലനം',
+    gateDescs: {
+      '7400': 'രണ്ട് ഇൻപുട്ടും HIGH ആകുമ്പോൾ മാത്രം ഔട്ട്പുട്ട് LOW (0) ആകും. മറ്റ് സമയങ്ങളിൽ ഔട്ട്പുട്ട് HIGH (1) ആണ്. NAND = NOT AND.',
+      '7408': 'A=1 AND B=1 ആകുമ്പോൾ മാത്രം ഔട്ട്പുട്ട് HIGH. രണ്ട് സ്വിച്ചുകൾ series-ൽ ഉള്ളതുപോലെ.',
+      '7432': 'ഏതെങ്കിലും ഒരു ഇൻപുട്ട് HIGH ആകുമ്പോൾ ഔട്ട്പുട്ട് HIGH. രണ്ട് സ്വിച്ചുകൾ parallel-ൽ ഉള്ളതുപോലെ.',
+      '7404': 'ഔട്ട്പുട്ട് എപ്പോഴും ഇൻപുട്ടിന് വിപരീതം. ഒരു IC-ൽ 6 inverter-കൾ ഉണ്ട്.',
+      '7402': 'A=0, B=0 ആകുമ്പോൾ മാത്രം ഔട്ട്പുട്ട് HIGH. NOR = NOT OR. ⚠️ ഈ IC-ൽ ഔട്ട്പുട്ട് പിൻ ആദ്യം വരും!',
+      '7486': 'ഇൻപുട്ടുകൾ വ്യത്യസ്തം ആകുമ്പോൾ ഔട്ട്പുട്ട് HIGH. XOR = eXclusive OR.',
+      '7426': 'ഇൻപുട്ടുകൾ ഒരുപോലെ ആകുമ്പോൾ ഔട്ട്പുട്ട് HIGH. XNOR = eXclusive NOR.',
+    },
+    gateUse: {
+      '7400':'യൂണിവേഴ്സൽ ഗേറ്റ് — NAND മാത്രം ഉപയോഗിച്ച് ഏത് ഗേറ്റും ഉണ്ടാക്കാം.',
+      '7408':'കൺട്രോൾ സർക്കീട്ടുകൾ — ഒന്നിലധികം ഷർത്തുകൾ ഒരേ സമയം.',
+      '7432':'അലാം സിസ്റ്റം — ഏത് സെൻസറും ട്രിഗർ ചെയ്യും.',
+      '7404':'സിഗ്നൽ ഇൻവേർഷൻ, ഓസിലേറ്ററുകൾ.',
+      '7402':'യൂണിവേഴ്സൽ ഗേറ്റ്. ലാച്ചുകൾ, ഫ്ലിപ്-ഫ്ലോപ്പ് സർക്കീട്ടുകൾ.',
+      '7486':'Parity checker, ബൈനറി adder, എൻക്രിപ്ഷൻ.',
+      '7426':'Comparator, error detection, equality check.',
+    },
+    boolExpr:{ AND:'Y = A · B', NAND:"Y = (A·B)'", OR:'Y = A + B', NOR:"Y = (A+B)'", NOT:"Y = A'", XOR:'Y = A ⊕ B', XNOR:"Y = (A⊕B)'" },
+    outputConditions:{
+      '7400':'NOT (A AND B)', '7408':'A=1 ഉം B=1 ഉം', '7432':'A=1 അല്ലെങ്കിൽ B=1',
+      '7404':'ഇൻപുട്ട് = 0', '7402':'A=0 ഉം B=0 ഉം', '7486':'A ≠ B (വ്യത്യസ്ത)', '7426':'A = B (ഒരുപോലെ)'
+    },
+    keyFeats:{
+      '7400':'യൂണിവേഴ്സൽ ഗേറ്റ്','7408':'രണ്ടും HIGH','7432':'ഏതെങ്കിലും HIGH',
+      '7404':'Inverter (6 ഗേറ്റ്)','7402':'യൂണിവേഴ്സൽ ഗേറ്റ്','7486':'Inequality detector','7426':'Equality detector'
+    },
+    tips: [
+      { ic:'7400', gate:'NAND ഗേറ്റ്', cls:'nand', mnem:'<strong>7400 → "NAND = AND-ന്റെ വിപരീതം"</strong><br>🏏 ക്രിക്കറ്റ്: ബൗൺഡറി (1) കിട്ടും — രണ്ട് ബാറ്റ്‌സ്മാനും OUT ആകുമ്പോൾ (1,1) മാത്രം wicket (0)!<br><em>Quad = ഒരു IC-ൽ 4 ഗേറ്റ്</em>' },
+      { ic:'7408', gate:'AND ഗേറ്റ്', cls:'and', mnem:'<strong>7408 → "AND = രണ്ടും വേണം"</strong><br>🔒 രണ്ട് താക്കോൽ lock — ഒന്ന് ഇല്ലെങ്കിൽ തുറക്കില്ല. A=1 AND B=1 ആകുമ്പോൾ മാത്രം Y=1.<br><em>Series connection ആണ് AND</em>' },
+      { ic:'7432', gate:'OR ഗേറ്റ്', cls:'or', mnem:'<strong>7432 → "OR = ഏതെങ്കിലും ഒന്ന് മതി"</strong><br>🔔 രണ്ട് doorbell — ഏതെങ്കിലും ഒന്ന് അടിച്ചാൽ (1) door തുറക്കും.<br><em>Parallel connection ആണ് OR</em>' },
+      { ic:'7404', gate:'NOT / Inverter', cls:'not', mnem:'<strong>7404 → "NOT = തിരിക്കം"</strong><br>💡 സ്വിച്ച് അമർത്തിയാൽ ലൈറ്റ് ഓഫ്, വിട്ടാൽ ON — ഇതാണ് NOT.<br><strong>Special:</strong> 7404-ൽ 6 inverter ഉണ്ട്, 4 അല്ല!' },
+      { ic:'7402', gate:'NOR ഗേറ്റ്', cls:'nor', mnem:'<strong>7402 → "NOR = OR-ന്റെ വിപരീതം"</strong><br>🔇 ശബ്ദ sensor: രണ്ട് പേരും ശാന്തം (0,0) ആകുമ്പോൾ മാത്രം alarm (1).<br><em>⚠️ ഔട്ട്പുട്ട് പിൻ ആദ്യം — ശ്രദ്ധിക്കുക!</em>' },
+      { ic:'7486', gate:'XOR ഗേറ്റ്', cls:'xor', mnem:'<strong>7486 → "XOR = വ്യത്യസ്തം ആകുമ്പോൾ 1"</strong><br>🥊 രണ്ട് ആളുകൾ argue ചെയ്യുമ്പോൾ (different values) മാത്രം output=1.<br><em>Same ആകുമ്പോൾ 0, Different ആകുമ്പോൾ 1</em>' },
+      { ic:'7426', gate:'XNOR ഗേറ്റ്', cls:'xnor', mnem:'<strong>7426 → "XNOR = ഒരുപോലെ ആകുമ്പോൾ 1"</strong><br>🤝 രണ്ട് കൂട്ടുകാർ agree ചെയ്യുമ്പോൾ (same values) output=1.<br><em>Equality detector — match checker</em>' },
+    ],
+    codes: [
+      { ic:'7400', hint:'NAND → "00 = zero-zero = NAND-ലെ N ഓർക്കാൻ"' },
+      { ic:'7408', hint:'AND → "08 = ∞ = AND-ന് infinitely many conditions — രണ്ടും 1 വേണം"' },
+      { ic:'7432', hint:'OR → "32 = any = OR ഏതെങ്കിലും ഒന്ന് accept ചെയ്യും"' },
+      { ic:'7404', hint:'NOT → "04 = 0 to 4 flip — NOT എല്ലാം flip ചെയ്യും"' },
+      { ic:'7402', hint:'NOR → "02 = 0,0 pair = NOR output 1 ആകുന്നത് 00 pair-ൽ മാത്രം"' },
+      { ic:'7486', hint:'XOR → "86 = fight / quarrel = different ആകുമ്പോൾ output 1"' },
+      { ic:'7426', hint:'XNOR → "26 = couple = same pair = equal ആകുമ്പോൾ output 1"' },
+    ],
+    relRows: [
+      ['NAND (7400)','✅ യൂണിവേഴ്സൽ','—','കോംപ്ലക്സ്','AND'],
+      ['AND (7408)','Basic','2 NAND','3 NOR','NAND'],
+      ['OR (7432)','Basic','3 NAND','2 NOR','NOR'],
+      ['NOT (7404)','Basic','1 NAND (inputs tie)','1 NOR (inputs tie)','Buffer'],
+      ['NOR (7402)','✅ യൂണിവേഴ്സൽ','കോംപ്ലക്സ്','—','OR'],
+      ['XOR (7486)','Derived','4 NAND','4 NOR','XNOR'],
+      ['XNOR (7426)','Derived','5 NAND','5 NOR','XOR'],
+    ],
+    truthHeader1in:['ഇൻപുട്ട് A','ഔട്ട്പുട്ട് Y'],
+    truthHeader2in:['ഇൻപുട്ട് A','ഇൻപുട്ട് B','ഔട്ട്പുട്ട് Y'],
+    explainMap:{
+      AND:'ഔട്ട്പുട്ട് = 1 ആകുന്നത് A=1 <strong>ഉം</strong> B=1 ഉം ആകുമ്പോൾ മാത്രം (series switch)',
+      NAND:'ഔട്ട്പുട്ട് = 0 ആകുന്നത് A=1 ഉം B=1 ഉം ആകുമ്പോൾ മാത്രം. ബാക്കി combinations-ൽ output = 1',
+      OR:'ഔട്ട്പുട്ട് = 1 ആകുന്നത് A=1 <strong>അല്ലെങ്കിൽ</strong> B=1 ആകുമ്പോൾ (parallel switch)',
+      NOR:'ഔട്ട്പുട്ട് = 1 ആകുന്നത് A=0 ഉം B=0 ഉം ആകുമ്പോൾ മാത്രം',
+      NOT:'ഔട്ട്പുട്ട് <strong>എപ്പോഴും</strong> ഇൻപുട്ടിന് വിപരീതം (0→1, 1→0)',
+      XOR:'ഔട്ട്പുട്ട് = 1 ആകുന്നത് A, B <strong>വ്യത്യസ്ത</strong> ആകുമ്പോൾ',
+      XNOR:'ഔട്ട്പുട്ട് = 1 ആകുന്നത് A, B <strong>ഒരുപോലെ</strong> ആകുമ്പോൾ',
+    },
+  },
+
+  hi: {
+    fontClass: 'lang-hi',
+    headerTitle: '⚡ लॉजिक गेट IC लैब',
+    headerSub: '74xx सीरीज़ · पिन डायग्राम · सर्किट · ट्रूथ टेबल · याद करने के तरीके',
+    langLabel: '🌐 भाषा:',
+    tabs: ['📌 पिन डायग्राम','⚡ लाइव सर्किट','📊 ट्रूथ टेबल','🔍 IC तुलना','🧠 याद करें','🗺️ माइंड मैप'],
+    pinCardTitle: ic => `📌 ${ic} — पिन डायग्राम`,
+    pinTypeLabel: { in:'इनपुट', out:'आउटपुट', vcc:'+5V पावर', gnd:'GND (0V)' },
+    pinTableHead: ['पिन #','लेबल','काम'],
+    powerNote: '<strong>⚡ पावर कनेक्शन:</strong> पिन 14 → +5V (VCC). पिन 7 → GND. पिन 14 और 7 के बीच 100nF कैपेसिटर लगाएं।',
+    gateLayoutTitle: '🔌 IC के अंदर गेट लेआउट',
+    circuitTitle: ic => `⚡ ${ic} — इंटरएक्टिव सर्किट`,
+    inputLabels: ['इनपुट A','इनपुट B'],
+    outputLabel: 'आउटपुट Y =',
+    highLow: ['HIGH (~5V)','LOW (0V)'],
+    switchOnOff: ['चालू','बंद'],
+    truthTitle: ic => `📊 ${ic} ट्रूथ टेबल`,
+    gateSymTitle: '🔣 गेट का चिह्न',
+    cmpTitle: '⚡ सभी 7 IC की तुलना',
+    cmpNote: '<strong>⚠️ सभी 74xx IC के लिए:</strong> VCC (पिन 14) = +5V DC हमेशा. GND (पिन 7) = 0V हमेशा. खाली पड़े इनपुट को VCC या GND से जोड़ें — floating मत छोड़ें!',
+    cmpHead: ['IC नं.','गेट','इनपुट','गेट/IC','आउटपुट HIGH कब...','खास बात','VCC','GND'],
+    relTitle: '🔁 गेट के संबंध',
+    relHead: ['गेट','यूनिवर्सल?','NAND से बना?','NOR से बना?','विपरीत है'],
+    memTitle: '🧠 याद करने के तरीके',
+    memCodeTitle: '🎯 IC नंबर याद करने का तरीका',
+    mmTitle: '🗺️ 74xx IC फैमिली माइंड मैप',
+    pinruleTitle: '📐 सभी 74xx IC के लिए एक ही पिन नियम',
+    pinruleSub: 'पिन 14 = VCC (+5V) · पिन 7 = GND · notch से anti-clockwise गिनें',
+    footerText: 'लॉजिक गेट IC ट्रेनर · 74xx सीरीज़ · इलेक्ट्रीशियन ट्रेनिंग',
+    gateDescs: {
+      '7400': 'आउटपुट LOW (0) तभी होता है जब दोनों इनपुट HIGH हों। बाकी सभी cases में आउटपुट HIGH (1) रहता है। NAND = NOT AND।',
+      '7408': 'आउटपुट HIGH (1) तभी होता है जब A=1 और B=1 हो। जैसे दो स्विच series में।',
+      '7432': 'आउटपुट HIGH (1) तब होता है जब कोई भी एक इनपुट HIGH हो। जैसे दो स्विच parallel में।',
+      '7404': 'आउटपुट हमेशा इनपुट का उल्टा होता है। एक IC में 6 inverter होते हैं।',
+      '7402': 'आउटपुट HIGH तभी होता है जब A=0 और B=0 हो। NOR = NOT OR. ⚠️ इस IC में आउटपुट पिन पहले आती है!',
+      '7486': 'इनपुट अलग-अलग होने पर आउटपुट HIGH। XOR = eXclusive OR।',
+      '7426': 'इनपुट एक जैसे होने पर आउटपुट HIGH। XNOR = eXclusive NOR। समानता detector।',
+    },
+    gateUse: {
+      '7400':'यूनिवर्सल गेट — सिर्फ NAND से हर गेट बना सकते हैं।',
+      '7408':'कंट्रोल सर्किट — एक साथ कई conditions पूरी होनी चाहिए।',
+      '7432':'अलार्म सिस्टम — कोई भी sensor trigger करे।',
+      '7404':'सिग्नल inversion, oscillator, level shifter।',
+      '7402':'यूनिवर्सल गेट। Latch और flip-flop सर्किट।',
+      '7486':'Parity checker, binary adder, encryption।',
+      '7426':'Comparator, error detection, equality check।',
+    },
+    boolExpr:{ AND:'Y = A · B', NAND:"Y = (A·B)'", OR:'Y = A + B', NOR:"Y = (A+B)'", NOT:"Y = A'", XOR:'Y = A ⊕ B', XNOR:"Y = (A⊕B)'" },
+    outputConditions:{
+      '7400':'NOT (A AND B)', '7408':'A=1 और B=1', '7432':'A=1 या B=1',
+      '7404':'इनपुट = 0', '7402':'A=0 और B=0', '7486':'A ≠ B (अलग)', '7426':'A = B (एक जैसा)'
+    },
+    keyFeats:{
+      '7400':'यूनिवर्सल गेट','7408':'दोनों HIGH','7432':'कोई भी HIGH',
+      '7404':'Inverter (6 गेट)','7402':'यूनिवर्सल गेट','7486':'Inequality detector','7426':'Equality detector'
+    },
+    tips: [
+      { ic:'7400', gate:'NAND गेट', cls:'nand', mnem:'<strong>7400 → "NAND = AND का उल्टा"</strong><br>🏏 क्रिकेट: दोनों बल्लेबाज़ OUT (1,1) होने पर ही wicket (0), बाकी सब पर boundary (1)!<br><em>एक IC में 4 NAND गेट होते हैं</em>' },
+      { ic:'7408', gate:'AND गेट', cls:'and', mnem:'<strong>7408 → "AND = दोनों चाहिए"</strong><br>🔒 दो ताला — दोनों चाबी हों तो खुलता है। A=1 और B=1 तभी Y=1।<br><em>Series में जुड़े दो switch जैसा</em>' },
+      { ic:'7432', gate:'OR गेट', cls:'or', mnem:'<strong>7432 → "OR = एक भी काफी है"</strong><br>🔔 दो दरवाज़े की घंटी — कोई भी बजे तो दरवाज़ा खुले। A=1 या B=1 → Y=1।<br><em>Parallel में जुड़े दो switch जैसा</em>' },
+      { ic:'7404', gate:'NOT / Inverter', cls:'not', mnem:'<strong>7404 → "NOT = उल्टा हमेशा"</strong><br>💡 बटन दबाओ → बत्ती बंद, छोड़ो → बत्ती चालू — यही है NOT।<br><strong>ध्यान दें:</strong> 7404 में 6 inverter हैं, 4 नहीं!' },
+      { ic:'7402', gate:'NOR गेट', cls:'nor', mnem:'<strong>7402 → "NOR = दोनों ज़ीरो पर ही 1"</strong><br>🔇 शांति sensor: दोनों शांत (0,0) हों तभी alarm (1) बजे।<br><em>⚠️ इस IC में आउटपुट पिन पहले आती है — ध्यान रखें!</em>' },
+      { ic:'7486', gate:'XOR गेट', cls:'xor', mnem:'<strong>7486 → "XOR = अलग होने पर 1"</strong><br>🥊 झगड़ा (1) तभी होता है जब दोनों अलग सोचें (different values)।<br><em>Same हो → 0, Different हो → 1</em>' },
+      { ic:'7426', gate:'XNOR गेट', cls:'xnor', mnem:'<strong>7426 → "XNOR = एक जैसा होने पर 1"</strong><br>🤝 दो दोस्त सहमत हों (same values) → खुश (1)।<br><em>Equality detector — मिलान checker</em>' },
+    ],
+    codes: [
+      { ic:'7400', hint:'NAND → "00 = zero-zero = NAND का N याद करो"' },
+      { ic:'7408', hint:'AND → "08 = ∞ = AND को दोनों इनपुट 1 चाहिए"' },
+      { ic:'7432', hint:'OR → "32 = any two = OR को एक भी मिले तो काम करे"' },
+      { ic:'7404', hint:'NOT → "04 = 0 को 4 में पलटो — NOT सब पलट देता है"' },
+      { ic:'7402', hint:'NOR → "02 = 0,0 pair = NOR तभी 1 देता है जब दोनों 0 हों"' },
+      { ic:'7486', hint:'XOR → "86 = लड़ाई = अलग होने पर output 1"' },
+      { ic:'7426', hint:'XNOR → "26 = जोड़ी = एक जैसे होने पर output 1"' },
+    ],
+    relRows: [
+      ['NAND (7400)','✅ यूनिवर्सल','—','जटिल','AND'],
+      ['AND (7408)','Basic','2 NAND','3 NOR','NAND'],
+      ['OR (7432)','Basic','3 NAND','2 NOR','NOR'],
+      ['NOT (7404)','Basic','1 NAND (inputs जोड़ें)','1 NOR (inputs जोड़ें)','Buffer'],
+      ['NOR (7402)','✅ यूनिवर्सल','जटिल','—','OR'],
+      ['XOR (7486)','Derived','4 NAND','4 NOR','XNOR'],
+      ['XNOR (7426)','Derived','5 NAND','5 NOR','XOR'],
+    ],
+    truthHeader1in:['इनपुट A','आउटपुट Y'],
+    truthHeader2in:['इनपुट A','इनपुट B','आउटपुट Y'],
+    explainMap:{
+      AND:'आउटपुट = 1 तभी जब A=1 <strong>और</strong> B=1 (series switch जैसा)',
+      NAND:'आउटपुट = 0 तभी जब A=1 <strong>और</strong> B=1। बाकी सब combinations में output = 1',
+      OR:'आउटपुट = 1 जब A=1 <strong>या</strong> B=1 (parallel switch जैसा)',
+      NOR:'आउटपुट = 1 तभी जब A=0 <strong>और</strong> B=0 (दोनों बंद)',
+      NOT:'आउटपुट <strong>हमेशा</strong> इनपुट का उल्टा (0→1, 1→0)',
+      XOR:'आउटपुट = 1 जब A और B <strong>अलग</strong> हों',
+      XNOR:'आउटपुट = 1 जब A और B <strong>एक जैसे</strong> हों',
+    },
+  },
+};
+
+// ============================================================
+//  IC DATA (language-independent)
+// ============================================================
+const ICS = {
+  '7400':{ name:'NAND', sym:'NAND', color:'#c0001a', gates:4, inputs:2, logic:(a,b)=>(a&&b)?0:1,
+    truthRows:[[0,0,1],[0,1,1],[1,0,1],[1,1,0]],
+    pins:[{n:1,l:'1A',t:'in'},{n:2,l:'1B',t:'in'},{n:3,l:'1Y',t:'out'},
+          {n:4,l:'2A',t:'in'},{n:5,l:'2B',t:'in'},{n:6,l:'2Y',t:'out'},
+          {n:7,l:'GND',t:'gnd'},{n:8,l:'3Y',t:'out'},
+          {n:9,l:'3A',t:'in'},{n:10,l:'3B',t:'in'},
+          {n:11,l:'4Y',t:'out'},{n:12,l:'4A',t:'in'},{n:13,l:'4B',t:'in'},{n:14,l:'VCC',t:'vcc'}]},
+  '7408':{ name:'AND', sym:'AND', color:'#006b2b', gates:4, inputs:2, logic:(a,b)=>(a&&b)?1:0,
+    truthRows:[[0,0,0],[0,1,0],[1,0,0],[1,1,1]],
+    pins:[{n:1,l:'1A',t:'in'},{n:2,l:'1B',t:'in'},{n:3,l:'1Y',t:'out'},
+          {n:4,l:'2A',t:'in'},{n:5,l:'2B',t:'in'},{n:6,l:'2Y',t:'out'},
+          {n:7,l:'GND',t:'gnd'},{n:8,l:'3Y',t:'out'},
+          {n:9,l:'3A',t:'in'},{n:10,l:'3B',t:'in'},
+          {n:11,l:'4Y',t:'out'},{n:12,l:'4A',t:'in'},{n:13,l:'4B',t:'in'},{n:14,l:'VCC',t:'vcc'}]},
+  '7432':{ name:'OR', sym:'OR', color:'#b35c00', gates:4, inputs:2, logic:(a,b)=>(a||b)?1:0,
+    truthRows:[[0,0,0],[0,1,1],[1,0,1],[1,1,1]],
+    pins:[{n:1,l:'1A',t:'in'},{n:2,l:'1B',t:'in'},{n:3,l:'1Y',t:'out'},
+          {n:4,l:'2A',t:'in'},{n:5,l:'2B',t:'in'},{n:6,l:'2Y',t:'out'},
+          {n:7,l:'GND',t:'gnd'},{n:8,l:'3Y',t:'out'},
+          {n:9,l:'3A',t:'in'},{n:10,l:'3B',t:'in'},
+          {n:11,l:'4Y',t:'out'},{n:12,l:'4A',t:'in'},{n:13,l:'4B',t:'in'},{n:14,l:'VCC',t:'vcc'}]},
+  '7404':{ name:'NOT', sym:'NOT', color:'#5a1e96', gates:6, inputs:1, logic:(a)=>a?0:1,
+    truthRows:[[0,1],[1,0]],
+    pins:[{n:1,l:'1A',t:'in'},{n:2,l:'1Y',t:'out'},{n:3,l:'2A',t:'in'},{n:4,l:'2Y',t:'out'},
+          {n:5,l:'3A',t:'in'},{n:6,l:'3Y',t:'out'},{n:7,l:'GND',t:'gnd'},
+          {n:8,l:'4Y',t:'out'},{n:9,l:'4A',t:'in'},{n:10,l:'5Y',t:'out'},
+          {n:11,l:'5A',t:'in'},{n:12,l:'6Y',t:'out'},{n:13,l:'6A',t:'in'},{n:14,l:'VCC',t:'vcc'}]},
+  '7402':{ name:'NOR', sym:'NOR', color:'#e05a00', gates:4, inputs:2, logic:(a,b)=>(a||b)?0:1,
+    truthRows:[[0,0,1],[0,1,0],[1,0,0],[1,1,0]],
+    pins:[{n:1,l:'1Y',t:'out'},{n:2,l:'1A',t:'in'},{n:3,l:'1B',t:'in'},
+          {n:4,l:'2Y',t:'out'},{n:5,l:'2A',t:'in'},{n:6,l:'2B',t:'in'},
+          {n:7,l:'GND',t:'gnd'},{n:8,l:'3A',t:'in'},{n:9,l:'3B',t:'in'},
+          {n:10,l:'3Y',t:'out'},{n:11,l:'4A',t:'in'},{n:12,l:'4B',t:'in'},
+          {n:13,l:'4Y',t:'out'},{n:14,l:'VCC',t:'vcc'}]},
+  '7486':{ name:'XOR', sym:'XOR', color:'#1a56db', gates:4, inputs:2, logic:(a,b)=>(a!==b)?1:0,
+    truthRows:[[0,0,0],[0,1,1],[1,0,1],[1,1,0]],
+    pins:[{n:1,l:'1A',t:'in'},{n:2,l:'1B',t:'in'},{n:3,l:'1Y',t:'out'},
+          {n:4,l:'2A',t:'in'},{n:5,l:'2B',t:'in'},{n:6,l:'2Y',t:'out'},
+          {n:7,l:'GND',t:'gnd'},{n:8,l:'3Y',t:'out'},
+          {n:9,l:'3A',t:'in'},{n:10,l:'3B',t:'in'},
+          {n:11,l:'4Y',t:'out'},{n:12,l:'4A',t:'in'},{n:13,l:'4B',t:'in'},{n:14,l:'VCC',t:'vcc'}]},
+  '7426':{ name:'XNOR', sym:'XNOR', color:'#b5006e', gates:4, inputs:2, logic:(a,b)=>(a===b)?1:0,
+    truthRows:[[0,0,1],[0,1,0],[1,0,0],[1,1,1]],
+    pins:[{n:1,l:'1A',t:'in'},{n:2,l:'1B',t:'in'},{n:3,l:'1Y',t:'out'},
+          {n:4,l:'2A',t:'in'},{n:5,l:'2B',t:'in'},{n:6,l:'2Y',t:'out'},
+          {n:7,l:'GND',t:'gnd'},{n:8,l:'3Y',t:'out'},
+          {n:9,l:'3A',t:'in'},{n:10,l:'3B',t:'in'},
+          {n:11,l:'4Y',t:'out'},{n:12,l:'4A',t:'in'},{n:13,l:'4B',t:'in'},{n:14,l:'VCC',t:'vcc'}]},
+};
+const IC_KEYS = ['7400','7408','7432','7404','7402','7486','7426'];
+
+let LANG = 'en';
+let circuitState = { A:0, B:0, ic:'7400' };
+let activeSelections = { pinout:'7400', circuit:'7400', truth:'7400' };
+
+// ============================================================
+//  LANGUAGE SWITCH
+// ============================================================
+function setLang(lang) {
+  LANG = lang;
+  const L = LANGS[lang];
+  // Remove old font class
+  document.body.classList.remove('lang-en','lang-ml','lang-hi');
+  document.body.classList.add(L.fontClass);
+  // Update header
+  document.getElementById('h-title').textContent = L.headerTitle;
+  document.getElementById('h-sub').textContent = L.headerSub;
+  document.getElementById('h-langlab').textContent = L.langLabel;
+  // Update tab buttons
+  const tabIds = ['pinout','circuit','truth','compare','memory','mindmap'];
+  tabIds.forEach((t,i)=>{ const el=document.getElementById('tnav-'+t); if(el) el.textContent=L.tabs[i]; });
+  // Re-render all active content
+  rebuildAllSelectors();
+  renderPinout(activeSelections.pinout);
+  renderCircuit(activeSelections.circuit);
+  renderTruth(activeSelections.truth);
+  renderCompare();
+  renderMemory();
+  renderMindmap();
+  document.getElementById('footer-text').textContent = L.footerText;
+  document.getElementById('pinrule-title').textContent = L.pinruleTitle;
+  document.getElementById('pinrule-sub').textContent = L.pinruleSub;
+  document.getElementById('mm-title').textContent = L.mmTitle;
+}
+
+// ============================================================
+//  TAB SWITCHING
+// ============================================================
+function showTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ============================================================
+//  SELECTORS
+// ============================================================
+function buildSelector(containerId, onClickFn, defaultKey) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  IC_KEYS.forEach(k=>{
+    const ic = ICS[k];
+    const btn = document.createElement('button');
+    btn.className = 'ic-btn'+(k===defaultKey?' active':'');
+    btn.innerHTML = `<span class="ic-num">${k}</span><span class="ic-name-en">${ic.name}</span>`;
+    btn.dataset.ic = k;
+    btn.onclick = ()=>{
+      el.querySelectorAll('.ic-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      onClickFn(k);
+    };
+    el.appendChild(btn);
+  });
+}
+
+function rebuildAllSelectors() {
+  buildSelector('pinout-ic-selector', k=>{ activeSelections.pinout=k; renderPinout(k); }, activeSelections.pinout);
+  buildSelector('circuit-ic-selector', k=>{ activeSelections.circuit=k; renderCircuit(k); }, activeSelections.circuit);
+  buildSelector('truth-ic-selector', k=>{ activeSelections.truth=k; renderTruth(k); }, activeSelections.truth);
+}
+
+// ============================================================
+//  PINOUT
+// ============================================================
+function renderPinout(key) {
+  const ic = ICS[key];
+  const L = LANGS[LANG];
+  const el = document.getElementById('pinout-content');
+  const pinColor = { in:'#8b4500', out:'#1a56db', vcc:'#c0001a', gnd:'#006b2b' };
+
+  // DIP-14 SVG — light background
+  let svg = `<svg viewBox="0 0 280 340" style="width:190px;min-width:160px;font-family:'Baloo 2',sans-serif;">`;
+  svg += `<rect x="70" y="38" width="140" height="264" rx="10" fill="#fff" stroke="${ic.color}" stroke-width="2.5"/>`;
+  svg += `<rect x="70" y="38" width="140" height="36" rx="8" fill="${ic.color}" opacity="0.12"/>`;
+  svg += `<text x="140" y="168" text-anchor="middle" fill="${ic.color}" font-size="18" font-weight="800">${key}</text>`;
+  svg += `<text x="140" y="190" text-anchor="middle" fill="#888" font-size="11">${ic.gates} ${ic.sym} Gates</text>`;
+  svg += `<path d="M108,38 Q140,24 172,38" fill="#f5f7fa" stroke="${ic.color}" stroke-width="2"/>`;
+
+  const left = ic.pins.slice(0,7);
+  const right = [...ic.pins.slice(7)].reverse();
+  const sp = 38;
+  left.forEach((p,i)=>{
+    const y=62+i*sp, col=pinColor[p.t]||'#333';
+    svg += `<line x1="22" y1="${y}" x2="70" y2="${y}" stroke="${col}" stroke-width="2"/>`;
+    svg += `<circle cx="22" cy="${y}" r="5" fill="${col}"/>`;
+    svg += `<text x="75" y="${y+4}" fill="${col}" font-size="10" font-weight="700">${p.l}</text>`;
+    svg += `<text x="18" y="${y+4}" text-anchor="end" fill="#888" font-size="10">${p.n}</text>`;
+  });
+  right.forEach((p,i)=>{
+    const y=62+i*sp, col=pinColor[p.t]||'#333';
+    svg += `<line x1="210" y1="${y}" x2="258" y2="${y}" stroke="${col}" stroke-width="2"/>`;
+    svg += `<circle cx="258" cy="${y}" r="5" fill="${col}"/>`;
+    svg += `<text x="205" y="${y+4}" text-anchor="end" fill="${col}" font-size="10" font-weight="700">${p.l}</text>`;
+    svg += `<text x="262" y="${y+4}" fill="#888" font-size="10">${p.n}</text>`;
+  });
+  svg += `</svg>`;
+
+  // Pin table
+  const rows = ic.pins.map(p=>{
+    const cls = {in:'pin-in',out:'pin-out',vcc:'pin-vcc',gnd:'pin-gnd'}[p.t]||'';
+    const desc = L.pinTypeLabel[p.t] || p.t;
+    return `<tr><td style="font-weight:800">${p.n}</td><td class="${cls}">${p.l}</td><td class="${cls}">${desc}</td></tr>`;
+  }).join('');
+
+  // Gate layout SVG
+  const gw=90, gh=56, pad=8;
+  const total_w = ic.gates*(gw+pad)-pad;
+  const svgW = Math.max(460, total_w+40);
+  let gLayout = `<svg viewBox="0 0 ${svgW} 100" style="width:100%;max-width:${svgW}px;display:block;font-family:'Baloo 2',sans-serif;">`;
+  const startX = (svgW-total_w)/2;
+  for(let i=0;i<ic.gates;i++){
+    const gx=startX+i*(gw+pad), gy=22;
+    gLayout += gateSymbolSVG(ic.sym, gx, gy, gw, gh, ic.color, i+1, ic.inputs);
+  }
+  gLayout += `</svg>`;
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title" style="color:${ic.color}">${L.pinCardTitle(key)} — ${ic.name}</div>
+      <div class="info-box"><span class="label">${ic.name}:</span> ${L.gateDescs[key]}<br><span style="color:#666">${L.gateUse[key]}</span></div>
+      <div class="pinout-wrap">
+        <div class="pinout-svg-wrap">${svg}</div>
+        <div class="pinout-info">
+          <table class="pin-table">
+            <thead><tr>${L.pinTableHead.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+          <div class="wiring-note">${L.powerNote}</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:0">
+      <div class="card-title" style="color:${ic.color}">${L.gateLayoutTitle}</div>
+      ${gLayout}
+    </div>`;
+}
+
+function gateSymbolSVG(type,x,y,w,h,color,gNum,inputs){
+  const mx=x+w/2, my=y+h/2;
+  let body='';
+  if(type==='AND'||type==='NAND'){
+    body=`<path d="M${x+8},${y+4} L${x+8},${y+h-4} Q${x+w-8},${y+h-4} ${x+w-8},${my} Q${x+w-8},${y+4} ${x+8},${y+4} Z" fill="#f8faff" stroke="${color}" stroke-width="2"/>`;
+  } else if(type==='OR'||type==='NOR'){
+    body=`<path d="M${x+8},${y+4} Q${x+26},${my} ${x+8},${y+h-4} Q${x+46},${y+h-4} ${x+w-8},${my} Q${x+46},${y+4} ${x+8},${y+4} Z" fill="#f8faff" stroke="${color}" stroke-width="2"/>`;
+  } else if(type==='XOR'||type==='XNOR'){
+    body=`<path d="M${x+10},${y+4} Q${x+28},${my} ${x+10},${y+h-4} Q${x+48},${y+h-4} ${x+w-8},${my} Q${x+48},${y+4} ${x+10},${y+4} Z" fill="#f8faff" stroke="${color}" stroke-width="2"/>`;
+    body+=`<path d="M${x+2},${y+4} Q${x+18},${my} ${x+2},${y+h-4}" fill="none" stroke="${color}" stroke-width="2"/>`;
+  } else if(type==='NOT'){
+    body=`<polygon points="${x+8},${y+4} ${x+w-18},${my} ${x+8},${y+h-4}" fill="#f8faff" stroke="${color}" stroke-width="2"/>`;
+  }
+  let bubble='';
+  if(['NAND','NOR','NOT','XNOR'].includes(type)){
+    bubble=`<circle cx="${x+w-4}" cy="${my}" r="5" fill="#fff" stroke="${color}" stroke-width="2"/>`;
+  }
+  const label=`<text x="${mx}" y="${my+5}" text-anchor="middle" fill="${color}" font-size="11" font-weight="700">G${gNum}</text>`;
+  return body+bubble+label;
+}
+
+// ============================================================
+//  CIRCUIT
+// ============================================================
+function renderCircuit(key) {
+  activeSelections.circuit = key;
+  circuitState.ic = key;
+  const ic = ICS[key];
+  const L = LANGS[LANG];
+  const el = document.getElementById('circuit-content');
+  const is1 = ic.inputs === 1;
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title" style="color:${ic.color}">${L.circuitTitle(key)}</div>
+      <div class="info-box" style="margin-bottom:14px"><span class="label">${ic.name}:</span> ${L.gateDescs[key]}</div>
+      <canvas id="circuit-canvas" style="width:100%;background:#f8faff;border:2px solid ${ic.color};border-radius:8px;" height="210"></canvas>
+      <div class="switch-controls">
+        <div class="switch-group">
+          <span class="switch-label">${L.inputLabels[0]}</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="sw-a" onchange="updateCircuit()">
+            <div class="toggle-track"></div><div class="toggle-thumb"></div>
+          </label>
+          <span id="val-a" style="font-size:22px;font-weight:800;color:#b35c00">0</span>
+        </div>
+        ${!is1?`<div class="switch-group">
+          <span class="switch-label">${L.inputLabels[1]}</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="sw-b" onchange="updateCircuit()">
+            <div class="toggle-track"></div><div class="toggle-thumb"></div>
+          </label>
+          <span id="val-b" style="font-size:22px;font-weight:800;color:#b35c00">0</span>
+        </div>`:''}
+      </div>
+      <div class="output-display">
+        <div class="output-led off" id="output-led"></div>
+        <span style="color:#555;font-weight:700">${L.outputLabel}</span>
+        <span class="out-0" id="output-val" style="font-size:26px;font-weight:800">0</span>
+        <span style="color:#888;font-size:16px" id="output-state">— ${L.highLow[1]}</span>
+      </div>
+    </div>`;
+  updateCircuit();
+}
+
+function updateCircuit() {
+  const ic = ICS[circuitState.ic];
+  const L = LANGS[LANG];
+  const swA = document.getElementById('sw-a');
+  const swB = document.getElementById('sw-b');
+  const A = swA && swA.checked ? 1 : 0;
+  const B = swB && swB.checked ? 1 : 0;
+  circuitState.A = A; circuitState.B = B;
+  if(document.getElementById('val-a')) document.getElementById('val-a').textContent = A;
+  if(document.getElementById('val-b')) document.getElementById('val-b').textContent = B;
+  const out = ic.inputs===1 ? ic.logic(A) : ic.logic(A,B);
+  const led = document.getElementById('output-led');
+  const ov = document.getElementById('output-val');
+  const os = document.getElementById('output-state');
+  if(led){ led.className='output-led '+(out?'on':'off'); }
+  if(ov){ ov.textContent=out; ov.className=out?'out-1':'out-0'; }
+  if(os){ os.textContent='— '+(out?L.highLow[0]:L.highLow[1]); }
+  drawCircuit(ic, A, B, out);
+}
+
+function drawCircuit(ic, A, B, out) {
+  const canvas = document.getElementById('circuit-canvas');
+  if(!canvas) return;
+  const dpr = window.devicePixelRatio||1;
+  const W = canvas.parentElement.clientWidth||600;
+  canvas.width = W*dpr; canvas.height = 210*dpr;
+  canvas.style.width = W+'px'; canvas.style.height = '210px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  ctx.fillStyle = '#f8faff';
+  ctx.fillRect(0,0,W,210);
+
+  const cx=W/2, cy=105;
+  const gx=cx-30, gy=cy;
+  const hiColor='#1a56db', loColor='#d0d8e8';
+  const wireA=A?hiColor:loColor;
+  const wireB=B?hiColor:loColor;
+  const wireOut=out?'#006b2b':loColor;
+  const L = LANGS[LANG];
+
+  // IC body
+  ctx.fillStyle='#fff'; ctx.strokeStyle=ic.color; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.roundRect(gx-42,gy-42,84,84,8); ctx.fill(); ctx.stroke();
+  ctx.fillStyle=ic.color; ctx.font='bold 14px Baloo 2,sans-serif';
+  ctx.textAlign='center'; ctx.fillText(ic.name,gx,gy+2);
+  ctx.font='10px Baloo 2,sans-serif'; ctx.fillStyle='#888';
+  ctx.fillText(ic.inputs===1?'1-IN':'2-IN',gx,gy+16);
+
+  // VCC
+  ctx.strokeStyle='#c0001a'; ctx.lineWidth=2; ctx.setLineDash([5,3]);
+  ctx.beginPath(); ctx.moveTo(gx,gy-42); ctx.lineTo(gx,gy-68); ctx.stroke();
+  ctx.setLineDash([]); ctx.fillStyle='#c0001a';
+  ctx.font='bold 12px Baloo 2,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('+5V VCC',gx,gy-72);
+
+  // GND
+  ctx.strokeStyle='#006b2b'; ctx.lineWidth=2; ctx.setLineDash([5,3]);
+  ctx.beginPath(); ctx.moveTo(gx,gy+42); ctx.lineTo(gx,gy+64); ctx.stroke();
+  ctx.setLineDash([]);
+  for(let i=0;i<3;i++){
+    const gw2=14-i*4;
+    ctx.strokeStyle='#006b2b'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(gx-gw2/2,gy+66+i*5); ctx.lineTo(gx+gw2/2,gy+66+i*5); ctx.stroke();
+  }
+  ctx.fillStyle='#006b2b'; ctx.font='bold 12px Baloo 2,sans-serif';
+  ctx.fillText('GND',gx,gy+92);
+
+  // Input A
+  const ay=ic.inputs===1?cy:cy-14;
+  ctx.strokeStyle=wireA; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(80,ay); ctx.lineTo(gx-42,ay); ctx.stroke();
+  drawSwitchLight(ctx,80,ay,A,wireA,'A');
+
+  if(ic.inputs===2){
+    const by=cy+14;
+    ctx.strokeStyle=wireB; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(80,by); ctx.lineTo(gx-42,by); ctx.stroke();
+    drawSwitchLight(ctx,80,by,B,wireB,'B');
+  }
+
+  // Output
+  const outStart=gx+42;
+  ctx.strokeStyle=wireOut; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(outStart,cy); ctx.lineTo(W-70,cy); ctx.stroke();
+  // LED circle
+  ctx.beginPath(); ctx.arc(W-50,cy,20,0,Math.PI*2);
+  ctx.fillStyle=out?'#e8fff2':'#ffeaec'; ctx.fill();
+  ctx.strokeStyle=out?'#006b2b':'#c0001a'; ctx.lineWidth=2.5; ctx.stroke();
+  if(out){ ctx.fillStyle='#00c853'; } else { ctx.fillStyle='#ff6b6b'; }
+  ctx.beginPath(); ctx.arc(W-50,cy,13,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='bold 10px Baloo 2,sans-serif'; ctx.textAlign='center';
+  ctx.fillText(out?L.switchOnOff[0]:L.switchOnOff[1],W-50,cy+33);
+  ctx.fillStyle=out?'#006b2b':'#c0001a'; ctx.font='bold 13px Baloo 2,sans-serif';
+  ctx.fillText('Y='+out,outStart+30,cy-14);
+}
+
+function drawSwitchLight(ctx,x,y,state,color,label){
+  ctx.fillStyle='#fff'; ctx.strokeStyle=color; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.roundRect(x-44,y-14,44,28,5); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle=state?color:'#ccc'; ctx.lineWidth=2.5;
+  ctx.beginPath();
+  if(state){ ctx.moveTo(x-36,y); ctx.lineTo(x-10,y); }
+  else { ctx.moveTo(x-36,y+6); ctx.lineTo(x-10,y-6); }
+  ctx.stroke();
+  ctx.fillStyle=color; ctx.font='bold 11px Baloo 2,sans-serif'; ctx.textAlign='center';
+  ctx.fillText(label+'='+(state?1:0),x-22,y+22);
+}
+
+// ============================================================
+//  TRUTH TABLE
+// ============================================================
+function renderTruth(key) {
+  activeSelections.truth = key;
+  const ic = ICS[key];
+  const L = LANGS[LANG];
+  const el = document.getElementById('truth-content');
+  const hdrs = ic.inputs===1 ? L.truthHeader1in : L.truthHeader2in;
+  const headerRow = hdrs.map(h=>`<th>${h}</th>`).join('');
+  const rows = ic.truthRows.map(row=>{
+    const cells = row.map((v,i)=>{
+      const isOut = i===row.length-1;
+      return `<td class="${v?'bit-1':'bit-0'}">${v}${isOut?(v?' (HIGH)':' (LOW)'):''}</td>`;
+    }).join('');
+    return `<tr>${cells}</tr>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title" style="color:${ic.color}">${L.truthTitle(key)}</div>
+        <div style="overflow-x:auto">
+          <table class="truth-table"><thead><tr>${headerRow}</tr></thead><tbody>${rows}</tbody></table>
+        </div>
+        <div class="wiring-note" style="margin-top:14px;font-size:16px">${L.explainMap[ic.sym]||''}</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:${ic.color}">${L.gateSymTitle}</div>
+        ${buildLargeGateSym(ic)}
+        <div style="margin-top:16px;text-align:center">
+          <div style="font-size:22px;font-weight:800;color:${ic.color}">${L.boolExpr[ic.sym]||''}</div>
+          <div style="font-size:14px;color:#888;margin-top:6px">${L.gateUse[key]}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function buildLargeGateSym(ic){
+  const sym=ic.sym, w=200, h=140;
+  const cx=w/2, cy=h/2, gw=80, gh=60;
+  const gx=cx-gw/2, gy=cy-gh/2;
+  let svg=`<svg viewBox="0 0 ${w} ${h}" style="display:block;margin:0 auto;width:170px">`;
+  let body='';
+  if(sym==='AND'||sym==='NAND'){
+    body=`<path d="M${gx},${gy} L${gx},${gy+gh} Q${gx+gw},${gy+gh} ${gx+gw},${cy} Q${gx+gw},${gy} ${gx},${gy} Z" fill="#f0f4ff" stroke="${ic.color}" stroke-width="2.5"/>`;
+  } else if(sym==='OR'||sym==='NOR'){
+    body=`<path d="M${gx},${gy} Q${gx+18},${cy} ${gx},${gy+gh} Q${gx+48},${gy+gh} ${gx+gw},${cy} Q${gx+48},${gy} ${gx},${gy} Z" fill="#f0f4ff" stroke="${ic.color}" stroke-width="2.5"/>`;
+  } else if(sym==='XOR'||sym==='XNOR'){
+    body=`<path d="M${gx+4},${gy} Q${gx+22},${cy} ${gx+4},${gy+gh} Q${gx+50},${gy+gh} ${gx+gw},${cy} Q${gx+50},${gy} ${gx+4},${gy} Z" fill="#f0f4ff" stroke="${ic.color}" stroke-width="2.5"/>`;
+    body+=`<path d="M${gx-6},${gy} Q${gx+10},${cy} ${gx-6},${gy+gh}" fill="none" stroke="${ic.color}" stroke-width="2.5"/>`;
+  } else if(sym==='NOT'){
+    body=`<polygon points="${gx},${gy} ${gx+gw-10},${cy} ${gx},${gy+gh}" fill="#f0f4ff" stroke="${ic.color}" stroke-width="2.5"/>`;
+  }
+  let bubble='';
+  if(['NAND','NOR','NOT','XNOR'].includes(sym)){
+    bubble=`<circle cx="${gx+gw+8}" cy="${cy}" r="7" fill="#fff" stroke="${ic.color}" stroke-width="2.5"/>`;
+  }
+  const outEnd=['NAND','NOR','NOT','XNOR'].includes(sym)?gx+gw+15:gx+gw;
+  if(ic.inputs===1){
+    svg+=`<line x1="${gx-30}" y1="${cy}" x2="${gx}" y2="${cy}" stroke="${ic.color}" stroke-width="2"/>`;
+    svg+=`<text x="${gx-34}" y="${cy+5}" text-anchor="end" fill="#b35c00" font-size="14" font-weight="800">A</text>`;
+  } else {
+    const ya=cy-12, yb=cy+12;
+    svg+=`<line x1="${gx-30}" y1="${ya}" x2="${gx}" y2="${ya}" stroke="${ic.color}" stroke-width="2"/>`;
+    svg+=`<line x1="${gx-30}" y1="${yb}" x2="${gx}" y2="${yb}" stroke="${ic.color}" stroke-width="2"/>`;
+    svg+=`<text x="${gx-34}" y="${ya+5}" text-anchor="end" fill="#b35c00" font-size="14" font-weight="800">A</text>`;
+    svg+=`<text x="${gx-34}" y="${yb+5}" text-anchor="end" fill="#b35c00" font-size="14" font-weight="800">B</text>`;
+  }
+  svg+=body+bubble;
+  svg+=`<line x1="${outEnd}" y1="${cy}" x2="${outEnd+28}" y2="${cy}" stroke="${ic.color}" stroke-width="2"/>`;
+  svg+=`<text x="${outEnd+32}" y="${cy+5}" fill="${ic.color}" font-size="14" font-weight="800">Y</text>`;
+  svg+=`</svg>`;
+  return svg;
+}
+
+// ============================================================
+//  COMPARE
+// ============================================================
+function renderCompare() {
+  const L = LANGS[LANG];
+  document.getElementById('cmp-title').textContent = L.cmpTitle;
+  document.getElementById('rel-title').textContent = L.relTitle;
+  document.getElementById('cmp-note').innerHTML = L.cmpNote;
+  // Compare table header
+  const thead=document.querySelector('#cmp-table thead tr');
+  if(thead) thead.innerHTML = L.cmpHead.map(h=>`<th>${h}</th>`).join('');
+  // Compare rows
+  const tbody=document.getElementById('cmp-tbody');
+  tbody.innerHTML = IC_KEYS.map(k=>{
+    const ic=ICS[k];
+    const isUni=(k==='7400'||k==='7402');
+    return `<tr>
+      <td class="ic-highlight">${k}</td>
+      <td style="font-weight:800;color:${ic.color}">${ic.name}</td>
+      <td>${ic.inputs}</td><td>${ic.gates}</td>
+      <td>${L.outputConditions[k]||''}</td>
+      <td class="${isUni?'yes':''}">${L.keyFeats[k]||''}</td>
+      <td class="pin-vcc" style="font-weight:800">14</td>
+      <td class="pin-gnd" style="font-weight:800">7</td>
+    </tr>`;
+  }).join('');
+  // Rel table
+  const rThead=document.querySelector('#rel-tbody').previousElementSibling;
+  if(rThead) rThead.innerHTML = `<tr>${L.relHead.map(h=>`<th>${h}</th>`).join('')}</tr>`;
+  document.getElementById('rel-tbody').innerHTML = L.relRows.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===1&&c.includes('✅')?'yes':''}">${c}</td>`).join('')}</tr>`).join('');
+  document.getElementById('cth-ic') && (()=>{})(); // headers already updated
+}
+
+// ============================================================
+//  MEMORY
+// ============================================================
+function renderMemory() {
+  const L = LANGS[LANG];
+  document.getElementById('mem-title').textContent = L.memTitle;
+  document.getElementById('memcode-title').textContent = L.memCodeTitle;
+  document.getElementById('mem-grid').innerHTML = L.tips.map(t=>`
+    <div class="tip-card ${t.cls}">
+      <div class="tip-ic">${t.ic}</div>
+      <div class="tip-gate">${t.gate}</div>
+      <div class="tip-mnemonic">${t.mnem}</div>
+    </div>`).join('');
+  document.getElementById('memcode-grid').innerHTML = L.codes.map(c=>{
+    const ic=ICS[c.ic];
+    return `<div style="background:#f8faff;padding:14px;border:1.5px solid #d0d8e8;border-radius:8px;">
+      <div style="font-size:24px;font-weight:800;color:${ic.color}">${c.ic} <span style="color:#888;font-size:16px">${ic.name}</span></div>
+      <div style="font-size:13px;color:#555;margin-top:6px;line-height:1.5">${c.hint}</div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+//  MIND MAP
+// ============================================================
+function renderMindmap() {
+  const L = LANGS[LANG];
+  const svg = document.getElementById('mindmap-svg');
+  const W=900, H=580;
+  const cx=W/2, cy=H/2+10;
+
+  const nodes=[
+    {x:cx,y:cy,r:58,color:'#1a56db',text:'74xx',sub:'Family',center:true},
+    {x:cx,y:76,r:44,color:'#c0001a',text:'7400',sub:'NAND'},
+    {x:cx+230,y:120,r:40,color:'#006b2b',text:'7408',sub:'AND'},
+    {x:cx+310,y:cy,r:40,color:'#b35c00',text:'7432',sub:'OR'},
+    {x:cx+210,y:cy+200,r:40,color:'#5a1e96',text:'7404',sub:'NOT'},
+    {x:cx,y:cy+252,r:40,color:'#e05a00',text:'7402',sub:'NOR'},
+    {x:cx-225,y:cy+170,r:40,color:'#1a56db',text:'7486',sub:'XOR'},
+    {x:cx-310,y:cy-40,r:40,color:'#b5006e',text:'7426',sub:'XNOR'},
+    {x:cx-160,y:cy-200,r:36,color:'#c0001a',text:L.tabs[3]?'Universal':'Universal',sub:'NAND+NOR',info:true},
+    {x:cx+180,y:cy-200,r:36,color:'#b35c00',text:'Pin 14',sub:'+5V VCC',info:true},
+    {x:cx+370,y:cy+190,r:36,color:'#006b2b',text:'Pin 7',sub:'GND 0V',info:true},
+    {x:cx-380,y:cy+120,r:36,color:'#5a1e96',text:'DIP-14',sub:'All ICs',info:true},
+  ];
+  const lines=[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[1,8],[2,9],[4,10],[6,11]];
+
+  let s='';
+  lines.forEach(([a,b])=>{
+    const na=nodes[a],nb=nodes[b];
+    const col=nb.info?'#ccd':'#bbc8e0';
+    s+=`<line x1="${na.x}" y1="${na.y}" x2="${nb.x}" y2="${nb.y}" stroke="${col}" stroke-width="${nb.info?1.5:2.5}" stroke-dasharray="${nb.info?'5,4':''}"/>`;
+  });
+  nodes.forEach(n=>{
+    if(n.center){
+      s+=`<circle cx="${n.x}" cy="${n.y}" r="${n.r}" fill="#eef2ff" stroke="${n.color}" stroke-width="3"/>`;
+      s+=`<circle cx="${n.x}" cy="${n.y}" r="${n.r+10}" fill="none" stroke="${n.color}" stroke-width="1.5" opacity="0.3" stroke-dasharray="6,5"/>`;
+      s+=`<text x="${n.x}" y="${n.y-6}" text-anchor="middle" fill="${n.color}" font-size="22" font-weight="800" font-family="Baloo 2,sans-serif">${n.text}</text>`;
+      s+=`<text x="${n.x}" y="${n.y+14}" text-anchor="middle" fill="#888" font-size="13" font-family="Baloo 2,sans-serif">${n.sub}</text>`;
+    } else if(n.info){
+      s+=`<rect x="${n.x-n.r}" y="${n.y-22}" width="${n.r*2}" height="44" rx="8" fill="#fff" stroke="${n.color}" stroke-width="1.5"/>`;
+      s+=`<text x="${n.x}" y="${n.y-2}" text-anchor="middle" fill="${n.color}" font-size="13" font-weight="800" font-family="Baloo 2,sans-serif">${n.text}</text>`;
+      s+=`<text x="${n.x}" y="${n.y+14}" text-anchor="middle" fill="#888" font-size="11" font-family="Baloo 2,sans-serif">${n.sub}</text>`;
+    } else {
+      s+=`<circle cx="${n.x}" cy="${n.y}" r="${n.r}" fill="#fff" stroke="${n.color}" stroke-width="2.5"/>`;
+      s+=`<text x="${n.x}" y="${n.y-8}" text-anchor="middle" fill="${n.color}" font-size="16" font-weight="800" font-family="Baloo 2,sans-serif">${n.text}</text>`;
+      s+=`<text x="${n.x}" y="${n.y+12}" text-anchor="middle" fill="#333" font-size="14" font-weight="700" font-family="Baloo 2,sans-serif">${n.sub}</text>`;
+    }
+  });
+  svg.innerHTML = s;
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+window.onload = ()=>{
+  rebuildAllSelectors();
+  renderPinout('7400');
+  renderCircuit('7400');
+  renderTruth('7400');
+  renderCompare();
+  renderMemory();
+  renderMindmap();
+};
+
+window.addEventListener('resize',()=>{
+  const ic=ICS[circuitState.ic];
+  const out=ic.inputs===1?ic.logic(circuitState.A):ic.logic(circuitState.A,circuitState.B);
+  drawCircuit(ic,circuitState.A,circuitState.B,out);
+});
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

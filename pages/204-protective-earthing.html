@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protective Earthing Systems</title>
+<meta name="section" content="Circuits &amp; Power Systems">
+<meta name="section-order" content="2">
+<meta name="order" content="4">
+<meta name="description" content="TN, TT, IT and protective multiple earthing">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #F5F2EB;
+    --card: #FFFFFF;
+    --primary: #1A3A5C;
+    --accent: #E8500A;
+    --green: #1A6B3C;
+    --yellow: #F5A623;
+    --red: #C0392B;
+    --text: #1C1C1C;
+    --subtext: #4A4A4A;
+    --border: #C8C0B0;
+    --highlight: #FFF4E0;
+    --correct: #D4EDDA;
+    --wrong: #F8D7DA;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* ===== HEADER ===== */
+  #header {
+    background: var(--primary);
+    color: white;
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  }
+  #header h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+  }
+  #header .subtitle { font-size: 13px; opacity: 0.8; margin-top: 2px; }
+
+  #lang-select {
+    font-size: 15px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 2px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.15);
+    color: white;
+    cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  #lang-select option { background: var(--primary); color: white; }
+
+  /* ===== NAV TABS ===== */
+  #nav {
+    background: var(--primary);
+    border-top: 1px solid rgba(255,255,255,0.15);
+    display: flex;
+    overflow-x: auto;
+    padding: 0 16px;
+    gap: 4px;
+  }
+  .nav-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 16px;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { color: white; }
+  .nav-btn.active { color: var(--yellow); border-bottom-color: var(--yellow); }
+
+  /* ===== MAIN CONTENT ===== */
+  #main { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ===== PAGE TITLE ===== */
+  .page-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px;
+    color: var(--primary);
+    border-left: 6px solid var(--accent);
+    padding-left: 16px;
+    margin-bottom: 22px;
+    line-height: 1.2;
+  }
+  .page-title .sub {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--subtext);
+    display: block;
+    margin-top: 4px;
+  }
+
+  /* ===== INFO CARDS ===== */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .card h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    color: var(--primary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card h3 .icon { font-size: 22px; }
+  .card p, .card li { font-size: 16px; color: var(--text); margin-bottom: 8px; }
+  .card ul { padding-left: 22px; }
+
+  /* ===== HIGHLIGHT BOXES ===== */
+  .box-yellow { background: #FFF8E1; border-left: 5px solid var(--yellow); border-radius: 8px; padding: 14px 18px; margin: 14px 0; font-size: 15px; }
+  .box-red    { background: #FDEDEC; border-left: 5px solid var(--red);    border-radius: 8px; padding: 14px 18px; margin: 14px 0; font-size: 15px; }
+  .box-green  { background: #EAFAF1; border-left: 5px solid var(--green);  border-radius: 8px; padding: 14px 18px; margin: 14px 0; font-size: 15px; }
+  .box-blue   { background: #EAF2FB; border-left: 5px solid #2471A3;       border-radius: 8px; padding: 14px 18px; margin: 14px 0; font-size: 15px; }
+  .box-yellow strong, .box-red strong, .box-green strong, .box-blue strong { font-size: 15px; }
+
+  /* ===== SVG DIAGRAM CONTAINER ===== */
+  .diagram-wrap {
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+  }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-wrap .caption {
+    font-size: 14px;
+    color: var(--subtext);
+    margin-top: 10px;
+    font-style: italic;
+  }
+
+  /* ===== COMPARISON TABLE ===== */
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { background: var(--primary); color: white; padding: 12px 14px; text-align: left; font-family: 'Oswald', sans-serif; font-size: 16px; }
+  td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: #F8F5EF; }
+  tr:hover td { background: #FFF4E0; }
+
+  /* ===== BADGE ===== */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-left: 8px; }
+  .badge-green { background: #EAFAF1; color: var(--green); border: 1px solid var(--green); }
+  .badge-red   { background: #FDEDEC; color: var(--red);   border: 1px solid var(--red); }
+  .badge-yellow{ background: #FFF8E1; color: #856404;      border: 1px solid var(--yellow); }
+
+  /* ===== QUIZ ===== */
+  .quiz-wrap {
+    background: #EAF2FB;
+    border: 2px solid #2471A3;
+    border-radius: 12px;
+    padding: 24px 26px;
+    margin-top: 28px;
+  }
+  .quiz-wrap h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    color: #1A3A5C;
+    margin-bottom: 16px;
+  }
+  .q-block { margin-bottom: 22px; }
+  .q-block p { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+  .q-block .options { display: flex; flex-direction: column; gap: 8px; }
+  .q-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .q-option:hover { border-color: #2471A3; background: #F0F8FF; }
+  .q-option.correct { background: var(--correct); border-color: var(--green); color: var(--green); font-weight: 700; }
+  .q-option.wrong   { background: var(--wrong);   border-color: var(--red);   color: var(--red); }
+  .q-option.disabled { pointer-events: none; }
+  .q-feedback { font-size: 14px; margin-top: 8px; padding: 8px 12px; border-radius: 6px; }
+  .q-feedback.correct { background: var(--correct); color: var(--green); }
+  .q-feedback.wrong   { background: var(--wrong);   color: var(--red); }
+  .quiz-score {
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    text-align: center;
+    padding: 14px;
+    border-radius: 8px;
+    margin-top: 16px;
+    background: var(--primary);
+    color: white;
+    display: none;
+  }
+  .quiz-btn {
+    margin-top: 14px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 28px;
+    font-size: 15px;
+    font-family: 'Oswald', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+  }
+  .quiz-btn:hover { background: var(--accent); }
+
+  /* ===== IS STANDARD BOX ===== */
+  .is-box {
+    background: #F0F4FF;
+    border: 2px solid #2C5282;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 14px 0;
+    font-size: 15px;
+  }
+  .is-box .is-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 17px;
+    color: #2C5282;
+    margin-bottom: 8px;
+  }
+
+  /* ===== TWO COL GRID ===== */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 14px 0; }
+  @media(max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-bar-wrap { height: 6px; background: #ddd; border-radius: 3px; margin: 6px 0 20px; }
+  .progress-bar { height: 6px; background: var(--accent); border-radius: 3px; transition: width 0.4s; }
+
+  /* ===== LANGUAGE HIDDEN ===== */
+  [data-lang] { display: none; }
+  [data-lang="en"] { display: block; }
+  span[data-lang] { display: none; }
+  span[data-lang="en"] { display: inline; }
+
+  /* ===== SAFETY TAG ===== */
+  .danger-strip {
+    background: #C0392B;
+    color: white;
+    font-family: 'Oswald', sans-serif;
+    font-size: 15px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    margin: 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ===== FOOTER ===== */
+  #footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 13px;
+    color: var(--subtext);
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  h4 { font-family: 'Oswald', sans-serif; font-size: 17px; color: var(--primary); margin: 14px 0 6px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="header">
+  <div>
+    <h1 id="hdr-title">⚡ Protective Earthing Systems – Complete Trainer</h1>
+    <div class="subtitle" id="hdr-sub">CITS Electrician | IS 3043 | IE Rules 1956 | NBC 2016</div>
+  </div>
+  <select id="lang-select" onchange="setLang(this.value)">
+    <option value="en">🇬🇧 English</option>
+    <option value="hi">🇮🇳 हिंदी</option>
+    <option value="ml">🌴 മലയാളം</option>
+  </select>
+</div>
+
+<!-- NAV TABS -->
+<div id="nav">
+  <button class="nav-btn active" onclick="showSection('s0',this)" id="nav0">
+    <span data-lang="en">📖 Introduction</span>
+    <span data-lang="hi">परिचय</span>
+    <span data-lang="ml">ആമുഖം</span>
+  </button>
+  <button class="nav-btn" onclick="showSection('s1',this)" id="nav1">
+    <span data-lang="en">🌍 TN System</span>
+    <span data-lang="hi">TN सिस्टम</span>
+    <span data-lang="ml">TN സിസ്റ്റം</span>
+  </button>
+  <button class="nav-btn" onclick="showSection('s2',this)" id="nav2">
+    <span data-lang="en">🔌 TN-C / TN-S / TN-C-S</span>
+    <span data-lang="hi">TN उपवर्ग</span>
+    <span data-lang="ml">TN ഉപവിഭാഗം</span>
+  </button>
+  <button class="nav-btn" onclick="showSection('s3',this)" id="nav3">
+    <span data-lang="en">🏠 TT System</span>
+    <span data-lang="hi">TT सिस्टम</span>
+    <span data-lang="ml">TT സിസ്റ്റം</span>
+  </button>
+  <button class="nav-btn" onclick="showSection('s4',this)" id="nav4">
+    <span data-lang="en">🔶 IT System</span>
+    <span data-lang="hi">IT सिस्टम</span>
+    <span data-lang="ml">IT സിസ്റ്റം</span>
+  </button>
+  <button class="nav-btn" onclick="showSection('s5',this)" id="nav5">
+    <span data-lang="en">📊 Comparison</span>
+    <span data-lang="hi">तुलना</span>
+    <span data-lang="ml">താരതമ്യം</span>
+  </button>
+  <button class="nav-btn" onclick="showSection('s6',this)" id="nav6">
+    <span data-lang="en">📜 Indian Standards</span>
+    <span data-lang="hi">भारतीय मानक</span>
+    <span data-lang="ml">ഇന്ത്യൻ മാനദണ്ഡം</span>
+  </button>
+  <button class="nav-btn" onclick="showSection('s7',this)" id="nav7">
+    <span data-lang="en">🏆 Final Quiz</span>
+    <span data-lang="hi">अंतिम क्विज़</span>
+    <span data-lang="ml">അന്തിമ ക്വിസ്</span>
+  </button>
+</div>
+
+<div id="main">
+
+<!-- ============================================================ SECTION 0: INTRODUCTION -->
+<div class="section active" id="s0">
+
+  <div class="page-title">
+    <span data-lang="en">What is Protective Earthing?<span class="sub">Grounding electrical systems for human safety</span></span>
+    <span data-lang="hi">प्रोटेक्टिव अर्थिंग क्या है?<span class="sub">मानव सुरक्षा के लिए विद्युत प्रणाली को भूसंपर्क देना</span></span>
+    <span data-lang="ml">പ്രൊട്ടക്റ്റീവ് ഇർഥിങ് എന്താണ്?<span class="sub">മനുഷ്യ സുരക്ഷക്കായി വൈദ്യുത ഗ്രൗണ്ടിംഗ്</span></span>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">💡</span>
+      <span data-lang="en">Why Do We Earth?</span>
+      <span data-lang="hi">हम अर्थ क्यों करते हैं?</span>
+      <span data-lang="ml">നമ്മൾ ഇർഥ് ചെയ്യുന്നതെന്തിന്?</span>
+    </h3>
+    <div data-lang="en">
+      <p>When you plug in a geyser or washing machine, the metal body of that appliance should never be "live." If it becomes live due to insulation failure, a person touching it creates a path for current to flow through their body to ground — causing electric shock or even death.</p>
+      <p>Protective earthing solves this by connecting the exposed metal parts of equipment to the earth (ground). If a fault occurs, current flows safely into the earth instead of through a human body, and the protection device (MCB/ELCB) trips quickly.</p>
+    </div>
+    <div data-lang="hi">
+      <p>जब आप गीज़र या वाशिंग मशीन लगाते हैं, तो उस उपकरण की धातु की बाहरी सतह "लाइव" नहीं होनी चाहिए। अगर इंसुलेशन फेल हो जाए और वह सतह लाइव हो जाए, तो उसे छूने वाले व्यक्ति के शरीर से होकर करंट जमीन तक जाता है — जिससे बिजली का झटका या मृत्यु हो सकती है।</p>
+      <p>प्रोटेक्टिव अर्थिंग इस समस्या को हल करती है — उपकरण के धातु भागों को पृथ्वी (अर्थ) से जोड़कर। फॉल्ट होने पर करंट इंसान के बजाय सीधे जमीन में चला जाता है और MCB/ELCB तुरंत ट्रिप हो जाता है।</p>
+    </div>
+    <div data-lang="ml">
+      <p>ഒരു ഗീസർ അല്ലെങ്കിൽ വാഷിംഗ് മെഷീൻ പ്ലഗ് ചെയ്യുമ്പോൾ, ആ ഉപകരണത്തിന്റെ ലോഹ ഷെൽ "ലൈവ്" ആകരുത്. ഇൻസുലേഷൻ കേടുപ്പെട്ടാൽ ആ ഭാഗം ലൈവ് ആകും — ആ ഉപകരണം തൊടുന്ന ആൾ ഒരു കറൻ്റ് പാത്ത് ആകും, ഇത് ഷോക്ക് അല്ലെങ്കിൽ മരണം വരെ ഉണ്ടാകാം.</p>
+      <p>പ്രൊട്ടക്ടീവ് ഇർഥിങ് ഈ പ്രശ്‍നം പരിഹരിക്കുന്നു — ഉപകരണത്തിന്റെ ലോഹ ഭാഗം ഭൂമിയുമായി ബന്ധിപ്പിക്കുന്നതിലൂടെ. ഫോൾട്ട് ഉണ്ടായാൽ കറൻ്റ് നേരിട്ട് ഭൂമിയിലേക്ക് ഒഴുകും, MCB/ELCB ട്രിപ്പ് ചെയ്യും.</p>
+    </div>
+  </div>
+
+  <!-- ANALOGY -->
+  <div class="box-yellow">
+    <strong>
+      <span data-lang="en">🪣 Analogy: Earthing is like a Safety Valve</span>
+      <span data-lang="hi">🪣 उदाहरण: अर्थिंग एक सेफ्टी वाल्व की तरह है</span>
+      <span data-lang="ml">🪣 ഉദാഹരണം: ഇർഥിങ് ഒരു സേഫ്റ്റി വാൽവ് പോലെ</span>
+    </strong><br>
+    <span data-lang="en">In a pressure cooker, the safety valve releases extra steam to prevent explosion. Similarly, earthing provides a safe path for unwanted fault current — releasing it harmlessly into the ground before it can harm anyone.</span>
+    <span data-lang="hi">प्रेशर कुकर में सेफ्टी वाल्व अतिरिक्त भाप निकालकर विस्फोट रोकता है। उसी प्रकार, अर्थिंग फॉल्ट करंट को सुरक्षित रास्ते से जमीन में भेजती है — किसी को नुकसान पहुंचाने से पहले।</span>
+    <span data-lang="ml">പ്രഷർ കുക്കറിൽ സേഫ്റ്റി വാൽവ് അധിക നീരാവി ഒഴിക്കി സ്ഫോടനം തടയുന്നു. അതുപോലെ, ഇർഥിങ് ഫോൾട്ട് കറൻ്റിന് ഒരു സുരക്ഷിത പാത നൽകുന്നു — ആർക്കെങ്കിലും ദോഷം ചെയ്യുന്നതിന് മുൻപ് ഭൂമിയിലേക്ക് ഒഴുക്കുന്നു.</span>
+  </div>
+
+  <!-- DIAGRAM: Basic Earthing Concept -->
+  <div class="diagram-wrap">
+    <svg width="700" height="280" viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+      <!-- Grid lines -->
+      <defs>
+        <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+          <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#EEE" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="700" height="280" fill="#FAFAFA" rx="8"/>
+      <rect width="700" height="280" fill="url(#grid)" rx="8"/>
+
+      <!-- Supply transformer -->
+      <rect x="30" y="90" width="80" height="100" rx="6" fill="#1A3A5C" stroke="#0D2240" stroke-width="2"/>
+      <text x="70" y="130" text-anchor="middle" fill="white" font-size="13" font-family="Oswald">TRANS-</text>
+      <text x="70" y="148" text-anchor="middle" fill="white" font-size="13" font-family="Oswald">FORMER</text>
+      <text x="70" y="166" text-anchor="middle" fill="white" font-size="11">11kV / 415V</text>
+
+      <!-- Phase L -->
+      <line x1="110" y1="110" x2="380" y2="110" stroke="#E8500A" stroke-width="3"/>
+      <text x="240" y="102" text-anchor="middle" fill="#E8500A" font-size="13" font-weight="bold">L (Phase)</text>
+
+      <!-- Neutral N -->
+      <line x1="110" y1="170" x2="380" y2="170" stroke="#1A6B3C" stroke-width="3"/>
+      <text x="240" y="188" text-anchor="middle" fill="#1A6B3C" font-size="13" font-weight="bold">N (Neutral)</text>
+
+      <!-- Appliance body -->
+      <rect x="380" y="80" width="100" height="120" rx="8" fill="#B0BEC5" stroke="#546E7A" stroke-width="2"/>
+      <text x="430" y="128" text-anchor="middle" fill="#1C1C1C" font-size="13" font-family="Oswald">LOAD</text>
+      <text x="430" y="148" text-anchor="middle" fill="#1C1C1C" font-size="11">(Metal body)</text>
+
+      <!-- Earth wire from body to ground -->
+      <line x1="430" y1="200" x2="430" y2="240" stroke="#F5A623" stroke-width="3" stroke-dasharray="6,3"/>
+      <line x1="430" y1="240" x2="560" y2="240" stroke="#F5A623" stroke-width="3" stroke-dasharray="6,3"/>
+      <text x="495" y="232" text-anchor="middle" fill="#856404" font-size="12" font-weight="bold">PE (Earth Wire)</text>
+
+      <!-- Earth electrode -->
+      <ellipse cx="600" cy="255" rx="50" ry="14" fill="#8B6914" opacity="0.7"/>
+      <rect x="590" y="240" width="8" height="30" fill="#5D4037" rx="2"/>
+      <text x="600" y="280" text-anchor="middle" fill="#5D4037" font-size="12" font-family="Oswald">EARTH ELECTRODE</text>
+
+      <!-- Earth star at transformer -->
+      <line x1="70" y1="190" x2="70" y2="230" stroke="#2196F3" stroke-width="3"/>
+      <line x1="70" y1="230" x2="150" y2="230" stroke="#2196F3" stroke-width="3"/>
+      <circle cx="155" cy="230" r="5" fill="#2196F3"/>
+      <text x="100" y="222" text-anchor="middle" fill="#1565C0" font-size="11">System earth</text>
+
+      <!-- Fault flash symbol -->
+      <text x="390" y="100" fill="#C0392B" font-size="20">⚡</text>
+      <text x="505" y="100" fill="#C0392B" font-size="12">← Insulation fault</text>
+
+      <!-- Human figure safe -->
+      <circle cx="620" cy="125" r="12" fill="#FFB74D" stroke="#E65100" stroke-width="1.5"/>
+      <line x1="620" y1="137" x2="620" y2="175" stroke="#4A4A4A" stroke-width="2"/>
+      <line x1="600" y1="148" x2="640" y2="148" stroke="#4A4A4A" stroke-width="2"/>
+      <line x1="620" y1="175" x2="600" y2="200" stroke="#4A4A4A" stroke-width="2"/>
+      <line x1="620" y1="175" x2="640" y2="200" stroke="#4A4A4A" stroke-width="2"/>
+      <text x="620" y="215" text-anchor="middle" fill="#1A6B3C" font-size="11" font-weight="bold">SAFE ✓</text>
+    </svg>
+    <div class="caption">
+      <span data-lang="en">Fig 1: With protective earth wire, fault current flows to ground — not through the human body</span>
+      <span data-lang="hi">चित्र 1: PE तार के साथ, फॉल्ट करंट जमीन में जाता है — मानव शरीर से नहीं</span>
+      <span data-lang="ml">ചിത്രം 1: PE വയർ ഉള്ളതിനാൽ, ഫോൾട്ട് കറൻ്റ് ഭൂമിയിലേക്ക് ഒഴുകുന്നു — മനുഷ്യ ശരീരത്തിലൂടെ അല്ല</span>
+    </div>
+  </div>
+
+  <!-- Key Terms -->
+  <div class="card">
+    <h3><span class="icon">📚</span>
+      <span data-lang="en">Key Terms (IEC 60364 Classification)</span>
+      <span data-lang="hi">मुख्य शब्द (IEC 60364 वर्गीकरण)</span>
+      <span data-lang="ml">പ്രധാന പദങ്ങൾ (IEC 60364 വർഗ്ഗീകരണം)</span>
+    </h3>
+    <div data-lang="en">
+      <p>The IEC 60364 standard (adopted in India via IS 732) classifies earthing arrangements using two letters. The <strong>first letter</strong> tells us how the power system (transformer) is connected to earth: <strong>T</strong> = directly earthed, <strong>I</strong> = isolated (or earthed through high impedance). The <strong>second letter</strong> tells us how the exposed conductive parts (equipment bodies) are earthed: <strong>T</strong> = separate earth electrode, <strong>N</strong> = connected to the system neutral.</p>
+      <p>A third letter (C or S) may appear: <strong>C</strong> = neutral and protective conductor combined into one wire (PEN), <strong>S</strong> = separate wires for neutral (N) and protective earth (PE).</p>
+    </div>
+    <div data-lang="hi">
+      <p>IEC 60364 मानक (भारत में IS 732 के रूप में अपनाया गया) दो अक्षरों से अर्थिंग व्यवस्था को वर्गीकृत करता है। <strong>पहला अक्षर</strong>: पावर सिस्टम (ट्रांसफॉर्मर) और अर्थ के बीच का संबंध — <strong>T</strong> = सीधे अर्थ से जुड़ा, <strong>I</strong> = अलग (या उच्च प्रतिबाधा के माध्यम से)। <strong>दूसरा अक्षर</strong>: उजागर धातु भागों की अर्थिंग — <strong>T</strong> = अलग अर्थ इलेक्ट्रोड, <strong>N</strong> = सिस्टम न्यूट्रल से जुड़ा।</p>
+      <p>तीसरा अक्षर (C या S): <strong>C</strong> = न्यूट्रल और PE एक ही तार में (PEN), <strong>S</strong> = न्यूट्रल और PE अलग-अलग तार।</p>
+    </div>
+    <div data-lang="ml">
+      <p>IEC 60364 സ്റ്റാൻഡേർഡ് (ഇന്ത്യയിൽ IS 732 ആയി സ്വീകരിക്കപ്പെട്ടത്) ഇർഥിങ് ക്രമീകരണം രണ്ട് അക്ഷരങ്ങൾ ഉപയോഗിച്ച് തരംതിരിക്കുന്നു. <strong>ഒന്നാം അക്ഷരം</strong>: വൈദ്യുത ശൃംഖല (ട്രാൻസ്ഫോർമർ) ഭൂമിയുമായി ബന്ധിക്കുന്ന രീതി — <strong>T</strong> = നേരിട്ട് ഭൂമിയുമായി, <strong>I</strong> = ഒറ്റപ്പെട്ടത്. <strong>രണ്ടാം അക്ഷരം</strong>: ഉപകരണ ലോഹ ഭാഗങ്ങളുടെ ഇർഥിങ് — <strong>T</strong> = പ്രത്യേക ഇർഥ് ഇലക്ട്രോഡ്, <strong>N</strong> = സിസ്റ്റം ന്യൂട്രലുമായി ബന്ധം.</p>
+      <p>മൂന്നാം അക്ഷരം: <strong>C</strong> = ന്യൂട്രൽ, PE ഒരേ കമ്പിയിൽ (PEN), <strong>S</strong> = ന്യൂട്രൽ, PE വ്യത്യസ്ത കമ്പികൾ.</p>
+    </div>
+  </div>
+
+  <!-- SECTION QUIZ -->
+  <div class="quiz-wrap" id="q0">
+    <h3>
+      <span data-lang="en">🧠 Quick Check – Introduction</span>
+      <span data-lang="hi">🧠 त्वरित जांच – परिचय</span>
+      <span data-lang="ml">🧠 ദ്രുത പരിശോധന – ആമുഖം</span>
+    </h3>
+    <!-- Q1 -->
+    <div class="q-block" id="q0_1">
+      <p>
+        <span data-lang="en">1. In IEC 60364, the first letter 'T' in earthing classification means:</span>
+        <span data-lang="hi">1. IEC 60364 में पहले अक्षर 'T' का अर्थ है:</span>
+        <span data-lang="ml">1. IEC 60364-ൽ ആദ്യ അക്ഷരം 'T' സൂചിപ്പിക്കുന്നത്:</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q0_1',false)">
+          <span data-lang="en">A. The equipment is earthed through a separate electrode</span>
+          <span data-lang="hi">A. उपकरण अलग इलेक्ट्रोड से अर्थ है</span>
+          <span data-lang="ml">A. ഉപകരണം പ്രത്യേക ഇലക്ട്രോഡ് വഴി ഇർഥ് ചെയ്തിരിക്കുന്നു</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q0_1',true)">
+          <span data-lang="en">B. The power source (transformer) is directly connected to earth</span>
+          <span data-lang="hi">B. विद्युत स्रोत (ट्रांसफॉर्मर) सीधे अर्थ से जुड़ा है</span>
+          <span data-lang="ml">B. വൈദ്യുത ഉറവിടം (ട്രാൻസ്ഫോർമർ) നേരിട്ട് ഭൂമിയുമായി ബന്ധിക്കുന്നു</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q0_1',false)">
+          <span data-lang="en">C. The system is completely isolated from earth</span>
+          <span data-lang="hi">C. सिस्टम पूरी तरह अर्थ से अलग है</span>
+          <span data-lang="ml">C. സിസ്റ്റം ഭൂമിയിൽ നിന്ന് പൂർണ്ണമായും ഒറ്റപ്പെട്ടതാണ്</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q0_1',false)">
+          <span data-lang="en">D. Neutral and PE conductor are combined</span>
+          <span data-lang="hi">D. न्यूट्रल और PE एक ही तार में हैं</span>
+          <span data-lang="ml">D. ന്യൂട്രൽ, PE ഒരേ കമ്പിയിൽ ആണ്</span>
+        </div>
+      </div>
+      <div id="fb_q0_1" class="q-feedback" style="display:none"></div>
+    </div>
+    <!-- Q2 -->
+    <div class="q-block" id="q0_2">
+      <p>
+        <span data-lang="en">2. What is the main purpose of a protective earth conductor?</span>
+        <span data-lang="hi">2. प्रोटेक्टिव अर्थ कंडक्टर का मुख्य उद्देश्य क्या है?</span>
+        <span data-lang="ml">2. പ്രൊട്ടക്ടീവ് ഇർഥ് കണ്ടക്ടറിന്റെ പ്രധാന ലക്ഷ്യം:</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q0_2',false)">
+          <span data-lang="en">A. To carry normal load current</span>
+          <span data-lang="hi">A. सामान्य लोड करंट वहन करना</span>
+          <span data-lang="ml">A. സാധാരണ ലോഡ് കറൻ്റ് കൊണ്ടുപോകാൻ</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q0_2',false)">
+          <span data-lang="en">B. To reduce voltage drop in the circuit</span>
+          <span data-lang="hi">B. सर्किट में वोल्टेज ड्रॉप कम करना</span>
+          <span data-lang="ml">B. സർക്കീട്ടിൽ വോൾട്ടേജ് ഡ്രോപ്പ് കുറക്കാൻ</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q0_2',true)">
+          <span data-lang="en">C. To provide a low-impedance path for fault current so protection devices operate</span>
+          <span data-lang="hi">C. फॉल्ट करंट को कम प्रतिबाधा पथ देकर सुरक्षा उपकरण ट्रिप करवाना</span>
+          <span data-lang="ml">C. ഫോൾട്ട് കറൻ്റിന് കുറഞ്ഞ ഇംപ്പഡൻസ് പാത നൽകി സുരക്ഷ ഉപകരണം ട്രിപ്പ് ചെയ്യാൻ</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q0_2',false)">
+          <span data-lang="en">D. To improve power factor</span>
+          <span data-lang="hi">D. पावर फैक्टर सुधारना</span>
+          <span data-lang="ml">D. പവർ ഫാക്ടർ മെച്ചപ്പെടുത്താൻ</span>
+        </div>
+      </div>
+      <div id="fb_q0_2" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="quiz-score" id="score_s0"></div>
+    <button class="quiz-btn" onclick="showScore('s0',['q0_1','q0_2'])">
+      <span data-lang="en">Submit Answers</span>
+      <span data-lang="hi">उत्तर जमा करें</span>
+      <span data-lang="ml">ഉത്തരം സമർപ്പിക്കുക</span>
+    </button>
+  </div>
+</div><!-- /s0 -->
+
+
+<!-- ============================================================ SECTION 1: TN SYSTEM OVERVIEW -->
+<div class="section" id="s1">
+  <div class="page-title">
+    <span data-lang="en">TN Earthing System<span class="sub">Terra-Neutral: Equipment earthed via system neutral</span></span>
+    <span data-lang="hi">TN अर्थिंग सिस्टम<span class="sub">Terra-Neutral: उपकरण सिस्टम न्यूट्रल से अर्थ</span></span>
+    <span data-lang="ml">TN ഇർഥിങ് സിസ്റ്റം<span class="sub">Terra-Neutral: ഉപകരണം സിസ്റ്റം ന്യൂട്രൽ വഴി ഇർഥ്</span></span>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">🔑</span>
+      <span data-lang="en">Core Principle</span>
+      <span data-lang="hi">मूल सिद्धांत</span>
+      <span data-lang="ml">അടിസ്ഥാന തത്ത്വം</span>
+    </h3>
+    <div data-lang="en">
+      <p>In a TN system, the neutral of the supply transformer is solidly connected to earth (terra). The exposed metallic parts of all electrical equipment are connected back to this same earthed neutral through a protective conductor (PE). The entire fault current return path is via metallic conductors — not through the soil.</p>
+      <p>Because the fault loop is all-metal, fault impedance is very low. This means fault currents are large and MCBs/fuses trip fast — typically within 0.4 seconds for socket circuits per IE Rules.</p>
+    </div>
+    <div data-lang="hi">
+      <p>TN सिस्टम में, सप्लाई ट्रांसफॉर्मर का न्यूट्रल सीधे अर्थ (terra) से जुड़ा होता है। सभी उपकरणों के उजागर धातु भाग इसी अर्थेड न्यूट्रल से PE तार के माध्यम से जुड़े होते हैं। पूरा फॉल्ट करंट पाथ धातु का है — मिट्टी से नहीं।</p>
+      <p>चूंकि फॉल्ट लूप पूरी तरह धातु का है, फॉल्ट इम्पीडेंस बहुत कम होती है। इससे फॉल्ट करंट बड़ा होता है और MCB/फ्यूज़ जल्दी ट्रिप होता है।</p>
+    </div>
+    <div data-lang="ml">
+      <p>TN സിസ്റ്റത്തിൽ, സപ്ലൈ ട്രാൻസ്ഫോർമറിന്റെ ന്യൂട്രൽ നേരിട്ട് ഭൂമിയുമായി (terra) ബന്ധിക്കുന്നു. എല്ലാ ഉപകരണങ്ങളുടെ ലോഹ ഭാഗങ്ങളും PE കമ്പി വഴി ഈ ഇർഥ് ചെയ്ത ന്യൂട്രലുമായി ബന്ധിക്കുന്നു. ഫോൾട്ട് കറൻ്റ് മടങ്ങുന്ന പാത മൊത്തം ലോഹ കണ്ടക്ടർ ആണ്.</p>
+      <p>ഫോൾട്ട് ലൂപ്പ് ലോഹ കണ്ടക്ടർ ആയതിനാൽ ഇൻപ്പഡൻസ് വളരെ കുറവ്. ഇതിൽ ഫോൾട്ട് കറൻ്റ് വലുതായിരിക്കും, MCB/ഫ്യൂസ് വേഗം ട്രിപ്പ് ആകും.</p>
+    </div>
+
+    <div class="box-green">
+      <strong>
+        <span data-lang="en">✅ Key Advantage:</span>
+        <span data-lang="hi">✅ मुख्य लाभ:</span>
+        <span data-lang="ml">✅ പ്രധാന ഗുണം:</span>
+      </strong>
+      <span data-lang="en"> Fast, reliable disconnection of faults. Suitable for most Indian urban installations.</span>
+      <span data-lang="hi"> फॉल्ट की त्वरित और विश्वसनीय डिस्कनेक्शन। भारतीय शहरी प्रतिष्ठानों के लिए उपयुक्त।</span>
+      <span data-lang="ml"> ഫോൾട്ടുകളുടെ വേഗവും വിശ്വസ്തതയുമുള്ള വിഛേദനം. ഇന്ത്യൻ നഗര ഇൻസ്റ്റലേഷനുകൾക്ക് അനുയോജ്യം.</span>
+    </div>
+  </div>
+
+  <!-- TN SYSTEM TYPES OVERVIEW -->
+  <div class="card">
+    <h3><span class="icon">🌿</span>
+      <span data-lang="en">Three Variants of TN</span>
+      <span data-lang="hi">TN के तीन प्रकार</span>
+      <span data-lang="ml">TN-യുടെ മൂന്ന് വകഭേദങ്ങൾ</span>
+    </h3>
+    <div class="two-col">
+      <div class="box-blue">
+        <strong>TN-C</strong><br>
+        <span data-lang="en">Neutral (N) and Protective Earth (PE) combined into one single conductor called PEN. Older system.</span>
+        <span data-lang="hi">न्यूट्रल और PE एक ही PEN तार में। पुरानी प्रणाली।</span>
+        <span data-lang="ml">ന്യൂട്രൽ, PE ഒരേ PEN കമ്പിയിൽ. പഴയ സംവിധാനം.</span>
+      </div>
+      <div class="box-blue">
+        <strong>TN-S</strong><br>
+        <span data-lang="en">Neutral and PE are completely separate conductors throughout. Safer, preferred in modern installations.</span>
+        <span data-lang="hi">न्यूट्रल और PE पूरी तरह अलग-अलग तार। अधिक सुरक्षित, आधुनिक प्रतिष्ठानों में पसंदीदा।</span>
+        <span data-lang="ml">ന്യൂട്രൽ, PE തുടർച്ചയായി വേർതിരിഞ്ഞ കമ്പികൾ. കൂടുതൽ സുരക്ഷിതം.</span>
+      </div>
+    </div>
+    <div class="box-blue" style="margin-top:10px">
+      <strong>TN-C-S (PME – Protective Multiple Earthing)</strong><br>
+      <span data-lang="en">Starts as TN-C (combined PEN) from substation, then splits into separate N and PE at the consumer's main distribution board. This is the most common system in India's urban grid (BESCOM, KSEB, MSEDCL etc.).</span>
+      <span data-lang="hi">सब-स्टेशन से TN-C (PEN) के रूप में शुरू होता है, फिर उपभोक्ता के मुख्य वितरण बोर्ड पर N और PE अलग हो जाते हैं। यह भारत के शहरी ग्रिड में सबसे आम है।</span>
+      <span data-lang="ml">സബ്-സ്റ്റേഷനിൽ നിന്ന് TN-C (PEN) ആയി ആരംഭിക്കുന്നു, ഉപഭോക്താവിന്റെ MDB-യിൽ N, PE ആയി വേർതിരിക്കുന്നു. ഇത് ഇന്ത്യൻ നഗര ഗ്രിഡിൽ ഏറ്റവും സാധാരണം.</span>
+    </div>
+  </div>
+
+  <!-- QUIZ S1 -->
+  <div class="quiz-wrap" id="q1">
+    <h3>
+      <span data-lang="en">🧠 Quick Check – TN System</span>
+      <span data-lang="hi">🧠 त्वरित जांच – TN सिस्टम</span>
+      <span data-lang="ml">🧠 ദ്രുത പരിശോധന – TN സിസ്റ്റം</span>
+    </h3>
+    <div class="q-block" id="q1_1">
+      <p>
+        <span data-lang="en">1. In a TN system, the exposed metallic parts of equipment are connected to:</span>
+        <span data-lang="hi">1. TN सिस्टम में उपकरण के उजागर धातु भाग किससे जुड़े होते हैं?</span>
+        <span data-lang="ml">1. TN സിസ്റ്റത്തിൽ ഉപകരണ ലോഹ ഭാഗങ്ങൾ ബന്ധിക്കുന്നത്:</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q1_1',false)">
+          <span data-lang="en">A. A separate local earth electrode</span>
+          <span data-lang="hi">A. अलग स्थानीय अर्थ इलेक्ट्रोड</span>
+          <span data-lang="ml">A. പ്രത്യേക ലോക്കൽ ഇർഥ് ഇലക്ട്രോഡ്</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q1_1',true)">
+          <span data-lang="en">B. The earthed neutral of the supply system via metallic conductors</span>
+          <span data-lang="hi">B. धातु तारों के माध्यम से सप्लाई सिस्टम के अर्थेड न्यूट्रल से</span>
+          <span data-lang="ml">B. ലോഹ കണ്ടക്ടർ വഴി സപ്ലൈ ന്യൂട്രലിൽ</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q1_1',false)">
+          <span data-lang="hi">C. सिस्टम से कोई संबंध नहीं</span>
+          <span data-lang="en">C. Not connected to the system at all</span>
+          <span data-lang="ml">C. സിസ്റ്റവുമായി ബന്ധമില്ല</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q1_1',false)">
+          <span data-lang="en">D. The phase conductor</span>
+          <span data-lang="hi">D. फेज़ कंडक्टर</span>
+          <span data-lang="ml">D. ഫേസ് കണ്ടക്ടർ</span>
+        </div>
+      </div>
+      <div id="fb_q1_1" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="q-block" id="q1_2">
+      <p>
+        <span data-lang="en">2. What does PEN stand for?</span>
+        <span data-lang="hi">2. PEN का अर्थ क्या है?</span>
+        <span data-lang="ml">2. PEN എന്നതിന്റെ അർത്ഥം:</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q1_2',false)">
+          <span data-lang="en">A. Phase, Earth, Neutral</span>
+          <span data-lang="hi">A. फेज़, अर्थ, न्यूट्रल</span>
+          <span data-lang="ml">A. ഫേസ്, ഇർഥ്, ന്യൂട്രൽ</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q1_2',true)">
+          <span data-lang="en">B. Protective Earth and Neutral (combined conductor)</span>
+          <span data-lang="hi">B. प्रोटेक्टिव अर्थ और न्यूट्रल (एकत्रित तार)</span>
+          <span data-lang="ml">B. പ്രൊട്ടക്ടീവ് ഇർഥ്, ന്യൂട്രൽ (ഒരുമിച്ച കണ്ടക്ടർ)</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q1_2',false)">
+          <span data-lang="en">C. Primary Earth Node</span>
+          <span data-lang="hi">C. प्राइमरी अर्थ नोड</span>
+          <span data-lang="ml">C. പ്രൈമറി ഇർഥ് നോഡ്</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q1_2',false)">
+          <span data-lang="en">D. Protective Earthing Node</span>
+          <span data-lang="hi">D. प्रोटेक्टिव अर्थिंग नोड</span>
+          <span data-lang="ml">D. പ്രൊട്ടക്ടീവ് ഇർഥിങ് നോഡ്</span>
+        </div>
+      </div>
+      <div id="fb_q1_2" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="quiz-score" id="score_s1"></div>
+    <button class="quiz-btn" onclick="showScore('s1',['q1_1','q1_2'])">
+      <span data-lang="en">Submit Answers</span><span data-lang="hi">उत्तर जमा करें</span><span data-lang="ml">ഉത്തരം സമർപ്പിക്കുക</span>
+    </button>
+  </div>
+</div><!-- /s1 -->
+
+
+<!-- ============================================================ SECTION 2: TN-C / TN-S / TN-C-S -->
+<div class="section" id="s2">
+  <div class="page-title">
+    <span data-lang="en">TN-C, TN-S and TN-C-S (PME) in Detail<span class="sub">Understanding each sub-type with diagrams, safety &amp; IS compliance</span></span>
+    <span data-lang="hi">TN-C, TN-S और TN-C-S (PME) विस्तार में<span class="sub">प्रत्येक उपप्रकार – आरेख, सुरक्षा और IS अनुपालन</span></span>
+    <span data-lang="ml">TN-C, TN-S, TN-C-S (PME) വিശദമായി<span class="sub">ഓരോ ഉപവകഭേദവും – ഡയഗ്രം, സുരക്ഷ, IS പ്രകാരം</span></span>
+  </div>
+
+  <!-- TN-C -->
+  <div class="card">
+    <h3><span class="icon">🔩</span> TN-C System</h3>
+    <div data-lang="en">
+      <p>In TN-C, the protective earth (PE) and neutral (N) functions are combined in a single conductor called the <strong>PEN conductor</strong>. This conductor is earthed at the source (transformer neutral) and at multiple points along the distribution network — hence the name <em>Protective Multiple Earthing (PME)</em> when multiple earth electrodes are used.</p>
+    </div>
+    <div data-lang="hi">
+      <p>TN-C में, PE और न्यूट्रल को मिलाकर एक <strong>PEN कंडक्टर</strong> बनाया जाता है। इसे स्रोत (ट्रांसफॉर्मर न्यूट्रल) और वितरण नेटवर्क के कई बिंदुओं पर अर्थ किया जाता है — इसीलिए जब कई अर्थ इलेक्ट्रोड हों तो इसे <em>Protective Multiple Earthing (PME)</em> कहते हैं।</p>
+    </div>
+    <div data-lang="ml">
+      <p>TN-C-ൽ, PE, ന്യൂട്രൽ ഒരൊറ്റ <strong>PEN കണ്ടക്ടർ</strong> ആയി ഒന്നിക്കുന്നു. ഇത് ഉറവിടത്തിൽ (ട്രാൻസ്ഫോർമർ ന്യൂട്രൽ) വിതരണ ശൃംഖലയിലെ ഒന്നിലധികം ഭൂമിയുമായി ബന്ധിക്കുന്നു — ഇത് <em>Protective Multiple Earthing (PME)</em> ആണ്.</p>
+    </div>
+
+    <!-- TN-C DIAGRAM -->
+    <div class="diagram-wrap">
+      <svg width="680" height="240" viewBox="0 0 680 240" xmlns="http://www.w3.org/2000/svg">
+        <rect width="680" height="240" fill="#FAFAFA" rx="8"/>
+        <!-- Transformer -->
+        <rect x="20" y="70" width="80" height="100" rx="6" fill="#1A3A5C"/>
+        <text x="60" y="108" text-anchor="middle" fill="white" font-size="12" font-family="Oswald">TRANS</text>
+        <text x="60" y="124" text-anchor="middle" fill="white" font-size="12" font-family="Oswald">FORMER</text>
+        <text x="60" y="140" text-anchor="middle" fill="white" font-size="10">415V</text>
+        <!-- Earth at transformer -->
+        <line x1="60" y1="170" x2="60" y2="210" stroke="#2196F3" stroke-width="2.5"/>
+        <line x1="40" y1="210" x2="80" y2="210" stroke="#5D4037" stroke-width="3"/>
+        <line x1="46" y1="218" x2="74" y2="218" stroke="#5D4037" stroke-width="2"/>
+        <line x1="51" y1="225" x2="69" y2="225" stroke="#5D4037" stroke-width="1.5"/>
+
+        <!-- Phase L1 -->
+        <line x1="100" y1="88" x2="560" y2="88" stroke="#E8500A" stroke-width="3"/>
+        <text x="320" y="80" text-anchor="middle" fill="#E8500A" font-size="13" font-weight="bold">L (Phase)</text>
+        <!-- PEN combined (thick blue+yellow) -->
+        <line x1="100" y1="152" x2="560" y2="152" stroke="#1565C0" stroke-width="5"/>
+        <line x1="100" y1="152" x2="560" y2="152" stroke="#F5A623" stroke-width="2" stroke-dasharray="8,8"/>
+        <text x="320" y="145" text-anchor="middle" fill="#1565C0" font-size="13" font-weight="bold">PEN (N + PE combined)</text>
+
+        <!-- Multiple earth points -->
+        <line x1="200" y1="152" x2="200" y2="195" stroke="#2196F3" stroke-width="2"/>
+        <line x1="180" y1="195" x2="220" y2="195" stroke="#5D4037" stroke-width="2.5"/>
+        <line x1="185" y1="202" x2="215" y2="202" stroke="#5D4037" stroke-width="2"/>
+        <text x="200" y="218" text-anchor="middle" fill="#5D4037" font-size="10">Earth 1</text>
+
+        <line x1="350" y1="152" x2="350" y2="195" stroke="#2196F3" stroke-width="2"/>
+        <line x1="330" y1="195" x2="370" y2="195" stroke="#5D4037" stroke-width="2.5"/>
+        <line x1="335" y1="202" x2="365" y2="202" stroke="#5D4037" stroke-width="2"/>
+        <text x="350" y="218" text-anchor="middle" fill="#5D4037" font-size="10">Earth 2</text>
+
+        <line x1="480" y1="152" x2="480" y2="195" stroke="#2196F3" stroke-width="2"/>
+        <line x1="460" y1="195" x2="500" y2="195" stroke="#5D4037" stroke-width="2.5"/>
+        <line x1="465" y1="202" x2="495" y2="202" stroke="#5D4037" stroke-width="2"/>
+        <text x="480" y="218" text-anchor="middle" fill="#5D4037" font-size="10">Earth 3</text>
+
+        <!-- Consumer -->
+        <rect x="560" y="68" width="90" height="100" rx="6" fill="#B0BEC5" stroke="#546E7A" stroke-width="2"/>
+        <text x="605" y="106" text-anchor="middle" fill="#1C1C1C" font-size="12" font-family="Oswald">CONSUMER</text>
+        <text x="605" y="120" text-anchor="middle" fill="#1C1C1C" font-size="11">Metal body</text>
+        <text x="605" y="136" text-anchor="middle" fill="#C0392B" font-size="11">→ PEN</text>
+        <!-- Labels -->
+        <text x="340" y="30" text-anchor="middle" fill="#1A3A5C" font-size="14" font-family="Oswald" font-weight="bold">TN-C SYSTEM – Multiple Earthing of PEN</text>
+      </svg>
+      <div class="caption">
+        <span data-lang="en">TN-C: Single PEN conductor earthed at multiple points. Metal casing connected directly to PEN.</span>
+        <span data-lang="hi">TN-C: PEN कंडक्टर को कई बिंदुओं पर अर्थ किया जाता है। धातु केसिंग सीधे PEN से जुड़ी।</span>
+        <span data-lang="ml">TN-C: PEN കണ്ടക്ടർ ഒന്നിലധികം ഭൂ ബന്ധങ്ങൾ. ലോഹ ഷെൽ PEN-ൽ ബന്ധിക്കുന്നു.</span>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="box-green">
+          <strong><span data-lang="en">✅ Advantages</span><span data-lang="hi">✅ लाभ</span><span data-lang="ml">✅ ഗുണങ്ങൾ</span></strong><br>
+          <span data-lang="en">Saves one conductor (fewer cables), cheaper to install, used in overhead distribution lines.</span>
+          <span data-lang="hi">एक तार की बचत, सस्ती स्थापना, ओवरहेड लाइनों में उपयोग।</span>
+          <span data-lang="ml">ഒരു കണ്ടക്ടർ ലാഭം, ചെലവ് കുറവ്, ഓവർഹെഡ് ലൈനുകളിൽ ഉപയോഗം.</span>
+        </div>
+      </div>
+      <div>
+        <div class="box-red">
+          <strong><span data-lang="en">⚠️ Disadvantages &amp; Dangers</span><span data-lang="hi">⚠️ नुकसान और खतरे</span><span data-lang="ml">⚠️ ദോഷങ്ങൾ, അപകടങ്ങൾ</span></strong><br>
+          <span data-lang="en">If PEN breaks, all equipment casings rise to full line voltage (dangerous touch voltage!). Cannot use RCDs. Not permitted for new consumer installations per IS 3043.</span>
+          <span data-lang="hi">PEN टूटने पर सभी उपकरण केसिंग पूरी लाइन वोल्टेज पर आ जाते हैं (खतरनाक!)। RCD का उपयोग नहीं। IS 3043 के अनुसार नए उपभोक्ता इंस्टालेशन में अनुमति नहीं।</span>
+          <span data-lang="ml">PEN പൊട്ടിയാൽ ഉപകരണ ഷെൽ മൊത്തം ലൈൻ വോൾട്ടേജ് ആകും (അപകടകരം!). RCD ഉപയോഗിക്കാൻ കഴിയില്ല. IS 3043 പ്രകാരം പുതിയ ഉപഭോക്ത ഇൻസ്റ്റലേഷനിൽ അനുവദനീയമല്ല.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="danger-strip">⚡ <span data-lang="en">SAFETY WARNING: TN-C is PROHIBITED inside buildings (IS 3043 Cl. 5.3). Never use PEN conductor in flexible cables.</span><span data-lang="hi">सुरक्षा चेतावनी: TN-C इमारतों के अंदर निषिद्ध है (IS 3043)। फ्लेक्सिबल केबल में PEN का उपयोग कभी न करें।</span><span data-lang="ml">സുരക്ഷ മുന്നറിയിപ്പ്: TN-C കെട്ടിടങ്ങൾക്ക് ഉള്ളിൽ നിഷിദ്ധം (IS 3043). ഫ്ലെക്സിബൾ കേബിളിൽ PEN ഉപയോഗിക്കരുത്.</span></div>
+  </div>
+
+  <!-- TN-S -->
+  <div class="card">
+    <h3><span class="icon">🛡️</span> TN-S System</h3>
+    <div data-lang="en"><p>In TN-S, the neutral conductor (N) and protective earth conductor (PE) are <strong>completely separate</strong> throughout the entire installation — from transformer to final socket. This is the safest TN variant because a break in the neutral does not affect the protective earth.</p></div>
+    <div data-lang="hi"><p>TN-S में, न्यूट्रल (N) और PE पूरी स्थापना में <strong>पूरी तरह अलग</strong> रहते हैं। यह सबसे सुरक्षित TN प्रकार है क्योंकि न्यूट्रल टूटने से PE पर कोई असर नहीं पड़ता।</p></div>
+    <div data-lang="ml"><p>TN-S-ൽ, ന്യൂട്രൽ (N), PE ഇൻസ്റ്റലേഷൻ മൊത്തം <strong>പൂർണ്ണമായും വേർതിരിഞ്ഞ</strong> കമ്പികൾ ആണ്. ഏറ്റവും സുരക്ഷിതമായ TN ഇനം, ന്യൂട്രൽ പൊട്ടിയാൽ PE ബാധിക്കപ്പെടില്ല.</p></div>
+
+    <div class="box-green">
+      <strong><span data-lang="en">✅ Advantages:</span><span data-lang="hi">✅ लाभ:</span><span data-lang="ml">✅ ഗുണങ്ങൾ:</span></strong>
+      <span data-lang="en"> RCDs can be used effectively. PE is always at true earth potential. Preferred for laboratories, hospitals, and sensitive equipment areas. Complies fully with IS 3043.</span>
+      <span data-lang="hi"> RCD प्रभावी ढंग से उपयोग। PE हमेशा सच्ची अर्थ विभव पर। प्रयोगशाला, अस्पताल हेतु पसंदीदा। IS 3043 का पूर्ण अनुपालन।</span>
+      <span data-lang="ml"> RCD ഫലപ്രദമായി ഉപയോഗിക്കാം. PE എപ്പോഴും ശരിയായ ഭൂ വോൾട്ടേജ്. ലാബ്, ആശുപത്രിക്ക് അനുയോജ്യം. IS 3043 പൂർണ്ണ അനുപാലനം.</span>
+    </div>
+    <div class="box-red">
+      <strong><span data-lang="en">⚠️ Disadvantage:</span><span data-lang="hi">⚠️ नुकसान:</span><span data-lang="ml">⚠️ ദോഷം:</span></strong>
+      <span data-lang="en"> Requires an extra conductor throughout, adding cost. The separate PE must be sized correctly (min. 2.5 mm² for mechanically protected, 4 mm² unprotected — IS 3043).</span>
+      <span data-lang="hi"> पूरे रास्ते अतिरिक्त तार चाहिए, लागत अधिक। PE का आकार सही होना ज़रूरी (न्यूनतम 2.5 mm² सुरक्षित, 4 mm² असुरक्षित — IS 3043)।</span>
+      <span data-lang="ml"> ഒരു അധിക കണ്ടക്ടർ ആവശ്യം, ചെലവ് കൂടും. PE ശരിയായ വലുപ്പം ഉണ്ടായിരിക്കണം (min. 2.5 mm² സംരക്ഷിതം, 4 mm² — IS 3043).</span>
+    </div>
+  </div>
+
+  <!-- TN-C-S -->
+  <div class="card">
+    <h3><span class="icon">🏙️</span>
+      <span data-lang="en">TN-C-S (PME) – The Indian Urban Standard</span>
+      <span data-lang="hi">TN-C-S (PME) – भारतीय शहरी मानक</span>
+      <span data-lang="ml">TN-C-S (PME) – ഇന്ത്യൻ നഗര മാനദണ്ഡം</span>
+    </h3>
+    <div data-lang="en">
+      <p>TN-C-S is a hybrid. The supply company (like KSEB, BESCOM) runs the distribution using a combined PEN conductor (cheaper overhead system). However, at the point of entry to the consumer's premises — typically the Meter Board or Main Distribution Board — the PEN is <strong>split</strong> into a separate Neutral (N) and separate Protective Earth (PE). From this split point onward, only TN-S wiring is used inside the building.</p>
+      <p>This split point is called the <strong>Main Earthing Terminal (MET)</strong> or <strong>Earth Bar</strong>. The MET is also connected to a local earth electrode at the consumer's premises for added safety.</p>
+    </div>
+    <div data-lang="hi">
+      <p>TN-C-S एक मिश्रित प्रणाली है। बिजली कंपनी (KSEB, BESCOM आदि) PEN तार का उपयोग करती है। उपभोक्ता के परिसर में प्रवेश पर — मीटर बोर्ड/मुख्य वितरण बोर्ड पर — PEN को अलग N और PE में <strong>विभाजित</strong> किया जाता है। इस बिंदु से आगे केवल TN-S वायरिंग।</p>
+      <p>इस विभाजन बिंदु को <strong>मुख्य अर्थिंग टर्मिनल (MET)</strong> या <strong>अर्थ बार</strong> कहते हैं।</p>
+    </div>
+    <div data-lang="ml">
+      <p>TN-C-S ഒരു ഹൈബ്രിഡ്. ഇലക്ട്രിസിറ്റി ബോർഡ് PEN കണ്ടക്ടർ ഉപയോഗിക്കുന്നു. ഉപഭോക്താവിന്റെ അതിർത്തിയിൽ — മീറ്റർ ബോർഡ്/MDB-ൽ — PEN, N, PE ആയി <strong>വിഭജിക്കുന്നു</strong>. ഈ ബിന്ദുവിൽ നിന്ന് TN-S മാത്രം.</p>
+      <p>ഈ വിഭജന ബിന്ദുവിനെ <strong>Main Earthing Terminal (MET)</strong> അഥവാ <strong>ഇർഥ് ബാർ</strong> എന്ന് വിളിക്കുന്നു.</p>
+    </div>
+
+    <!-- TN-C-S DIAGRAM -->
+    <div class="diagram-wrap">
+      <svg width="680" height="280" viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg">
+        <rect width="680" height="280" fill="#FAFAFA" rx="8"/>
+        <!-- Substation -->
+        <rect x="10" y="80" width="90" height="100" rx="6" fill="#1A3A5C"/>
+        <text x="55" y="118" text-anchor="middle" fill="white" font-size="11" font-family="Oswald">11kV/415V</text>
+        <text x="55" y="134" text-anchor="middle" fill="white" font-size="11" font-family="Oswald">SUBSTATION</text>
+        <!-- Earth at substation -->
+        <line x1="55" y1="180" x2="55" y2="220" stroke="#1565C0" stroke-width="2"/>
+        <line x1="38" y1="220" x2="72" y2="220" stroke="#5D4037" stroke-width="3"/>
+        <line x1="43" y1="228" x2="67" y2="228" stroke="#5D4037" stroke-width="2"/>
+        <line x1="48" y1="235" x2="62" y2="235" stroke="#5D4037" stroke-width="1.5"/>
+        <text x="55" y="250" text-anchor="middle" fill="#5D4037" font-size="10">System earth</text>
+
+        <!-- Phase line (L) -->
+        <line x1="100" y1="100" x2="290" y2="100" stroke="#E8500A" stroke-width="3"/>
+        <!-- PEN line -->
+        <line x1="100" y1="155" x2="290" y2="155" stroke="#1565C0" stroke-width="5"/>
+        <line x1="100" y1="155" x2="290" y2="155" stroke="#F5A623" stroke-width="2" stroke-dasharray="8,8"/>
+
+        <!-- Label: Distribution zone -->
+        <text x="195" y="72" text-anchor="middle" fill="#7D6608" font-size="12" font-family="Oswald">← TN-C Zone (Supply) →</text>
+        <rect x="95" y="78" width="200" height="90" rx="4" fill="none" stroke="#F5A623" stroke-width="1.5" stroke-dasharray="5,4"/>
+
+        <!-- MET BOX -->
+        <rect x="290" y="60" width="80" height="175" rx="6" fill="#EAF2FB" stroke="#2471A3" stroke-width="2.5"/>
+        <text x="330" y="80" text-anchor="middle" fill="#1A3A5C" font-size="12" font-family="Oswald">MDB /</text>
+        <text x="330" y="96" text-anchor="middle" fill="#1A3A5C" font-size="12" font-family="Oswald">MET</text>
+        <!-- Incoming PEN -->
+        <line x1="290" y1="100" x2="330" y2="100" stroke="#E8500A" stroke-width="3"/>
+        <line x1="290" y1="155" x2="330" y2="155" stroke="#1565C0" stroke-width="5"/>
+        <!-- Split symbol -->
+        <circle cx="330" cy="155" r="8" fill="#F5A623" stroke="#856404" stroke-width="2"/>
+        <text x="330" y="159" text-anchor="middle" fill="#1C1C1C" font-size="9" font-weight="bold">SPLIT</text>
+        <!-- N out -->
+        <line x1="370" y1="140" x2="440" y2="140" stroke="#1A6B3C" stroke-width="3"/>
+        <text x="440" y="136" fill="#1A6B3C" font-size="12" font-weight="bold">N</text>
+        <!-- PE out -->
+        <line x1="370" y1="170" x2="440" y2="170" stroke="#F5A623" stroke-width="3"/>
+        <text x="440" y="185" fill="#856404" font-size="12" font-weight="bold">PE</text>
+
+        <!-- Local earth electrode -->
+        <line x1="330" y1="235" x2="330" y2="260" stroke="#2196F3" stroke-width="2"/>
+        <line x1="310" y1="260" x2="350" y2="260" stroke="#5D4037" stroke-width="3"/>
+        <line x1="315" y1="267" x2="345" y2="267" stroke="#5D4037" stroke-width="2"/>
+        <text x="330" y="278" text-anchor="middle" fill="#5D4037" font-size="10">Local electrode</text>
+
+        <!-- Right zone: TN-S -->
+        <rect x="440" y="78" width="230" height="110" rx="4" fill="none" stroke="#1A6B3C" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <text x="555" y="70" text-anchor="middle" fill="#1A6B3C" font-size="12" font-family="Oswald">← TN-S Zone (Consumer) →</text>
+
+        <!-- Consumer load -->
+        <rect x="570" y="96" width="80" height="80" rx="6" fill="#B0BEC5" stroke="#546E7A" stroke-width="2"/>
+        <text x="610" y="128" text-anchor="middle" fill="#1C1C1C" font-size="12" font-family="Oswald">LOAD</text>
+        <text x="610" y="144" text-anchor="middle" fill="#1C1C1C" font-size="10">(Metal body)</text>
+        <!-- L to load -->
+        <line x1="440" y1="100" x2="570" y2="100" stroke="#E8500A" stroke-width="3"/>
+        <!-- N to load -->
+        <line x1="440" y1="140" x2="570" y2="140" stroke="#1A6B3C" stroke-width="3"/>
+        <!-- PE to load -->
+        <line x1="440" y1="170" x2="570" y2="170" stroke="#F5A623" stroke-width="2.5"/>
+
+        <text x="340" y="25" text-anchor="middle" fill="#1A3A5C" font-size="14" font-family="Oswald" font-weight="bold">TN-C-S (PME) SYSTEM</text>
+      </svg>
+      <div class="caption">
+        <span data-lang="en">TN-C-S: PEN from substation splits at MET (MDB) into separate N and PE for consumer wiring</span>
+        <span data-lang="hi">TN-C-S: सबस्टेशन से PEN, MET (MDB) पर N और PE में विभाजित होता है</span>
+        <span data-lang="ml">TN-C-S: സബ്സ്റ്റേഷനിൽ നിന്ന് PEN, MET (MDB)-ൽ N, PE ആകുന്നു</span>
+      </div>
+    </div>
+
+    <div class="is-box">
+      <div class="is-title">📜 Indian Standard / IE Rule Compliance</div>
+      <span data-lang="en">IS 3043:2018 (Clause 5.3) permits TN-C-S only when PEN cross-section is ≥ 10 mm² copper or ≥ 16 mm² aluminium. IE Rule 90 requires that the neutral be earthed at source and consumer end. NBC 2016 (Part 8) endorses TN-C-S as the standard urban distribution earthing.</span>
+      <span data-lang="hi">IS 3043:2018 (खंड 5.3) TN-C-S तभी अनुमति देता है जब PEN का आकार ≥ 10 mm² तांबा या ≥ 16 mm² एल्युमिनियम हो। IE नियम 90 में स्रोत और उपभोक्ता दोनों छोर पर न्यूट्रल अर्थ करना आवश्यक है।</span>
+      <span data-lang="ml">IS 3043:2018 (ഖണ്ഡം 5.3) PEN കുറഞ്ഞത് ≥ 10 mm² ചെമ്പ് അല്ലെങ്കിൽ ≥ 16 mm² അലൂമിനിയം ആകുമ്പോൾ TN-C-S അനുവദനീയം. IE ചട്ടം 90 പ്രകാരം ഉറവിടത്തിലും ഉപഭോക്ത ഭാഗത്തും ന്യൂട്രൽ ഇർഥ് ചെയ്യണം.</span>
+    </div>
+  </div>
+
+  <!-- QUIZ S2 -->
+  <div class="quiz-wrap" id="q2">
+    <h3><span data-lang="en">🧠 Quick Check – TN Subtypes</span><span data-lang="hi">🧠 त्वरित जांच – TN उपप्रकार</span><span data-lang="ml">🧠 ദ്രുത പരിശോധന – TN ഉപവകഭേദം</span></h3>
+    <div class="q-block" id="q2_1">
+      <p>
+        <span data-lang="en">1. In which TN variant are Neutral and PE completely separate throughout?</span>
+        <span data-lang="hi">1. किस TN प्रकार में न्यूट्रल और PE पूरे रास्ते अलग हैं?</span>
+        <span data-lang="ml">1. ഏത് TN ഇനത്തിൽ ന്യൂട്രൽ, PE ഉടനീളം വേർതിരിഞ്ഞിരിക്കുന്നു?</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q2_1',false)">TN-C</div>
+        <div class="q-option" onclick="checkAns(this,'q2_1',true)">TN-S</div>
+        <div class="q-option" onclick="checkAns(this,'q2_1',false)">TN-C-S</div>
+        <div class="q-option" onclick="checkAns(this,'q2_1',false)">TT</div>
+      </div>
+      <div id="fb_q2_1" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="q-block" id="q2_2">
+      <p>
+        <span data-lang="en">2. Where does the PEN conductor split into N and PE in a TN-C-S system?</span>
+        <span data-lang="hi">2. TN-C-S में PEN कहां N और PE में विभाजित होता है?</span>
+        <span data-lang="ml">2. TN-C-S-ൽ PEN N, PE ആയി വേർതിരിക്കുന്നത് എവിടെ?</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q2_2',false)">
+          <span data-lang="en">A. At the generating station</span><span data-lang="hi">A. जनरेटिंग स्टेशन पर</span><span data-lang="ml">A. ജനറേറ്റിംഗ് സ്റ്റേഷനിൽ</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q2_2',false)">
+          <span data-lang="en">B. At the 11kV distribution transformer</span><span data-lang="hi">B. 11kV वितरण ट्रांसफॉर्मर पर</span><span data-lang="ml">B. 11kV ട്രാൻസ്ഫോർമറിൽ</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q2_2',true)">
+          <span data-lang="en">C. At the consumer's Main Earthing Terminal (MET/MDB)</span><span data-lang="hi">C. उपभोक्ता के मुख्य अर्थिंग टर्मिनल (MET/MDB) पर</span><span data-lang="ml">C. ഉപഭോക്ത MET/MDB-ൽ</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q2_2',false)">
+          <span data-lang="en">D. At each socket outlet</span><span data-lang="hi">D. प्रत्येक सॉकेट आउटलेट पर</span><span data-lang="ml">D. ഓരോ സോക്കറ്റ് ഔട്ട്‌ലെറ്റിലും</span>
+        </div>
+      </div>
+      <div id="fb_q2_2" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="q-block" id="q2_3">
+      <p>
+        <span data-lang="en">3. What is the DANGER of a broken PEN conductor in TN-C?</span>
+        <span data-lang="hi">3. TN-C में PEN टूटने का खतरा क्या है?</span>
+        <span data-lang="ml">3. TN-C-ൽ PEN പൊട്ടിയാലുള്ള അപകടം:</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q2_3',false)">
+          <span data-lang="en">A. Equipment fails to start</span><span data-lang="hi">A. उपकरण चालू नहीं होता</span><span data-lang="ml">A. ഉപകരണം ആരംഭിക്കില്ല</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q2_3',true)">
+          <span data-lang="en">B. All equipment casings rise to dangerous line voltage</span><span data-lang="hi">B. सभी उपकरण केसिंग खतरनाक लाइन वोल्टेज पर आ जाते हैं</span><span data-lang="ml">B. ഉപകരണ ഷെൽ ലൈൻ വോൾട്ടേജ് ആകും</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q2_3',false)">
+          <span data-lang="en">C. MCB trips immediately</span><span data-lang="hi">C. MCB तुरंत ट्रिप होता है</span><span data-lang="ml">C. MCB ഉടൻ ട്രിപ്പ് ആകും</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q2_3',false)">
+          <span data-lang="en">D. Power factor decreases only</span><span data-lang="hi">D. केवल पावर फैक्टर कम होता है</span><span data-lang="ml">D. പവർ ഫാക്ടർ കുറയുന്നു മാത്രം</span>
+        </div>
+      </div>
+      <div id="fb_q2_3" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="quiz-score" id="score_s2"></div>
+    <button class="quiz-btn" onclick="showScore('s2',['q2_1','q2_2','q2_3'])">
+      <span data-lang="en">Submit Answers</span><span data-lang="hi">उत्तर जमा करें</span><span data-lang="ml">ഉത്തരം സമർപ്പിക്കുക</span>
+    </button>
+  </div>
+</div><!-- /s2 -->
+
+
+<!-- ============================================================ SECTION 3: TT SYSTEM -->
+<div class="section" id="s3">
+  <div class="page-title">
+    <span data-lang="en">TT Earthing System<span class="sub">Terra-Terra: Separate earth electrodes at source and consumer</span></span>
+    <span data-lang="hi">TT अर्थिंग सिस्टम<span class="sub">Terra-Terra: स्रोत और उपभोक्ता पर अलग-अलग अर्थ इलेक्ट्रोड</span></span>
+    <span data-lang="ml">TT ഇർഥിങ് സിസ്റ്റം<span class="sub">Terra-Terra: ഉറവിടം, ഉപഭോക്താവ് — രണ്ടിലും വേർതിരിഞ്ഞ ഇർഥ് ഇലക്ട്രോഡ്</span></span>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">🏚️</span>
+      <span data-lang="en">How TT Works</span>
+      <span data-lang="hi">TT कैसे काम करता है</span>
+      <span data-lang="ml">TT എങ്ങനെ പ്രവർത്തിക്കുന്നു</span>
+    </h3>
+    <div data-lang="en">
+      <p>In a TT system, the transformer neutral is earthed at the source (first T), and the equipment at the consumer's premises is connected to a <strong>completely separate, independent earth electrode</strong> at the consumer's site (second T). There is no metallic connection between the source earth and the consumer earth.</p>
+      <p>Because the fault loop passes through two earth resistances (source earth + consumer earth electrode in series), the fault current is typically low and insufficient to trip an MCB or fuse reliably. This is why TT systems <strong>MUST use an RCD (Residual Current Device/ELCB)</strong> as the primary protection.</p>
+    </div>
+    <div data-lang="hi">
+      <p>TT सिस्टम में, ट्रांसफॉर्मर न्यूट्रल स्रोत पर अर्थेड है (पहला T), और उपभोक्ता के उपकरण एक <strong>पूरी तरह अलग, स्वतंत्र अर्थ इलेक्ट्रोड</strong> से जुड़े हैं (दूसरा T)। स्रोत और उपभोक्ता अर्थ के बीच कोई धातु संबंध नहीं।</p>
+      <p>फॉल्ट लूप दो अर्थ प्रतिरोधों से गुज़रता है, इसलिए फॉल्ट करंट कम होता है और MCB/फ्यूज़ विश्वसनीय रूप से ट्रिप नहीं होता। इसीलिए TT में <strong>RCD/ELCB अनिवार्य है।</strong></p>
+    </div>
+    <div data-lang="ml">
+      <p>TT സിസ്റ്റത്തിൽ, ട്രാൻസ്ഫോർമർ ന്യൂട്രൽ ഉറവിടത്തിൽ ഇർഥ് ചെയ്യുന്നു (ഒന്നാം T), ഉപഭോക്ത ഉപകരണം <strong>പൂർണ്ണ വേർതിരിഞ്ഞ, സ്വതന്ത്ര ഇർഥ് ഇലക്ട്രോഡ്</strong> ഉള്ളതാണ് (രണ്ടാം T). ഉറവിടം, ഉപഭോക്ത ഇർഥ് തമ്മിൽ ലോഹ ബന്ധം ഇല്ല.</p>
+      <p>ഫോൾട്ട് ലൂപ്പ് രണ്ട് ഇർഥ് റെസിസ്റ്റൻസ് വഴി ഒഴുകുന്നതിനാൽ ഫോൾട്ട് കറൻ്റ് കുറഞ്ഞതാകും — MCB ട്രിപ്പ് ആകില്ല. അതിനാൽ TT-ൽ <strong>RCD/ELCB നിർബന്ധമാണ്.</strong></p>
+    </div>
+
+    <!-- TT DIAGRAM -->
+    <div class="diagram-wrap">
+      <svg width="680" height="280" viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg">
+        <rect width="680" height="280" fill="#FAFAFA" rx="8"/>
+        <!-- Transformer -->
+        <rect x="20" y="80" width="80" height="100" rx="6" fill="#1A3A5C"/>
+        <text x="60" y="118" text-anchor="middle" fill="white" font-size="11" font-family="Oswald">TRANS-</text>
+        <text x="60" y="134" text-anchor="middle" fill="white" font-size="11" font-family="Oswald">FORMER</text>
+        <!-- System earth T1 -->
+        <line x1="60" y1="180" x2="60" y2="215" stroke="#2196F3" stroke-width="2"/>
+        <line x1="40" y1="215" x2="80" y2="215" stroke="#5D4037" stroke-width="3"/>
+        <line x1="45" y1="222" x2="75" y2="222" stroke="#5D4037" stroke-width="2"/>
+        <line x1="50" y1="228" x2="70" y2="228" stroke="#5D4037" stroke-width="1.5"/>
+        <text x="60" y="245" text-anchor="middle" fill="#5D4037" font-size="10">Source earth (T1)</text>
+
+        <!-- Phase L -->
+        <line x1="100" y1="100" x2="420" y2="100" stroke="#E8500A" stroke-width="3"/>
+        <text x="260" y="92" text-anchor="middle" fill="#E8500A" font-size="13" font-weight="bold">L (Phase)</text>
+        <!-- Neutral N (not connected to consumer earth) -->
+        <line x1="100" y1="160" x2="420" y2="160" stroke="#1A6B3C" stroke-width="3"/>
+        <text x="260" y="178" text-anchor="middle" fill="#1A6B3C" font-size="13" font-weight="bold">N (Neutral – no consumer PE link)</text>
+
+        <!-- RCD box -->
+        <rect x="290" y="82" width="60" height="90" rx="6" fill="#FFF8E1" stroke="#F5A623" stroke-width="2.5"/>
+        <text x="320" y="108" text-anchor="middle" fill="#856404" font-size="11" font-family="Oswald">RCD</text>
+        <text x="320" y="124" text-anchor="middle" fill="#856404" font-size="11" font-family="Oswald">30mA</text>
+        <text x="320" y="140" text-anchor="middle" fill="#C0392B" font-size="11" font-weight="bold">MUST!</text>
+
+        <!-- Consumer -->
+        <rect x="430" y="70" width="100" height="120" rx="6" fill="#B0BEC5" stroke="#546E7A" stroke-width="2"/>
+        <text x="480" y="112" text-anchor="middle" fill="#1C1C1C" font-size="12" font-family="Oswald">CONSUMER</text>
+        <text x="480" y="128" text-anchor="middle" fill="#1C1C1C" font-size="11">Metal body</text>
+
+        <!-- Consumer earth T2 (separate) -->
+        <line x1="480" y1="190" x2="480" y2="220" stroke="#F5A623" stroke-width="3"/>
+        <line x1="460" y1="220" x2="500" y2="220" stroke="#5D4037" stroke-width="3"/>
+        <line x1="465" y1="228" x2="495" y2="228" stroke="#5D4037" stroke-width="2"/>
+        <line x1="470" y1="235" x2="490" y2="235" stroke="#5D4037" stroke-width="1.5"/>
+        <text x="480" y="252" text-anchor="middle" fill="#5D4037" font-size="10">Consumer earth (T2)</text>
+
+        <!-- "No metallic link" label -->
+        <line x1="80" y1="200" x2="460" y2="200" stroke="#C0392B" stroke-width="1.5" stroke-dasharray="4,4"/>
+        <text x="270" y="195" text-anchor="middle" fill="#C0392B" font-size="11" font-weight="bold">✗ No metallic link between T1 and T2</text>
+
+        <!-- Fault path through ground -->
+        <path d="M 480 240 Q 480 270 320 270 Q 160 270 60 240" fill="none" stroke="#9C27B0" stroke-width="2" stroke-dasharray="6,3"/>
+        <text x="270" y="265" text-anchor="middle" fill="#7B1FA2" font-size="11">Fault current via soil (high R — needs RCD)</text>
+
+        <text x="340" y="28" text-anchor="middle" fill="#1A3A5C" font-size="14" font-family="Oswald" font-weight="bold">TT SYSTEM</text>
+      </svg>
+      <div class="caption">
+        <span data-lang="en">TT: Fault current returns via two earth electrodes and soil. Low fault current demands RCD protection (≤30 mA for sockets).</span>
+        <span data-lang="hi">TT: फॉल्ट करंट दो अर्थ इलेक्ट्रोड और मिट्टी से वापस जाता है। कम फॉल्ट करंट के लिए RCD अनिवार्य।</span>
+        <span data-lang="ml">TT: ഫോൾട്ട് കറൻ്റ് രണ്ട് ഇർഥ് ഇലക്ട്രോഡ്, മണ്ണ് വഴി — RCD നിർബന്ധം (≤30 mA).</span>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="box-green">
+          <strong><span data-lang="en">✅ Advantages</span><span data-lang="hi">✅ लाभ</span><span data-lang="ml">✅ ഗുണങ്ങൾ</span></strong><br>
+          <span data-lang="en">Consumer earth is completely independent of supply company's earth — good for rural areas. A broken neutral does not cause dangerous touch voltages. Suitable for caravan parks, outdoor events, petrol stations, farms.</span>
+          <span data-lang="hi">उपभोक्ता की अर्थिंग बिजली कंपनी से स्वतंत्र — ग्रामीण क्षेत्रों के लिए अच्छी। न्यूट्रल टूटने पर खतरनाक टच वोल्टेज नहीं। कैरेवन पार्क, बाहरी आयोजन, पेट्रोल स्टेशन के लिए उपयुक्त।</span>
+          <span data-lang="ml">ഉപഭോക്ത ഇർഥ് ബോർഡ് ഇർഥ് ൽ നിന്ന് സ്വതന്ത്രം — ഗ്രാമ മേഖലയ്ക്ക് ഗുണം. ന്യൂട്രൽ പൊട്ടിയാൽ ടച്ച് വോൾട്ടേജ് ഇല്ല. ഫാം, ഔട്ഡോർ ഇൻസ്റ്റലേഷൻ, പെട്രോൾ സ്റ്റേഷൻ.</span>
+        </div>
+      </div>
+      <div>
+        <div class="box-red">
+          <strong><span data-lang="en">⚠️ Disadvantages</span><span data-lang="hi">⚠️ नुकसान</span><span data-lang="ml">⚠️ ദോഷങ്ങൾ</span></strong><br>
+          <span data-lang="en">High earth electrode resistance → low fault current → MCB will NOT trip without RCD. Earth electrode resistance must be tested (≤ 200 Ω recommended, IS 3043). Earth rod must be maintained — resistance increases in dry season.</span>
+          <span data-lang="hi">उच्च अर्थ इलेक्ट्रोड प्रतिरोध → कम फॉल्ट करंट → MCB ट्रिप नहीं होगा बिना RCD के। इलेक्ट्रोड प्रतिरोध ≤ 200 Ω (IS 3043)। शुष्क मौसम में प्रतिरोध बढ़ता है।</span>
+          <span data-lang="ml">ഉയർന്ന ഇർഥ് ഇലക്ട്രോഡ് റെസിസ്റ്റൻസ് → കുറഞ്ഞ ഫോൾട്ട് കറൻ്റ് → RCD ഇല്ലാതെ MCB ട്രിപ്പ് ആകില്ല. ഇലക്ട്രോഡ് ≤ 200 Ω (IS 3043). ഉണങ്ങിയ കാലത്ത് റെസിസ്റ്റൻസ് കൂടും.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="is-box">
+      <div class="is-title">📜 Indian Standard / IE Rule Compliance</div>
+      <span data-lang="en">IS 3043:2018 (Cl. 5.4) specifies TT for installations without a distributed earth conductor from the supply authority. IE Rule 50 requires every consumer earthing electrode to have resistance ≤ 5 Ω for LV systems. ELCB/RCD of ≤ 30 mA is mandatory for all socket outlet circuits per NBC 2016 Part 8.</span>
+      <span data-lang="hi">IS 3043:2018 (खंड 5.4) TT उन प्रतिष्ठानों के लिए निर्दिष्ट करता है जहाँ वितरण प्राधिकरण से अर्थ तार नहीं है। IE नियम 50: उपभोक्ता अर्थ इलेक्ट्रोड प्रतिरोध ≤ 5 Ω। NBC 2016 के अनुसार सॉकेट सर्किट में ≤ 30 mA ELCB/RCD अनिवार्य।</span>
+      <span data-lang="ml">IS 3043:2018 (ഖണ്ഡം 5.4) ബോർഡ് ഇർഥ് ഇല്ലാത്ത ഇൻസ്റ്റലേഷനുകൾക്ക് TT നിർദ്ദേശിക്കുന്നു. IE ചട്ടം 50: ഇർഥ് ഇലക്ട്രോഡ് ≤ 5 Ω. NBC 2016 (ഭാഗം 8) സോക്കറ്റ് സർക്കീട്ടിൽ ≤ 30 mA RCD/ELCB നിർബന്ധം.</span>
+    </div>
+  </div>
+
+  <!-- QUIZ S3 -->
+  <div class="quiz-wrap" id="q3">
+    <h3><span data-lang="en">🧠 Quick Check – TT System</span><span data-lang="hi">🧠 त्वरित जांच – TT सिस्टम</span><span data-lang="ml">🧠 ദ്രുത പരിശോധന – TT സിസ്റ്റം</span></h3>
+    <div class="q-block" id="q3_1">
+      <p>
+        <span data-lang="en">1. Why is an MCB alone NOT sufficient protection in a TT system?</span>
+        <span data-lang="hi">1. TT सिस्टम में MCB अकेले पर्याप्त सुरक्षा क्यों नहीं है?</span>
+        <span data-lang="ml">1. TT-ൽ MCB മാത്രം സുരക്ഷ പര്യാപ്തമല്ലേ?</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q3_1',false)">
+          <span data-lang="en">A. MCBs are too expensive for TT</span><span data-lang="hi">A. MCB TT के लिए बहुत महंगे हैं</span><span data-lang="ml">A. TT-ക്ക് MCB വളരെ ചെലവേറിയതാണ്</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q3_1',true)">
+          <span data-lang="en">B. Fault current is too low (high earth resistance) to trip an MCB reliably</span>
+          <span data-lang="hi">B. अर्थ प्रतिरोध अधिक होने से फॉल्ट करंट बहुत कम होता है, MCB ट्रिप नहीं होता</span>
+          <span data-lang="ml">B. ഉയർന്ന ഇർഥ് റെസിസ്റ്റൻസ് ഫോൾട്ട് കറൻ്റ് കുറക്കുന്നു, MCB ട്രിപ്പ് ആകില്ല</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q3_1',false)">
+          <span data-lang="en">C. MCB cannot detect earth faults at all</span><span data-lang="hi">C. MCB अर्थ फॉल्ट बिल्कुल नहीं पहचान सकता</span><span data-lang="ml">C. MCB ഇർഥ് ഫോൾട്ട് തിരിച്ചറിയില്ല</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q3_1',false)">
+          <span data-lang="en">D. TT systems do not have MCBs</span><span data-lang="hi">D. TT सिस्टम में MCB नहीं होते</span><span data-lang="ml">D. TT-ൽ MCB ഉണ്ടാകില്ല</span>
+        </div>
+      </div>
+      <div id="fb_q3_1" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="q-block" id="q3_2">
+      <p>
+        <span data-lang="en">2. As per IS 3043, what is the maximum recommended earth electrode resistance for a TT installation?</span>
+        <span data-lang="hi">2. IS 3043 के अनुसार TT प्रतिष्ठान में अर्थ इलेक्ट्रोड का अधिकतम प्रतिरोध?</span>
+        <span data-lang="ml">2. IS 3043 പ്രകാരം TT ഇൻസ്റ്റലേഷനിൽ ഇർഥ് ഇലക്ട്രോഡ് പരമാവധി റെസിസ്റ്റൻസ്:</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q3_2',false)">
+          <span data-lang="en">A. 50 Ω</span><span data-lang="hi">A. 50 Ω</span><span data-lang="ml">A. 50 Ω</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q3_2',false)">
+          <span data-lang="en">B. 100 Ω</span><span data-lang="hi">B. 100 Ω</span><span data-lang="ml">B. 100 Ω</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q3_2',true)">
+          <span data-lang="en">C. 200 Ω (≤ 5 Ω preferred per IE Rule 50)</span><span data-lang="hi">C. 200 Ω (IE नियम 50 के अनुसार ≤ 5 Ω बेहतर)</span><span data-lang="ml">C. 200 Ω (IE ചട്ടം 50 ≤ 5 Ω ഉത്തമം)</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q3_2',false)">
+          <span data-lang="en">D. 1000 Ω</span><span data-lang="hi">D. 1000 Ω</span><span data-lang="ml">D. 1000 Ω</span>
+        </div>
+      </div>
+      <div id="fb_q3_2" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="quiz-score" id="score_s3"></div>
+    <button class="quiz-btn" onclick="showScore('s3',['q3_1','q3_2'])">
+      <span data-lang="en">Submit Answers</span><span data-lang="hi">उत्तर जमा करें</span><span data-lang="ml">ഉത്തരം സമർപ്പിക്കുക</span>
+    </button>
+  </div>
+</div><!-- /s3 -->
+
+
+<!-- ============================================================ SECTION 4: IT SYSTEM -->
+<div class="section" id="s4">
+  <div class="page-title">
+    <span data-lang="en">IT Earthing System<span class="sub">Isolated Terra: Power source isolated or impedance-earthed — used in critical installations</span></span>
+    <span data-lang="hi">IT अर्थिंग सिस्टम<span class="sub">Isolated Terra: विद्युत स्रोत पृथक – महत्वपूर्ण प्रतिष्ठानों में उपयोग</span></span>
+    <span data-lang="ml">IT ഇർഥിങ് സിസ്റ്റം<span class="sub">Isolated Terra: ഉറവിടം ഒറ്റപ്പെട്ടത് — നിർണ്ണായക ഇൻസ്റ്റലേഷൻ</span></span>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">🏥</span>
+      <span data-lang="en">How IT Works</span>
+      <span data-lang="hi">IT कैसे काम करता है</span>
+      <span data-lang="ml">IT എങ്ങനെ പ്രവർത്തിക്കുന്നു</span>
+    </h3>
+    <div data-lang="en">
+      <p>In an IT system, the supply source is either completely isolated from earth or connected through a very high impedance (such as a Zener barrier or resistor). The exposed metallic parts of equipment are connected to earth via a local electrode.</p>
+      <p>If the first insulation fault occurs somewhere in the system, a negligibly small current flows through the stray capacitance path. The equipment continues to operate and nobody gets a severe shock. An <strong>Insulation Monitoring Device (IMD)</strong> detects this first fault and raises an alarm — giving maintenance teams time to find and fix it without interrupting power.</p>
+      <p>A second fault on a different phase would, however, cause a dangerous situation — so the IMD alarm must always be acted upon promptly.</p>
+    </div>
+    <div data-lang="hi">
+      <p>IT सिस्टम में, सप्लाई स्रोत या तो अर्थ से पूरी तरह अलग है या बहुत उच्च प्रतिबाधा के माध्यम से जुड़ा है। उपकरण के धातु भाग स्थानीय अर्थ इलेक्ट्रोड से जुड़े हैं।</p>
+      <p>पहली इंसुलेशन गड़बड़ी पर, बहुत कम करंट बहता है और उपकरण काम करता रहता है। <strong>इंसुलेशन मॉनिटरिंग डिवाइस (IMD)</strong> पहली गड़बड़ी का पता लगाकर अलार्म देता है — बिजली बाधित किए बिना मरम्मत का समय मिलता है।</p>
+    </div>
+    <div data-lang="ml">
+      <p>IT-ൽ, ഉറവിടം ഭൂമിയിൽ നിന്ന് ഒറ്റപ്പെട്ടതോ ഉയർന്ന ഇൻപ്പഡൻസ് വഴി ബന്ധിക്കപ്പെട്ടതോ ആണ്. ഉപകരണ ലോഹ ഭാഗം ലോക്കൽ ഇർഥ് ഇലക്ട്രോഡ് ഉള്ളതാണ്.</p>
+      <p>ഒന്നാം ഇൻസുലേഷൻ ഫോൾട്ടിൽ, ചെറിയ കറൻ്റ് ഒഴുകുന്നു, ഉപകരണം തുടർന്ന് പ്രവർത്തിക്കുന്നു. <strong>Insulation Monitoring Device (IMD)</strong> ആദ്യ ഫോൾട്ട് കണ്ടെത്തി അലാറം നൽകുന്നു — വൈദ്യുത വിച്ഛേദം ഇല്ലാതെ അറ്റകുറ്റ പണി ചെയ്യാൻ സമയം.</p>
+    </div>
+
+    <!-- IT DIAGRAM -->
+    <div class="diagram-wrap">
+      <svg width="680" height="260" viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="680" height="260" fill="#FAFAFA" rx="8"/>
+        <!-- Isolation transformer -->
+        <rect x="20" y="75" width="90" height="110" rx="6" fill="#4A148C"/>
+        <text x="65" y="110" text-anchor="middle" fill="white" font-size="11" font-family="Oswald">ISOLATION</text>
+        <text x="65" y="126" text-anchor="middle" fill="white" font-size="11" font-family="Oswald">XFORMER</text>
+        <text x="65" y="142" text-anchor="middle" fill="white" font-size="10">or High-Z</text>
+        <text x="65" y="158" text-anchor="middle" fill="#CE93D8" font-size="10">No earth</text>
+
+        <!-- Impedance symbol -->
+        <rect x="60" y="175" width="30" height="14" fill="none" stroke="#CE93D8" stroke-width="1.5"/>
+        <text x="75" y="185" text-anchor="middle" fill="#CE93D8" font-size="9">Z</text>
+        <line x1="65" y1="189" x2="65" y2="210" stroke="#CE93D3" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <line x1="45" y1="210" x2="85" y2="210" stroke="#5D4037" stroke-width="2"/>
+        <text x="65" y="230" text-anchor="middle" fill="#9C27B0" font-size="10">Optional Z-earth</text>
+
+        <!-- Phase L1, L2 -->
+        <line x1="110" y1="100" x2="430" y2="100" stroke="#E8500A" stroke-width="3"/>
+        <text x="270" y="92" text-anchor="middle" fill="#E8500A" font-size="12" font-weight="bold">L1</text>
+        <line x1="110" y1="160" x2="430" y2="160" stroke="#1565C0" stroke-width="3"/>
+        <text x="270" y="153" text-anchor="middle" fill="#1565C0" font-size="12" font-weight="bold">L2</text>
+
+        <!-- IMD box -->
+        <rect x="250" y="82" width="70" height="96" rx="6" fill="#FCE4EC" stroke="#C0392B" stroke-width="2"/>
+        <text x="285" y="110" text-anchor="middle" fill="#880E4F" font-size="11" font-family="Oswald">IMD</text>
+        <text x="285" y="126" text-anchor="middle" fill="#880E4F" font-size="10">Insulation</text>
+        <text x="285" y="140" text-anchor="middle" fill="#880E4F" font-size="10">Monitor</text>
+        <text x="285" y="155" text-anchor="middle" fill="#C0392B" font-size="11" font-weight="bold">🔔 ALARM</text>
+
+        <!-- Consumer / Equipment -->
+        <rect x="440" y="65" width="110" height="140" rx="8" fill="#B0BEC5" stroke="#546E7A" stroke-width="2"/>
+        <text x="495" y="108" text-anchor="middle" fill="#1C1C1C" font-size="12" font-family="Oswald">LOAD</text>
+        <text x="495" y="126" text-anchor="middle" fill="#1C1C1C" font-size="11">(Isolated)</text>
+        <!-- Fault flash -->
+        <text x="510" y="86" fill="#C0392B" font-size="18">⚡</text>
+        <text x="530" y="78" fill="#C0392B" font-size="11">1st fault</text>
+        <!-- PE to local earth -->
+        <line x1="495" y1="205" x2="495" y2="235" stroke="#F5A623" stroke-width="3"/>
+        <line x1="475" y1="235" x2="515" y2="235" stroke="#5D4037" stroke-width="3"/>
+        <line x1="480" y1="243" x2="510" y2="243" stroke="#5D4037" stroke-width="2"/>
+        <text x="495" y="258" text-anchor="middle" fill="#5D4037" font-size="10">Local PE electrode</text>
+
+        <!-- Label: small leakage path -->
+        <path d="M 495 235 Q 495 255 350 255 Q 200 255 65 215" fill="none" stroke="#9E9E9E" stroke-width="1.5" stroke-dasharray="4,4"/>
+        <text x="280" y="252" text-anchor="middle" fill="#616161" font-size="10">Tiny leakage current – system keeps running</text>
+
+        <text x="340" y="28" text-anchor="middle" fill="#4A148C" font-size="14" font-family="Oswald" font-weight="bold">IT SYSTEM – First Fault: Supply Continues</text>
+      </svg>
+      <div class="caption">
+        <span data-lang="en">IT: Source isolated from earth. First fault causes tiny current only — IMD alarms. Power supply is NOT interrupted until fault is repaired.</span>
+        <span data-lang="hi">IT: स्रोत अर्थ से अलग। पहली गड़बड़ी में बहुत कम करंट — IMD अलार्म। बिजली बाधित नहीं।</span>
+        <span data-lang="ml">IT: ഉറവിടം ഒറ്റപ്പെട്ടത്. ആദ്യ ഫോൾട്ടിൽ ചെറിയ കറൻ്റ് — IMD അലാറം. വൈദ്യുത വിതരണം തുടരും.</span>
+      </div>
+    </div>
+
+    <div class="box-yellow">
+      <strong>
+        <span data-lang="en">🏥 Where is IT used in India?</span>
+        <span data-lang="hi">🏥 भारत में IT कहाँ उपयोग होता है?</span>
+        <span data-lang="ml">🏥 ഇന്ത്യയിൽ IT ഉപയോഗിക്കുന്നത് എവിടെ?</span>
+      </strong><br>
+      <span data-lang="en">Operating theatres (OT) and Intensive Care Units (ICU) in hospitals — where a sudden power interruption during surgery could be fatal. Also used in mines (IS 9758), petrol dispensing areas (ATEX zones), and precision manufacturing. IS 3043 Cl. 5.5 covers IT systems.</span>
+      <span data-lang="hi">अस्पताल में ऑपरेशन थिएटर (OT) और ICU — जहाँ ऑपरेशन के दौरान बिजली जाने से मृत्यु हो सकती है। खदानों (IS 9758), पेट्रोल डिस्पेंसिंग क्षेत्र, और सटीक विनिर्माण में भी।</span>
+      <span data-lang="ml">ആശുപത്രി ഓപ്പറേഷൻ തിയേറ്റർ (OT), ICU — ഓപ്പറേഷൻ സമയത്ത് വൈദ്യുതി പോയാൽ മരണം ഉണ്ടാകാം. ഖനി (IS 9758), പെട്രോൾ ഡിസ്‌പൻസ്, precision manufacturing.</span>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="box-green">
+          <strong><span data-lang="en">✅ Advantages</span><span data-lang="hi">✅ लाभ</span><span data-lang="ml">✅ ഗുണങ്ങൾ</span></strong><br>
+          <span data-lang="en">Supply continuity on first fault. Low risk of shock on single fault. Ideal for life-critical loads.</span>
+          <span data-lang="hi">पहली गड़बड़ी पर सप्लाई जारी। सिंगल फॉल्ट पर झटके का कम खतरा। जीवन-महत्वपूर्ण भार के लिए आदर्श।</span>
+          <span data-lang="ml">ഒന്നാം ഫോൾട്ടിൽ ഊർജ്ജ തുടർച്ച. ഒറ്റ ഫോൾട്ടിൽ ഷോക്ക് അപകടം കുറവ്. ജീവൻ നിർണ്ണായക ഭാരങ്ങൾക്ക് ഉത്തമം.</span>
+        </div>
+      </div>
+      <div>
+        <div class="box-red">
+          <strong><span data-lang="en">⚠️ Disadvantages</span><span data-lang="hi">⚠️ नुकसान</span><span data-lang="ml">⚠️ ദോഷങ്ങൾ</span></strong><br>
+          <span data-lang="en">Complex and expensive — needs IMD per circuit. Two simultaneous faults can be dangerous. Qualified personnel required. Not for general domestic use.</span>
+          <span data-lang="hi">जटिल और महंगा — प्रत्येक सर्किट में IMD चाहिए। दो एक साथ गड़बड़ी खतरनाक। योग्य कर्मी आवश्यक। सामान्य घरेलू उपयोग के लिए नहीं।</span>
+          <span data-lang="ml">സങ്കീർണ്ണം, ചെലവേറിയത് — ഓരോ സർക്കീട്ടിലും IMD വേണം. ഒരേ സമയം രണ്ട് ഫോൾട്ട് അപകടകരം. കൂടുതൽ ജ്ഞാനം ആവശ്യം. ഗ്രഹോപയോഗ ഇൻസ്റ്റലേഷനുകൾക്ക് അനുകൂലമല്ല.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ S4 -->
+  <div class="quiz-wrap" id="q4">
+    <h3><span data-lang="en">🧠 Quick Check – IT System</span><span data-lang="hi">🧠 त्वरित जांच – IT सिस्टम</span><span data-lang="ml">🧠 ദ്രുത പരിശോധന – IT സിസ്റ്റം</span></h3>
+    <div class="q-block" id="q4_1">
+      <p>
+        <span data-lang="en">1. Which device is ESSENTIAL in an IT system to detect the first insulation fault?</span>
+        <span data-lang="hi">1. IT सिस्टम में पहली इंसुलेशन खराबी पहचानने के लिए कौन सा उपकरण आवश्यक है?</span>
+        <span data-lang="ml">1. IT-ൽ ആദ്യ ഇൻസുലേഷൻ ഫോൾട്ട് കണ്ടെത്താൻ ഏത് ഉപകരണം നിർബന്ധം?</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q4_1',false)">
+          <span data-lang="en">A. MCB (Miniature Circuit Breaker)</span><span data-lang="hi">A. MCB</span><span data-lang="ml">A. MCB</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q4_1',false)">
+          <span data-lang="en">B. RCD (Residual Current Device)</span><span data-lang="hi">B. RCD</span><span data-lang="ml">B. RCD</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q4_1',true)">
+          <span data-lang="en">C. IMD (Insulation Monitoring Device)</span><span data-lang="hi">C. IMD (इंसुलेशन मॉनिटरिंग डिवाइस)</span><span data-lang="ml">C. IMD (Insulation Monitoring Device)</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q4_1',false)">
+          <span data-lang="en">D. Earth Leakage Circuit Breaker (ELCB - voltage type)</span><span data-lang="hi">D. ELCB (वोल्टेज प्रकार)</span><span data-lang="ml">D. ELCB (voltage type)</span>
+        </div>
+      </div>
+      <div id="fb_q4_1" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="q-block" id="q4_2">
+      <p>
+        <span data-lang="en">2. The main advantage of IT system over TN and TT is:</span>
+        <span data-lang="hi">2. TN और TT की तुलना में IT सिस्टम का मुख्य लाभ क्या है?</span>
+        <span data-lang="ml">2. TN, TT-യുമായി താരതമ്യം ചെയ്ത് IT-ന്റെ പ്രധാന ഗുണം:</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q4_2',false)">
+          <span data-lang="en">A. Cheapest to install</span><span data-lang="hi">A. सबसे सस्ती स्थापना</span><span data-lang="ml">A. ഇൻസ്റ്റൽ ചെയ്യൽ ഏറ്റവും ചെലവ് കുറഞ്ഞത്</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q4_2',true)">
+          <span data-lang="en">B. Power supply continues uninterrupted on the first insulation fault</span>
+          <span data-lang="hi">B. पहली इंसुलेशन गड़बड़ी पर बिजली सप्लाई बाधित नहीं होती</span>
+          <span data-lang="ml">B. ആദ്യ ഇൻസുലേഷൻ ഫോൾട്ടിൽ വൈദ്യുതി വിതരണം തടസ്സമില്ലാതെ തുടരുന്നു</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q4_2',false)">
+          <span data-lang="en">C. No need for any earth electrode</span><span data-lang="hi">C. किसी अर्थ इलेक्ट्रोड की आवश्यकता नहीं</span><span data-lang="ml">C. ഇർഥ് ഇലക്ട്രോഡ് ആവശ്യം ഇല്ല</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q4_2',false)">
+          <span data-lang="en">D. MCBs trip faster</span><span data-lang="hi">D. MCB तेजी से ट्रिप होता है</span><span data-lang="ml">D. MCB വേഗം ട്രിപ്പ് ആകും</span>
+        </div>
+      </div>
+      <div id="fb_q4_2" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="quiz-score" id="score_s4"></div>
+    <button class="quiz-btn" onclick="showScore('s4',['q4_1','q4_2'])">
+      <span data-lang="en">Submit Answers</span><span data-lang="hi">उत्तर जमा करें</span><span data-lang="ml">ഉത്തരം സമർപ്പിക്കുക</span>
+    </button>
+  </div>
+</div><!-- /s4 -->
+
+
+<!-- ============================================================ SECTION 5: COMPARISON -->
+<div class="section" id="s5">
+  <div class="page-title">
+    <span data-lang="en">Comparison of All Earthing Systems<span class="sub">TN-C | TN-S | TN-C-S | TT | IT — Side by Side</span></span>
+    <span data-lang="hi">सभी अर्थिंग सिस्टम की तुलना<span class="sub">TN-C | TN-S | TN-C-S | TT | IT</span></span>
+    <span data-lang="ml">എല്ലാ ഇർഥിങ് സിസ്റ്റം താരതമ്യം<span class="sub">TN-C | TN-S | TN-C-S | TT | IT</span></span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th><span data-lang="en">Feature</span><span data-lang="hi">विशेषता</span><span data-lang="ml">സവിശേഷത</span></th>
+          <th>TN-C</th>
+          <th>TN-S</th>
+          <th>TN-C-S (PME)</th>
+          <th>TT</th>
+          <th>IT</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><span data-lang="en">Source earthing</span><span data-lang="hi">स्रोत अर्थिंग</span><span data-lang="ml">ഉറവിടം ഇർഥ്</span></strong></td>
+          <td><span data-lang="en">Solid</span><span data-lang="hi">सीधी</span><span data-lang="ml">നേരിട്ട്</span></td>
+          <td><span data-lang="en">Solid</span><span data-lang="hi">सीधी</span><span data-lang="ml">നേരിട്ട്</span></td>
+          <td><span data-lang="en">Solid (multiple)</span><span data-lang="hi">सीधी (कई बिंदु)</span><span data-lang="ml">നേരിട്ട് (ഒന്നിലധികം)</span></td>
+          <td><span data-lang="en">Solid</span><span data-lang="hi">सीधी</span><span data-lang="ml">നേരിട്ട്</span></td>
+          <td><span data-lang="en">Isolated / High-Z</span><span data-lang="hi">पृथक / उच्च-Z</span><span data-lang="ml">ഒറ്റപ്പെട്ടത് / ഉയർന്ന Z</span></td>
+        </tr>
+        <tr>
+          <td><strong><span data-lang="en">Equipment earth path</span><span data-lang="hi">उपकरण अर्थ पाथ</span><span data-lang="ml">ഉപകരണ ഇർഥ് പാത</span></strong></td>
+          <td><span data-lang="en">PEN conductor</span><span data-lang="hi">PEN तार</span><span data-lang="ml">PEN കണ്ടക്ടർ</span></td>
+          <td><span data-lang="en">Separate PE</span><span data-lang="hi">अलग PE</span><span data-lang="ml">പ്രത്യേക PE</span></td>
+          <td><span data-lang="en">Separate PE (after MET)</span><span data-lang="hi">MET के बाद अलग PE</span><span data-lang="ml">MET-ന് ശേഷം PE</span></td>
+          <td><span data-lang="en">Separate local electrode</span><span data-lang="hi">अलग स्थानीय इलेक्ट्रोड</span><span data-lang="ml">പ്രത്യേക ഇലക്ട്രോഡ്</span></td>
+          <td><span data-lang="en">Local electrode</span><span data-lang="hi">स्थानीय इलेक्ट्रोड</span><span data-lang="ml">ലോക്കൽ ഇലക്ട്രോഡ്</span></td>
+        </tr>
+        <tr>
+          <td><strong><span data-lang="en">RCD use</span><span data-lang="hi">RCD उपयोग</span><span data-lang="ml">RCD ഉപയോഗം</span></strong></td>
+          <td><span class="badge badge-red"><span data-lang="en">NOT possible</span><span data-lang="hi">संभव नहीं</span><span data-lang="ml">കഴിയില്ല</span></span></td>
+          <td><span class="badge badge-green"><span data-lang="en">Possible</span><span data-lang="hi">संभव</span><span data-lang="ml">കഴിയും</span></span></td>
+          <td><span class="badge badge-green"><span data-lang="en">Possible</span><span data-lang="hi">संभव</span><span data-lang="ml">കഴിയും</span></span></td>
+          <td><span class="badge badge-red"><span data-lang="en">MANDATORY</span><span data-lang="hi">अनिवार्य</span><span data-lang="ml">നിർബന്ധം</span></span></td>
+          <td><span class="badge badge-yellow"><span data-lang="en">IMD needed</span><span data-lang="hi">IMD चाहिए</span><span data-lang="ml">IMD വേണം</span></span></td>
+        </tr>
+        <tr>
+          <td><strong><span data-lang="en">Broken neutral danger</span><span data-lang="hi">न्यूट्रल टूटने का खतरा</span><span data-lang="ml">ന്യൂട്രൽ പൊട്ടൽ അപകടം</span></strong></td>
+          <td><span class="badge badge-red"><span data-lang="en">HIGH ⚠️</span><span data-lang="hi">अधिक ⚠️</span><span data-lang="ml">ഉയർന്നത് ⚠️</span></span></td>
+          <td><span class="badge badge-green"><span data-lang="en">Low</span><span data-lang="hi">कम</span><span data-lang="ml">കുറവ്</span></span></td>
+          <td><span class="badge badge-yellow"><span data-lang="en">Medium</span><span data-lang="hi">मध्यम</span><span data-lang="ml">ഇടത്തരം</span></span></td>
+          <td><span class="badge badge-green"><span data-lang="en">Low</span><span data-lang="hi">कम</span><span data-lang="ml">കുറവ്</span></span></td>
+          <td><span class="badge badge-green"><span data-lang="en">Low (1st fault)</span><span data-lang="hi">कम (1st fault)</span><span data-lang="ml">കുറവ് (1st fault)</span></span></td>
+        </tr>
+        <tr>
+          <td><strong><span data-lang="en">Fault current magnitude</span><span data-lang="hi">फॉल्ट करंट परिमाण</span><span data-lang="ml">ഫോൾട്ട് കറൻ്റ് വ്യാപ്തം</span></strong></td>
+          <td><span data-lang="en">High (all metal path)</span><span data-lang="hi">अधिक (धातु पाथ)</span><span data-lang="ml">കൂടുതൽ (ലോഹ)</span></td>
+          <td><span data-lang="en">High</span><span data-lang="hi">अधिक</span><span data-lang="ml">കൂടുതൽ</span></td>
+          <td><span data-lang="en">High</span><span data-lang="hi">अधिक</span><span data-lang="ml">കൂടുതൽ</span></td>
+          <td><span data-lang="en">Low (via soil)</span><span data-lang="hi">कम (मिट्टी से)</span><span data-lang="ml">കുറഞ്ഞത് (മണ്ണ്)</span></td>
+          <td><span data-lang="en">Very low (1st fault)</span><span data-lang="hi">बहुत कम</span><span data-lang="ml">വളരെ കുറഞ്ഞത്</span></td>
+        </tr>
+        <tr>
+          <td><strong><span data-lang="en">IS 3043 Clause</span><span data-lang="hi">IS 3043 खंड</span><span data-lang="ml">IS 3043 ഖണ്ഡം</span></strong></td>
+          <td>5.3 (restricted)</td>
+          <td>5.3</td>
+          <td>5.3 (preferred)</td>
+          <td>5.4</td>
+          <td>5.5</td>
+        </tr>
+        <tr>
+          <td><strong><span data-lang="en">Typical use in India</span><span data-lang="hi">भारत में सामान्य उपयोग</span><span data-lang="ml">ഇന്ത്യയിൽ ഉപയോഗം</span></strong></td>
+          <td><span data-lang="en">Old HT/LT overhead lines</span><span data-lang="hi">पुरानी HT/LT ओवरहेड लाइनें</span><span data-lang="ml">പഴയ ഓവർഹെഡ് ലൈൻ</span></td>
+          <td><span data-lang="en">Labs, hospitals, critical areas</span><span data-lang="hi">प्रयोगशाला, अस्पताल</span><span data-lang="ml">ലാബ്, ആശുപത്രി</span></td>
+          <td><span data-lang="en">Urban domestic/commercial</span><span data-lang="hi">शहरी घरेलू/व्यावसायिक</span><span data-lang="ml">നഗര ഗ്രഹ/വ്യാപാരം</span></td>
+          <td><span data-lang="en">Rural, outdoor, farms</span><span data-lang="hi">ग्रामीण, आउटडोर, खेत</span><span data-lang="ml">ഗ്രാമ, ഔട്ഡോർ, ഫാം</span></td>
+          <td><span data-lang="en">OT, ICU, mines, EX zones</span><span data-lang="hi">OT, ICU, खदान, EX क्षेत्र</span><span data-lang="ml">OT, ICU, ഖനി</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box-blue">
+    <strong>
+      <span data-lang="en">📌 Key Exam Point:</span>
+      <span data-lang="hi">📌 परीक्षा महत्वपूर्ण:</span>
+      <span data-lang="ml">📌 പ്രധാന പരീക്ഷ ബിന്ദു:</span>
+    </strong>
+    <span data-lang="en"> TT and IT systems rely on RCD/IMD for protection because fault currents are too low to trip overcurrent devices. TN systems depend on low loop impedance to ensure high fault current for fast MCB/fuse tripping.</span>
+    <span data-lang="hi"> TT और IT सिस्टम में फॉल्ट करंट कम होने के कारण RCD/IMD आवश्यक है। TN सिस्टम में कम लूप इम्पीडेंस उच्च फॉल्ट करंट सुनिश्चित करती है।</span>
+    <span data-lang="ml"> TT, IT-ൽ ഫോൾട്ട് കറൻ്റ് കുറഞ്ഞതിനാൽ RCD/IMD ആവശ്യം. TN-ൽ കുറഞ്ഞ ലൂപ്പ് ഇൻപ്പഡൻസ് ഉയർന്ന ഫോൾട്ട് കറൻ്റ് — MCB/ഫ്യൂസ് ട്രിപ്പ്.</span>
+  </div>
+
+  <!-- QUIZ S5 -->
+  <div class="quiz-wrap" id="q5">
+    <h3><span data-lang="en">🧠 Quick Check – Comparison</span><span data-lang="hi">🧠 त्वरित जांच – तुलना</span><span data-lang="ml">🧠 ദ്രുത പരിശോധന – താരതമ്യം</span></h3>
+    <div class="q-block" id="q5_1">
+      <p>
+        <span data-lang="en">1. Which system is most commonly used for urban domestic wiring in India?</span>
+        <span data-lang="hi">1. भारत में शहरी घरेलू वायरिंग में कौन सा सिस्टम सबसे आम है?</span>
+        <span data-lang="ml">1. ഇന്ത്യൻ നഗര ഗ്രഹ വയറിംഗിൽ ഏറ്റവും സാധാരണ സിസ്റ്റം?</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q5_1',false)">TN-C</div>
+        <div class="q-option" onclick="checkAns(this,'q5_1',false)">TN-S</div>
+        <div class="q-option" onclick="checkAns(this,'q5_1',true)">TN-C-S (PME)</div>
+        <div class="q-option" onclick="checkAns(this,'q5_1',false)">IT</div>
+      </div>
+      <div id="fb_q5_1" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="q-block" id="q5_2">
+      <p>
+        <span data-lang="en">2. In which system is it NOT possible to use an RCD?</span>
+        <span data-lang="hi">2. किस सिस्टम में RCD का उपयोग संभव नहीं है?</span>
+        <span data-lang="ml">2. ഏത് സിസ്റ്റത്തിൽ RCD ഉപയോഗം സാധ്യമല്ല?</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q5_2',true)">TN-C</div>
+        <div class="q-option" onclick="checkAns(this,'q5_2',false)">TN-S</div>
+        <div class="q-option" onclick="checkAns(this,'q5_2',false)">TT</div>
+        <div class="q-option" onclick="checkAns(this,'q5_2',false)">TN-C-S</div>
+      </div>
+      <div id="fb_q5_2" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="quiz-score" id="score_s5"></div>
+    <button class="quiz-btn" onclick="showScore('s5',['q5_1','q5_2'])">
+      <span data-lang="en">Submit Answers</span><span data-lang="hi">उत्तर जमा करें</span><span data-lang="ml">ഉത്തരം സമർപ്പിക്കുക</span>
+    </button>
+  </div>
+</div><!-- /s5 -->
+
+
+<!-- ============================================================ SECTION 6: INDIAN STANDARDS -->
+<div class="section" id="s6">
+  <div class="page-title">
+    <span data-lang="en">Indian Standards &amp; Rules for Earthing<span class="sub">IS 3043 | IE Rules 1956 | NBC 2016 | IS 732</span></span>
+    <span data-lang="hi">भारतीय मानक और नियम<span class="sub">IS 3043 | IE नियम 1956 | NBC 2016 | IS 732</span></span>
+    <span data-lang="ml">ഇന്ത്യൻ മാനദണ്ഡങ്ങൾ, ചട്ടങ്ങൾ<span class="sub">IS 3043 | IE ചട്ടം 1956 | NBC 2016 | IS 732</span></span>
+  </div>
+
+  <!-- IS 3043 -->
+  <div class="card">
+    <h3><span class="icon">📘</span>
+      <span data-lang="en">IS 3043:2018 – Code of Practice for Earthing</span>
+      <span data-lang="hi">IS 3043:2018 – अर्थिंग की आचार संहिता</span>
+      <span data-lang="ml">IS 3043:2018 – ഇർഥിങ് പ്രൈക്ടീസ് കോഡ്</span>
+    </h3>
+    <div data-lang="en">
+      <p>IS 3043 is the primary Indian standard governing all aspects of earthing in electrical installations. It covers earthing system types (TN/TT/IT), electrode types and installation, conductor sizing, bonding, testing, and maintenance. The 2018 revision aligns closely with IEC 60364.</p>
+      <h4>Key Requirements from IS 3043:</h4>
+      <ul>
+        <li>Earth electrode resistance for LV systems: ≤ 1 Ω preferred; ≤ 5 Ω maximum (Cl. 7.2)</li>
+        <li>Minimum earth conductor size: 2.5 mm² copper (if mechanically protected), 4 mm² (if not protected)</li>
+        <li>GI (Galvanized Iron) pipe electrode: 38 mm diameter, ≥ 2.5 m length (Cl. 6.1)</li>
+        <li>Copper plate electrode: 600 mm × 600 mm × 3.15 mm thick (Cl. 6.2)</li>
+        <li>Continuity testing and earth resistance measurement mandatory before commissioning</li>
+        <li>PEN conductor not permitted in flexible cables or for new consumer installations (Cl. 5.3)</li>
+        <li>TN-C-S: PEN must be ≥ 10 mm² Cu or ≥ 16 mm² Al (Cl. 5.3)</li>
+      </ul>
+    </div>
+    <div data-lang="hi">
+      <p>IS 3043 भारत में विद्युत प्रतिष्ठानों की अर्थिंग का प्राथमिक मानक है। यह अर्थिंग प्रकार, इलेक्ट्रोड प्रकार और स्थापना, तार आकार, बॉन्डिंग, परीक्षण, और रखरखाव को कवर करता है।</p>
+      <h4>IS 3043 की मुख्य आवश्यकताएं:</h4>
+      <ul>
+        <li>LV सिस्टम में अर्थ इलेक्ट्रोड प्रतिरोध: ≤ 1 Ω पसंदीदा; ≤ 5 Ω अधिकतम (खंड 7.2)</li>
+        <li>न्यूनतम अर्थ तार: 2.5 mm² तांबा (यदि सुरक्षित), 4 mm² (असुरक्षित)</li>
+        <li>GI पाइप इलेक्ट्रोड: 38 mm व्यास, ≥ 2.5 m लंबाई</li>
+        <li>तांबे की प्लेट: 600×600×3.15 mm</li>
+        <li>PEN कंडक्टर फ्लेक्सिबल केबल में वर्जित</li>
+        <li>TN-C-S: PEN ≥ 10 mm² Cu या ≥ 16 mm² Al</li>
+      </ul>
+    </div>
+    <div data-lang="ml">
+      <p>IS 3043 ഇന്ത്യൻ ഇൻസ്റ്റലേഷൻ ഇർഥിങ് മാനദണ്ഡം. 2018 പതിപ്പ് IEC 60364 ആയി ഒത്തുചേർക്കുന്നു.</p>
+      <h4>IS 3043 പ്രധാന ആവശ്യകതകൾ:</h4>
+      <ul>
+        <li>LV സിസ്റ്റം ഇർഥ് ഇലക്ട്രോഡ് റെസിസ്റ്റൻസ്: ≤ 1 Ω ഉത്തമം; ≤ 5 Ω പരമാവധി (ഖണ്ഡം 7.2)</li>
+        <li>ഇർഥ് കണ്ടക്ടർ ഏറ്റവും കുറഞ്ഞ: 2.5 mm² (സംരക്ഷിതം), 4 mm² (അരക്ഷിതം)</li>
+        <li>GI പൈപ്പ് ഇലക്ട്രോഡ്: 38 mm, ≥ 2.5 m ആഴം</li>
+        <li>ചെമ്പ് പ്ലേറ്റ്: 600×600×3.15 mm</li>
+        <li>ഫ്ലെക്സിബൾ കേബിളിൽ PEN നിഷിദ്ധം</li>
+        <li>TN-C-S: PEN ≥ 10 mm² Cu അല്ലെങ്കിൽ ≥ 16 mm² Al</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- IE Rules -->
+  <div class="card">
+    <h3><span class="icon">⚖️</span>
+      <span data-lang="en">IE Rules 1956 – Key Earthing Rules</span>
+      <span data-lang="hi">IE नियम 1956 – मुख्य अर्थिंग नियम</span>
+      <span data-lang="ml">IE ചട്ടം 1956 – ഇർഥിങ് ചട്ടങ്ങൾ</span>
+    </h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th><span data-lang="en">Rule No.</span><span data-lang="hi">नियम</span><span data-lang="ml">ചട്ടം</span></th>
+            <th><span data-lang="en">Requirement</span><span data-lang="hi">आवश्यकता</span><span data-lang="ml">ആവശ്യകത</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Rule 32</strong></td>
+            <td><span data-lang="en">Every consumer's installation shall have all metalwork earthed to prevent danger</span><span data-lang="hi">प्रत्येक उपभोक्ता की स्थापना में सभी धातु भाग अर्थ किए जाएं</span><span data-lang="ml">ഓരോ ഉപഭോക്ത ഇൻസ്റ്റലേഷനിലും ലോഹ ഭാഗം ഇർഥ് ചെയ്യണം</span></td>
+          </tr>
+          <tr>
+            <td><strong>Rule 50</strong></td>
+            <td><span data-lang="en">Earthing conductors for LV: minimum 2.5 mm² Cu; earth resistance ≤ 5 Ω for consumer end</span><span data-lang="hi">LV के लिए: न्यूनतम 2.5 mm² Cu; उपभोक्ता अर्थ प्रतिरोध ≤ 5 Ω</span><span data-lang="ml">LV: കുറഞ്ഞത് 2.5 mm² Cu; ≤ 5 Ω</span></td>
+          </tr>
+          <tr>
+            <td><strong>Rule 61</strong></td>
+            <td><span data-lang="en">All metallic parts of switchgear, control gear, and conduits shall be earthed</span><span data-lang="hi">सभी स्विचगियर, कंट्रोलगियर और कंड्यूट के धातु भाग अर्थ किए जाएं</span><span data-lang="ml">switchgear, conduit ലോഹ ഭാഗം ഇർഥ് ചെയ്യണം</span></td>
+          </tr>
+          <tr>
+            <td><strong>Rule 67</strong></td>
+            <td><span data-lang="en">EHV/HV substations: earth mat required; step and touch potential must meet safety limits</span><span data-lang="hi">EHV/HV सबस्टेशन में अर्थ मैट आवश्यक; स्टेप और टच पोटेंशियल सुरक्षित सीमा में</span><span data-lang="ml">EHV/HV — ഇർഥ് മാറ്റ് ആവശ്യം; step, touch potential</span></td>
+          </tr>
+          <tr>
+            <td><strong>Rule 88</strong></td>
+            <td><span data-lang="en">Neutral of LV systems shall be earthed and insulated from earth at consumer premises</span><span data-lang="hi">LV न्यूट्रल अर्थेड होना चाहिए और उपभोक्ता परिसर में अर्थ से इंसुलेटेड</span><span data-lang="ml">LV ന്യൂട്രൽ ഇർഥ് ചെയ്യണം; ഉപഭോക്ത ഭാഗത്ത് ഇൻസുലേറ്റ്</span></td>
+          </tr>
+          <tr>
+            <td><strong>Rule 90</strong></td>
+            <td><span data-lang="en">Neutral earthed at source; multiple earthing of neutral permitted in overhead distribution</span><span data-lang="hi">स्रोत पर न्यूट्रल अर्थ; ओवरहेड वितरण में न्यूट्रल की कई अर्थिंग अनुमत</span><span data-lang="ml">ഉറവിടത്തിൽ ന്യൂട്രൽ ഇർഥ്; ഒന്നിലധികം ഇർഥിങ് — ഓവർഹെഡ് ലൈൻ</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Earth Electrode Types -->
+  <div class="card">
+    <h3><span class="icon">🔩</span>
+      <span data-lang="en">Earth Electrode Types (IS 3043)</span>
+      <span data-lang="hi">अर्थ इलेक्ट्रोड के प्रकार (IS 3043)</span>
+      <span data-lang="ml">ഇർഥ് ഇലക്ട്രോഡ് ഇനങ്ങൾ (IS 3043)</span>
+    </h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th><span data-lang="en">Type</span><span data-lang="hi">प्रकार</span><span data-lang="ml">ഇനം</span></th>
+            <th><span data-lang="en">Size / Specification</span><span data-lang="hi">आकार / विशिष्टता</span><span data-lang="ml">വലുപ്പം / സ്പെക്</span></th>
+            <th><span data-lang="en">Typical Use</span><span data-lang="hi">सामान्य उपयोग</span><span data-lang="ml">ഉപയോഗം</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong><span data-lang="en">GI Pipe</span><span data-lang="hi">GI पाइप</span><span data-lang="ml">GI പൈപ്പ്</span></strong></td>
+            <td>38 mm dia, 2.5 m+, 3.25 mm wall</td>
+            <td><span data-lang="en">Domestic, commercial</span><span data-lang="hi">घरेलू, व्यावसायिक</span><span data-lang="ml">ഗ്രഹ, വ്യാപാര</span></td>
+          </tr>
+          <tr>
+            <td><strong><span data-lang="en">Copper Plate</span><span data-lang="hi">तांबे की प्लेट</span><span data-lang="ml">ചെമ്പ് പ്ലേറ്റ്</span></strong></td>
+            <td>600×600×3.15 mm, buried ≥ 3 m</td>
+            <td><span data-lang="en">Low resistance areas, critical systems</span><span data-lang="hi">कम प्रतिरोध क्षेत्र, महत्वपूर्ण सिस्टम</span><span data-lang="ml">ലോ-R ഭൂപ്രദേശം, critical system</span></td>
+          </tr>
+          <tr>
+            <td><strong><span data-lang="en">GI Plate</span><span data-lang="hi">GI प्लेट</span><span data-lang="ml">GI പ്ലേറ്റ്</span></strong></td>
+            <td>600×600×6.35 mm</td>
+            <td><span data-lang="en">General LV industrial</span><span data-lang="hi">सामान्य LV औद्योगिक</span><span data-lang="ml">LV ഇൻഡസ്ട്രിയൽ</span></td>
+          </tr>
+          <tr>
+            <td><strong><span data-lang="en">Rod / Rod Cluster</span><span data-lang="hi">रॉड / रॉड क्लस्टर</span><span data-lang="ml">റോഡ്</span></strong></td>
+            <td>≥ 12 mm dia copper-bonded steel, 3 m+</td>
+            <td><span data-lang="en">Deep earth in rocky terrain, substations</span><span data-lang="hi">चट्टानी भूमि, सबस्टेशन</span><span data-lang="ml">ആഴം കൂടിയ ഭൂമി, സബ്സ്റ്റേഷൻ</span></td>
+          </tr>
+          <tr>
+            <td><strong><span data-lang="en">Earth Mat</span><span data-lang="hi">अर्थ मैट</span><span data-lang="ml">ഇർഥ് മാറ്റ്</span></strong></td>
+            <td>Copper/GI grid buried 0.5–1 m deep</td>
+            <td><span data-lang="en">HV/EHV substations (IE Rule 67)</span><span data-lang="hi">HV/EHV सबस्टेशन</span><span data-lang="ml">HV/EHV സബ്സ്റ്റേഷൻ</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- QUIZ S6 -->
+  <div class="quiz-wrap" id="q6">
+    <h3><span data-lang="en">🧠 Quick Check – Standards</span><span data-lang="hi">🧠 त्वरित जांच – मानक</span><span data-lang="ml">🧠 ദ്രുത പരിശോധന – മാനദണ്ഡം</span></h3>
+    <div class="q-block" id="q6_1">
+      <p>
+        <span data-lang="en">1. As per IS 3043, what is the preferred maximum earth electrode resistance for LV installations?</span>
+        <span data-lang="hi">1. IS 3043 के अनुसार LV प्रतिष्ठान में अर्थ इलेक्ट्रोड का पसंदीदा अधिकतम प्रतिरोध?</span>
+        <span data-lang="ml">1. IS 3043 പ്രകാരം LV-ൽ ഏറ്റവും ഉചിതമായ ഇർഥ് ഇലക്ട്രോഡ് റെസിസ്റ്റൻസ്?</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q6_1',false)"><span data-lang="en">A. 5 Ω</span><span data-lang="hi">A. 5 Ω</span><span data-lang="ml">A. 5 Ω</span></div>
+        <div class="q-option" onclick="checkAns(this,'q6_1',true)"><span data-lang="en">B. 1 Ω</span><span data-lang="hi">B. 1 Ω</span><span data-lang="ml">B. 1 Ω</span></div>
+        <div class="q-option" onclick="checkAns(this,'q6_1',false)"><span data-lang="en">C. 10 Ω</span><span data-lang="hi">C. 10 Ω</span><span data-lang="ml">C. 10 Ω</span></div>
+        <div class="q-option" onclick="checkAns(this,'q6_1',false)"><span data-lang="en">D. 50 Ω</span><span data-lang="hi">D. 50 Ω</span><span data-lang="ml">D. 50 Ω</span></div>
+      </div>
+      <div id="fb_q6_1" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="q-block" id="q6_2">
+      <p>
+        <span data-lang="en">2. What is the standard size of a copper plate electrode as per IS 3043?</span>
+        <span data-lang="hi">2. IS 3043 के अनुसार तांबे की प्लेट इलेक्ट्रोड का मानक आकार?</span>
+        <span data-lang="ml">2. IS 3043 ചെമ്പ് പ്ലേറ്റ് ഇലക്ട്രോഡ് വലുപ്പം?</span>
+      </p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'q6_2',false)">
+          <span data-lang="en">A. 300 × 300 × 3 mm</span><span data-lang="hi">A. 300 × 300 × 3 mm</span><span data-lang="ml">A. 300 × 300 × 3 mm</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q6_2',true)">
+          <span data-lang="en">B. 600 × 600 × 3.15 mm</span><span data-lang="hi">B. 600 × 600 × 3.15 mm</span><span data-lang="ml">B. 600 × 600 × 3.15 mm</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q6_2',false)">
+          <span data-lang="en">C. 1000 × 500 × 5 mm</span><span data-lang="hi">C. 1000 × 500 × 5 mm</span><span data-lang="ml">C. 1000 × 500 × 5 mm</span>
+        </div>
+        <div class="q-option" onclick="checkAns(this,'q6_2',false)">
+          <span data-lang="en">D. 450 × 450 × 6 mm</span><span data-lang="hi">D. 450 × 450 × 6 mm</span><span data-lang="ml">D. 450 × 450 × 6 mm</span>
+        </div>
+      </div>
+      <div id="fb_q6_2" class="q-feedback" style="display:none"></div>
+    </div>
+    <div class="quiz-score" id="score_s6"></div>
+    <button class="quiz-btn" onclick="showScore('s6',['q6_1','q6_2'])">
+      <span data-lang="en">Submit Answers</span><span data-lang="hi">उत्तर जमा करें</span><span data-lang="ml">ഉത്തരം സമർപ്പിക്കുക</span>
+    </button>
+  </div>
+</div><!-- /s6 -->
+
+
+<!-- ============================================================ SECTION 7: FINAL QUIZ -->
+<div class="section" id="s7">
+  <div class="page-title">
+    <span data-lang="en">🏆 Final Comprehensive Quiz<span class="sub">All topics – 10 Questions – Earthing Systems</span></span>
+    <span data-lang="hi">🏆 अंतिम व्यापक क्विज़<span class="sub">सभी विषय – 10 प्रश्न</span></span>
+    <span data-lang="ml">🏆 അന്തിമ സമഗ്ര ക്വിസ്<span class="sub">എല്ലാ വിഷയങ്ങൾ – 10 ചോദ്യങ്ങൾ</span></span>
+  </div>
+
+  <div class="quiz-wrap" id="qfinal">
+    <h3><span data-lang="en">Answer all 10 questions. Good luck!</span><span data-lang="hi">सभी 10 प्रश्नों का उत्तर दें। शुभकामनाएं!</span><span data-lang="ml">10 ചോദ്യങ്ങൾ ഉത്തരം നൽകുക. ആശംസകൾ!</span></h3>
+
+    <!-- FQ1 -->
+    <div class="q-block" id="fq_1">
+      <p><span data-lang="en">1. In the IEC 60364 classification, what does the second letter 'N' in 'TN' system mean?</span><span data-lang="hi">1. IEC 60364 वर्गीकरण में 'TN' का दूसरा अक्षर 'N' क्या दर्शाता है?</span><span data-lang="ml">1. IEC 60364-ൽ 'TN'-ൽ 'N' അർത്ഥം:</span></p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'fq_1',false)"><span data-lang="en">A. Source neutral is isolated</span><span data-lang="hi">A. स्रोत न्यूट्रल पृथक है</span><span data-lang="ml">A. ഉറവിടം ന്യൂട്രൽ ഒറ്റപ്പെട്ടത്</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_1',true)"><span data-lang="en">B. Exposed parts are connected to the system neutral conductor</span><span data-lang="hi">B. उजागर भाग सिस्टम न्यूट्रल से जुड़े हैं</span><span data-lang="ml">B. ലോഹ ഭാഗം ന്യൂട്രൽ കണ്ടക്ടറുമായി ബന്ധം</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_1',false)"><span data-lang="en">C. No earth electrode is used</span><span data-lang="hi">C. कोई अर्थ इलेक्ट्रोड नहीं</span><span data-lang="ml">C. ഇർഥ് ഇലക്ട്രോഡ് ഇല്ല</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_1',false)"><span data-lang="en">D. N stands for 'Neutral phase'</span><span data-lang="hi">D. N का अर्थ 'न्यूट्रल फेज़' है</span><span data-lang="ml">D. N = ന്യൂട്രൽ ഫേസ്</span></div>
+      </div>
+      <div id="fb_fq_1" class="q-feedback" style="display:none"></div>
+    </div>
+
+    <!-- FQ2 -->
+    <div class="q-block" id="fq_2">
+      <p><span data-lang="en">2. What is the risk of NOT having equipotential bonding in a bathroom with TN-C-S supply?</span><span data-lang="hi">2. TN-C-S आपूर्ति वाले बाथरूम में इक्विपोटेंशियल बॉन्डिंग न होने से क्या खतरा है?</span><span data-lang="ml">2. TN-C-S ഉള്ള ബാത്ത്‌റൂമിൽ equipotential bonding ഇല്ലെങ്കിൽ:</span></p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'fq_2',false)"><span data-lang="en">A. Power factor drops</span><span data-lang="hi">A. पावर फैक्टर कम होता है</span><span data-lang="ml">A. പവർ ഫാക്ടർ കുറയും</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_2',false)"><span data-lang="en">B. Neutral current increases</span><span data-lang="hi">B. न्यूट्रल करंट बढ़ता है</span><span data-lang="ml">B. ന്യൂട്രൽ കറൻ്റ് കൂടും</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_2',true)"><span data-lang="en">C. Touch voltage between metallic fixtures can cause electric shock</span><span data-lang="hi">C. धातु फिक्सचर के बीच टच वोल्टेज से बिजली का झटका लग सकता है</span><span data-lang="ml">C. ലോഹ ഫിക്ചറുകൾ തമ്മിൽ touch voltage ഷോക്ക് ഉണ്ടാകാം</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_2',false)"><span data-lang="en">D. RCD will fail</span><span data-lang="hi">D. RCD काम नहीं करेगा</span><span data-lang="ml">D. RCD പരാജയപ്പെടും</span></div>
+      </div>
+      <div id="fb_fq_2" class="q-feedback" style="display:none"></div>
+    </div>
+
+    <!-- FQ3 -->
+    <div class="q-block" id="fq_3">
+      <p><span data-lang="en">3. For which application is the IT earthing system MOST appropriate?</span><span data-lang="hi">3. IT अर्थिंग सिस्टम किसके लिए सबसे उपयुक्त है?</span><span data-lang="ml">3. IT ഇർഥിങ് ഏറ്റവും ഉചിതമായ ആവശ്യം?</span></p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'fq_3',false)"><span data-lang="en">A. Domestic kitchen wiring</span><span data-lang="hi">A. घरेलू रसोई वायरिंग</span><span data-lang="ml">A. ഗ്രഹ അടുക്കള</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_3',true)"><span data-lang="en">B. Hospital operating theatres</span><span data-lang="hi">B. अस्पताल के ऑपरेशन थिएटर</span><span data-lang="ml">B. ആശുപത്രി OT</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_3',false)"><span data-lang="en">C. Street lighting</span><span data-lang="hi">C. सड़क प्रकाश</span><span data-lang="ml">C. തെരുവ് വിളക്ക്</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_3',false)"><span data-lang="en">D. Rural agricultural pumps</span><span data-lang="hi">D. ग्रामीण कृषि पंप</span><span data-lang="ml">D. ഗ്രാമ കൃഷി പമ്പ്</span></div>
+      </div>
+      <div id="fb_fq_3" class="q-feedback" style="display:none"></div>
+    </div>
+
+    <!-- FQ4 -->
+    <div class="q-block" id="fq_4">
+      <p><span data-lang="en">4. As per IE Rule 90, multiple earthing of the neutral is permitted in:</span><span data-lang="hi">4. IE नियम 90 के अनुसार, न्यूट्रल की कई अर्थिंग कहाँ अनुमत है?</span><span data-lang="ml">4. IE ചട്ടം 90 പ്രകാരം ന്യൂട്രൽ ഒന്നിലധികം ഇർഥ് അനുവദനീയം:</span></p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'fq_4',false)"><span data-lang="en">A. Consumer wiring only</span><span data-lang="hi">A. केवल उपभोक्ता वायरिंग</span><span data-lang="ml">A. ഉപഭോക്ത വയറിംഗ് മാത്രം</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_4',true)"><span data-lang="en">B. Overhead distribution systems</span><span data-lang="hi">B. ओवरहेड वितरण सिस्टम</span><span data-lang="ml">B. ഓവർഹെഡ് വിതരണ ശൃംഖല</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_4',false)"><span data-lang="en">C. Hospitals only</span><span data-lang="hi">C. केवल अस्पताल</span><span data-lang="ml">C. ആശുപത്രി മാത്രം</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_4',false)"><span data-lang="en">D. Underground cables only</span><span data-lang="hi">D. केवल भूमिगत केबल</span><span data-lang="ml">D. Underground cable മാത്രം</span></div>
+      </div>
+      <div id="fb_fq_4" class="q-feedback" style="display:none"></div>
+    </div>
+
+    <!-- FQ5 -->
+    <div class="q-block" id="fq_5">
+      <p><span data-lang="en">5. Which earthing system has the HIGHEST fault current during a line-to-earth fault?</span><span data-lang="hi">5. किस अर्थिंग सिस्टम में लाइन-टू-अर्थ फॉल्ट पर सबसे अधिक फॉल्ट करंट होता है?</span><span data-lang="ml">5. L-E ഫോൾട്ടിൽ ഏത് സിസ്റ്റത്തിൽ ഏറ്റവും കൂടിയ ഫോൾട്ട് കറൻ്റ്?</span></p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'fq_5',false)"><span data-lang="en">A. TT</span><span data-lang="hi">A. TT</span><span data-lang="ml">A. TT</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_5',false)"><span data-lang="en">B. IT</span><span data-lang="hi">B. IT</span><span data-lang="ml">B. IT</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_5',true)"><span data-lang="en">C. TN (all variants)</span><span data-lang="hi">C. TN (सभी प्रकार)</span><span data-lang="ml">C. TN (എല്ലാ ഇനങ്ങൾ)</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_5',false)"><span data-lang="en">D. All are the same</span><span data-lang="hi">D. सभी समान हैं</span><span data-lang="ml">D. എല്ലാം ഒരുപോലെ</span></div>
+      </div>
+      <div id="fb_fq_5" class="q-feedback" style="display:none"></div>
+    </div>
+
+    <!-- FQ6 -->
+    <div class="q-block" id="fq_6">
+      <p><span data-lang="en">6. In TN-C-S (PME), what must NEVER be done downstream of the split point (MET)?</span><span data-lang="hi">6. TN-C-S में MET के बाद (डाउनस्ट्रीम) क्या कभी नहीं करना चाहिए?</span><span data-lang="ml">6. TN-C-S-ൽ MET-ന് ശേഷം ഒരിക്കലും ചെയ്യരുതാത്തത്:</span></p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'fq_6',false)"><span data-lang="en">A. Using RCDs</span><span data-lang="hi">A. RCD का उपयोग</span><span data-lang="ml">A. RCD ഉപയോഗം</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_6',true)"><span data-lang="en">B. Reconnecting N and PE together (combining them back)</span><span data-lang="hi">B. N और PE को दोबारा जोड़ना</span><span data-lang="ml">B. N, PE വീണ്ടും ചേർക്കൽ</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_6',false)"><span data-lang="en">C. Using MCBs</span><span data-lang="hi">C. MCB का उपयोग</span><span data-lang="ml">C. MCB ഉപയോഗം</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_6',false)"><span data-lang="en">D. Installing a local earth electrode</span><span data-lang="hi">D. स्थानीय अर्थ इलेक्ट्रोड लगाना</span><span data-lang="ml">D. ലോക്കൽ ഇർഥ് ഇലക്ട്രോഡ്</span></div>
+      </div>
+      <div id="fb_fq_6" class="q-feedback" style="display:none"></div>
+    </div>
+
+    <!-- FQ7 -->
+    <div class="q-block" id="fq_7">
+      <p><span data-lang="en">7. According to IS 3043, the minimum GI pipe electrode length for earthing is:</span><span data-lang="hi">7. IS 3043 के अनुसार GI पाइप इलेक्ट्रोड की न्यूनतम लंबाई है:</span><span data-lang="ml">7. IS 3043 GI പൈപ്പ് ഇലക്ട്രോഡ് ഏറ്റവും കുറഞ്ഞ ദൈർഘ്യം:</span></p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'fq_7',false)"><span data-lang="en">A. 1 metre</span><span data-lang="hi">A. 1 मीटर</span><span data-lang="ml">A. 1 m</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_7',false)"><span data-lang="en">B. 2 metres</span><span data-lang="hi">B. 2 मीटर</span><span data-lang="ml">B. 2 m</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_7',true)"><span data-lang="en">C. 2.5 metres</span><span data-lang="hi">C. 2.5 मीटर</span><span data-lang="ml">C. 2.5 m</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_7',false)"><span data-lang="en">D. 4 metres</span><span data-lang="hi">D. 4 मीटर</span><span data-lang="ml">D. 4 m</span></div>
+      </div>
+      <div id="fb_fq_7" class="q-feedback" style="display:none"></div>
+    </div>
+
+    <!-- FQ8 -->
+    <div class="q-block" id="fq_8">
+      <p><span data-lang="en">8. In TT system, an RCCB of what sensitivity is typically required for socket circuits?</span><span data-lang="hi">8. TT सिस्टम में सॉकेट सर्किट के लिए किस संवेदनशीलता का RCCB आवश्यक है?</span><span data-lang="ml">8. TT-ൽ സോക്കറ്റ് സർക്കീട്ടിൽ RCCB sensitivity?</span></p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'fq_8',false)"><span data-lang="en">A. 100 mA</span><span data-lang="hi">A. 100 mA</span><span data-lang="ml">A. 100 mA</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_8',true)"><span data-lang="en">B. 30 mA</span><span data-lang="hi">B. 30 mA</span><span data-lang="ml">B. 30 mA</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_8',false)"><span data-lang="en">C. 300 mA</span><span data-lang="hi">C. 300 mA</span><span data-lang="ml">C. 300 mA</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_8',false)"><span data-lang="en">D. 500 mA</span><span data-lang="hi">D. 500 mA</span><span data-lang="ml">D. 500 mA</span></div>
+      </div>
+      <div id="fb_fq_8" class="q-feedback" style="display:none"></div>
+    </div>
+
+    <!-- FQ9 -->
+    <div class="q-block" id="fq_9">
+      <p><span data-lang="en">9. The full form of PME (as used in Indian electricity distribution) stands for:</span><span data-lang="hi">9. PME (भारतीय विद्युत वितरण में उपयोग) का पूर्ण रूप है:</span><span data-lang="ml">9. PME (ഇന്ത്യൻ ഇലക്ട്രിക്കൽ വിതരണത്തിൽ) = ?</span></p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'fq_9',false)"><span data-lang="en">A. Protective Metal Earthing</span><span data-lang="hi">A. प्रोटेक्टिव मेटल अर्थिंग</span><span data-lang="ml">A. Protective Metal Earthing</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_9',true)"><span data-lang="en">B. Protective Multiple Earthing</span><span data-lang="hi">B. प्रोटेक्टिव मल्टीपल अर्थिंग</span><span data-lang="ml">B. Protective Multiple Earthing</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_9',false)"><span data-lang="en">C. Primary Multiple Earthing</span><span data-lang="hi">C. प्राइमरी मल्टीपल अर्थिंग</span><span data-lang="ml">C. Primary Multiple Earthing</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_9',false)"><span data-lang="en">D. Potential Measurement Earthing</span><span data-lang="hi">D. पोटेंशियल मेजरमेंट अर्थिंग</span><span data-lang="ml">D. Potential Measurement Earthing</span></div>
+      </div>
+      <div id="fb_fq_9" class="q-feedback" style="display:none"></div>
+    </div>
+
+    <!-- FQ10 -->
+    <div class="q-block" id="fq_10">
+      <p><span data-lang="en">10. Which of the following is a safety advantage of TT system over TN-C when the supply neutral breaks?</span><span data-lang="hi">10. सप्लाई न्यूट्रल टूटने पर TN-C की तुलना में TT सिस्टम का कौन सा सुरक्षा लाभ है?</span><span data-lang="ml">10. ന്യൂട്രൽ പൊട്ടിയാൽ TT-ൻ്റെ TN-C-യേക്കാൾ സുരക്ഷ ഗുണം?</span></p>
+      <div class="options">
+        <div class="q-option" onclick="checkAns(this,'fq_10',false)"><span data-lang="en">A. MCB trips faster in TT</span><span data-lang="hi">A. TT में MCB तेजी से ट्रिप होता है</span><span data-lang="ml">A. TT-ൽ MCB വേഗം ട്രിപ്പ്</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_10',true)"><span data-lang="en">B. Equipment casings remain at safe earth potential in TT (not live)</span><span data-lang="hi">B. TT में उपकरण केसिंग सुरक्षित अर्थ विभव पर रहती है (लाइव नहीं होती)</span><span data-lang="ml">B. TT-ൽ ഉപകരണ ഷെൽ ഭൂ വോൾട്ടേജ് — live ആകില്ല</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_10',false)"><span data-lang="en">C. TT uses fewer conductors than TN-C</span><span data-lang="hi">C. TT में TN-C से कम तार उपयोग</span><span data-lang="ml">C. TT-ൽ കണ്ടക്ടർ കുറവ്</span></div>
+        <div class="q-option" onclick="checkAns(this,'fq_10',false)"><span data-lang="en">D. TT has lower installation cost</span><span data-lang="hi">D. TT की स्थापना लागत कम है</span><span data-lang="ml">D. TT ഇൻസ്റ്റൽ ചെലവ് കുറവ്</span></div>
+      </div>
+      <div id="fb_fq_10" class="q-feedback" style="display:none"></div>
+    </div>
+
+    <div class="quiz-score" id="score_final" style="font-size:24px; padding:20px"></div>
+    <button class="quiz-btn" style="font-size:17px; padding:14px 36px" onclick="showScore('final',['fq_1','fq_2','fq_3','fq_4','fq_5','fq_6','fq_7','fq_8','fq_9','fq_10'])">
+      <span data-lang="en">🏁 Submit Final Answers</span>
+      <span data-lang="hi">🏁 अंतिम उत्तर जमा करें</span>
+      <span data-lang="ml">🏁 അന്തിമ ഉത്തരം സമർപ്പിക്കുക</span>
+    </button>
+  </div>
+</div><!-- /s7 -->
+
+</div><!-- /#main -->
+
+<div id="footer">
+  <span data-lang="en">CITS Electrician Trainer | Protective Earthing Systems | IS 3043 | IE Rules 1956 | NBC 2016 | Prepared for classroom projection use</span>
+  <span data-lang="hi">CITS इलेक्ट्रीशियन ट्रेनर | प्रोटेक्टिव अर्थिंग सिस्टम | IS 3043 | IE नियम 1956 | NBC 2016</span>
+  <span data-lang="ml">CITS Electrician Trainer | IS 3043 | IE ചട്ടം 1956 | NBC 2016 | ക്ലാസ് മുറി പ്രൊജക്ഷൻ</span>
+</div>
+
+<script>
+let currentLang = 'en';
+let answeredQ = {};
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('[data-lang]').forEach(el => {
+    const isSpan = el.tagName === 'SPAN';
+    el.style.display = (el.getAttribute('data-lang') === lang) ? (isSpan ? 'inline' : 'block') : 'none';
+  });
+}
+
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function checkAns(el, qid, correct) {
+  if (answeredQ[qid]) return;
+  answeredQ[qid] = correct ? 'correct' : 'wrong';
+  const opts = el.closest('.q-block').querySelectorAll('.q-option');
+  opts.forEach(o => o.classList.add('disabled'));
+  if (correct) {
+    el.classList.add('correct');
+  } else {
+    el.classList.add('wrong');
+    opts.forEach(o => { if (o.onclick && o.onclick.toString().includes('true')) o.classList.add('correct'); });
+  }
+  const fb = document.getElementById('fb_' + qid);
+  fb.style.display = 'block';
+  if (correct) {
+    fb.className = 'q-feedback correct';
+    const msgs = { en: '✅ Correct! Well done.', hi: '✅ सही! शाबाश!', ml: '✅ ശരി! നന്നായി!' };
+    fb.textContent = msgs[currentLang];
+  } else {
+    fb.className = 'q-feedback wrong';
+    const msgs = { en: '❌ Incorrect. Review the section above and try to understand the correct answer.', hi: '❌ गलत। ऊपर दिए गए अनुभाग को पुनः देखें।', ml: '❌ തെറ്റ്. മുകളിലെ ഭാഗം വീണ്ടും വായിക്കുക.' };
+    fb.textContent = msgs[currentLang];
+  }
+}
+
+function showScore(section, qids) {
+  let correct = 0;
+  qids.forEach(q => { if (answeredQ[q] === 'correct') correct++; });
+  const total = qids.length;
+  const el = document.getElementById('score_' + section);
+  el.style.display = 'block';
+  const pct = Math.round((correct/total)*100);
+  const msgs = {
+    en: `Score: ${correct} / ${total}  (${pct}%)  ${pct>=80?'🏆 Excellent!':pct>=60?'👍 Good, keep revising!':'📚 Review the material again.'}`,
+    hi: `स्कोर: ${correct} / ${total}  (${pct}%)  ${pct>=80?'🏆 शानदार!':pct>=60?'👍 अच्छा, और अभ्यास करें!':'📚 सामग्री दोबारा पढ़ें।'}`,
+    ml: `സ്കോർ: ${correct} / ${total}  (${pct}%)  ${pct>=80?'🏆 മികച്ചത്!':pct>=60?'👍 നല്ലത്, കൂടുതൽ വായിക്കുക!':'📚 വിഷയം ആവർത്തിക്കുക.'}`
+  };
+  el.textContent = msgs[currentLang];
+}
+
+// Initialize language on load
+setLang('en');
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

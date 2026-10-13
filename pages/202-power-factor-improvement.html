@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Power Factor Improvement</title>
+<meta name="section" content="Circuits &amp; Power Systems">
+<meta name="section-order" content="2">
+<meta name="order" content="2">
+<meta name="description" content="Capacitor sizing calculations">
+
+    <style>
+        :root {
+            --bg-body: #eaeff2;
+            --bg-card: #ffffff;
+            --text-main: #2c3e50;
+            --text-sub: #7f8c8d;
+            --col-curr: #2980b9; 
+            --col-targ: #27ae60; 
+            --col-load: #c0392b; 
+        }
+        
+        * { box-sizing: border-box; } 
+
+        body { 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background: var(--bg-body); 
+            margin: 0; padding: 10px; 
+            color: var(--text-main);
+        }
+        
+        .app-container { 
+            max-width: 600px; margin: 0 auto; 
+            background: var(--bg-card);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        .lang-bar { background: #f8f9fa; padding: 10px 15px; border-bottom: 1px solid #eee; text-align: right; }
+        .lang-select { padding: 5px 10px; border-radius: 20px; border: 1px solid #ccc; font-size: 0.85rem; background: white; }
+
+        .section-header {
+            background: #f1f2f6; color: var(--text-sub);
+            font-size: 0.8rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1px;
+            padding: 10px 20px;
+            border-top: 1px solid #e1e1e1; border-bottom: 1px solid #e1e1e1;
+        }
+
+        /* INPUTS */
+        .input-area { padding: 20px; }
+        .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .col-half { flex: 1; }
+
+        label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px; color: var(--text-sub); }
+        
+        input[type="number"], select { 
+            width: 100%; padding: 12px; 
+            border: 2px solid #e0e0e0; border-radius: 8px; 
+            font-size: 1.1rem; font-weight: 600; color: var(--text-main);
+        }
+        input:focus, select:focus { outline: none; border-color: var(--col-curr); }
+
+        .inp-curr { border-color: #aed6f1 !important; color: var(--col-curr) !important; }
+        .inp-targ { border-color: #abebc6 !important; color: var(--col-targ) !important; }
+        .inp-load { border-color: #fadbd8 !important; color: var(--col-load) !important; }
+
+        .unit-toggle { display: flex; gap: 8px; margin-bottom: 8px; }
+        .unit-toggle label { font-size: 0.8rem; padding: 5px 12px; background: #eee; border-radius: 12px; cursor: pointer; }
+        .unit-toggle input { display: none; }
+        .unit-toggle label:has(input:checked) { background: var(--col-load); color: white; font-weight: bold; }
+
+        /* CALCULATION */
+        .calc-area { padding: 20px; background: #fff; }
+        .step-row { margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; }
+        
+        .step-title { font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+        .step-num { background: var(--text-main); color: white; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+
+        /* Split Box */
+        .split-box { display: flex; gap: 5px; background: #f8f9fa; border-radius: 8px; padding: 10px 5px; }
+        .sb-col { flex: 1; text-align: center; }
+        .sb-div { width: 1px; background: #ddd; }
+        
+        .val-head { font-size: 0.7rem; font-weight: 900; letter-spacing: 0.5px; margin-bottom: 5px; text-transform: uppercase; }
+        .val-row { font-size: 0.85rem; margin-bottom: 4px; white-space: nowrap; }
+        .val-num { font-weight: 800; font-size: 1rem; }
+        
+        .txt-c { color: var(--col-curr); }
+        .txt-t { color: var(--col-targ); }
+        .txt-l { color: var(--col-load); }
+
+        /* Formula Box */
+        .formula-box { background: #fff8e1; border-left: 5px solid #f1c40f; padding: 12px; border-radius: 4px; font-size: 1.05rem; font-weight: 600; color: #444; margin-top: 5px; line-height: 1.4; }
+        .mini-formula { font-size: 0.75rem; color: #888; margin-bottom: 5px; font-style: italic; }
+
+        /* Rec Box */
+        .rec-box { background: var(--col-curr); color: white; padding: 15px; border-radius: 8px; text-align: center; margin-top: 10px; }
+        .rec-val { font-size: 1.4rem; font-weight: 800; display: block; margin: 5px 0; }
+        .rec-note { font-size: 0.85rem; opacity: 0.9; }
+
+        /* Alert */
+        .alert { padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 0.85rem; font-weight: bold; display: none; line-height: 1.4; }
+        .alert-warn { background: #fcf3cf; color: #9a7d0a; border: 1px solid #f9e79f; }
+        .alert-danger { background: #fadbd8; color: #922b21; border: 1px solid #f5b7b1; }
+
+        /* Charts */
+        .chart-trigger { width: 100%; padding: 15px; background: white; border: none; border-top: 1px solid #eee; color: var(--col-curr); font-weight: bold; font-size: 0.9rem; cursor: pointer; }
+        .chart-panel { display: none; padding: 15px; background: #fbfbfb; }
+        .chart-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 15px; }
+        .chart-table th { background: var(--text-main); color: white; padding: 8px; text-align: left; }
+        .chart-table td { border: 1px solid #ddd; padding: 8px; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <div class="lang-bar">
+        <select id="langSel" class="lang-select" onchange="applyTranslation()">
+            <option value="en">English</option>
+            <option value="hi">Hindi (हिंदी)</option>
+            <option value="ml">Malayalam (മലയാളം)</option>
+        </select>
+    </div>
+
+    <div class="section-header" id="txt_h1">1. System & Load Input</div>
+    <div class="input-area">
+        
+        <div class="form-row">
+            <div class="col-half">
+                <label id="txt_sys">System Phase</label>
+                <select id="phase" onchange="updateDefaults()">
+                    <option value="1">1 Phase</option>
+                    <option value="3">3 Phase</option>
+                </select>
+            </div>
+            <div class="col-half">
+                <label id="txt_volt">Voltage (V)</label>
+                <input type="number" id="voltage" value="230" oninput="calculate()">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="color:var(--col-load)" id="txt_load">Motor Load</label>
+            <div class="unit-toggle">
+                <label><input type="radio" name="pUnit" value="kW" checked onchange="toggleUnit()"> kW</label>
+                <label><input type="radio" name="pUnit" value="HP" onchange="toggleUnit()"> HP</label>
+            </div>
+            <input type="number" id="powerInput" class="inp-load" value="5" oninput="calculate()">
+            <div id="convText" style="font-size:0.85rem; color:var(--col-load); margin-top:5px; font-weight:bold; display:none;"></div>
+        </div>
+
+        <div class="form-row">
+            <div class="col-half">
+                <label style="color:var(--col-curr)" id="txt_pf1">Current PF</label>
+                <input type="number" id="pf1" class="inp-curr" value="0.70" step="0.01" max="0.99" oninput="calculate()">
+            </div>
+            <div class="col-half">
+                <label style="color:var(--col-targ)" id="txt_pf2">Target PF</label>
+                <input type="number" id="pf2" class="inp-targ" value="0.95" step="0.01" max="1.0" oninput="calculate()">
+            </div>
+        </div>
+    </div>
+
+    <div class="section-header" id="txt_h2">2. Trainee Calculation</div>
+    <div class="calc-area" id="calcBoard">
+        
+        <div class="step-row">
+            <div class="step-title"><span class="step-num">1</span> <span id="txt_s1">Convert Load</span></div>
+            <div><span id="txt_p">Active Power (P)</span> = <span class="val-num txt-l" id="res_kw">--</span> kW</div>
+        </div>
+
+        <div class="step-row">
+            <div class="step-title"><span class="step-num">2</span> <span id="txt_s2">Find Angles & Multipliers</span></div>
+            <div class="mini-formula">Formula: &theta; = Cos⁻¹(PF)</div>
+            <div class="split-box">
+                <div class="sb-col">
+                    <div class="val-head txt-c" id="txt_curr">CURRENT (Old)</div>
+                    <div class="val-row">Cos⁻¹(<span id="dis_pf1"></span>) = <span class="val-num txt-c" id="res_ang1">--°</span></div>
+                    <div class="val-row">Tan&theta;1 = <span class="val-num txt-c" id="res_tan1">--</span></div>
+                </div>
+                <div class="sb-div"></div>
+                <div class="sb-col">
+                    <div class="val-head txt-t" id="txt_targ">TARGET (New)</div>
+                    <div class="val-row">Cos⁻¹(<span id="dis_pf2"></span>) = <span class="val-num txt-t" id="res_ang2">--°</span></div>
+                    <div class="val-row">Tan&theta;2 = <span class="val-num txt-t" id="res_tan2">--</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-row">
+            <div class="step-title"><span class="step-num">3</span> <span id="txt_s3">Required kVAR</span></div>
+            <div class="formula-box">
+                <div>Q<sub>c</sub> = P &times; (Tan&theta;1 - Tan&theta;2)</div>
+                <div style="margin-top:5px; font-weight:normal; font-size:0.95rem">
+                    = <span class="txt-l" id="f_p">P</span> &times; (<span class="txt-c" id="f_t1">t1</span> - <span class="txt-t" id="f_t2">t2</span>)
+                </div>
+                <div style="font-weight:800; margin-top:8px; font-size:1.2rem; color:#333;">
+                    = <span id="res_kvar">--</span> kVAR
+                </div>
+            </div>
+        </div>
+
+        <div class="step-row">
+            <div class="step-title"><span class="step-num">4</span> <span id="txt_s4">Capacitor Calculation</span></div>
+            <div class="formula-box" id="step4_formula" style="font-size:0.9rem; font-weight:normal;">
+                </div>
+        </div>
+
+        <div class="step-row" style="border:none;">
+            <div class="step-title"><span class="step-num">5</span> <span id="txt_s5">Final Selection</span></div>
+            <div class="rec-box">
+                <span id="rec_label">Recommendation</span>
+                <span class="rec-val" id="res_rec">--</span>
+                <span class="rec-note" id="rec_note"></span>
+            </div>
+            <div id="alertBox" class="alert"></div>
+        </div>
+
+    </div>
+
+    <button class="chart-trigger" id="txt_chart" onclick="toggleChart()">Show Standard Tables &#9660;</button>
+    <div class="chart-panel" id="chartArea">
+        <strong>Single Phase (&mu;F)</strong>
+        <table class="chart-table">
+            <tr><td>Std</td><td>2.5, 4, 6, 8, 10, 12.5, 15</td></tr>
+            <tr><td>Med</td><td>20, 25, 30, 36, 40, 50</td></tr>
+            <tr><td>High</td><td>60, 72, 75, 80, 100, 120, 150</td></tr>
+        </table>
+        <strong>Three Phase (kVAR)</strong>
+        <table class="chart-table">
+            <tr><td>Std</td><td>1, 2, 2.5, 3, 4, 5</td></tr>
+            <tr><td>Med</td><td>7.5, 10, 12.5, 15, 20, 25</td></tr>
+            <tr><td>Large</td><td>30, 40, 50, 75, 100</td></tr>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    // --- LANG DATA ---
+    const t = {
+        en: { 
+            h1: "1. System & Load Input",
+            sys: "System Phase", volt: "Voltage (V)", load: "Motor Load",
+            pf1: "Current PF", pf2: "Target PF",
+            h2: "2. Trainee Calculation",
+            s1: "Convert Load", p: "Active Power (P)",
+            s2: "Find Angles & Multipliers", curr: "CURRENT (Old)", targ: "TARGET (New)",
+            s3: "Required kVAR",
+            s4: "Capacitor Calculation",
+            s5: "Final Selection",
+            rec: "Recommendation", 
+            par: "Connect in Parallel",
+            chart: "Show Standard Tables ▼",
+            warn95: "Note: Improving PF > 0.95 yields diminishing returns (Not economical).",
+            warnU: "⛔ DANGER: Avoid Unity (1.0). Risk of Self-Excitation (High Voltage)." 
+        },
+        hi: { 
+            h1: "1. सिस्टम और लोड इनपुट",
+            sys: "सिस्टम फेज", volt: "वोल्टेज (V)", load: "मोटर लोड",
+            pf1: "वर्तमान PF", pf2: "लक्ष्य PF",
+            h2: "2. छात्र गणना (Calculation)",
+            s1: "लोड कन्वर्ट करें", p: "सक्रिय शक्ति (P)",
+            s2: "कोण (Angle) और गुणक", curr: "वर्तमान (Old)", targ: "लक्ष्य (New)",
+            s3: "आवश्यक kVAR",
+            s4: "कैपेसिटर गणना",
+            s5: "अंतिम चयन (Selection)",
+            rec: "सुझाव (Recommendation)", 
+            par: "समानांतर (Parallel) कनेक्शन करें",
+            chart: "मानक चार्ट दिखाएं ▼",
+            warn95: "नोट: 0.95 से ऊपर सुधारना आर्थिक रूप से लाभाकारी नहीं है।",
+            warnU: "⛔ खतरा: 1.0 PF से बचें। हाई वोल्टेज (Self-Excitation) का जोखिम है।" 
+        },
+        ml: { 
+            h1: "1. വിവരങ്ങൾ (Inputs)",
+            sys: "സിസ്റ്റം ഫേസ്", volt: "വോൾട്ടേജ് (V)", load: "മോട്ടോർ ലോഡ്",
+            pf1: "നിലവിലുള്ള PF", pf2: "ലക്ഷ്യമിടുന്ന PF",
+            h2: "2. കണക്കുകൂട്ടൽ (Calculation)",
+            s1: "ലോഡ് കണക്കാക്കുക", p: "ആക്റ്റീവ് പവർ (P)",
+            s2: "ഡിഗ്രി (Angle) കണ്ടെത്തുക", curr: "നിലവിലുള്ളത്", targ: "ലക്ഷ്യം",
+            s3: "kVAR കണ്ടെത്തുക",
+            s4: "കപ്പാസിറ്റർ കണക്കാക്കുക",
+            s5: "തിരഞ്ഞെടുക്കുക (Selection)",
+            rec: "നിർദ്ദേശം", 
+            par: "പാരലൽ കണക്ഷൻ ഉപയോഗിക്കുക",
+            chart: "ചാർട്ട് കാണുക ▼",
+            warn95: "കുറിപ്പ്: 0.95 ന് മുകളിൽ ലാഭകരമല്ല (Diminishing Returns).",
+            warnU: "⛔ അപകടം: 1.0 PF ഒഴിവാക്കുക. മോട്ടോർ ജനറേറ്റർ പോലെ പ്രവർത്തിക്കാം." 
+        }
+    };
+
+    const std_uF = [2.5, 4, 6, 8, 10, 12.5, 15, 20, 25, 30, 36, 40, 42, 45, 50, 60, 72, 75, 80, 100, 120, 150, 200, 250, 300, 400, 500, 600];
+    const std_kVAR = [1, 2, 2.5, 3, 4, 5, 7.5, 10, 12.5, 15, 20, 25, 30, 40, 50, 75, 100];
+
+    function getClosest(val, arr) {
+        const maxVal = arr[arr.length - 1];
+        if (val > maxVal) return { val: maxVal, isMaxed: true };
+        const best = arr.reduce((prev, curr) => Math.abs(curr - val) < Math.abs(prev - val) ? curr : prev);
+        return { val: best, isMaxed: false };
+    }
+
+    function toggleChart() {
+        const x = document.getElementById("chartArea");
+        x.style.display = (x.style.display === "block") ? "none" : "block";
+    }
+
+    function updateDefaults() {
+        const p = document.getElementById('phase').value;
+        document.getElementById('voltage').value = (p === "1") ? 230 : 415;
+        calculate();
+    }
+    
+    function toggleUnit() { calculate(); }
+
+    function applyTranslation() {
+        const lang = document.getElementById('langSel').value;
+        const txt = t[lang];
+
+        document.getElementById('txt_h1').innerText = txt.h1;
+        document.getElementById('txt_sys').innerText = txt.sys;
+        document.getElementById('txt_volt').innerText = txt.volt;
+        document.getElementById('txt_load').innerText = txt.load;
+        document.getElementById('txt_pf1').innerText = txt.pf1;
+        document.getElementById('txt_pf2').innerText = txt.pf2;
+        
+        document.getElementById('txt_h2').innerText = txt.h2;
+        document.getElementById('txt_s1').innerText = txt.s1;
+        document.getElementById('txt_p').innerText = txt.p;
+        
+        document.getElementById('txt_s2').innerText = txt.s2;
+        document.getElementById('txt_curr').innerText = txt.curr;
+        document.getElementById('txt_targ').innerText = txt.targ;
+
+        document.getElementById('txt_s3').innerText = txt.s3;
+        document.getElementById('txt_s4').innerText = txt.s4;
+        document.getElementById('txt_s5').innerText = txt.s5;
+        document.getElementById('rec_label').innerText = txt.rec;
+        document.getElementById('txt_chart').innerText = txt.chart;
+
+        calculate(); 
+    }
+
+    function calculate() {
+        // Inputs
+        const lang = document.getElementById('langSel').value;
+        const phase = document.getElementById('phase').value;
+        let rawP = parseFloat(document.getElementById('powerInput').value) || 0;
+        const V = parseFloat(document.getElementById('voltage').value) || 0;
+        const pf1 = parseFloat(document.getElementById('pf1').value) || 0.7;
+        const pf2 = parseFloat(document.getElementById('pf2').value) || 0.95;
+        const f = 50;
+
+        // Conv
+        const isHP = document.querySelector('input[name="pUnit"]:checked').value === "HP";
+        const convBox = document.getElementById('convText');
+        let kW = rawP;
+
+        if(isHP && rawP > 0) {
+            kW = rawP * 0.746;
+            convBox.style.display = "block";
+            convBox.innerHTML = `${rawP} HP &times; 0.746 = ${kW.toFixed(3)} kW`;
+        } else {
+            convBox.style.display = "none";
+        }
+
+        // Validate
+        if(kW <= 0 || V <= 0 || pf1 >= pf2) return;
+
+        // Math
+        const th1 = Math.acos(pf1);
+        const th2 = Math.acos(pf2);
+        const tan1 = Math.tan(th1);
+        const tan2 = Math.tan(th2);
+        const kvar = kW * (tan1 - tan2);
+
+        // Update Steps
+        document.getElementById('res_kw').innerText = kW.toFixed(2);
+        
+        document.getElementById('dis_pf1').innerText = pf1;
+        document.getElementById('res_ang1').innerText = (th1 * 180/Math.PI).toFixed(1) + "°";
+        document.getElementById('res_tan1').innerText = tan1.toFixed(3);
+        
+        document.getElementById('dis_pf2').innerText = pf2;
+        document.getElementById('res_ang2').innerText = (th2 * 180/Math.PI).toFixed(1) + "°";
+        document.getElementById('res_tan2').innerText = tan2.toFixed(3);
+
+        document.getElementById('f_p').innerText = kW.toFixed(2);
+        document.getElementById('f_t1').innerText = tan1.toFixed(3);
+        document.getElementById('f_t2').innerText = tan2.toFixed(3);
+        document.getElementById('res_kvar').innerText = kvar.toFixed(2);
+
+        // Update Formula & Result
+        const step4 = document.getElementById('step4_formula');
+        const recVal = document.getElementById('res_rec');
+        const recNote = document.getElementById('rec_note');
+        const alertBox = document.getElementById('alertBox');
+        
+        // Warnings
+        alertBox.style.display = "none";
+        if(pf2 >= 0.99) {
+            alertBox.style.display = "block";
+            alertBox.className = "alert alert-danger";
+            alertBox.innerText = t[lang].warnU;
+        } else if (pf2 > 0.95) {
+            alertBox.style.display = "block";
+            alertBox.className = "alert alert-warn";
+            alertBox.innerText = t[lang].warn95;
+        }
+
+        if (phase === "1") {
+            const num = kvar * 1e9;
+            const den = 2 * Math.PI * f * V * V;
+            const uf = num / den;
+
+            step4.innerHTML = `
+                <div style="font-weight:bold; margin-bottom:5px;">C = (kVAR &times; 10<sup>9</sup>) / (2&pi;fV<sup>2</sup>)</div>
+                <div style="font-size:0.9rem">
+                   = (${kvar.toFixed(2)} &times; 10<sup>9</sup>) / (314 &times; ${V}<sup>2</sup>)
+                </div>
+                <div style="margin-top:5px; font-weight:bold; color:#2980b9; font-size:1.1rem">
+                   = ${uf.toFixed(1)} &mu;F
+                </div>
+            `;
+
+            let lookup = getClosest(uf, std_uF);
+            recVal.innerText = `${lookup.val} \u00B5F`;
+            if (lookup.isMaxed || uf > 600) {
+                recNote.innerText = t[lang].par;
+            } else {
+                recNote.innerText = `@ 440V AC`;
+            }
+
+        } else {
+            step4.innerHTML = `
+                <div style="font-weight:bold">For 3-Phase Systems:</div>
+                <div>Select Capacitor Bank based on kVAR directly.</div>
+                <div style="margin-top:5px; font-weight:bold; color:#2980b9; font-size:1.1rem">
+                   Rating = ${kvar.toFixed(2)} kVAR
+                </div>
+            `;
+
+            let lookup = getClosest(kvar, std_kVAR);
+            recVal.innerText = `${lookup.val} kVAR`;
+            recNote.innerText = "Standard Bank";
+        }
+    }
+    
+    applyTranslation();
+</script>
+
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

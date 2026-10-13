@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Single Phasing Preventer</title>
+<meta name="section" content="Electrical Machines &amp; Control">
+<meta name="section-order" content="1">
+<meta name="order" content="5">
+<meta name="description" content="GIC SM-301 working and connection">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   ROOT & RESET
+═══════════════════════════════════════ */
+:root {
+  --bg:      #f1f5fb;
+  --surface: #ffffff;
+  --surface2:#f6f9fd;
+  --border:  #dae4f0;
+  --shadow:  rgba(20,50,100,.10);
+  --shadow2: rgba(20,50,100,.18);
+
+  /* Phase colours */
+  --R: #c0392b;  --Rl:#fdecea;
+  --Y: #b7770d;  --Yl:#fff8e1;
+  --B: #1558a8;  --Bl:#e8f0fb;
+  --G: #1a6b38;  --Gl:#e6f4ec;
+
+  --warn:  #c84b00;  --warnl:#fff3e0;
+  --fault: #b71c1c;  --faultl:#fdecea;
+
+  --dim:   #7090b0;
+  --text:  #1a2d42;
+  --head:  #0c1d30;
+  --mono:  'JetBrains Mono', monospace;
+  --sans:  'Outfit', sans-serif;
+}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:var(--sans); overflow-x:hidden; }
+
+/* ═══════════════════════════════════════
+   LANGUAGE
+═══════════════════════════════════════ */
+[data-lang] { display:none; }
+body.lang-en [data-lang="en"],
+body.lang-ml [data-lang="ml"],
+body.lang-hi [data-lang="hi"] { display:inline; }
+
+/* ═══════════════════════════════════════
+   STICKY NAV
+═══════════════════════════════════════ */
+nav {
+  position:sticky; top:0; z-index:100;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 2px 12px var(--shadow);
+  display:flex; align-items:center;
+  gap:.4rem; padding:.5rem 1.2rem;
+  flex-wrap:wrap;
+}
+.nav-brand {
+  font-weight:900; font-size:1rem; color:var(--head);
+  letter-spacing:.04em; margin-right:.6rem; white-space:nowrap;
+}
+.nav-brand span { color:var(--R); }
+.nav-tabs { display:flex; gap:.3rem; flex:1; flex-wrap:wrap; }
+.ntab {
+  font-size:.75rem; font-weight:600; padding:.35rem .75rem;
+  border-radius:20px; border:1.5px solid var(--border);
+  background:transparent; color:var(--dim); cursor:pointer;
+  transition:all .18s; white-space:nowrap;
+  font-family:var(--sans);
+}
+.ntab:hover    { border-color:var(--B); color:var(--B); background:var(--Bl); }
+.ntab.active   { border-color:var(--B); color:#fff; background:var(--B); }
+
+/* Language switcher */
+.lang-sw { display:flex; gap:.25rem; margin-left:auto; }
+.lbtn {
+  font-size:.72rem; font-weight:700; padding:.3rem .6rem;
+  border-radius:5px; border:1.5px solid var(--border);
+  background:transparent; color:var(--dim); cursor:pointer;
+  transition:all .15s; font-family:var(--sans);
+}
+.lbtn:hover   { border-color:var(--Y); color:var(--Y); }
+.lbtn.active  { background:var(--Y); color:#fff; border-color:var(--Y); }
+
+/* ═══════════════════════════════════════
+   PAGE SECTIONS
+═══════════════════════════════════════ */
+.page {
+  min-height:100vh; padding:2rem 1rem 3rem;
+  max-width:1020px; margin:0 auto;
+  display:none;
+}
+.page.active { display:block; }
+
+/* SECTION HEADING */
+.sec-hd {
+  font-size:1.5rem; font-weight:900; color:var(--head);
+  letter-spacing:.02em; margin-bottom:1.4rem;
+  padding-bottom:.6rem;
+  border-bottom:3px solid transparent;
+  border-image:linear-gradient(90deg,var(--R),var(--Y),var(--B)) 1;
+  display:flex; align-items:center; gap:.7rem;
+}
+.sec-hd .num {
+  width:32px; height:32px; border-radius:8px;
+  background:var(--B); color:#fff;
+  font-size:.85rem; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+
+/* CARD */
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px; padding:1.4rem;
+  margin-bottom:1.2rem;
+  box-shadow:0 2px 16px var(--shadow);
+  position:relative; overflow:hidden;
+}
+.card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,var(--R),var(--Y),var(--B));
+}
+.card-title {
+  font-size:.72rem; font-weight:700; letter-spacing:.14em;
+  color:var(--B); text-transform:uppercase; margin-bottom:.9rem;
+  font-family:var(--mono);
+}
+
+/* ═══════════════════════════════════════
+   PAGE 1 – PHYSICAL DEVICE
+═══════════════════════════════════════ */
+.device-layout {
+  display:grid; grid-template-columns:1fr 1fr; gap:1.4rem;
+  align-items:start;
+}
+@media(max-width:640px){ .device-layout{ grid-template-columns:1fr; } }
+
+/* 3D-style device SVG wrapper */
+.device-wrap {
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:12px; padding:1.2rem;
+  display:flex; flex-direction:column; align-items:center; gap:.8rem;
+}
+
+/* Parts callout list */
+.callout-list { list-style:none; display:flex; flex-direction:column; gap:.6rem; }
+.callout-list li {
+  display:flex; gap:.75rem; align-items:flex-start;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:8px; padding:.6rem .85rem;
+}
+.cl-num {
+  width:22px; height:22px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.72rem; font-weight:700; font-family:var(--mono);
+}
+.cl-body { font-size:.84rem; line-height:1.5; }
+.cl-body strong { font-weight:700; display:block; margin-bottom:.1rem; }
+.cl-body span   { color:var(--dim); font-size:.78rem; }
+
+/* ═══════════════════════════════════════
+   PAGE 2 – HOW IT WORKS
+═══════════════════════════════════════ */
+.flow-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:1rem; margin-bottom:1.2rem;
+}
+.flow-step {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:1rem; text-align:center; position:relative;
+}
+.flow-step .fs-icon { font-size:1.8rem; margin-bottom:.4rem; }
+.flow-step .fs-title { font-size:.88rem; font-weight:700; color:var(--head); margin-bottom:.3rem; }
+.flow-step .fs-body  { font-size:.78rem; color:var(--dim); line-height:1.5; }
+.flow-arrow {
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem; color:var(--B); font-weight:700;
+  padding:.2rem 0;
+}
+
+/* Waveform */
+#wave-svg { width:100%; height:130px; display:block; }
+
+/* ═══════════════════════════════════════
+   PAGE 3 – FAULT TYPES
+═══════════════════════════════════════ */
+.fault-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:1rem;
+}
+.fault-card {
+  border-radius:10px; padding:1.1rem; border:1.5px solid;
+}
+.fault-card.fc-pl { background:#fdecea; border-color:#ef9a9a; }
+.fault-card.fc-as { background:#fff8e1; border-color:#ffe082; }
+.fault-card.fc-sq { background:#f3e5f5; border-color:#ce93d8; }
+.fault-card .fc-icon  { font-size:1.6rem; margin-bottom:.4rem; }
+.fault-card .fc-title { font-size:.95rem; font-weight:700; margin-bottom:.4rem; }
+.fault-card .fc-body  { font-size:.8rem;  line-height:1.6; color:var(--text); }
+.fault-card .fc-led   {
+  margin-top:.7rem; font-family:var(--mono); font-size:.7rem;
+  background:rgba(0,0,0,.06); border-radius:5px; padding:.3rem .6rem;
+  display:inline-flex; align-items:center; gap:.5rem;
+}
+.led-dot { width:9px; height:9px; border-radius:50%; }
+
+/* ═══════════════════════════════════════
+   PAGE 4 – CONTACTS & TERMINALS
+═══════════════════════════════════════ */
+.tt-wrap { overflow-x:auto; }
+table.tt {
+  width:100%; border-collapse:collapse; font-size:.82rem;
+}
+table.tt th {
+  background:#eaf1fb; color:var(--dim); padding:.55rem .9rem;
+  font-family:var(--mono); font-weight:600; font-size:.68rem;
+  letter-spacing:.08em; border-bottom:2px solid var(--border); text-align:left;
+}
+table.tt td { padding:.55rem .9rem; border-bottom:1px solid #dde8f0; }
+table.tt tr:nth-child(even) td { background:#f8fbff; }
+table.tt tr:last-child td { border-bottom:none; }
+.tag { display:inline-block; padding:.1rem .5rem; border-radius:4px;
+       font-family:var(--mono); font-size:.7rem; font-weight:700; }
+.tag-nc   { background:var(--faultl); color:var(--fault); border:1px solid #ef9a9a; }
+.tag-no   { background:var(--Gl); color:var(--G); border:1px solid #81c784; }
+.tag-open { background:var(--surface2); color:var(--dim); border:1px solid var(--border); }
+
+/* Contact animation boxes */
+.contacts-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media(max-width:520px){ .contacts-row{ grid-template-columns:1fr; } }
+.cbox {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:.9rem; text-align:center;
+}
+.cbox-lbl {
+  font-family:var(--mono); font-size:.66rem; color:var(--dim);
+  margin-bottom:.5rem; letter-spacing:.08em;
+}
+
+/* ═══════════════════════════════════════
+   PAGE 5 – TIMING
+═══════════════════════════════════════ */
+.timing-boxes {
+  display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.2rem;
+}
+@media(max-width:520px){ .timing-boxes{ grid-template-columns:1fr; } }
+.tbox {
+  border-radius:10px; padding:1rem 1.1rem; border:2px solid;
+}
+.tbox-op { background:var(--warnl); border-color:#e65100; }
+.tbox-tr { background:var(--Bl); border-color:var(--B); }
+.tbox-lbl { font-family:var(--mono); font-size:.68rem; font-weight:700;
+  margin-bottom:.35rem; }
+.tbox-val { font-size:1.5rem; font-weight:900; font-family:var(--mono);
+  margin-bottom:.3rem; }
+.tbox-body { font-size:.82rem; line-height:1.55; }
+.t-scroll { overflow-x:auto; }
+
+/* ═══════════════════════════════════════
+   PAGE 6 – SIMULATOR
+═══════════════════════════════════════ */
+.sim-layout { display:grid; grid-template-columns:220px 1fr; gap:1.2rem; }
+@media(max-width:600px){ .sim-layout{ grid-template-columns:1fr; } }
+.sbtn-col { display:flex; flex-direction:column; gap:.6rem; }
+.sbtn {
+  display:flex; align-items:center; gap:.65rem;
+  background:var(--surface2); border:1.5px solid var(--border);
+  color:var(--text); font-family:var(--sans); font-size:.88rem; font-weight:600;
+  padding:.7rem .9rem; border-radius:8px; cursor:pointer;
+  transition:all .18s; text-align:left; width:100%;
+}
+.sbtn:hover { border-color:var(--B); color:var(--B); background:var(--Bl); }
+.sbtn.s-ok      { border-color:var(--G); color:var(--G); background:var(--Gl); }
+.sbtn.s-fault   { border-color:var(--fault); color:var(--fault); background:var(--faultl); }
+.sbtn.s-warn    { border-color:var(--warn); color:var(--warn); background:var(--warnl); }
+.sbtn.s-restore { border-color:var(--B); color:var(--B); background:var(--Bl); }
+.dot { width:10px; height:10px; border-radius:50%; background:#c4d4e4; flex-shrink:0; }
+.dot.on   { background:var(--G); box-shadow:0 0 6px var(--G); }
+.dot.off  { background:#bbb; }
+.dot.fast { background:var(--warn); animation:blink .24s steps(1) infinite; }
+.dot.slow { background:var(--fault); animation:blink .9s steps(1) infinite; }
+@keyframes blink{ 50%{opacity:0;} }
+
+.state-panel {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:1rem;
+  display:flex; flex-direction:column; gap:.8rem;
+}
+.tbar-wrap { display:none; }
+.tbar-wrap.show { display:block; }
+.tbar-lbl { font-family:var(--mono); font-size:.69rem; color:var(--dim); margin-bottom:.3rem; }
+.tbar-bg  { background:#dde8f0; border-radius:4px; height:14px; overflow:hidden; }
+.tbar-fill{ height:100%; width:0%; border-radius:4px; }
+.fill-op  { background:linear-gradient(90deg,var(--warn),var(--fault)); }
+.fill-tr  { background:linear-gradient(90deg,var(--B),var(--G)); }
+.rbadge {
+  font-family:var(--mono); font-size:.74rem;
+  padding:.6rem .9rem; border-radius:7px; text-align:center;
+  border:1.5px solid var(--border); background:var(--surface);
+  transition:all .3s;
+}
+.rbadge.energised { border-color:var(--G); color:var(--G); background:var(--Gl); }
+.rbadge.tripped   { border-color:var(--fault); color:var(--fault); background:var(--faultl); }
+.rbadge.counting  { border-color:var(--warn); color:var(--warn); background:var(--warnl); }
+.rbadge.releasing { border-color:var(--B); color:var(--B); background:var(--Bl); }
+.logbox {
+  font-family:var(--mono); font-size:.71rem;
+  height:150px; overflow-y:auto; line-height:1.9;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:6px; padding:.5rem .8rem;
+}
+.logbox .ok   { color:var(--G); }
+.logbox .bad  { color:var(--fault); }
+.logbox .warn { color:var(--warn); }
+.logbox .info { color:var(--B); }
+.logbox .dim  { color:#9ab5c8; }
+
+/* ═══════════════════════════════════════
+   PAGE 7 – WIRING
+═══════════════════════════════════════ */
+.wiring-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+@media(max-width:580px){ .wiring-grid{ grid-template-columns:1fr; } }
+
+/* ═══════════════════════════════════════
+   SPECS TABLE
+═══════════════════════════════════════ */
+.spec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:.8rem; }
+.spec-item {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:8px; padding:.8rem 1rem;
+}
+.spec-label { font-family:var(--mono); font-size:.64rem; color:var(--dim); margin-bottom:.25rem; letter-spacing:.08em; }
+.spec-val   { font-size:1rem; font-weight:700; color:var(--head); font-family:var(--mono); }
+
+/* ═══════════════════════════════════════
+   MISC UTILITIES
+═══════════════════════════════════════ */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media(max-width:520px){ .two-col{ grid-template-columns:1fr; } }
+.info-box {
+  border-radius:9px; padding:.9rem 1rem; font-size:.83rem; line-height:1.6;
+  border:1.5px solid;
+}
+.info-box.ib-green { background:var(--Gl); border-color:var(--G); }
+.info-box.ib-blue  { background:var(--Bl); border-color:var(--B); }
+.info-box.ib-red   { background:var(--faultl); border-color:var(--fault); }
+.info-box.ib-warn  { background:var(--warnl); border-color:var(--warn); }
+.info-box .ib-title{ font-weight:700; margin-bottom:.3rem; font-size:.88rem; }
+
+/* ═══════════════════════════════════════
+   MALAYALAM / HINDI FONT OVERRIDE
+═══════════════════════════════════════ */
+body.lang-ml { font-family:'Noto Sans Malayalam', var(--sans); }
+body.lang-hi { font-family:'Noto Sans Devanagari', var(--sans); }
+</style>
+</head>
+<body class="lang-en">
+
+<!-- ══════════════════════════════════
+     STICKY NAV
+══════════════════════════════════ -->
+<nav>
+  <div class="nav-brand">SM<span>-301</span> SPP</div>
+  <div class="nav-tabs">
+    <button class="ntab active" onclick="goPage(0,this)">
+      <span data-lang="en">Device</span>
+      <span data-lang="ml">ഉപകരണം</span>
+      <span data-lang="hi">उपकरण</span>
+    </button>
+    <button class="ntab" onclick="goPage(1,this)">
+      <span data-lang="en">Working</span>
+      <span data-lang="ml">പ്രവർത്തനം</span>
+      <span data-lang="hi">कार्यप्रणाली</span>
+    </button>
+    <button class="ntab" onclick="goPage(2,this)">
+      <span data-lang="en">Fault Types</span>
+      <span data-lang="ml">തകരാറുകൾ</span>
+      <span data-lang="hi">खराबी</span>
+    </button>
+    <button class="ntab" onclick="goPage(3,this)">
+      <span data-lang="en">Contacts</span>
+      <span data-lang="ml">കോൺടാക്ടുകൾ</span>
+      <span data-lang="hi">सम्पर्क</span>
+    </button>
+    <button class="ntab" onclick="goPage(4,this)">
+      <span data-lang="en">Timing</span>
+      <span data-lang="ml">ടൈമിങ്</span>
+      <span data-lang="hi">समय</span>
+    </button>
+    <button class="ntab" onclick="goPage(5,this)">
+      <span data-lang="en">Simulator</span>
+      <span data-lang="ml">സിമുലേറ്റർ</span>
+      <span data-lang="hi">सिमुलेटर</span>
+    </button>
+    <button class="ntab" onclick="goPage(6,this)">
+      <span data-lang="en">Wiring</span>
+      <span data-lang="ml">വയറിങ്</span>
+      <span data-lang="hi">वायरिंग</span>
+    </button>
+    <button class="ntab" onclick="goPage(7,this)">
+      <span data-lang="en">Specs</span>
+      <span data-lang="ml">സ്പെക്സ്</span>
+      <span data-lang="hi">स्पेसिफिकेशन</span>
+    </button>
+  </div>
+  <div class="lang-sw">
+    <button class="lbtn active" onclick="setLang('en',this)">EN</button>
+    <button class="lbtn" onclick="setLang('ml',this)">ML</button>
+    <button class="lbtn" onclick="setLang('hi',this)">HI</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 0 — PHYSICAL DEVICE
+══════════════════════════════════════════════════════ -->
+<section class="page active" id="page-0">
+  <div class="sec-hd"><div class="num">1</div>
+    <span data-lang="en">Physical Device — GIC SM-301</span>
+    <span data-lang="ml">ഭൗതിക ഉപകരണം — GIC SM-301</span>
+    <span data-lang="hi">भौतिक उपकरण — GIC SM-301</span>
+  </div>
+
+  <div class="device-layout">
+    <!-- SVG Physical replica -->
+    <div class="device-wrap">
+      <svg width="100%" viewBox="0 0 240 340" xmlns="http://www.w3.org/2000/svg" id="device-svg">
+        <!-- DIN rail clip bottom -->
+        <rect x="20" y="318" width="200" height="16" rx="4" fill="#90a4ae"/>
+        <rect x="40" y="318" width="160" height="6" rx="2" fill="#607d8b"/>
+
+        <!-- Main body -->
+        <rect x="30" y="30" width="180" height="285" rx="8" fill="#263238"/>
+        <rect x="30" y="30" width="180" height="285" rx="8" fill="none" stroke="#37474f" stroke-width="1.5"/>
+
+        <!-- Top rail (input terminals R Y B) -->
+        <rect x="30" y="20" width="180" height="22" rx="4" fill="#1c2b35"/>
+        <!-- R terminal -->
+        <rect x="52"  y="12" width="28" height="24" rx="4" fill="#c62828"/>
+        <text x="66"  y="27" fill="#fff" font-family="Outfit,sans-serif" font-size="11" font-weight="700" text-anchor="middle">R</text>
+        <!-- Y terminal -->
+        <rect x="106" y="12" width="28" height="24" rx="4" fill="#b45f00"/>
+        <text x="120" y="27" fill="#fff" font-family="Outfit,sans-serif" font-size="11" font-weight="700" text-anchor="middle">Y</text>
+        <!-- B terminal -->
+        <rect x="160" y="12" width="28" height="24" rx="4" fill="#1255a8"/>
+        <text x="174" y="27" fill="#fff" font-family="Outfit,sans-serif" font-size="11" font-weight="700" text-anchor="middle">B</text>
+
+        <!-- Wires entering -->
+        <line x1="66"  y1="36" x2="66"  y2="58" stroke="#c62828" stroke-width="3"/>
+        <line x1="120" y1="36" x2="120" y2="58" stroke="#b45f00" stroke-width="3"/>
+        <line x1="174" y1="36" x2="174" y2="58" stroke="#1255a8" stroke-width="3"/>
+
+        <!-- Face plate area -->
+        <rect x="38" y="58" width="164" height="218" rx="5" fill="#2e3f4a"/>
+
+        <!-- Brand label -->
+        <text x="120" y="78" fill="#90a4ae" font-family="Outfit,sans-serif" font-size="9" font-weight="600" text-anchor="middle" letter-spacing="2">GIC</text>
+
+        <!-- Triangle phase diagram -->
+        <polygon points="120,88  80,155  160,155" fill="none" stroke="#546e7a" stroke-width="1.5"/>
+        <!-- R at top -->
+        <circle cx="120" cy="88" r="5" fill="#c62828"/>
+        <text x="120" y="82" fill="#c62828" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="middle">R</text>
+        <!-- Y at bottom-left -->
+        <circle cx="80" cy="155" r="5" fill="#b45f00"/>
+        <text x="72" y="159" fill="#b45f00" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="middle">Y</text>
+        <!-- B at bottom-right -->
+        <circle cx="160" cy="155" r="5" fill="#4499ff"/>
+        <text x="168" y="159" fill="#4499ff" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="middle">B</text>
+        <!-- Horseshoe symbol inside triangle -->
+        <path d="M110,125 Q110,108 120,108 Q130,108 130,125" fill="none" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+        <line x1="110" y1="125" x2="110" y2="132" stroke="#78909c" stroke-width="2"/>
+        <line x1="130" y1="125" x2="130" y2="132" stroke="#78909c" stroke-width="2"/>
+
+        <!-- LED indicator -->
+        <circle cx="52" cy="118" r="7" fill="#1a3040" stroke="#37474f" stroke-width="1" id="dev-led"/>
+        <text x="52" y="133" fill="#546e7a" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">LED</text>
+
+        <!-- Status label table on face -->
+        <rect x="44" y="165" width="152" height="80" rx="4" fill="#1c2b35"/>
+        <!-- rows -->
+        <text x="88"  y="180" fill="#78909c" font-family="JetBrains Mono,monospace" font-size="7.5" text-anchor="middle">HEALTHY</text>
+        <text x="168" y="180" fill="#1a7038" font-family="JetBrains Mono,monospace" font-size="7.5" text-anchor="middle">ON</text>
+        <line x1="44" y1="183" x2="196" y2="183" stroke="#263238" stroke-width=".8"/>
+        <text x="88"  y="195" fill="#78909c" font-family="JetBrains Mono,monospace" font-size="7.5" text-anchor="middle">PH. LOSS</text>
+        <text x="168" y="195" fill="#ef5350" font-family="JetBrains Mono,monospace" font-size="7.5" text-anchor="middle">OFF</text>
+        <line x1="44" y1="198" x2="196" y2="198" stroke="#263238" stroke-width=".8"/>
+        <text x="88"  y="210" fill="#78909c" font-family="JetBrains Mono,monospace" font-size="7.5" text-anchor="middle">ASYMMETRY</text>
+        <text x="168" y="210" fill="#ff9800" font-family="JetBrains Mono,monospace" font-size="7.5" text-anchor="middle">FAST BLINK</text>
+        <line x1="44" y1="213" x2="196" y2="213" stroke="#263238" stroke-width=".8"/>
+        <text x="88"  y="225" fill="#78909c" font-family="JetBrains Mono,monospace" font-size="7.5" text-anchor="middle">SEQ FAULT</text>
+        <text x="168" y="225" fill="#ce93d8" font-family="JetBrains Mono,monospace" font-size="7.5" text-anchor="middle">SLOW BLINK</text>
+
+        <!-- ON label -->
+        <text x="52" y="158" fill="#90a4ae" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">ON</text>
+
+        <!-- Bottom terminal area -->
+        <rect x="38" y="282" width="164" height="30" rx="4" fill="#1c2b35"/>
+        <!-- Terminals 15, 16, 18 -->
+        <rect x="68"  y="278" width="26" height="22" rx="3" fill="#37474f" stroke="#546e7a" stroke-width="1"/>
+        <rect x="107" y="278" width="26" height="22" rx="3" fill="#37474f" stroke="#546e7a" stroke-width="1"/>
+        <rect x="146" y="278" width="26" height="22" rx="3" fill="#37474f" stroke="#546e7a" stroke-width="1"/>
+        <text x="81"  y="292" fill="#cfd8dc" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">15</text>
+        <text x="120" y="292" fill="#cfd8dc" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">16</text>
+        <text x="159" y="292" fill="#cfd8dc" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">18</text>
+
+        <!-- Callout numbers -->
+        <circle cx="200" cy="20" r="10" fill="#1558a8"/><text x="200" y="24" fill="#fff" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="middle">1</text>
+        <circle cx="215" cy="118" r="10" fill="#b45f00"/><text x="215" y="122" fill="#fff" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="middle">2</text>
+        <circle cx="215" cy="175" r="10" fill="#37474f"/><text x="215" y="179" fill="#fff" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="middle">3</text>
+        <circle cx="215" cy="240" r="10" fill="#1a6b38"/><text x="215" y="244" fill="#fff" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="middle">4</text>
+        <circle cx="215" cy="288" r="10" fill="#7b1fa2"/><text x="215" y="292" fill="#fff" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="middle">5</text>
+        <circle cx="120" cy="335" r="10" fill="#546e7a"/><text x="120" y="339" fill="#fff" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="middle">6</text>
+      </svg>
+      <p style="font-size:.72rem;color:var(--dim);text-align:center;margin-top:-.3rem;">
+        <span data-lang="en">GIC SM-301 Single Phasing Preventor — DIN Rail mount</span>
+        <span data-lang="ml">GIC SM-301 — ഡിൻ റെയിൽ മൗണ്ട്</span>
+        <span data-lang="hi">GIC SM-301 — डिन रेल माउंट</span>
+      </p>
+    </div>
+
+    <!-- Callout explanation -->
+    <div>
+      <div class="card-title" style="margin-bottom:.7rem;">
+        <span data-lang="en">PARTS IDENTIFICATION</span>
+        <span data-lang="ml">ഭാഗങ്ങൾ</span>
+        <span data-lang="hi">भाग पहचान</span>
+      </div>
+      <ul class="callout-list">
+        <li>
+          <div class="cl-num" style="background:#1558a8;color:#fff;">1</div>
+          <div class="cl-body">
+            <strong><span data-lang="en">Input Terminals R · Y · B</span><span data-lang="ml">ഇൻപുട്ട് ടെർമിനൽ R · Y · B</span><span data-lang="hi">इनपुट टर्मिनल R · Y · B</span></strong>
+            <span><span data-lang="en">3-phase 415V AC supply connected here. Red, Yellow, Blue wires.</span><span data-lang="ml">415V 3-ഫേസ് AC സപ്ലൈ ഇവിടെ കണക്ട് ചെയ്യുന്നു.</span><span data-lang="hi">यहाँ 3-फेज 415V AC सप्लाई जोड़ी जाती है।</span></span>
+          </div>
+        </li>
+        <li>
+          <div class="cl-num" style="background:#b45f00;color:#fff;">2</div>
+          <div class="cl-body">
+            <strong><span data-lang="en">LED Status Indicator</span><span data-lang="ml">LED സ്ഥിതി സൂചകം</span><span data-lang="hi">LED स्थिति संकेतक</span></strong>
+            <span><span data-lang="en">Single LED shows system health: ON / OFF / Fast Blink / Slow Blink.</span><span data-lang="ml">ഒറ്റ LED — ON / OFF / Fast / Slow Blink.</span><span data-lang="hi">एकल LED — ON / OFF / तेज / धीमी झलक।</span></span>
+          </div>
+        </li>
+        <li>
+          <div class="cl-num" style="background:#37474f;color:#fff;">3</div>
+          <div class="cl-body">
+            <strong><span data-lang="en">Phase Triangle Diagram</span><span data-lang="ml">ഫേസ് ത്രികോണ ഡയഗ്രം</span><span data-lang="hi">फेज ट्रायंगल डायग्राम</span></strong>
+            <span><span data-lang="en">Shows R-Y-B phase relationships. Horseshoe symbol = sensing coil.</span><span data-lang="ml">R-Y-B ഫേസ് ബന്ധം. കുളമ്പ് ചിഹ്നം = സെൻസിംഗ് കോയിൽ.</span><span data-lang="hi">R-Y-B फेज संबंध दर्शाता है।</span></span>
+          </div>
+        </li>
+        <li>
+          <div class="cl-num" style="background:#1a6b38;color:#fff;">4</div>
+          <div class="cl-body">
+            <strong><span data-lang="en">Status Label</span><span data-lang="ml">സ്ഥിതി ലേബൽ</span><span data-lang="hi">स्थिति लेबल</span></strong>
+            <span><span data-lang="en">Front-panel legend: Healthy=ON, Ph.Loss=OFF, Asymmetry=Fast, Seq=Slow.</span><span data-lang="ml">ഫ്രണ്ട് പാനൽ ലെജൻഡ്.</span><span data-lang="hi">फ्रंट पैनल लेजेंड।</span></span>
+          </div>
+        </li>
+        <li>
+          <div class="cl-num" style="background:#7b1fa2;color:#fff;">5</div>
+          <div class="cl-body">
+            <strong><span data-lang="en">Output Terminals 15 · 16 · 18</span><span data-lang="ml">ഔട്ട്പുട്ട് ടെർമിനൽ 15 · 16 · 18</span><span data-lang="hi">आउटपुट टर्मिनल 15 · 16 · 18</span></strong>
+            <span><span data-lang="en">SPDT relay contacts. 15=Common, 16=NC, 18=NO. Connected to contactor coil.</span><span data-lang="ml">15=Common, 16=NC, 18=NO. കോൺടാക്ടർ കോയിലിലേക്ക് കണക്ട്.</span><span data-lang="hi">15=कॉमन, 16=NC, 18=NO।</span></span>
+          </div>
+        </li>
+        <li>
+          <div class="cl-num" style="background:#546e7a;color:#fff;">6</div>
+          <div class="cl-body">
+            <strong><span data-lang="en">DIN Rail Clip</span><span data-lang="ml">ഡിൻ റെയിൽ ക്ലിപ്</span><span data-lang="hi">DIN रेल क्लिप</span></strong>
+            <span><span data-lang="en">Standard 35mm DIN rail mounting. Clips onto MCC/MDB panel rail.</span><span data-lang="ml">35mm DIN റെയിൽ MCC/MDB പാനലിൽ ഘടിപ്പിക്കും.</span><span data-lang="hi">35mm DIN रेल MCC/MDB पैनल में लगाया जाता है।</span></span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 1 — WORKING
+══════════════════════════════════════════════════════ -->
+<section class="page" id="page-1">
+  <div class="sec-hd"><div class="num">2</div>
+    <span data-lang="en">How It Works</span>
+    <span data-lang="ml">ഇത് എങ്ങനെ പ്രവർത്തിക്കുന്നു</span>
+    <span data-lang="hi">यह कैसे काम करता है</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-lang="en">HEALTHY 3-PHASE SUPPLY</span><span data-lang="ml">ആരോഗ്യകരമായ 3-ഫേസ് സപ്ലൈ</span><span data-lang="hi">स्वस्थ 3-फेज सप्लाई</span></div>
+    <svg id="wave-svg" viewBox="0 0 700 130">
+      <rect width="700" height="130" fill="#f8fbff" rx="4"/>
+      <line x1="0" y1="65" x2="700" y2="65" stroke="#c4d4e4" stroke-width="1"/>
+      <line x1="0" y1="32" x2="700" y2="32" stroke="#ddeaf6" stroke-width=".6" stroke-dasharray="5 4"/>
+      <line x1="0" y1="98" x2="700" y2="98" stroke="#ddeaf6" stroke-width=".6" stroke-dasharray="5 4"/>
+      <path id="wr" fill="none" stroke="#c62828" stroke-width="2.2"/>
+      <path id="wy" fill="none" stroke="#b45f00" stroke-width="2.2"/>
+      <path id="wb" fill="none" stroke="#1255a8" stroke-width="2.2"/>
+      <text x="12" y="16" fill="#c62828" font-family="JetBrains Mono,monospace" font-size="11">R  0°</text>
+      <text x="12" y="29" fill="#b45f00" font-family="JetBrains Mono,monospace" font-size="11">Y  120°</text>
+      <text x="12" y="42" fill="#1255a8" font-family="JetBrains Mono,monospace" font-size="11">B  240°</text>
+    </svg>
+    <p style="font-size:.78rem;color:var(--dim);margin-top:.5rem;">
+      <span data-lang="en">Each phase is 240V and exactly 120° apart. SM-301 samples all three simultaneously at 50Hz.</span>
+      <span data-lang="ml">ഓരോ ഫേസും 240V ആണ്, 120° വ്യത്യാസം. SM-301 50Hz-ൽ മൂന്നും ഒരേ സമയം നിരീക്ഷിക്കുന്നു.</span>
+      <span data-lang="hi">प्रत्येक फेज 240V है और 120° के अंतर पर है। SM-301 50Hz पर तीनों को एक साथ मॉनिटर करता है।</span>
+    </p>
+  </div>
+
+  <div class="flow-grid">
+    <div class="flow-step">
+      <div class="fs-icon">⚡</div>
+      <div class="fs-title"><span data-lang="en">3-Phase Input</span><span data-lang="ml">3-ഫേസ് ഇൻപുട്ട്</span><span data-lang="hi">3-फेज इनपुट</span></div>
+      <div class="fs-body"><span data-lang="en">R, Y, B phases connected to top terminals. 415V AC, 50Hz.</span><span data-lang="ml">R, Y, B ഫേസ് ടോപ്പ് ടെർമിനലിൽ കണക്ട്. 415V AC.</span><span data-lang="hi">R, Y, B टॉप टर्मिनल से जुड़े। 415V AC।</span></div>
+    </div>
+    <div class="flow-step">
+      <div class="fs-icon">🔍</div>
+      <div class="fs-title"><span data-lang="en">Voltage Sensing</span><span data-lang="ml">വോൾട്ടേജ് സെൻസിങ്</span><span data-lang="hi">वोल्टेज सेंसिंग</span></div>
+      <div class="fs-body"><span data-lang="en">Internal transformer + rectifier samples each phase voltage every cycle.</span><span data-lang="ml">ആന്തരിക ട്രാൻസ്ഫോർമർ ഓരോ ഫേസ് സൈക്കിൾ ശേഖരിക്കുന്നു.</span><span data-lang="hi">आंतरिक ट्रांसफॉर्मर प्रत्येक फेज वोल्टेज सैंपल करता है।</span></div>
+    </div>
+    <div class="flow-step">
+      <div class="fs-icon">🧮</div>
+      <div class="fs-title"><span data-lang="en">Comparator Logic</span><span data-lang="ml">കമ്പാരേറ്റർ ലോജിക്</span><span data-lang="hi">कम्पेरेटर लॉजिक</span></div>
+      <div class="fs-body"><span data-lang="en">Compares voltages for loss, asymmetry (&gt;65V), sequence. Starts TO counter on fault.</span><span data-lang="ml">ഫേസ് loss, asymmetry (&gt;65V), sequence പരിശോധിക്കുന്നു. തകരാർ ഉണ്ടായാൽ TO ടൈമർ ആരംഭിക്കുന്നു.</span><span data-lang="hi">loss, asymmetry (&gt;65V), sequence जांचता है। खराबी पर TO टाइमर शुरू।</span></div>
+    </div>
+    <div class="flow-step">
+      <div class="fs-icon">⏱</div>
+      <div class="fs-title"><span data-lang="en">Operate Timer (TO)</span><span data-lang="ml">ഓപ്പറേറ്റ് ടൈമർ (TO)</span><span data-lang="hi">ऑपरेट टाइमर (TO)</span></div>
+      <div class="fs-body"><span data-lang="en">7-second delay before tripping. Ignores momentary dips and transients.</span><span data-lang="ml">ട്രിപ്പ് ചെയ്യുന്നതിന് മുൻപ് 7 സെക്കൻഡ് കാത്തിരിക്കുന്നു.</span><span data-lang="hi">ट्रिप से पहले 7 सेकंड की देरी। क्षणिक dips को नजरअंदाज करता है।</span></div>
+    </div>
+    <div class="flow-step">
+      <div class="fs-icon">🔌</div>
+      <div class="fs-title"><span data-lang="en">Relay Trips</span><span data-lang="ml">റിലേ ട്രിപ്</span><span data-lang="hi">रिले ट्रिप</span></div>
+      <div class="fs-body"><span data-lang="en">Relay de-energises. 15-18 (NO) opens → contactor coil loses power → motor stops.</span><span data-lang="ml">റിലേ ഡീ-എനർജൈസ്. 15-18 തുറക്കുന്നു → കോൺടാക്ടർ ഓഫ് → മോട്ടോർ നിൽക്കുന്നു.</span><span data-lang="hi">रिले डी-एनर्जाइज। 15-18 खुलता है → कॉन्टेक्टर बंद → मोटर रुकती है।</span></div>
+    </div>
+    <div class="flow-step">
+      <div class="fs-icon">✅</div>
+      <div class="fs-title"><span data-lang="en">Auto Reset (TR)</span><span data-lang="ml">ഓട്ടോ റീസെറ്റ് (TR)</span><span data-lang="hi">ऑटो रिसेट (TR)</span></div>
+      <div class="fs-body"><span data-lang="en">After fault clears, waits TR seconds then re-energises relay. Motor restarts safely.</span><span data-lang="ml">തകരാർ ശരിയായ ശേഷം TR സെക്കൻഡ് കാത്ത് റിലേ ഓൺ ആകുന്നു.</span><span data-lang="hi">खराबी ठीक होने के बाद TR सेकंड बाद रिले ऑन। मोटर सुरक्षित रीस्टार्ट।</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-lang="en">WHY MOTOR PROTECTION IS CRITICAL</span><span data-lang="ml">മോട്ടോർ സംരക്ഷണം പ്രധാനം</span><span data-lang="hi">मोटर सुरक्षा क्यों जरूरी है</span></div>
+    <div class="two-col">
+      <div class="info-box ib-red">
+        <div class="ib-title">⚠ <span data-lang="en">Without SPP</span><span data-lang="ml">SPP ഇല്ലാതെ</span><span data-lang="hi">SPP के बिना</span></div>
+        <span data-lang="en">Single phasing causes 2-3× rated current in remaining phases. Motor winding temperature rises 80–100°C above normal in minutes. Burnout follows.</span>
+        <span data-lang="ml">ഒരു ഫേസ് നഷ്ടപ്പെടുമ്പോൾ ബാക്കി ഫേസുകളിൽ 2-3 മടങ്ങ് കറൻ്റ്. വൈൻഡിങ് 80–100°C ചൂടാകുന്നു.</span>
+        <span data-lang="hi">एक फेज गायब होने पर बाकी फेज में 2-3 गुना करेंट। वाइंडिंग 80–100°C गर्म। जलने का खतरा।</span>
+      </div>
+      <div class="info-box ib-green">
+        <div class="ib-title">✅ <span data-lang="en">With SPP</span><span data-lang="ml">SPP ഉണ്ടെങ്കിൽ</span><span data-lang="hi">SPP के साथ</span></div>
+        <span data-lang="en">SM-301 detects fault within one cycle, trips motor after 7 sec. Motor is saved. Typical motor costs ₹15,000–₹5 lakh — SM-301 costs ₹800.</span>
+        <span data-lang="ml">SM-301 ഒരു സൈക്കിളിൽ കണ്ടെത്തി 7 സെക്കൻഡിൽ ട്രിപ്. മോട്ടോർ രക്ഷപ്പെടുന്നു.</span>
+        <span data-lang="hi">SM-301 एक साइकिल में पता लगाता है, 7 सेकंड में ट्रिप। मोटर बच जाती है।</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 2 — FAULT TYPES
+══════════════════════════════════════════════════════ -->
+<section class="page" id="page-2">
+  <div class="sec-hd"><div class="num">3</div>
+    <span data-lang="en">Types of Faults Detected</span>
+    <span data-lang="ml">കണ്ടെത്തുന്ന തകരാറുകൾ</span>
+    <span data-lang="hi">पता की जाने वाली खराबियाँ</span>
+  </div>
+
+  <div class="fault-grid">
+    <div class="fault-card fc-pl">
+      <div class="fc-icon">⚡</div>
+      <div class="fc-title" style="color:#b71c1c;">
+        <span data-lang="en">Phase Loss (Single Phasing)</span>
+        <span data-lang="ml">ഫേസ് ലോസ്</span>
+        <span data-lang="hi">फेज लॉस (सिंगल फेजिंग)</span>
+      </div>
+      <div class="fc-body">
+        <span data-lang="en">One of R, Y, or B phase voltage drops to zero. Causes due to: blown fuse, broken wire, tripped MCB, loose connection. Most common and most dangerous fault.</span>
+        <span data-lang="ml">R, Y, അല്ലെങ്കിൽ B ഫേസ് വോൾട്ടേജ് പൂജ്യമാകുന്നു. കാരണം: ഫ്യൂസ് കത്തൽ, കമ്പി പൊട്ടൽ, MCB ട്രിപ്. ഏറ്റവും അപകടകരമായ തകരാർ.</span>
+        <span data-lang="hi">R, Y, या B फेज वोल्टेज शून्य। कारण: फ्यूज जलना, तार टूटना, MCB ट्रिप। सबसे खतरनाक खराबी।</span>
+      </div>
+      <div class="fc-led">
+        <span class="led-dot" style="background:#333;border:1px solid #666;"></span>
+        <span data-lang="en">LED OFF</span><span data-lang="ml">LED OFF</span><span data-lang="hi">LED बंद</span>
+      </div>
+    </div>
+
+    <div class="fault-card fc-as">
+      <div class="fc-icon">〜</div>
+      <div class="fc-title" style="color:#b45f00;">
+        <span data-lang="en">Voltage Asymmetry (Unbalance)</span>
+        <span data-lang="ml">വോൾട്ടേജ് അസമ്മിതി</span>
+        <span data-lang="hi">वोल्टेज असमानता</span>
+      </div>
+      <div class="fc-body">
+        <span data-lang="en">Voltage difference between phases exceeds 65±10V (~8%). Causes: unequal transformer loading, loose connections, single-phase heavy loads nearby. Even 10% unbalance = 25% extra motor heating.</span>
+        <span data-lang="ml">ഫേസ് വ്യത്യാസം 65±10V കവിയുന്നു. കാരണം: അസന്തുലിത ലോഡ്, loose connections. 10% unbalance = 25% കൂടുതൽ ചൂട്.</span>
+        <span data-lang="hi">फेज वोल्टेज अंतर 65±10V से अधिक। 10% असंतुलन = 25% अतिरिक्त गर्मी।</span>
+      </div>
+      <div class="fc-led">
+        <span class="led-dot" style="background:#e65100;animation:blink .24s steps(1) infinite;"></span>
+        <span data-lang="en">LED FAST BLINK</span><span data-lang="ml">LED ഫാസ്റ്റ് ബ്ലിങ്ക്</span><span data-lang="hi">LED तेज झलक</span>
+      </div>
+    </div>
+
+    <div class="fault-card fc-sq">
+      <div class="fc-icon">🔄</div>
+      <div class="fc-title" style="color:#6a1b9a;">
+        <span data-lang="en">Phase Sequence Fault</span>
+        <span data-lang="ml">ഫേസ് സീക്വൻസ് തകരാർ</span>
+        <span data-lang="hi">फेज अनुक्रम खराबी</span>
+      </div>
+      <div class="fc-body">
+        <span data-lang="en">Phases connected in wrong order (RBY instead of RYB). Motor runs in reverse direction. Dangerous for pumps, compressors, conveyors. SM-301 blocks the start.</span>
+        <span data-lang="ml">ഫേസ് തെറ്റായ ക്രമത്തിൽ (RBY). മോട്ടോർ വിപരീത ദിശയിൽ തിരിയുന്നു. SM-301 ആരംഭം തടയുന്നു.</span>
+        <span data-lang="hi">गलत क्रम में फेज (RBY)। मोटर उल्टी दिशा में चलती है। SM-301 स्टार्ट रोकता है।</span>
+      </div>
+      <div class="fc-led">
+        <span class="led-dot" style="background:#9c27b0;animation:blink .9s steps(1) infinite;"></span>
+        <span data-lang="en">LED SLOW BLINK</span><span data-lang="ml">LED സ്ലോ ബ്ലിങ്ക്</span><span data-lang="hi">LED धीमी झलक</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1.2rem;">
+    <div class="card-title"><span data-lang="en">FAULT COMPARISON</span><span data-lang="ml">തകരാർ താരതമ്യം</span><span data-lang="hi">खराबी तुलना</span></div>
+    <div class="tt-wrap">
+    <table class="tt">
+      <thead><tr>
+        <th><span data-lang="en">FAULT</span><span data-lang="ml">തകരാർ</span><span data-lang="hi">खराबी</span></th>
+        <th><span data-lang="en">CAUSE</span><span data-lang="ml">കാരണം</span><span data-lang="hi">कारण</span></th>
+        <th><span data-lang="en">DETECT TIME</span><span data-lang="ml">കണ്ടെത്തൽ</span><span data-lang="hi">पता लगाने का समय</span></th>
+        <th><span data-lang="en">LED</span></th>
+        <th><span data-lang="en">RELAY</span><span data-lang="ml">റിലേ</span><span data-lang="hi">रिले</span></th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td style="color:#b71c1c;font-weight:700"><span data-lang="en">Phase Loss</span><span data-lang="ml">ഫേസ് ലോസ്</span><span data-lang="hi">फेज लॉस</span></td>
+          <td><span data-lang="en">Fuse blown, wire break</span><span data-lang="ml">ഫ്യൂസ്, കമ്പി</span><span data-lang="hi">फ्यूज, तार</span></td>
+          <td><span data-lang="en">&lt;1 cycle (20ms)</span><span data-lang="ml">&lt;1 cycle</span><span data-lang="hi">&lt;1 cycle</span></td>
+          <td style="color:#555"><span data-lang="en">OFF</span><span data-lang="ml">OFF</span><span data-lang="hi">बंद</span></td>
+          <td><span class="tag tag-nc"><span data-lang="en">TRIPS after 7s</span><span data-lang="ml">7s-ൽ ട്രിപ്</span><span data-lang="hi">7s में ट्रिप</span></span></td>
+        </tr>
+        <tr>
+          <td style="color:#b45f00;font-weight:700"><span data-lang="en">Asymmetry</span><span data-lang="ml">അസമ്മിതി</span><span data-lang="hi">असमानता</span></td>
+          <td><span data-lang="en">Unbalanced load</span><span data-lang="ml">അസന്തുലിത ലോഡ്</span><span data-lang="hi">असंतुलित लोड</span></td>
+          <td><span data-lang="en">&lt;1 cycle</span><span data-lang="ml">&lt;1 cycle</span><span data-lang="hi">&lt;1 cycle</span></td>
+          <td style="color:#e65100"><span data-lang="en">Fast Blink</span><span data-lang="ml">Fast Blink</span><span data-lang="hi">तेज झलक</span></td>
+          <td><span class="tag tag-nc"><span data-lang="en">TRIPS after 7s</span><span data-lang="ml">7s-ൽ ട്രിപ്</span><span data-lang="hi">7s में ट्रिप</span></span></td>
+        </tr>
+        <tr>
+          <td style="color:#6a1b9a;font-weight:700"><span data-lang="en">Seq. Fault</span><span data-lang="ml">Seq. തകരാർ</span><span data-lang="hi">अनुक्रम दोष</span></td>
+          <td><span data-lang="en">Wrong connection</span><span data-lang="ml">തെറ്റായ കണക്ഷൻ</span><span data-lang="hi">गलत कनेक्शन</span></td>
+          <td><span data-lang="en">At power-on</span><span data-lang="ml">ഓണ്‍ ആകുമ്പോൾ</span><span data-lang="hi">पावर-ऑन पर</span></td>
+          <td style="color:#9c27b0"><span data-lang="en">Slow Blink</span><span data-lang="ml">Slow Blink</span><span data-lang="hi">धीमी झलक</span></td>
+          <td><span class="tag tag-nc"><span data-lang="en">BLOCKS start</span><span data-lang="ml">ആരംഭം തടയൽ</span><span data-lang="hi">स्टार्ट ब्लॉक</span></span></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 3 — CONTACTS
+══════════════════════════════════════════════════════ -->
+<section class="page" id="page-3">
+  <div class="sec-hd"><div class="num">4</div>
+    <span data-lang="en">Relay Contacts — 15 · 16 · 18</span>
+    <span data-lang="ml">റിലേ കോൺടാക്ടുകൾ — 15 · 16 · 18</span>
+    <span data-lang="hi">रिले सम्पर्क — 15 · 16 · 18</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-lang="en">CONTACT TRUTH TABLE</span><span data-lang="ml">കോൺടാക്ട് സ്ഥിതി</span><span data-lang="hi">सम्पर्क स्थिति तालिका</span></div>
+    <div class="tt-wrap">
+    <table class="tt">
+      <thead><tr>
+        <th><span data-lang="en">CONDITION</span><span data-lang="ml">അവസ്ഥ</span><span data-lang="hi">स्थिति</span></th>
+        <th><span data-lang="en">RELAY</span><span data-lang="ml">റിലേ</span><span data-lang="hi">रिले</span></th>
+        <th>15–16 (NC)</th>
+        <th>15–18 (NO)</th>
+        <th><span data-lang="en">MOTOR</span><span data-lang="ml">മോട്ടോർ</span><span data-lang="hi">मोटर</span></th>
+        <th>LED</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td style="color:#1a6b38;font-weight:700">✓ <span data-lang="en">HEALTHY</span><span data-lang="ml">ആരോഗ്യകരം</span><span data-lang="hi">स्वस्थ</span></td>
+          <td style="color:#1a6b38"><span data-lang="en">ENERGISED</span><span data-lang="ml">ON</span><span data-lang="hi">चालू</span></td>
+          <td><span class="tag tag-open"><span data-lang="en">OPEN</span><span data-lang="ml">തുറന്നത്</span><span data-lang="hi">खुला</span></span></td>
+          <td><span class="tag tag-no"><span data-lang="en">CLOSED</span><span data-lang="ml">അടഞ്ഞത്</span><span data-lang="hi">बंद</span></span></td>
+          <td style="color:#1a6b38"><span data-lang="en">RUNNING</span><span data-lang="ml">ഓടുന്നു</span><span data-lang="hi">चल रही</span></td>
+          <td style="color:#1a6b38"><span data-lang="en">ON</span><span data-lang="ml">ON</span><span data-lang="hi">चालू</span></td>
+        </tr>
+        <tr>
+          <td style="color:#b71c1c;font-weight:700">✗ <span data-lang="en">ANY FAULT</span><span data-lang="ml">ഏതെങ്കിലും തകരാർ</span><span data-lang="hi">कोई भी खराबी</span></td>
+          <td style="color:#b71c1c"><span data-lang="en">DE-ENERGISED</span><span data-lang="ml">OFF</span><span data-lang="hi">बंद</span></td>
+          <td><span class="tag tag-nc"><span data-lang="en">CLOSED</span><span data-lang="ml">അടഞ്ഞത്</span><span data-lang="hi">बंद</span></span></td>
+          <td><span class="tag tag-open"><span data-lang="en">OPEN</span><span data-lang="ml">തുറന്നത്</span><span data-lang="hi">खुला</span></span></td>
+          <td style="color:#b71c1c"><span data-lang="en">STOPPED</span><span data-lang="ml">നിൽക്കുന്നു</span><span data-lang="hi">रुकी</span></td>
+          <td style="color:#b71c1c"><span data-lang="en">BLINK/OFF</span><span data-lang="ml">BLINK/OFF</span><span data-lang="hi">ब्लिंक/बंद</span></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="contacts-row" style="margin-top:1rem;">
+    <div class="cbox">
+      <div class="cbox-lbl">15–16 · NC · <span data-lang="en">ALARM CIRCUIT</span><span data-lang="ml">ALARM</span><span data-lang="hi">अलार्म</span></div>
+      <svg width="100%" height="110" viewBox="0 0 220 110">
+        <rect width="220" height="110" fill="#f8fbff" rx="6"/>
+        <line x1="10" y1="55" x2="58" y2="55" stroke="#334e68" stroke-width="2.5"/>
+        <line x1="162" y1="55" x2="210" y2="55" stroke="#334e68" stroke-width="2.5"/>
+        <text x="8" y="48" fill="#6a85a0" font-family="JetBrains Mono,monospace" font-size="9">15</text>
+        <text x="206" y="48" fill="#6a85a0" font-family="JetBrains Mono,monospace" font-size="9">16</text>
+        <circle cx="58" cy="55" r="5" fill="#dce8f4" stroke="#6a85a0" stroke-width="1.5"/>
+        <circle cx="162" cy="55" r="5" fill="#334e68"/>
+        <line   id="nc-arm" x1="58" y1="55" x2="162" y2="35" stroke="#9ab0c8" stroke-width="3" stroke-linecap="round"/>
+        <circle id="nc-tip" cx="162" cy="35" r="5" fill="#9ab0c8"/>
+        <line id="nc-cur" x1="10" y1="55" x2="210" y2="55" stroke="#b71c1c" stroke-width="3" stroke-dasharray="14 8" opacity="0"/>
+        <g id="nc-spark" opacity="0">
+          <circle cx="162" cy="55" r="10" fill="none" stroke="#ffd600" stroke-width="2"/>
+          <line x1="153" y1="46" x2="162" y2="55" stroke="#ffd600" stroke-width="1.5"/>
+          <line x1="171" y1="46" x2="162" y2="55" stroke="#ffd600" stroke-width="1.5"/>
+          <line x1="162" y1="42" x2="162" y2="55" stroke="#ffd600" stroke-width="1.5"/>
+        </g>
+        <text id="nc-lbl" x="110" y="84" fill="#6a85a0" font-family="JetBrains Mono,monospace" font-size="10" text-anchor="middle"><span data-lang="en">OPEN</span></text>
+        <text id="nc-sub" x="110" y="98" fill="#9ab5c8" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">Alarm inactive</text>
+      </svg>
+    </div>
+    <div class="cbox">
+      <div class="cbox-lbl">15–18 · NO · <span data-lang="en">MOTOR CONTACTOR</span><span data-lang="ml">CONTACTOR</span><span data-lang="hi">कॉन्टेक्टर</span></div>
+      <svg width="100%" height="110" viewBox="0 0 220 110">
+        <rect width="220" height="110" fill="#f8fbff" rx="6"/>
+        <line x1="10" y1="55" x2="58" y2="55" stroke="#334e68" stroke-width="2.5"/>
+        <line x1="162" y1="55" x2="210" y2="55" stroke="#334e68" stroke-width="2.5"/>
+        <text x="8" y="48" fill="#6a85a0" font-family="JetBrains Mono,monospace" font-size="9">15</text>
+        <text x="206" y="48" fill="#6a85a0" font-family="JetBrains Mono,monospace" font-size="9">18</text>
+        <circle cx="58" cy="55" r="5" fill="#dce8f4" stroke="#6a85a0" stroke-width="1.5"/>
+        <circle cx="162" cy="55" r="5" fill="#334e68"/>
+        <line   id="no-arm" x1="58" y1="55" x2="162" y2="55" stroke="#1a6b38" stroke-width="3" stroke-linecap="round"/>
+        <circle id="no-tip" cx="162" cy="55" r="5" fill="#1a6b38"/>
+        <line id="no-cur" x1="10" y1="55" x2="210" y2="55" stroke="#1a6b38" stroke-width="3" stroke-dasharray="14 8" opacity="0.9"/>
+        <g id="no-spark" opacity="0">
+          <circle cx="162" cy="55" r="10" fill="none" stroke="#ffd600" stroke-width="2"/>
+          <line x1="153" y1="46" x2="162" y2="55" stroke="#ffd600" stroke-width="1.5"/>
+          <line x1="171" y1="46" x2="162" y2="55" stroke="#ffd600" stroke-width="1.5"/>
+          <line x1="162" y1="42" x2="162" y2="55" stroke="#ffd600" stroke-width="1.5"/>
+        </g>
+        <text id="no-lbl" x="110" y="84" fill="#1a6b38" font-family="JetBrains Mono,monospace" font-size="10" text-anchor="middle">CLOSED — motor ON</text>
+        <text id="no-sub" x="110" y="98" fill="#9ab5c8" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">Contactor coil energised</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1rem;">
+    <div class="card-title"><span data-lang="en">HOW TO USE THESE CONTACTS</span><span data-lang="ml">കോൺടാക്ടുകൾ ഉപയോഗം</span><span data-lang="hi">इन सम्पर्कों का उपयोग</span></div>
+    <div class="two-col">
+      <div class="info-box ib-green">
+        <div class="ib-title">15–18 (NO) → <span data-lang="en">Contactor Coil</span><span data-lang="ml">കോൺടാക്ടർ കോയിൽ</span><span data-lang="hi">कॉन्टेक्टर कॉइल</span></div>
+        <span data-lang="en">Wire in series with contactor A1 coil circuit. When SM-301 is healthy → 15–18 closes → contactor pulls in → motor runs.</span>
+        <span data-lang="ml">കോൺടാക്ടർ A1 കോയിൽ സർക്കീറ്റിൽ series-ൽ വയർ ചെയ്യുക. SM-301 healthy → 15–18 close → കോൺടാക്ടർ pull-in → മോട്ടോർ ഓടും.</span>
+        <span data-lang="hi">कॉन्टेक्टर A1 कॉइल सर्किट में सीरीज में लगाएं। SM-301 ठीक → 15–18 बंद → कॉन्टेक्टर pull-in → मोटर चलती है।</span>
+      </div>
+      <div class="info-box ib-warn">
+        <div class="ib-title">15–16 (NC) → <span data-lang="en">Alarm / Indicator</span><span data-lang="ml">അലാറം</span><span data-lang="hi">अलार्म</span></div>
+        <span data-lang="en">Connect to alarm bell or fault indicator lamp. When fault occurs → 15–16 closes → alarm rings. Optional but recommended for industrial use.</span>
+        <span data-lang="ml">alarm bell അല്ലെങ്കിൽ lamp-ലേക്ക് കണക്ട്. fault ഉണ്ടാകുമ്പോൾ → 15–16 close → alarm ring.</span>
+        <span data-lang="hi">अलार्म बेल या इंडिकेटर लैंप से जोड़ें। खराबी → 15–16 बंद → अलार्म बजता है।</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 4 — TIMING
+══════════════════════════════════════════════════════ -->
+<section class="page" id="page-4">
+  <div class="sec-hd"><div class="num">5</div>
+    <span data-lang="en">Timing — TO &amp; TR Explained</span>
+    <span data-lang="ml">ടൈമിങ് — TO &amp; TR</span>
+    <span data-lang="hi">टाइमिंग — TO और TR</span>
+  </div>
+
+  <div class="timing-boxes">
+    <div class="tbox tbox-op">
+      <div class="tbox-lbl" style="color:#c84b00;">⏱ <span data-lang="en">OPERATE TIME (TO)</span><span data-lang="ml">OPERATE TIME (TO)</span><span data-lang="hi">ऑपरेट टाइम (TO)</span></div>
+      <div class="tbox-val" style="color:#c84b00;">7 <span style="font-size:.9rem;">sec</span></div>
+      <div class="tbox-body">
+        <span data-lang="en">Fixed 7-second delay from fault detection to relay trip. Purpose: ignore brief transients (switching surges, momentary dips). If fault persists &gt;7s → trip.</span>
+        <span data-lang="ml">തകരാർ കണ്ടെത്തൽ മുതൽ relay trip വരെ 7 സെക്കൻഡ് delay. ഉദ്ദേശ്യം: switching surges അവഗണിക്കൽ. 7 സെക്കൻഡ് കഴിഞ്ഞും fault → trip.</span>
+        <span data-lang="hi">खराबी पता लगाने से relay ट्रिप तक 7 सेकंड की देरी। उद्देश्य: क्षणिक surge को नजरअंदाज करना। 7s से अधिक fault → ट्रिप।</span>
+      </div>
+    </div>
+    <div class="tbox tbox-tr">
+      <div class="tbox-lbl" style="color:#1558a8;">⏱ <span data-lang="en">RELEASE TIME (TR)</span><span data-lang="ml">RELEASE TIME (TR)</span><span data-lang="hi">रिलीज़ टाइम (TR)</span></div>
+      <div class="tbox-val" style="color:#1558a8;"><span data-lang="en">Adj.</span><span data-lang="ml">Adj.</span><span data-lang="hi">समायोज्य</span></div>
+      <div class="tbox-body">
+        <span data-lang="en">Adjustable delay from fault clearance to relay re-energising. Set via potentiometer on back of unit. Prevents immediate restart — lets capacitors discharge and supply stabilise.</span>
+        <span data-lang="ml">fault ശരിയാകൽ മുതൽ relay ഓൺ വരെ adjustable delay. back potentiometer ഉപയോഗിച്ച് set ചെയ്യാം. ഉടൻ restart തടയുന്നു.</span>
+        <span data-lang="hi">खराबी ठीक होने से रिले ऑन तक समायोज्य देरी। पीछे का potentiometer से सेट। तुरंत restart रोकता है।</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-lang="en">TIMING DIAGRAM</span><span data-lang="ml">ടൈമിങ് ഡയഗ്രം</span><span data-lang="hi">टाइमिंग डायग्राम</span></div>
+    <div class="t-scroll">
+      <svg width="660" height="295" viewBox="0 0 660 295" style="display:block;">
+        <rect x="80" y="8" width="568" height="278" fill="#f8fbff" rx="5"/>
+        <line x1="80" y1="275" x2="648" y2="275" stroke="#b0c8e0" stroke-width="1.5"/>
+        <text x="364" y="290" fill="#9ab0c8" font-family="JetBrains Mono,monospace" font-size="9" text-anchor="middle">TIME →</text>
+        <!-- Row labels -->
+        <text x="76" y="45"  fill="#b45f00" font-family="JetBrains Mono,monospace" font-size="10" text-anchor="end">SUPPLY</text>
+        <text x="76" y="103" fill="#c84b00" font-family="JetBrains Mono,monospace" font-size="9"  text-anchor="end">TO</text>
+        <text x="76" y="161" fill="#1558a8" font-family="JetBrains Mono,monospace" font-size="9"  text-anchor="end">TR</text>
+        <text x="76" y="215" fill="#1a6b38" font-family="JetBrains Mono,monospace" font-size="10" text-anchor="end">15-18</text>
+        <text x="76" y="245" fill="#b71c1c" font-family="JetBrains Mono,monospace" font-size="10" text-anchor="end">15-16</text>
+        <text x="76" y="265" fill="#b45f00" font-family="JetBrains Mono,monospace" font-size="9"  text-anchor="end">LED</text>
+        <!-- Vertical markers -->
+        <line x1="245" y1="14" x2="245" y2="268" stroke="#c6282840" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <text x="248" y="20" fill="#c62828" font-family="JetBrains Mono,monospace" font-size="9">FAULT</text>
+        <line x1="365" y1="14" x2="365" y2="268" stroke="#b71c1c80" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="368" y="20" fill="#b71c1c" font-family="JetBrains Mono,monospace" font-size="9">TRIP</text>
+        <line x1="455" y1="14" x2="455" y2="268" stroke="#1a703840" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <text x="458" y="20" fill="#1a6b38" font-family="JetBrains Mono,monospace" font-size="9">CLEAR</text>
+        <line x1="568" y1="14" x2="568" y2="268" stroke="#1a703870" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="571" y="20" fill="#1a6b38" font-family="JetBrains Mono,monospace" font-size="9">RESET</text>
+        <!-- Supply wave -->
+        <path id="td-w1" fill="none" stroke="#b45f00" stroke-width="2"/>
+        <path id="td-w2" fill="none" stroke="#b45f00" stroke-width="2"/>
+        <line x1="245" y1="43" x2="455" y2="43" stroke="#b0c8e0" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <!-- TO box -->
+        <rect x="245" y="85" width="120" height="30" rx="4" fill="#fff3e0" stroke="#c84b00" stroke-width="1.5"/>
+        <text x="305" y="104" fill="#c84b00" font-family="JetBrains Mono,monospace" font-size="9" text-anchor="middle">← TO = 7 sec →</text>
+        <!-- TR box -->
+        <rect x="455" y="143" width="113" height="30" rx="4" fill="#eaf1fb" stroke="#1558a8" stroke-width="1.5"/>
+        <text x="511" y="162" fill="#1558a8" font-family="JetBrains Mono,monospace" font-size="9" text-anchor="middle">← TR (adj.) →</text>
+        <!-- 15-18 NO -->
+        <line x1="80"  y1="210" x2="365" y2="210" stroke="#1a6b38" stroke-width="3"/>
+        <line x1="365" y1="210" x2="365" y2="220" stroke="#1a6b38" stroke-width="3"/>
+        <line x1="365" y1="220" x2="568" y2="220" stroke="#b71c1c" stroke-width="2.5" stroke-dasharray="7 4"/>
+        <line x1="568" y1="220" x2="568" y2="210" stroke="#1a6b38" stroke-width="3"/>
+        <line x1="568" y1="210" x2="648" y2="210" stroke="#1a6b38" stroke-width="3"/>
+        <text x="160" y="207" fill="#1a6b3888" font-family="JetBrains Mono,monospace" font-size="8">CLOSED</text>
+        <text x="400" y="233" fill="#b71c1c88" font-family="JetBrains Mono,monospace" font-size="8">OPEN</text>
+        <!-- 15-16 NC -->
+        <line x1="80"  y1="240" x2="365" y2="240" stroke="#c4d4e4" stroke-width="2" stroke-dasharray="6 4"/>
+        <line x1="365" y1="240" x2="365" y2="249" stroke="#c4d4e4" stroke-width="2"/>
+        <line x1="365" y1="249" x2="568" y2="249" stroke="#b71c1c" stroke-width="3"/>
+        <line x1="568" y1="249" x2="568" y2="240" stroke="#c4d4e4" stroke-width="2"/>
+        <line x1="568" y1="240" x2="648" y2="240" stroke="#c4d4e4" stroke-width="2" stroke-dasharray="6 4"/>
+        <!-- LED -->
+        <line x1="80"  y1="260" x2="365" y2="260" stroke="#1a6b38" stroke-width="2.5"/>
+        <line x1="365" y1="260" x2="568" y2="260" stroke="#b71c1c" stroke-width="2.5" stroke-dasharray="5 4"/>
+        <line x1="568" y1="260" x2="648" y2="260" stroke="#1a6b38" stroke-width="2.5"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 5 — SIMULATOR
+══════════════════════════════════════════════════════ -->
+<section class="page" id="page-5">
+  <div class="sec-hd"><div class="num">6</div>
+    <span data-lang="en">Live Fault Simulator</span>
+    <span data-lang="ml">ലൈവ് ഫോൾട്ട് സിമുലേറ്റർ</span>
+    <span data-lang="hi">लाइव फॉल्ट सिमुलेटर</span>
+  </div>
+
+  <div class="sim-layout">
+    <div class="sbtn-col">
+      <button class="sbtn s-ok" id="btn-ok" onclick="sim('ok')">
+        <span class="dot on" id="dot-ok"></span>
+        <span data-lang="en">✅ Healthy Supply</span>
+        <span data-lang="ml">✅ ആരോഗ്യകരം</span>
+        <span data-lang="hi">✅ स्वस्थ सप्लाई</span>
+      </button>
+      <button class="sbtn" id="btn-pl" onclick="sim('pl')">
+        <span class="dot" id="dot-pl"></span>
+        <span data-lang="en">⚡ Phase Loss</span>
+        <span data-lang="ml">⚡ ഫേസ് ലോസ്</span>
+        <span data-lang="hi">⚡ फेज लॉस</span>
+      </button>
+      <button class="sbtn" id="btn-as" onclick="sim('as')">
+        <span class="dot" id="dot-as"></span>
+        <span data-lang="en">〜 Asymmetry</span>
+        <span data-lang="ml">〜 അസമ്മിതി</span>
+        <span data-lang="hi">〜 असमानता</span>
+      </button>
+      <button class="sbtn" id="btn-sq" onclick="sim('sq')">
+        <span class="dot" id="dot-sq"></span>
+        <span data-lang="en">🔄 Wrong Sequence</span>
+        <span data-lang="ml">🔄 തെറ്റായ Sequence</span>
+        <span data-lang="hi">🔄 गलत अनुक्रम</span>
+      </button>
+      <button class="sbtn" id="btn-rs" onclick="sim('rs')">
+        <span class="dot" id="dot-rs"></span>
+        <span data-lang="en">🔁 Fault Cleared (TR)</span>
+        <span data-lang="ml">🔁 തകരാർ ശരിയായി</span>
+        <span data-lang="hi">🔁 खराबी ठीक (TR)</span>
+      </button>
+    </div>
+
+    <div class="state-panel">
+      <div>
+        <div class="tbar-wrap" id="to-wrap">
+          <div class="tbar-lbl">⏱ <span data-lang="en">Operate Time (TO):</span><span data-lang="ml">TO:</span><span data-lang="hi">TO:</span> <span id="to-num">0.0</span>s / 7.0s</div>
+          <div class="tbar-bg"><div class="tbar-fill fill-op" id="to-bar"></div></div>
+        </div>
+        <div class="tbar-wrap" id="tr-wrap">
+          <div class="tbar-lbl">⏱ <span data-lang="en">Release Time (TR):</span><span data-lang="ml">TR:</span><span data-lang="hi">TR:</span> <span id="tr-num">0.0</span>s / 4.0s</div>
+          <div class="tbar-bg"><div class="tbar-fill fill-tr" id="tr-bar"></div></div>
+        </div>
+      </div>
+      <div class="rbadge energised" id="rbadge">
+        <span data-lang="en">RELAY ENERGISED · 15-18 CLOSED · Motor RUNNING</span>
+        <span data-lang="ml">RELAY ON · 15-18 CLOSED · Motor RUNNING</span>
+        <span data-lang="hi">रिले चालू · 15-18 बंद · मोटर चल रही</span>
+      </div>
+      <div class="logbox" id="log"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 6 — WIRING
+══════════════════════════════════════════════════════ -->
+<section class="page" id="page-6">
+  <div class="sec-hd"><div class="num">7</div>
+    <span data-lang="en">Wiring Diagram</span>
+    <span data-lang="ml">വയറിങ് ഡയഗ്രം</span>
+    <span data-lang="hi">वायरिंग डायग्राम</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-lang="en">COMPLETE CONTROL CIRCUIT</span><span data-lang="ml">കൺട്രോൾ സർക്കീട്ട്</span><span data-lang="hi">पूर्ण नियंत्रण सर्किट</span></div>
+    <svg width="100%" viewBox="0 0 780 385" style="display:block;background:#f8fbff;border-radius:8px;">
+      <rect width="780" height="385" fill="#f8fbff" rx="8"/>
+      <!-- section label -->
+      <text x="30" y="20" fill="#1255a8" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">CONTROL CIRCUIT (Rung 1–3)</text>
+      <line x1="0" y1="258" x2="780" y2="258" stroke="#dae4f0" stroke-width="1" stroke-dasharray="6 4"/>
+      <text x="30" y="270" fill="#1255a8" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">POWER CIRCUIT</text>
+
+      <!-- ═══ CORRECT LADDER / CONTROL CIRCUIT ═══
+           Layout (all x from L=30 rail, R=740 rail):
+
+           L-rail (Phase R control)  ────────────────────────────── R-rail (Neutral N)
+
+      Rung 1 (y=80):  L──[STOP NC]──[SPP 15-18 NO]──┬──[START NO]──[KM coil A1─A2]──N
+                                                      │
+      Rung 2 (y=130): (hold-on)                    [KM aux NO]  (parallel with START, same nodes)
+
+      Rung 3 (y=200): L──[SPP 15-16 NC]──[Alarm lamp]──────────────────────────────N
+
+      Power circuit (y=290–370): 3-phase R/Y/B → MCCB → Contactor main → Motor
+      ════════════════════════════════════════════════════════════════════════════ -->
+
+      <!-- ── LEFT & RIGHT RAILS ── -->
+      <line x1="30"  y1="50" x2="30"  y2="370" stroke="#c62828" stroke-width="3"/>
+      <line x1="740" y1="50" x2="740" y2="230" stroke="#555"    stroke-width="3"/>
+
+      <!-- Rail labels -->
+      <text x="14" y="48"  fill="#c62828" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">L</text>
+      <text x="14" y="62"  fill="#888"    font-family="JetBrains Mono,monospace" font-size="8">(Phase R)</text>
+      <text x="745" y="48" fill="#555"    font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">N</text>
+      <text x="745" y="62" fill="#888"    font-family="JetBrains Mono,monospace" font-size="8">(Neutral)</text>
+
+      <!-- ════════════════════════════════
+           RUNG 1 — CONTROL CIRCUIT (y=80)
+           L ─ STOP(NC) ─ SPP-NO(15-18) ─┬─ START(NO) ─ KM-coil ─ N
+           ════════════════════════════════ -->
+      <text x="14" y="115" fill="#888" font-family="JetBrains Mono,monospace" font-size="8">Rung 1</text>
+
+      <!-- L to STOP button -->
+      <line x1="30" y1="100" x2="80" y2="100" stroke="#c62828" stroke-width="2"/>
+
+      <!-- STOP button (NC) — two horizontal lines with diagonal slash = NC symbol -->
+      <line x1="80"  y1="100" x2="110" y2="100" stroke="#c62828" stroke-width="2"/>
+      <line x1="110" y1="92"  x2="110" y2="108" stroke="#b71c1c" stroke-width="2"/>
+      <line x1="130" y1="92"  x2="130" y2="108" stroke="#b71c1c" stroke-width="2"/>
+      <line x1="115" y1="92"  x2="125" y2="108" stroke="#b71c1c" stroke-width="2.5"/><!-- diagonal = NC -->
+      <line x1="130" y1="100" x2="160" y2="100" stroke="#c62828" stroke-width="2"/>
+      <text x="107" y="88"  fill="#b71c1c" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">STOP</text>
+      <text x="107" y="120" fill="#888"    font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">NC (PB)</text>
+
+      <!-- SPP 15-18 NO contact -->
+      <line x1="160" y1="100" x2="200" y2="100" stroke="#c62828" stroke-width="2"/>
+      <line x1="200" y1="92"  x2="200" y2="108" stroke="#1a6b38" stroke-width="2"/>
+      <line x1="220" y1="100" x2="200" y2="92"  stroke="#1a6b38" stroke-width="2"/><!-- angled arm = NO -->
+      <line x1="220" y1="92"  x2="220" y2="108" stroke="#1a6b38" stroke-width="2"/>
+      <line x1="220" y1="100" x2="260" y2="100" stroke="#c62828" stroke-width="2"/>
+      <text x="210" y="88"  fill="#1a6b38" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">SPP</text>
+      <text x="210" y="120" fill="#1a6b38" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">15–18 NO</text>
+
+      <!-- Junction node at x=260 (START parallel joins here) -->
+      <circle cx="260" cy="100" r="4" fill="#c62828"/>
+
+      <!-- Wire from junction to START button -->
+      <line x1="260" y1="100" x2="310" y2="100" stroke="#c62828" stroke-width="2"/>
+
+      <!-- START button (NO) -->
+      <line x1="310" y1="92"  x2="310" y2="108" stroke="#1a6b38" stroke-width="2"/>
+      <line x1="330" y1="100" x2="310" y2="92"  stroke="#1a6b38" stroke-width="2"/><!-- angled arm = NO -->
+      <line x1="330" y1="92"  x2="330" y2="108" stroke="#1a6b38" stroke-width="2"/>
+      <line x1="330" y1="100" x2="380" y2="100" stroke="#c62828" stroke-width="2"/>
+      <text x="320" y="88"  fill="#1a6b38" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">START</text>
+      <text x="320" y="120" fill="#888"    font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">NO (PB)</text>
+
+      <!-- Junction node at x=380 (hold-on joins here) -->
+      <circle cx="380" cy="100" r="4" fill="#c62828"/>
+
+      <!-- KM Contactor coil A1 -->
+      <line x1="380" y1="100" x2="440" y2="100" stroke="#c62828" stroke-width="2"/>
+      <rect x="440" y="84" width="70" height="32" rx="5" fill="#e8f0fb" stroke="#1255a8" stroke-width="2"/>
+      <text x="475" y="98"  fill="#1255a8" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="middle">KM</text>
+      <text x="475" y="110" fill="#1255a8" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">A1–A2</text>
+      <!-- coil symbol arcs inside rect -->
+      <path d="M448,100 Q455,90 462,100 Q469,110 476,100 Q483,90 490,100 Q497,110 504,100" fill="none" stroke="#1255a8" stroke-width="1.5"/>
+
+      <!-- A1 to N rail -->
+      <line x1="510" y1="100" x2="740" y2="100" stroke="#555" stroke-width="2"/>
+
+      <!-- ════════════════════════════════
+           RUNG 2 — HOLD-ON / SELF-LATCHING (y=140)
+           Parallel path: junction(x=260) ─ KM-aux NO ─ junction(x=380)
+           ════════════════════════════════ -->
+      <text x="14" y="165" fill="#888" font-family="JetBrains Mono,monospace" font-size="8">Rung 2</text>
+
+      <!-- Drop from junction x=260,y=100 down to y=150 -->
+      <line x1="260" y1="100" x2="260" y2="150" stroke="#c62828" stroke-width="2"/>
+      <line x1="260" y1="150" x2="310" y2="150" stroke="#c62828" stroke-width="2"/>
+
+      <!-- KM auxiliary NO contact (hold-on) -->
+      <line x1="310" y1="142" x2="310" y2="158" stroke="#1255a8" stroke-width="2"/>
+      <line x1="330" y1="150" x2="310" y2="142" stroke="#1255a8" stroke-width="2"/>
+      <line x1="330" y1="142" x2="330" y2="158" stroke="#1255a8" stroke-width="2"/>
+      <line x1="330" y1="150" x2="380" y2="150" stroke="#c62828" stroke-width="2"/>
+      <text x="320" y="138" fill="#1255a8" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">KM aux</text>
+      <text x="320" y="168" fill="#1255a8" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">NO (hold)</text>
+
+      <!-- Rise from y=150 back up to junction x=380,y=100 -->
+      <line x1="380" y1="150" x2="380" y2="100" stroke="#c62828" stroke-width="2"/>
+
+      <!-- Label for parallel -->
+      <text x="195" y="148" fill="#888" font-family="JetBrains Mono,monospace" font-size="8">parallel →</text>
+
+      <!-- ════════════════════════════════
+           RUNG 3 — ALARM / FAULT INDICATOR (y=210)
+           L ─ SPP-NC(15-16) ─ Alarm Lamp ─ N
+           ════════════════════════════════ -->
+      <text x="14" y="215" fill="#888" font-family="JetBrains Mono,monospace" font-size="8">Rung 3</text>
+
+      <line x1="30" y1="220" x2="90" y2="220" stroke="#c62828" stroke-width="2"/>
+
+      <!-- SPP 15-16 NC contact -->
+      <line x1="90"  y1="212" x2="90"  y2="228" stroke="#b71c1c" stroke-width="2"/>
+      <line x1="110" y1="220" x2="90"  y2="212" stroke="#b71c1c" stroke-width="2"/><!-- angled NO arm -->
+      <line x1="110" y1="212" x2="110" y2="228" stroke="#b71c1c" stroke-width="2"/>
+      <line x1="100" y1="212" x2="100" y2="205" stroke="#b71c1c" stroke-width="1.5"/><!-- NC diagonal bar -->
+      <line x1="94"  y1="205" x2="106" y2="205" stroke="#b71c1c" stroke-width="2"/>
+      <line x1="110" y1="220" x2="160" y2="220" stroke="#c62828" stroke-width="2"/>
+      <text x="100" y="236" fill="#b71c1c" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">15–16 NC</text>
+      <text x="100" y="245" fill="#888"    font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">SPP fault</text>
+
+      <!-- Alarm indicator lamp -->
+      <circle cx="210" cy="220" r="22" fill="#fdecea" stroke="#b71c1c" stroke-width="2"/>
+      <line x1="160" y1="220" x2="188" y2="220" stroke="#c62828" stroke-width="2"/>
+      <!-- X inside circle = lamp symbol -->
+      <line x1="196" y1="210" x2="224" y2="230" stroke="#b71c1c" stroke-width="1.5"/>
+      <line x1="224" y1="210" x2="196" y2="230" stroke="#b71c1c" stroke-width="1.5"/>
+      <text x="210" y="254" fill="#b71c1c" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">FAULT LAMP</text>
+      <line x1="232" y1="220" x2="290" y2="220" stroke="#c62828" stroke-width="2"/>
+
+      <!-- Alarm bell (buzzer) -->
+      <rect x="290" y="207" width="50" height="26" rx="5" fill="#fdecea" stroke="#b71c1c" stroke-width="1.5"/>
+      <text x="315" y="224" fill="#b71c1c" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">BUZZER</text>
+      <line x1="340" y1="220" x2="740" y2="220" stroke="#555" stroke-width="2"/>
+
+      <!-- ════════════════════════════════
+           POWER CIRCUIT (bottom)
+           3-phase: R/Y/B → MCCB → Contactor → Motor
+           ════════════════════════════════ -->
+      <text x="30" y="270" fill="#1255a8" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">POWER CIRCUIT</text>
+
+      <!-- Three phase lines -->
+      <line x1="30"  y1="285" x2="200" y2="285" stroke="#c62828" stroke-width="3"/>
+      <line x1="30"  y1="305" x2="200" y2="305" stroke="#b45f00" stroke-width="3"/>
+      <line x1="30"  y1="325" x2="200" y2="325" stroke="#1255a8" stroke-width="3"/>
+      <text x="14" y="289" fill="#c62828" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">R</text>
+      <text x="14" y="309" fill="#b45f00" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">Y</text>
+      <text x="14" y="329" fill="#1255a8" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700">B</text>
+
+      <!-- MCCB box -->
+      <rect x="200" y="275" width="50" height="60" rx="4" fill="#f0f4f8" stroke="#334e68" stroke-width="1.5"/>
+      <text x="225" y="300" fill="#334e68" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">MCCB</text>
+      <line x1="208" y1="285" x2="242" y2="285" stroke="#c62828" stroke-width="2"/>
+      <line x1="208" y1="305" x2="242" y2="305" stroke="#b45f00" stroke-width="2"/>
+      <line x1="208" y1="325" x2="242" y2="325" stroke="#1255a8" stroke-width="2"/>
+      <!-- MCCB break symbols -->
+      <line x1="218" y1="280" x2="228" y2="290" stroke="#334e68" stroke-width="1.5"/>
+      <line x1="218" y1="300" x2="228" y2="310" stroke="#334e68" stroke-width="1.5"/>
+      <line x1="218" y1="320" x2="228" y2="330" stroke="#334e68" stroke-width="1.5"/>
+
+      <!-- MCCB to Contactor -->
+      <line x1="250" y1="285" x2="360" y2="285" stroke="#c62828" stroke-width="3"/>
+      <line x1="250" y1="305" x2="360" y2="305" stroke="#b45f00" stroke-width="3"/>
+      <line x1="250" y1="325" x2="360" y2="325" stroke="#1255a8" stroke-width="3"/>
+
+      <!-- Contactor main contacts box -->
+      <rect x="360" y="275" width="70" height="60" rx="4" fill="#e8f0fb" stroke="#1255a8" stroke-width="2"/>
+      <text x="395" y="296" fill="#1255a8" font-family="Outfit,sans-serif" font-size="9" font-weight="700" text-anchor="middle">KM</text>
+      <text x="395" y="308" fill="#1255a8" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">MAIN</text>
+      <text x="395" y="319" fill="#1255a8" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">CONTACTS</text>
+      <!-- main contact NO symbols -->
+      <line x1="368" y1="285" x2="380" y2="285" stroke="#c62828" stroke-width="2"/>
+      <line x1="380" y1="280" x2="380" y2="290" stroke="#334e68" stroke-width="1.5"/>
+      <line x1="388" y1="280" x2="380" y2="280" stroke="#334e68" stroke-width="1.5"/>
+      <line x1="388" y1="280" x2="388" y2="290" stroke="#334e68" stroke-width="1.5"/>
+      <line x1="368" y1="305" x2="380" y2="305" stroke="#b45f00" stroke-width="2"/>
+      <line x1="380" y1="300" x2="380" y2="310" stroke="#334e68" stroke-width="1.5"/>
+      <line x1="388" y1="300" x2="380" y2="300" stroke="#334e68" stroke-width="1.5"/>
+      <line x1="388" y1="300" x2="388" y2="310" stroke="#334e68" stroke-width="1.5"/>
+      <line x1="368" y1="325" x2="380" y2="325" stroke="#1255a8" stroke-width="2"/>
+      <line x1="380" y1="320" x2="380" y2="330" stroke="#334e68" stroke-width="1.5"/>
+      <line x1="388" y1="320" x2="380" y2="320" stroke="#334e68" stroke-width="1.5"/>
+      <line x1="388" y1="320" x2="388" y2="330" stroke="#334e68" stroke-width="1.5"/>
+
+      <!-- Contactor to Motor -->
+      <line x1="430" y1="285" x2="560" y2="285" stroke="#c62828" stroke-width="3"/>
+      <line x1="430" y1="305" x2="560" y2="305" stroke="#b45f00" stroke-width="3"/>
+      <line x1="430" y1="325" x2="560" y2="325" stroke="#1255a8" stroke-width="3"/>
+
+      <!-- Motor circle -->
+      <circle cx="610" cy="305" r="42" fill="#e8f0fb" stroke="#1255a8" stroke-width="2.5"/>
+      <text x="610" y="298" fill="#1255a8" font-family="Outfit,sans-serif" font-size="16" font-weight="900" text-anchor="middle">M</text>
+      <text x="610" y="314" fill="#1255a8" font-family="JetBrains Mono,monospace" font-size="9" text-anchor="middle">3 ~</text>
+      <line x1="560" y1="285" x2="574" y2="285" stroke="#c62828" stroke-width="3"/>
+      <line x1="560" y1="305" x2="568" y2="305" stroke="#b45f00" stroke-width="3"/>
+      <line x1="560" y1="325" x2="574" y2="325" stroke="#1255a8" stroke-width="3"/>
+      <text x="610" y="360" fill="#6a85a0" font-family="JetBrains Mono,monospace" font-size="9" text-anchor="middle">3-Phase Motor</text>
+
+      <!-- Dashed control line from KM coil down to KM main (mechanical linkage) -->
+      <line x1="475" y1="116" x2="475" y2="275" stroke="#1255a8" stroke-width="1.5" stroke-dasharray="5 4"/>
+      <text x="488" y="200" fill="#1255a8" font-family="JetBrains Mono,monospace" font-size="8" transform="rotate(90,488,200)">mechanical linkage</text>
+
+      <!-- KM aux label near hold-on rung -->
+      <text x="700" y="100" fill="#1255a8" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">A2 (N)</text>
+      <text x="700" y="220" fill="#555" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle">N</text>
+    </svg>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="card">
+    <div class="card-title"><span data-lang="en">CONTACT SYMBOLS LEGEND</span><span data-lang="ml">കോൺടാക്ട് ചിഹ്നങ്ങൾ</span><span data-lang="hi">सम्पर्क प्रतीक</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.8rem;">
+
+      <div style="display:flex;align-items:center;gap:.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:.7rem;">
+        <svg width="48" height="32" viewBox="0 0 48 32">
+          <line x1="2" y1="16" x2="14" y2="16" stroke="#334e68" stroke-width="2"/>
+          <line x1="14" y1="8"  x2="14" y2="24" stroke="#334e68" stroke-width="2"/>
+          <line x1="32" y1="16" x2="14" y2="8"  stroke="#334e68" stroke-width="2"/>
+          <line x1="32" y1="8"  x2="32" y2="24" stroke="#334e68" stroke-width="2"/>
+          <line x1="32" y1="16" x2="46" y2="16" stroke="#334e68" stroke-width="2"/>
+        </svg>
+        <div><div style="font-size:.78rem;font-weight:700;">NO Contact</div><div style="font-size:.72rem;color:var(--dim);">Normally Open — open at rest</div></div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:.7rem;">
+        <svg width="48" height="32" viewBox="0 0 48 32">
+          <line x1="2" y1="16" x2="14" y2="16" stroke="#b71c1c" stroke-width="2"/>
+          <line x1="14" y1="8"  x2="14" y2="24" stroke="#b71c1c" stroke-width="2"/>
+          <line x1="32" y1="16" x2="14" y2="8"  stroke="#b71c1c" stroke-width="2"/>
+          <line x1="32" y1="8"  x2="32" y2="24" stroke="#b71c1c" stroke-width="2"/>
+          <line x1="23" y1="8"  x2="23" y2="2"  stroke="#b71c1c" stroke-width="1.5"/>
+          <line x1="18" y1="2"  x2="28" y2="2"  stroke="#b71c1c" stroke-width="2"/>
+          <line x1="32" y1="16" x2="46" y2="16" stroke="#b71c1c" stroke-width="2"/>
+        </svg>
+        <div><div style="font-size:.78rem;font-weight:700;color:#b71c1c;">NC Contact</div><div style="font-size:.72rem;color:var(--dim);">Normally Closed — closed at rest</div></div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:.7rem;">
+        <svg width="48" height="32" viewBox="0 0 48 32">
+          <line x1="2" y1="16" x2="14" y2="16" stroke="#b71c1c" stroke-width="2"/>
+          <line x1="14" y1="8"  x2="14" y2="24" stroke="#b71c1c" stroke-width="2"/>
+          <line x1="32" y1="16" x2="14" y2="8"  stroke="#b71c1c" stroke-width="2"/>
+          <line x1="32" y1="8"  x2="32" y2="24" stroke="#b71c1c" stroke-width="2"/>
+          <line x1="19" y1="8"  x2="27" y2="24" stroke="#b71c1c" stroke-width="2"/>
+          <line x1="32" y1="16" x2="46" y2="16" stroke="#b71c1c" stroke-width="2"/>
+        </svg>
+        <div><div style="font-size:.78rem;font-weight:700;color:#b71c1c;">STOP (NC PB)</div><div style="font-size:.72rem;color:var(--dim);">NC push button — opens on press</div></div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:.7rem;">
+        <svg width="48" height="32" viewBox="0 0 48 32">
+          <rect x="14" y="8" width="20" height="16" rx="3" fill="#e8f5ee" stroke="#1a6b38" stroke-width="1.5"/>
+          <line x1="2" y1="16" x2="14" y2="16" stroke="#1a6b38" stroke-width="2"/>
+          <line x1="34" y1="16" x2="46" y2="16" stroke="#1a6b38" stroke-width="2"/>
+        </svg>
+        <div><div style="font-size:.78rem;font-weight:700;color:#1a6b38;">START (NO PB)</div><div style="font-size:.72rem;color:var(--dim);">NO push button — closes on press</div></div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:.7rem;">
+        <svg width="48" height="32" viewBox="0 0 48 32">
+          <rect x="12" y="8" width="24" height="16" rx="3" fill="#e8f0fb" stroke="#1255a8" stroke-width="1.5"/>
+          <path d="M14,16 Q18,10 22,16 Q26,22 30,16 Q34,10 34,16" fill="none" stroke="#1255a8" stroke-width="1.5"/>
+          <line x1="2" y1="16" x2="12" y2="16" stroke="#1255a8" stroke-width="2"/>
+          <line x1="36" y1="16" x2="46" y2="16" stroke="#1255a8" stroke-width="2"/>
+        </svg>
+        <div><div style="font-size:.78rem;font-weight:700;color:#1255a8;">Contactor Coil</div><div style="font-size:.72rem;color:var(--dim);">Coil symbol — electromagnet</div></div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:.7rem;">
+        <svg width="48" height="32" viewBox="0 0 48 32">
+          <circle cx="24" cy="16" r="12" fill="#fdecea" stroke="#b71c1c" stroke-width="1.5"/>
+          <line x1="17" y1="10" x2="31" y2="22" stroke="#b71c1c" stroke-width="1.5"/>
+          <line x1="31" y1="10" x2="17" y2="22" stroke="#b71c1c" stroke-width="1.5"/>
+          <line x1="2" y1="16" x2="12" y2="16" stroke="#b71c1c" stroke-width="2"/>
+          <line x1="36" y1="16" x2="46" y2="16" stroke="#b71c1c" stroke-width="2"/>
+        </svg>
+        <div><div style="font-size:.78rem;font-weight:700;color:#b71c1c;">Lamp / Indicator</div><div style="font-size:.72rem;color:var(--dim);">Fault indicator light</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-lang="en">HOW THE CIRCUIT WORKS — STEP BY STEP</span><span data-lang="ml">സർക്കീട്ട് പ്രവർത്തനം</span><span data-lang="hi">सर्किट कैसे काम करता है</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.8rem;">
+      <div class="spec-item" style="border-left:3px solid #1a6b38;">
+        <div class="spec-label">STEP 1 — POWER ON</div>
+        <div class="spec-val" style="font-size:.82rem;font-weight:400;line-height:1.5;">
+          <span data-lang="en">3-phase R/Y/B energises SM-301. LED turns ON steady. SPP 15-18 (NO) closes. Circuit ready but motor off — START not pressed yet.</span>
+          <span data-lang="ml">R/Y/B ഓൺ → SM-301 LED steady ON → 15-18 close. START അമർത്തിയിട്ടില്ല → Motor off.</span>
+          <span data-lang="hi">R/Y/B चालू → SM-301 LED स्थिर ON → 15-18 बंद। START नहीं दबाया → Motor बंद।</span>
+        </div>
+      </div>
+      <div class="spec-item" style="border-left:3px solid #1a6b38;">
+        <div class="spec-label">STEP 2 — START PRESSED</div>
+        <div class="spec-val" style="font-size:.82rem;font-weight:400;line-height:1.5;">
+          <span data-lang="en">START (NO) closes → current flows: L → STOP(NC) → SPP 15-18(NO) → START(NO) → KM coil → N. KM energises, main contacts close → motor starts.</span>
+          <span data-lang="ml">START close → L → STOP → 15-18 → START → KM coil → N. KM pull-in → motor start.</span>
+          <span data-lang="hi">START बंद → L → STOP → 15-18 → START → KM कॉइल → N। KM pull-in → मोटर स्टार्ट।</span>
+        </div>
+      </div>
+      <div class="spec-item" style="border-left:3px solid #1255a8;">
+        <div class="spec-label">STEP 3 — SELF-HOLDING</div>
+        <div class="spec-val" style="font-size:.82rem;font-weight:400;line-height:1.5;">
+          <span data-lang="en">KM auxiliary NO closes in parallel with START. START released — motor stays ON via hold-on path: STOP(NC) → SPP 15-18 → KM-aux(NO) → KM coil.</span>
+          <span data-lang="ml">KM aux NO close → START release ചെയ്‌താലും motor ON. Hold-on path active.</span>
+          <span data-lang="hi">KM aux NO बंद → START छोड़ने पर भी motor ON। Hold-on path सक्रिय।</span>
+        </div>
+      </div>
+      <div class="spec-item" style="border-left:3px solid #b71c1c;">
+        <div class="spec-label">STEP 4 — STOP / FAULT</div>
+        <div class="spec-val" style="font-size:.82rem;font-weight:400;line-height:1.5;">
+          <span data-lang="en">STOP pressed (opens NC) OR SPP detects fault (15-18 opens after 7s TO) → KM de-energises → main contacts open → motor stops. Fault lamp ON via 15-16 NC.</span>
+          <span data-lang="ml">STOP press (NC open) അല്ലെങ്കിൽ SPP fault (15-18 open) → KM off → motor stop. 15-16 NC → lamp ON.</span>
+          <span data-lang="hi">STOP दबाएं (NC खुले) या SPP fault (15-18 खुले) → KM बंद → motor रुके। 15-16 NC → lamp ON।</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 7 — SPECS
+══════════════════════════════════════════════════════ -->
+<section class="page" id="page-7">
+  <div class="sec-hd"><div class="num">8</div>
+    <span data-lang="en">Technical Specifications</span>
+    <span data-lang="ml">സാങ്കേതിക സവിശേഷതകൾ</span>
+    <span data-lang="hi">तकनीकी विशिष्टताएं</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-lang="en">SM-301 SPECIFICATIONS</span><span data-lang="ml">SM-301 സ്പെക്സ്</span><span data-lang="hi">SM-301 विशेषताएं</span></div>
+    <div class="spec-grid">
+      <div class="spec-item"><div class="spec-label">SERIES</div><div class="spec-val">SM-301</div></div>
+      <div class="spec-item"><div class="spec-label">CATALOGUE NO.</div><div class="spec-val">MA51BC</div></div>
+      <div class="spec-item"><div class="spec-label"><span data-lang="en">SUPPLY VOLTAGE</span><span data-lang="ml">SUPPLY VOLTAGE</span><span data-lang="hi">सप्लाई वोल्टेज</span></div><div class="spec-val">415 V AC ±10%</div></div>
+      <div class="spec-item"><div class="spec-label"><span data-lang="en">FREQUENCY</span><span data-lang="ml">ഫ്രീക്വൻസി</span><span data-lang="hi">फ्रीक्वेंसी</span></div><div class="spec-val">50 Hz</div></div>
+      <div class="spec-item"><div class="spec-label"><span data-lang="en">ASYMMETRY THRESHOLD</span><span data-lang="ml">Threshold</span><span data-lang="hi">थ्रेशोल्ड</span></div><div class="spec-val">65 ± 10 V</div></div>
+      <div class="spec-item"><div class="spec-label"><span data-lang="en">OPERATE TIME (TO)</span><span data-lang="ml">OPERATE TIME</span><span data-lang="hi">ऑपरेट समय</span></div><div class="spec-val">7 seconds</div></div>
+      <div class="spec-item"><div class="spec-label"><span data-lang="en">RELEASE TIME (TR)</span><span data-lang="ml">RELEASE TIME</span><span data-lang="hi">रिलीज़ समय</span></div><div class="spec-val"><span data-lang="en">Adjustable</span><span data-lang="ml">Adjustable</span><span data-lang="hi">समायोज्य</span></div></div>
+      <div class="spec-item"><div class="spec-label"><span data-lang="en">RELAY OUTPUT</span><span data-lang="ml">RELAY OUTPUT</span><span data-lang="hi">रिले आउटपुट</span></div><div class="spec-val">SPDT</div></div>
+      <div class="spec-item"><div class="spec-label"><span data-lang="en">TERMINALS</span><span data-lang="ml">ടെർമിനലുകൾ</span><span data-lang="hi">टर्मिनल</span></div><div class="spec-val">15 · 16 · 18</div></div>
+      <div class="spec-item"><div class="spec-label"><span data-lang="en">15–16</span></div><div class="spec-val" style="color:var(--fault);">NC</div></div>
+      <div class="spec-item"><div class="spec-label"><span data-lang="en">15–18</span></div><div class="spec-val" style="color:var(--G);">NO</div></div>
+      <div class="spec-item"><div class="spec-label"><span data-lang="en">MOUNTING</span><span data-lang="ml">MOUNTING</span><span data-lang="hi">माउंटिंग</span></div><div class="spec-val">35mm DIN Rail</div></div>
+      <div class="spec-item"><div class="spec-label"><span data-lang="en">MANUFACTURER</span><span data-lang="ml">നിർമ്മാതാവ്</span><span data-lang="hi">निर्माता</span></div><div class="spec-val">GIC India</div></div>
+      <div class="spec-item"><div class="spec-label"><span data-lang="en">APPLICATION</span><span data-lang="ml">ഉദ്ദേശ്യം</span><span data-lang="hi">अनुप्रयोग</span></div><div class="spec-val" style="font-size:.8rem;"><span data-lang="en">3-phase motor protection</span><span data-lang="ml">3-ഫേസ് മോട്ടോർ സംരക്ഷണം</span><span data-lang="hi">3-फेज मोटर सुरक्षा</span></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-lang="en">LED INDICATOR SUMMARY</span><span data-lang="ml">LED സൂചക സംഗ്രഹം</span><span data-lang="hi">LED संकेतक सारांश</span></div>
+    <div class="spec-grid">
+      <div class="spec-item" style="border-left:3px solid var(--G);">
+        <div class="spec-label"><span data-lang="en">HEALTHY</span><span data-lang="ml">ആരോഗ്യകരം</span><span data-lang="hi">स्वस्थ</span></div>
+        <div class="spec-val" style="color:var(--G);font-size:.88rem;"><span data-lang="en">Steady ON</span><span data-lang="ml">Steady ON</span><span data-lang="hi">स्थिर चालू</span></div>
+      </div>
+      <div class="spec-item" style="border-left:3px solid #555;">
+        <div class="spec-label"><span data-lang="en">PHASE LOSS</span><span data-lang="ml">ഫേസ് ലോസ്</span><span data-lang="hi">फेज लॉस</span></div>
+        <div class="spec-val" style="color:#555;font-size:.88rem;"><span data-lang="en">OFF</span><span data-lang="ml">OFF</span><span data-lang="hi">बंद</span></div>
+      </div>
+      <div class="spec-item" style="border-left:3px solid var(--warn);">
+        <div class="spec-label"><span data-lang="en">ASYMMETRY</span><span data-lang="ml">അസമ്മിതി</span><span data-lang="hi">असमानता</span></div>
+        <div class="spec-val" style="color:var(--warn);font-size:.88rem;"><span data-lang="en">Fast Blink</span><span data-lang="ml">Fast Blink</span><span data-lang="hi">तेज झलक</span></div>
+      </div>
+      <div class="spec-item" style="border-left:3px solid #9c27b0;">
+        <div class="spec-label"><span data-lang="en">SEQ. FAULT</span><span data-lang="ml">SEQ. തകരാർ</span><span data-lang="hi">अनुक्रम दोष</span></div>
+        <div class="spec-val" style="color:#9c27b0;font-size:.88rem;"><span data-lang="en">Slow Blink</span><span data-lang="ml">Slow Blink</span><span data-lang="hi">धीमी झलक</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════ -->
+<script>
+/* ── LANGUAGE SWITCHER ── */
+function setLang(l, btn){
+  document.body.className = 'lang-' + l;
+  document.querySelectorAll('.lbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ── PAGE SWITCHER ── */
+function goPage(idx, btn){
+  document.querySelectorAll('.page').forEach((p,i)=> p.classList.toggle('active', i===idx));
+  document.querySelectorAll('.ntab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ── WAVE PATHS ── */
+(function(){
+  function w(ph, amp, cy, n, W){
+    const p = ph*Math.PI/180; let d='';
+    for(let i=0;i<=n;i++){
+      const x=(i/n)*W, y=cy-amp*Math.sin((i/n)*4*Math.PI+p);
+      d+=(i?'L':'M')+x.toFixed(1)+','+y.toFixed(1);
+    }
+    return d;
+  }
+  document.getElementById('wr').setAttribute('d', w(0,  28,65,280,700));
+  document.getElementById('wy').setAttribute('d', w(120,28,65,280,700));
+  document.getElementById('wb').setAttribute('d', w(240,28,65,280,700));
+
+  function seg(ph,amp,cy,n,x0,x1){
+    const p=ph*Math.PI/180; let d='';
+    for(let i=0;i<=n;i++){
+      const x=x0+(i/n)*(x1-x0), y=cy-amp*Math.sin((i/n)*2*Math.PI+p);
+      d+=(i?'L':'M')+x.toFixed(1)+','+y.toFixed(1);
+    }
+    return d;
+  }
+  document.getElementById('td-w1').setAttribute('d', seg(0,15,43,100,80,245));
+  document.getElementById('td-w2').setAttribute('d', seg(0,15,43,70,455,648));
+})();
+
+/* ── DEV LED PULSE ── */
+(function(){
+  const led = document.getElementById('dev-led');
+  setInterval(()=>{
+    led.setAttribute('fill','#00c853');
+    led.setAttribute('filter','drop-shadow(0 0 4px #00c853)');
+    setTimeout(()=>{
+      led.setAttribute('fill','#1a3040');
+      led.removeAttribute('filter');
+    }, 400);
+  }, 2000);
+})();
+
+/* ── CONTACTS ── */
+function setContacts(energised){
+  const nc = { arm:document.getElementById('nc-arm'), tip:document.getElementById('nc-tip'),
+    cur:document.getElementById('nc-cur'), lbl:document.getElementById('nc-lbl'),
+    sub:document.getElementById('nc-sub'), spk:document.getElementById('nc-spark') };
+  const no = { arm:document.getElementById('no-arm'), tip:document.getElementById('no-tip'),
+    cur:document.getElementById('no-cur'), lbl:document.getElementById('no-lbl'),
+    sub:document.getElementById('no-sub'), spk:document.getElementById('no-spark') };
+
+  if(energised){
+    arm(nc, 35, '#9ab0c8'); nc.cur.style.opacity='0';
+    nc.lbl.textContent='OPEN — inactive'; nc.lbl.setAttribute('fill','#6a85a0');
+    nc.sub.textContent='Alarm circuit off';
+    arm(no, 55, '#1a6b38'); no.cur.style.opacity='0.9';
+    no.lbl.textContent='CLOSED — motor ON'; no.lbl.setAttribute('fill','#1a6b38');
+    no.sub.textContent='Contactor coil energised';
+    spark(no.spk);
+  } else {
+    arm(nc, 55, '#b71c1c'); nc.cur.style.opacity='0.9';
+    nc.lbl.textContent='CLOSED — alarm ON'; nc.lbl.setAttribute('fill','#b71c1c');
+    nc.sub.textContent='Alarm circuit active ⚠';
+    arm(no, 35, '#9ab0c8'); no.cur.style.opacity='0';
+    no.lbl.textContent='OPEN — motor OFF'; no.lbl.setAttribute('fill','#b71c1c');
+    no.sub.textContent='Contactor drops out 🛑';
+    spark(no.spk); spark(nc.spk);
+  }
+}
+function arm(c, y2, col){
+  c.arm.setAttribute('y2',y2); c.arm.setAttribute('stroke',col);
+  c.tip.setAttribute('cy',y2); c.tip.setAttribute('fill',col);
+}
+function spark(el){
+  el.setAttribute('opacity','1');
+  setTimeout(()=>el.setAttribute('opacity','0'), 450);
+}
+
+/* ── DEV LED based on relay ── */
+function setDevLed(state){
+  const led = document.getElementById('dev-led');
+  if(state==='on')   { led.setAttribute('fill','#00c853'); }
+  else if(state==='off')  { led.setAttribute('fill','#111'); }
+  else if(state==='fast') { led.setAttribute('fill','#ff9100'); }
+  else if(state==='slow') { led.setAttribute('fill','#9c27b0'); }
+}
+
+/* ── BADGE ── */
+function setBadge(cls){
+  const el = document.getElementById('rbadge');
+  el.className = 'rbadge ' + cls;
+}
+
+/* ── LOG ── */
+function clearLog(){ document.getElementById('log').innerHTML=''; }
+function log(t,c='dim'){
+  const b=document.getElementById('log');
+  const d=document.createElement('div'); d.className=c; d.textContent=t;
+  b.appendChild(d); b.scrollTop=b.scrollHeight;
+}
+
+/* ── TIMERS ── */
+let raf=null;
+function stopT(){
+  if(raf){cancelAnimationFrame(raf);raf=null;}
+  document.getElementById('to-wrap').classList.remove('show');
+  document.getElementById('tr-wrap').classList.remove('show');
+}
+function runBar(wId,bId,nId,dur,cb){
+  stopT();
+  document.getElementById(wId).classList.add('show');
+  const bar=document.getElementById(bId), num=document.getElementById(nId);
+  bar.style.width='0%';
+  const t0=performance.now();
+  (function tick(now){
+    const e=Math.min((now-t0)/1000,dur);
+    bar.style.width=(e/dur*100)+'%'; num.textContent=e.toFixed(1);
+    if(e<dur){raf=requestAnimationFrame(tick);}
+    else{raf=null;if(cb)cb();}
+  })(performance.now());
+}
+
+/* ── BUTTONS ── */
+const BK=['ok','pl','as','sq','rs'];
+function resetBtns(){
+  BK.forEach(k=>{
+    document.getElementById('btn-'+k).className='sbtn';
+    document.getElementById('dot-'+k).className='dot';
+  });
+}
+
+let ST='ok';
+
+/* ── SIMULATOR ── */
+function sim(k){
+  stopT(); resetBtns(); clearLog();
+  if(k==='ok'){
+    ST='ok';
+    document.getElementById('btn-ok').className='sbtn s-ok';
+    document.getElementById('dot-ok').className='dot on';
+    setContacts(true); setDevLed('on'); setBadge('energised');
+    log('[ SM-301 ] All phases normal','info');
+    log('R: 240V ✓   Y: 240V ✓   B: 240V ✓','ok');
+    log('Sequence: RYB ✓  |  Balance: OK','ok');
+    log('→ LED: STEADY ON','ok');
+    log('→ 15–18 NO: CLOSED → Motor RUNNING ✓','ok');
+    log('→ 15–16 NC: OPEN   → Alarm inactive','dim');
+  } else if(k==='pl'){
+    ST='fault';
+    document.getElementById('btn-pl').className='sbtn s-fault';
+    document.getElementById('dot-pl').className='dot fast';
+    setDevLed('off'); setBadge('counting');
+    log('[ FAULT ] Phase loss detected!','bad');
+    log('R: 240V ✓   Y: 0V ✗ ← MISSING   B: 240V ✓','bad');
+    log('⚠ Operate Time TO = 7s counting...','warn');
+    runBar('to-wrap','to-bar','to-num',7,()=>{
+      setContacts(false); setDevLed('off'); setBadge('tripped');
+      document.getElementById('dot-pl').className='dot off';
+      log('[ TRIP ] Relay de-energised!','bad');
+      log('→ LED: OFF','bad');
+      log('→ 15–18 NO: OPENED → Motor STOPPED 🛑','bad');
+      log('→ 15–16 NC: CLOSED → Alarm active ⚠','warn');
+    });
+  } else if(k==='as'){
+    ST='fault';
+    document.getElementById('btn-as').className='sbtn s-warn';
+    document.getElementById('dot-as').className='dot fast';
+    setDevLed('fast'); setBadge('counting');
+    log('[ FAULT ] Voltage asymmetry!','warn');
+    log('R: 240V ✓   Y: 165V ← LOW   B: 240V ✓','warn');
+    log('Δ = 75V  >  65V threshold','warn');
+    log('⚠ Operate Time TO = 7s counting...','warn');
+    runBar('to-wrap','to-bar','to-num',7,()=>{
+      setContacts(false); setDevLed('fast'); setBadge('tripped');
+      log('[ TRIP ] Relay de-energised!','bad');
+      log('→ LED: FAST BLINK','warn');
+      log('→ 15–18 NO: OPENED → Motor STOPPED 🛑','bad');
+      log('→ 15–16 NC: CLOSED → Alarm active ⚠','warn');
+    });
+  } else if(k==='sq'){
+    ST='fault';
+    document.getElementById('btn-sq').className='sbtn s-fault';
+    document.getElementById('dot-sq').className='dot slow';
+    setDevLed('slow'); setBadge('counting');
+    log('[ FAULT ] Wrong phase sequence!','bad');
+    log('Detected: R→B→Y  |  Expected: R→Y→B','bad');
+    log('Motor would run REVERSE!','bad');
+    log('⚠ Operate Time TO = 7s counting...','warn');
+    runBar('to-wrap','to-bar','to-num',7,()=>{
+      setContacts(false); setDevLed('slow'); setBadge('tripped');
+      log('[ TRIP ] Relay de-energised!','bad');
+      log('→ LED: SLOW BLINK','warn');
+      log('→ 15–18 NO: OPENED → Motor BLOCKED 🛑','bad');
+      log('→ 15–16 NC: CLOSED → Alarm active ⚠','warn');
+    });
+  } else if(k==='rs'){
+    if(ST!=='fault'){ log('No active fault to restore.','dim'); return; }
+    document.getElementById('btn-rs').className='sbtn s-restore';
+    document.getElementById('dot-rs').className='dot on';
+    setBadge('releasing');
+    log('[ SUPPLY OK ] Fault cleared!','info');
+    log('R: 240V ✓   Y: 240V ✓   B: 240V ✓','ok');
+    log('⏱ Release Time TR = 4s counting...','info');
+    log('  (Waiting for supply to stabilise)','dim');
+    runBar('tr-wrap','tr-bar','tr-num',4,()=>{
+      ST='ok'; setContacts(true); setDevLed('on'); setBadge('energised');
+      log('[ RESET ] Relay re-energised!','ok');
+      log('→ LED: STEADY ON','ok');
+      log('→ 15–18 NO: CLOSED → Motor RUNNING ✓','ok');
+      log('→ 15–16 NC: OPEN   → Alarm inactive','dim');
+    });
+  }
+}
+
+// Init
+setContacts(true);
+log('[ SM-301 ONLINE ] System healthy','ok');
+log('→ 15-18 CLOSED · 15-16 OPEN · Running','ok');
+log('Press a scenario button to simulate...','dim');
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

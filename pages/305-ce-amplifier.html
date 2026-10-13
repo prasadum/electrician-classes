@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CE Amplifier</title>
+<meta name="section" content="Electronics">
+<meta name="section-order" content="3">
+<meta name="order" content="5">
+<meta name="description" content="Transistor in common-emitter configuration">
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:wght@300;400;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Malayalam:wght@300;400;600&family=Noto+Sans+Devanagari:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0f14;--surface:#13161e;--surface2:#1a1e2a;--border:#252a38;--accent:#e8b84b;--accent2:#4be8a0;--accent3:#4b9ee8;--text:#e8e4d9;--text-dim:#8a8578;--text-mid:#b8b2a4;--danger:#e84b6a;--correct:#4be8a0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Source Serif 4',Georgia,serif;font-weight:300;min-height:100vh;overflow-x:hidden;}
+body.lang-ml{font-family:'Noto Sans Malayalam',Georgia,serif;}
+body.lang-hi{font-family:'Noto Sans Devanagari',Georgia,serif;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(232,184,75,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(232,184,75,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrapper{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:36px 24px 100px;}
+.lang-bar{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-bottom:20px;}
+.lang-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);}
+.lang-select{background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:8px 34px 8px 13px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a8578'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;transition:border-color .2s;}
+.lang-select:focus{border-color:var(--accent);}
+.lang-select option{background:#1a1e2a;}
+.header{text-align:center;margin-bottom:36px;padding-bottom:30px;border-bottom:1px solid var(--border);}
+.header-tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:block;}
+.header h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4.5vw,40px);font-weight:700;color:var(--text);line-height:1.2;margin-bottom:10px;}
+.header h1 em{color:var(--accent);font-style:normal;}
+.header p{color:var(--text-mid);font-size:15px;line-height:1.8;max-width:580px;margin:0 auto;}
+body.lang-ml .header p,body.lang-hi .header p{font-size:14px;line-height:2;}
+.progress-wrap{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:14px 20px;margin-bottom:28px;display:flex;align-items:center;gap:14px;}
+.progress-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;white-space:nowrap;}
+.progress-bar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .6s ease;}
+.progress-count{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);white-space:nowrap;}
+/* Module tabs */
+.module-tabs{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap;}
+.mod-tab{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:6px 12px;border:1px solid var(--border);border-radius:2px;cursor:pointer;color:var(--text-dim);background:transparent;transition:all .2s;}
+.mod-tab:hover{border-color:var(--accent);color:var(--accent);}
+.mod-tab.active{background:var(--accent);border-color:var(--accent);color:var(--bg);}
+.mod-tab.done{border-color:var(--correct);color:var(--correct);}
+#lessonArea{animation:fadeIn .35s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.lesson-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:20px;}
+.lesson-num{font-family:'Playfair Display',serif;font-size:40px;font-weight:700;color:var(--border);line-height:1;flex-shrink:0;}
+.lesson-title{font-family:'Playfair Display',serif;font-size:clamp(17px,3vw,24px);font-weight:600;color:var(--text);line-height:1.3;margin-bottom:4px;}
+body.lang-ml .lesson-title,body.lang-hi .lesson-title{font-family:inherit;font-size:clamp(15px,3vw,20px);}
+.lesson-subtitle{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+.content-block{background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:20px 24px;margin-bottom:16px;line-height:1.85;font-size:15px;color:var(--text-mid);}
+body.lang-ml .content-block,body.lang-hi .content-block{font-size:14px;line-height:2;}
+.content-block p{margin-bottom:10px;}
+.content-block p:last-child{margin-bottom:0;}
+.analogy-box{background:rgba(75,158,232,.07);border:1px solid rgba(75,158,232,.2);border-left:3px solid var(--accent3);border-radius:2px;padding:14px 18px;margin:12px 0;font-size:14px;color:var(--text-mid);line-height:1.85;}
+body.lang-ml .analogy-box,body.lang-hi .analogy-box{font-size:13px;line-height:2;}
+.analogy-tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--accent3);margin-bottom:6px;display:block;}
+.formula{font-family:'JetBrains Mono',monospace;background:var(--surface2);border:1px solid var(--border);padding:11px 16px;border-radius:2px;margin:10px 0;font-size:13px;color:var(--accent2);text-align:center;letter-spacing:.5px;}
+.diagram-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:2px;padding:18px;margin:16px 0;text-align:center;}
+.diagram-wrap svg{max-width:100%;height:auto;}
+.diagram-caption{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--text-dim);margin-top:8px;text-transform:uppercase;}
+.question-block{background:var(--surface2);border:1px solid var(--border);border-top:2px solid var(--accent);border-radius:2px;padding:20px 24px;margin-bottom:16px;}
+.question-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.question-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.question-text{font-size:16px;color:var(--text);line-height:1.75;margin-bottom:16px;}
+body.lang-ml .question-text,body.lang-hi .question-text{font-size:14px;line-height:2;}
+.options{display:flex;flex-direction:column;gap:7px;margin-bottom:12px;}
+.opt{background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:11px 15px;color:var(--text-mid);font-family:inherit;font-size:14px;cursor:pointer;text-align:left;transition:all .2s;display:flex;align-items:flex-start;gap:10px;line-height:1.6;width:100%;}
+body.lang-ml .opt,body.lang-hi .opt{font-size:13px;}
+.opt:hover:not(:disabled){border-color:var(--accent);color:var(--text);background:rgba(232,184,75,.05);}
+.opt-letter{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);width:22px;height:22px;min-width:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.opt.correct{border-color:var(--correct);background:rgba(75,232,160,.08);color:var(--correct);}
+.opt.correct .opt-letter{background:var(--correct);color:var(--bg);border-color:var(--correct);}
+.opt.wrong{border-color:var(--danger);background:rgba(232,75,106,.08);color:var(--danger);opacity:.6;}
+.opt:disabled{cursor:default;}
+.feedback{padding:14px 18px;border-radius:2px;margin-top:10px;line-height:1.8;font-size:14px;display:none;}
+body.lang-ml .feedback,body.lang-hi .feedback{font-size:13px;line-height:2;}
+.feedback.show-correct{display:block;background:rgba(75,232,160,.08);border:1px solid rgba(75,232,160,.25);border-left:3px solid var(--correct);color:var(--text-mid);}
+.feedback.show-wrong{display:block;background:rgba(232,75,106,.08);border:1px solid rgba(232,75,106,.25);border-left:3px solid var(--danger);color:var(--text-mid);}
+.hint-btn{background:transparent;border:1px solid var(--border);border-radius:2px;padding:6px 12px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-bottom:10px;display:inline-block;}
+.hint-btn:hover{border-color:var(--accent3);color:var(--accent3);}
+.hint-box{display:none;background:rgba(75,158,232,.06);border:1px solid rgba(75,158,232,.2);border-left:3px solid var(--accent3);padding:11px 15px;margin-bottom:10px;font-size:13px;color:var(--text-mid);line-height:1.8;border-radius:2px;}
+.hint-box.open{display:block;}
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:18px;border-top:1px solid var(--border);}
+.nav-btn{background:transparent;border:1px solid var(--border);border-radius:2px;padding:9px 18px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.nav-btn:hover:not(:disabled){border-color:var(--text-dim);color:var(--text);}
+.nav-btn:disabled{opacity:.25;cursor:default;}
+.nav-btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:500;}
+.nav-btn.primary:hover:not(:disabled){opacity:.85;}
+.data-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;}
+.data-table th{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);}
+.data-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);line-height:1.5;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table td b{color:var(--text);}
+.completion{text-align:center;padding:48px 28px;}
+.completion-icon{font-size:54px;margin-bottom:16px;}
+.completion h2{font-family:'Playfair Display',serif;font-size:30px;color:var(--text);margin-bottom:10px;}
+.completion p{color:var(--text-mid);font-size:15px;line-height:1.75;max-width:460px;margin:0 auto 20px;}
+.score-badge{display:inline-block;background:rgba(232,184,75,.1);border:1px solid rgba(232,184,75,.3);border-radius:2px;padding:8px 24px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);letter-spacing:2px;margin-bottom:20px;}
+.restart-btn{background:var(--accent);border:none;border-radius:2px;padding:11px 26px;color:var(--bg);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
+.restart-btn:hover{opacity:.85;}
+.lesson-dots{display:flex;flex-wrap:wrap;gap:5px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border);}
+.dot{font-family:'JetBrains Mono',monospace;font-size:9px;width:26px;height:26px;border:1px solid var(--border);border-radius:2px;background:transparent;color:var(--text-dim);cursor:pointer;transition:all .15s;padding:0;}
+.dot:hover{border-color:var(--accent);color:var(--accent);}
+.dot-cur{border-color:var(--accent)!important;background:var(--accent)!important;color:var(--bg)!important;}
+.dot-done{border-color:var(--correct);color:var(--correct);}
+@media(max-width:600px){.wrapper{padding:16px 12px 70px;}.content-block,.question-block{padding:14px 16px;}}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="lang-bar">
+    <span class="lang-label">Language</span>
+    <select class="lang-select" id="langSelect" onchange="setLang(this.value)">
+      <option value="en">🇬🇧 English</option>
+      <option value="ml">🇮🇳 മലയാളം</option>
+      <option value="hi">🇮🇳 हिन्दी</option>
+    </select>
+  </div>
+  <div class="header">
+    <span class="header-tag" id="hTag"></span>
+    <h1 id="hTitle"></h1>
+    <p id="hSub"></p>
+  </div>
+  <div class="progress-wrap">
+    <span class="progress-label" id="progLabel"></span>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-count" id="progressCount">0 / 12</span>
+  </div>
+  <div class="module-tabs" id="modTabs"></div>
+  <div id="lessonArea"></div>
+</div>
+<div style="display:none">
+  <div id="s_ce"><svg width='400' height='200' viewBox='0 0 400 200'><defs>
+<marker id='ag' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e8b84b'/></marker>
+<marker id='agn' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4be8a0'/></marker>
+<marker id='ab' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4b9ee8'/></marker>
+<marker id='ar' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e84b6a'/></marker>
+</defs>
+<line x1='175' y1='55' x2='175' y2='140' stroke='#e8b84b' stroke-width='2.5'/>
+<line x1='90' y1='97' x2='175' y2='97' stroke='#4b9ee8' stroke-width='2'/>
+<line x1='175' y1='72' x2='255' y2='50' stroke='#4be8a0' stroke-width='2'/>
+<line x1='175' y1='122' x2='255' y2='144' stroke='#4be8a0' stroke-width='2'/>
+<polygon points='227,136 241,143 229,151' fill='#4be8a0'/>
+<text x='55' y='101' fill='#4b9ee8' font-family='JetBrains Mono' font-size='12'>Base</text>
+<text x='260' y='48' fill='#4be8a0' font-family='JetBrains Mono' font-size='11'>Collector</text>
+<text x='260' y='153' fill='#4be8a0' font-family='JetBrains Mono' font-size='11'>Emitter</text>
+<path d='M80 80 Q65 80 65 97 Q65 114 80 114' fill='none' stroke='#4b9ee8' stroke-width='1.5' stroke-dasharray='4,3'/>
+<text x='8' y='95' fill='#4b9ee8' font-family='JetBrains Mono' font-size='9'>INPUT</text>
+<path d='M265 38 Q375 38 375 97 Q375 156 265 156' fill='none' stroke='#4be8a0' stroke-width='1.5' stroke-dasharray='4,3'/>
+<text x='344' y='101' fill='#4be8a0' font-family='JetBrains Mono' font-size='9'>OUTPUT</text>
+<line x1='255' y1='144' x2='255' y2='185' stroke='#e8b84b' stroke-width='1.5' stroke-dasharray='3,3'/>
+<line x1='90' y1='97' x2='90' y2='185' stroke='#4b9ee8' stroke-width='1.5' stroke-dasharray='3,3'/>
+<line x1='90' y1='185' x2='255' y2='185' stroke='#e8b84b' stroke-width='1.5'/>
+<text x='138' y='198' fill='#e8b84b' font-family='JetBrains Mono' font-size='9'>COMMON EMITTER</text>
+</svg></div>
+  <div id="s_inp"><svg width='380' height='210' viewBox='0 0 380 210'><defs>
+<marker id='ag' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e8b84b'/></marker>
+<marker id='agn' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4be8a0'/></marker>
+<marker id='ab' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4b9ee8'/></marker>
+<marker id='ar' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e84b6a'/></marker>
+</defs>
+<line x1='50' y1='15' x2='50' y2='180' stroke='#252a38' stroke-width='1.5'/>
+<line x1='50' y1='180' x2='345' y2='180' stroke='#252a38' stroke-width='1.5'/>
+<polygon points='50,9 45,21 55,21' fill='#252a38'/>
+<polygon points='351,180 339,175 339,185' fill='#252a38'/>
+<text x='8' y='100' fill='#8a8578' font-family='JetBrains Mono' font-size='9' transform='rotate(-90,8,100)'>I_B (µA)</text>
+<text x='318' y='195' fill='#8a8578' font-family='JetBrains Mono' font-size='9'>V_BE (V)</text>
+<path d='M50,180 Q168,178 198,175 Q228,171 248,150 Q268,117 288,62 Q298,33 308,17' fill='none' stroke='#e8b84b' stroke-width='2.5'/>
+<line x1='228' y1='175' x2='228' y2='183' stroke='#4b9ee8' stroke-width='1.5'/>
+<text x='214' y='196' fill='#4b9ee8' font-family='JetBrains Mono' font-size='9'>0.6V</text>
+<circle cx='235' cy='158' r='3.5' fill='none' stroke='#4b9ee8' stroke-width='1.5'/>
+<text x='241' y='148' fill='#4b9ee8' font-family='JetBrains Mono' font-size='9'>knee</text>
+<text x='32' y='144' fill='#8a8578' font-family='JetBrains Mono' font-size='8'>20</text>
+<text x='32' y='104' fill='#8a8578' font-family='JetBrains Mono' font-size='8'>40</text>
+<text x='32' y='64' fill='#8a8578' font-family='JetBrains Mono' font-size='8'>60</text>
+</svg></div>
+  <div id="s_out"><svg width='400' height='230' viewBox='0 0 400 230'><defs>
+<marker id='ag' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e8b84b'/></marker>
+<marker id='agn' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4be8a0'/></marker>
+<marker id='ab' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4b9ee8'/></marker>
+<marker id='ar' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e84b6a'/></marker>
+</defs>
+<line x1='50' y1='14' x2='50' y2='200' stroke='#252a38' stroke-width='1.5'/>
+<line x1='50' y1='200' x2='378' y2='200' stroke='#252a38' stroke-width='1.5'/>
+<polygon points='50,8 45,20 55,20' fill='#252a38'/>
+<polygon points='384,200 372,195 372,205' fill='#252a38'/>
+<text x='8' y='112' fill='#8a8578' font-family='JetBrains Mono' font-size='9' transform='rotate(-90,8,112)'>I_C (mA)</text>
+<text x='350' y='214' fill='#8a8578' font-family='JetBrains Mono' font-size='9'>V_CE (V)</text>
+<path d='M50,200 Q76,47 96,41 L358,38' fill='none' stroke='#e84b6a' stroke-width='1.8'/>
+<text x='362' y='42' fill='#e84b6a' font-family='JetBrains Mono' font-size='9'>40µA</text>
+<path d='M50,200 Q76,78 96,72 L358,69' fill='none' stroke='#e8b84b' stroke-width='1.8'/>
+<text x='362' y='73' fill='#e8b84b' font-family='JetBrains Mono' font-size='9'>30µA</text>
+<path d='M50,200 Q76,108 96,102 L358,100' fill='none' stroke='#4be8a0' stroke-width='1.8'/>
+<text x='362' y='104' fill='#4be8a0' font-family='JetBrains Mono' font-size='9'>20µA</text>
+<path d='M50,200 Q76,138 96,132 L358,130' fill='none' stroke='#4b9ee8' stroke-width='1.8'/>
+<text x='362' y='134' fill='#4b9ee8' font-family='JetBrains Mono' font-size='9'>10µA</text>
+<line x1='50' y1='196' x2='358' y2='193' stroke='#8a8578' stroke-width='1.2' stroke-dasharray='4,3'/>
+<text x='362' y='197' fill='#8a8578' font-family='JetBrains Mono' font-size='9'>0</text>
+<line x1='103' y1='14' x2='103' y2='200' stroke='#252a38' stroke-width='1' stroke-dasharray='3,3'/>
+<text x='52' y='217' fill='#e8b84b' font-family='JetBrains Mono' font-size='8'>SAT</text>
+<text x='185' y='217' fill='#4be8a0' font-family='JetBrains Mono' font-size='8'>ACTIVE REGION</text>
+</svg></div>
+  <div id="s_reg"><svg width='400' height='200' viewBox='0 0 400 200'><defs>
+<marker id='ag' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e8b84b'/></marker>
+<marker id='agn' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4be8a0'/></marker>
+<marker id='ab' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4b9ee8'/></marker>
+<marker id='ar' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e84b6a'/></marker>
+</defs>
+<rect x='50' y='148' width='305' height='22' fill='rgba(138,133,120,.08)' rx='1'/>
+<text x='200' y='163' fill='#8a8578' font-family='JetBrains Mono' font-size='9' text-anchor='middle'>CUTOFF — transistor OFF</text>
+<rect x='50' y='14' width='52' height='136' fill='rgba(232,184,75,.06)' rx='1'/>
+<text x='76' y='176' fill='#e8b84b' font-family='JetBrains Mono' font-size='8' text-anchor='middle'>SAT</text>
+<rect x='102' y='14' width='253' height='136' fill='rgba(75,232,160,.04)' rx='1'/>
+<text x='228' y='176' fill='#4be8a0' font-family='JetBrains Mono' font-size='8' text-anchor='middle'>ACTIVE — AMPLIFICATION</text>
+<path d='M50,172 Q74,50 94,44 L355,40' fill='none' stroke='#e84b6a' stroke-width='1.5' opacity='.6'/>
+<path d='M50,172 Q74,80 94,74 L355,71' fill='none' stroke='#e8b84b' stroke-width='1.5' opacity='.6'/>
+<path d='M50,172 Q74,108 94,103 L355,101' fill='none' stroke='#4be8a0' stroke-width='1.5' opacity='.6'/>
+<path d='M50,172 Q74,137 94,132 L355,130' fill='none' stroke='#4b9ee8' stroke-width='1.5' opacity='.6'/>
+<line x1='102' y1='10' x2='102' y2='148' stroke='#e8b84b' stroke-width='1.5' stroke-dasharray='4,3'/>
+<line x1='50' y1='10' x2='50' y2='170' stroke='#252a38' stroke-width='1.5'/>
+<line x1='50' y1='170' x2='360' y2='170' stroke='#252a38' stroke-width='1.5'/>
+</svg></div>
+  <div id="s_base"><svg width='420' height='178' viewBox='0 0 420 178'><defs>
+<marker id='ag' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e8b84b'/></marker>
+<marker id='agn' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4be8a0'/></marker>
+<marker id='ab' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4b9ee8'/></marker>
+<marker id='ar' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e84b6a'/></marker>
+</defs>
+<rect x='22' y='22' width='118' height='120' fill='rgba(75,158,232,.1)' rx='2' stroke='#4b9ee8' stroke-width='1'/>
+<rect x='140' y='22' width='48' height='120' fill='rgba(232,184,75,.1)' rx='2' stroke='#e8b84b' stroke-width='1.5'/>
+<rect x='188' y='22' width='210' height='120' fill='rgba(75,232,160,.1)' rx='2' stroke='#4be8a0' stroke-width='1'/>
+<text x='81' y='14' fill='#4b9ee8' font-family='JetBrains Mono' font-size='10' text-anchor='middle'>EMITTER</text>
+<text x='164' y='14' fill='#e8b84b' font-family='JetBrains Mono' font-size='9' text-anchor='middle'>BASE</text>
+<text x='164' y='155' fill='#e8b84b' font-family='JetBrains Mono' font-size='8' text-anchor='middle'>~1µm</text>
+<text x='293' y='14' fill='#4be8a0' font-family='JetBrains Mono' font-size='10' text-anchor='middle'>COLLECTOR</text>
+<line x1='140' y1='62' x2='190' y2='62' stroke='#4b9ee8' stroke-width='1.5' marker-end='url(#ab)'/>
+<line x1='190' y1='62' x2='382' y2='62' stroke='#4be8a0' stroke-width='2.5' marker-end='url(#agn)'/>
+<text x='245' y='54' fill='#4be8a0' font-family='JetBrains Mono' font-size='8'>95-99% swept → I_C</text>
+<line x1='140' y1='92' x2='190' y2='92' stroke='#4b9ee8' stroke-width='1.5' marker-end='url(#ab)'/>
+<line x1='190' y1='92' x2='382' y2='92' stroke='#4be8a0' stroke-width='2.5' marker-end='url(#agn)'/>
+<line x1='140' y1='122' x2='190' y2='122' stroke='#4b9ee8' stroke-width='1.5' marker-end='url(#ab)'/>
+<line x1='164' y1='122' x2='164' y2='145' stroke='#e8b84b' stroke-width='1.5' marker-end='url(#ag)'/>
+<text x='50' y='165' fill='#e8b84b' font-family='JetBrains Mono' font-size='8' text-anchor='middle'>1-5% recombine → I_B</text>
+<text x='81' y='88' fill='#4b9ee8' font-family='JetBrains Mono' font-size='10' text-anchor='middle'>I_E</text>
+</svg></div>
+  <div id="s_bias"><svg width='340' height='272' viewBox='0 0 340 272'><defs>
+<marker id='ag' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e8b84b'/></marker>
+<marker id='agn' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4be8a0'/></marker>
+<marker id='ab' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4b9ee8'/></marker>
+<marker id='ar' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e84b6a'/></marker>
+</defs>
+<line x1='170' y1='5' x2='170' y2='22' stroke='#e8b84b' stroke-width='2'/>
+<text x='175' y='17' fill='#e8b84b' font-family='JetBrains Mono' font-size='10'>VCC</text>
+<rect x='157' y='22' width='26' height='38' rx='2' fill='#1a1e2a' stroke='#e8b84b' stroke-width='1.5'/>
+<text x='188' y='45' fill='#e8b84b' font-family='JetBrains Mono' font-size='10'>R1</text>
+<line x1='170' y1='60' x2='170' y2='75' stroke='#e8b84b' stroke-width='2'/>
+<circle cx='170' cy='75' r='3' fill='#e8b84b'/>
+<rect x='157' y='75' width='26' height='38' rx='2' fill='#1a1e2a' stroke='#4b9ee8' stroke-width='1.5'/>
+<text x='188' y='98' fill='#4b9ee8' font-family='JetBrains Mono' font-size='10'>R2</text>
+<line x1='170' y1='113' x2='170' y2='255' stroke='#4b9ee8' stroke-width='1.5'/>
+<line x1='156' y1='255' x2='184' y2='255' stroke='#8a8578' stroke-width='2'/>
+<line x1='161' y1='260' x2='179' y2='260' stroke='#8a8578' stroke-width='1.5'/>
+<line x1='166' y1='265' x2='174' y2='265' stroke='#8a8578' stroke-width='1'/>
+<line x1='170' y1='75' x2='218' y2='75' stroke='#4b9ee8' stroke-width='2'/>
+<line x1='231' y1='48' x2='231' y2='124' stroke='#e8b84b' stroke-width='2.5'/>
+<line x1='218' y1='86' x2='231' y2='86' stroke='#4b9ee8' stroke-width='2'/>
+<line x1='231' y1='63' x2='268' y2='44' stroke='#4be8a0' stroke-width='2'/>
+<line x1='231' y1='109' x2='268' y2='128' stroke='#4be8a0' stroke-width='2'/>
+<polygon points='252,121 266,127 254,135' fill='#4be8a0'/>
+<line x1='268' y1='5' x2='268' y2='44' stroke='#4be8a0' stroke-width='2'/>
+<line x1='268' y1='5' x2='170' y2='5' stroke='#e8b84b' stroke-width='1.5'/>
+<rect x='255' y='5' width='26' height='30' rx='2' fill='#1a1e2a' stroke='#4be8a0' stroke-width='1.5'/>
+<text x='287' y='24' fill='#4be8a0' font-family='JetBrains Mono' font-size='10'>RC</text>
+<line x1='268' y1='128' x2='268' y2='155' stroke='#4be8a0' stroke-width='2'/>
+<rect x='255' y='155' width='26' height='30' rx='2' fill='#1a1e2a' stroke='#e84b6a' stroke-width='1.5'/>
+<text x='287' y='174' fill='#e84b6a' font-family='JetBrains Mono' font-size='10'>RE</text>
+<line x1='268' y1='185' x2='268' y2='255' stroke='#e84b6a' stroke-width='2'/>
+<line x1='268' y1='255' x2='170' y2='255' stroke='#8a8578' stroke-width='1.5'/>
+<path d='M268 142 Q308 142 308 90 Q308 78 288 78' fill='none' stroke='#e84b6a' stroke-width='1.5' stroke-dasharray='4,3' marker-end='url(#ar)'/>
+<text x='295' y='115' fill='#e84b6a' font-family='JetBrains Mono' font-size='8'>feedback</text>
+<text x='175' y='71' fill='#e8b84b' font-family='JetBrains Mono' font-size='8'>VB</text>
+<text x='274' y='70' fill='#4b9ee8' font-family='JetBrains Mono' font-size='8'>VC</text>
+<text x='274' y='135' fill='#4be8a0' font-family='JetBrains Mono' font-size='8'>VE</text>
+</svg></div>
+  <div id="s_ll"><svg width='400' height='248' viewBox='0 0 400 248'><defs>
+<marker id='ag' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e8b84b'/></marker>
+<marker id='agn' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4be8a0'/></marker>
+<marker id='ab' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4b9ee8'/></marker>
+<marker id='ar' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e84b6a'/></marker>
+</defs>
+<line x1='50' y1='14' x2='50' y2='208' stroke='#252a38' stroke-width='1.5'/>
+<line x1='50' y1='208' x2='378' y2='208' stroke='#252a38' stroke-width='1.5'/>
+<polygon points='50,8 45,20 55,20' fill='#252a38'/>
+<polygon points='384,208 372,203 372,213' fill='#252a38'/>
+<text x='8' y='115' fill='#8a8578' font-family='JetBrains Mono' font-size='9' transform='rotate(-90,8,115)'>I_C (mA)</text>
+<text x='350' y='222' fill='#8a8578' font-family='JetBrains Mono' font-size='9'>V_CE (V)</text>
+<path d='M50,208 Q76,58 96,52 L358,49' fill='none' stroke='#e84b6a' stroke-width='1.5' opacity='.4'/>
+<path d='M50,208 Q76,89 96,83 L358,80' fill='none' stroke='#e8b84b' stroke-width='1.5' opacity='.4'/>
+<path d='M50,208 Q76,119 96,113 L358,111' fill='none' stroke='#4be8a0' stroke-width='1.5' opacity='.4'/>
+<path d='M50,208 Q76,149 96,143 L358,141' fill='none' stroke='#4b9ee8' stroke-width='1.5' opacity='.4'/>
+<line x1='50' y1='26' x2='328' y2='208' stroke='#e8b84b' stroke-width='2.5'/>
+<circle cx='50' cy='26' r='5' fill='#e84b6a'/>
+<text x='55' y='23' fill='#e84b6a' font-family='JetBrains Mono' font-size='9'>10mA</text>
+<circle cx='328' cy='208' r='5' fill='#4b9ee8'/>
+<text x='298' y='224' fill='#4b9ee8' font-family='JetBrains Mono' font-size='9'>10V</text>
+<circle cx='189' cy='117' r='7' fill='#4be8a0' opacity='.9'/>
+<line x1='189' y1='117' x2='189' y2='208' stroke='#4be8a0' stroke-width='1' stroke-dasharray='4,3'/>
+<line x1='50' y1='117' x2='189' y2='117' stroke='#4be8a0' stroke-width='1' stroke-dasharray='4,3'/>
+<text x='196' y='114' fill='#4be8a0' font-family='JetBrains Mono' font-size='10'>Q (5V,5mA)</text>
+<path d='M189 117 Q142 87 94 55' fill='none' stroke='#4be8a0' stroke-width='1' stroke-dasharray='3,3' opacity='.5'/>
+<path d='M189 117 Q246 148 302 179' fill='none' stroke='#4be8a0' stroke-width='1' stroke-dasharray='3,3' opacity='.5'/>
+<text x='88' y='44' fill='#4be8a0' font-family='JetBrains Mono' font-size='8' opacity='.8'>+ve swing</text>
+<text x='272' y='192' fill='#4be8a0' font-family='JetBrains Mono' font-size='8' opacity='.8'>-ve swing</text>
+</svg></div>
+  <div id="s_phase"><svg width='420' height='200' viewBox='0 0 420 200'><defs>
+<marker id='ag' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e8b84b'/></marker>
+<marker id='agn' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4be8a0'/></marker>
+<marker id='ab' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4b9ee8'/></marker>
+<marker id='ar' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e84b6a'/></marker>
+</defs>
+<!-- Input signal -->
+<text x='10' y='18' fill='#4b9ee8' font-family='JetBrains Mono' font-size='10'>INPUT V_BE</text>
+<line x1='10' y1='60' x2='195' y2='60' stroke='#252a38' stroke-width='1'/>
+<path d='M20,60 Q40,20 60,60 Q80,100 100,60 Q120,20 140,60 Q160,100 180,60' fill='none' stroke='#4b9ee8' stroke-width='2'/>
+<text x='62' y='16' fill='#4b9ee8' font-family='JetBrains Mono' font-size='8'>+ve half</text>
+<text x='102' y='104' fill='#4b9ee8' font-family='JetBrains Mono' font-size='8'>-ve half</text>
+<!-- Arrow -->
+<text x='200' y='65' fill='#e8b84b' font-family='JetBrains Mono' font-size='18'>→</text>
+<!-- Output signal -->
+<text x='222' y='18' fill='#e84b6a' font-family='JetBrains Mono' font-size='10'>OUTPUT V_CE</text>
+<line x1='222' y1='60' x2='410' y2='60' stroke='#252a38' stroke-width='1'/>
+<path d='M232,60 Q252,100 272,60 Q292,20 312,60 Q332,100 352,60 Q372,20 392,60' fill='none' stroke='#e84b6a' stroke-width='2'/>
+<text x='274' y='104' fill='#e84b6a' font-family='JetBrains Mono' font-size='8'>+ve (inverted)</text>
+<text x='234' y='16' fill='#e84b6a' font-family='JetBrains Mono' font-size='8'>-ve (inverted)</text>
+<!-- 180 label -->
+<text x='168' y='130' fill='#e8b84b' font-family='JetBrains Mono' font-size='10' text-anchor='middle'>180°</text>
+<text x='168' y='143' fill='#e8b84b' font-family='JetBrains Mono' font-size='9' text-anchor='middle'>phase shift</text>
+<!-- Q point movement -->
+<text x='10' y='175' fill='#4b9ee8' font-family='JetBrains Mono' font-size='9'>+ve half: IB↑ IC↑ VCE↓</text>
+<text x='10' y='190' fill='#e84b6a' font-family='JetBrains Mono' font-size='9'>-ve half: IB↓ IC↓ VCE↑</text>
+</svg></div>
+  <div id="s_clip"><svg width='420' height='210' viewBox='0 0 420 210'><defs>
+<marker id='ag' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e8b84b'/></marker>
+<marker id='agn' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4be8a0'/></marker>
+<marker id='ab' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4b9ee8'/></marker>
+<marker id='ar' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e84b6a'/></marker>
+</defs>
+<!-- Correct Q -->
+<text x='5' y='14' fill='#4be8a0' font-family='JetBrains Mono' font-size='9'>Q at midpoint ✓</text>
+<line x1='5' y1='70' x2='130' y2='70' stroke='#252a38' stroke-width='1'/>
+<line x1='5' y1='40' x2='5' y2='105' stroke='#252a38' stroke-width='1'/>
+<path d='M15,70 Q30,40 45,70 Q60,100 75,70 Q90,40 105,70 Q120,100 125,70' fill='none' stroke='#4be8a0' stroke-width='2'/>
+<text x='55' y='120' fill='#4be8a0' font-family='JetBrains Mono' font-size='8' text-anchor='middle'>no clipping</text>
+<!-- Q near saturation -->
+<text x='145' y='14' fill='#e84b6a' font-family='JetBrains Mono' font-size='9'>Q near saturation</text>
+<line x1='145' y1='70' x2='270' y2='70' stroke='#252a38' stroke-width='1'/>
+<line x1='145' y1='40' x2='145' y2='105' stroke='#252a38' stroke-width='1'/>
+<line x1='145' y1='42' x2='270' y2='42' stroke='#e84b6a' stroke-width='1' stroke-dasharray='3,2' opacity='.5'/>
+<path d='M155,70 Q165,42 175,42 Q185,42 195,70 Q205,98 215,70 Q225,42 235,42 Q245,42 255,70' fill='none' stroke='#e84b6a' stroke-width='2'/>
+<text x='200' y='120' fill='#e84b6a' font-family='JetBrains Mono' font-size='8' text-anchor='middle'>+ve clipped ✗</text>
+<!-- Q near cutoff -->
+<text x='285' y='14' fill='#e8b84b' font-family='JetBrains Mono' font-size='9'>Q near cutoff</text>
+<line x1='285' y1='70' x2='415' y2='70' stroke='#252a38' stroke-width='1'/>
+<line x1='285' y1='40' x2='285' y2='105' stroke='#252a38' stroke-width='1'/>
+<line x1='285' y1='100' x2='415' y2='100' stroke='#e8b84b' stroke-width='1' stroke-dasharray='3,2' opacity='.5'/>
+<path d='M295,70 Q310,40 325,70 Q340,100 350,100 Q360,100 375,70 Q390,40 405,70' fill='none' stroke='#e8b84b' stroke-width='2'/>
+<text x='350' y='120' fill='#e8b84b' font-family='JetBrains Mono' font-size='8' text-anchor='middle'>-ve clipped ✗</text>
+<!-- Labels -->
+<text x='5' y='148' fill='#4be8a0' font-family='JetBrains Mono' font-size='9'>Both halves intact</text>
+<text x='145' y='148' fill='#e84b6a' font-family='JetBrains Mono' font-size='9'>Top flattened</text>
+<text x='285' y='148' fill='#e8b84b' font-family='JetBrains Mono' font-size='9'>Bottom flattened</text>
+</svg></div>
+  <div id="s_gain"><svg width='400' height='185' viewBox='0 0 400 185'><defs>
+<marker id='ag' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e8b84b'/></marker>
+<marker id='agn' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4be8a0'/></marker>
+<marker id='ab' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4b9ee8'/></marker>
+<marker id='ar' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e84b6a'/></marker>
+</defs>
+<!-- Input small signal -->
+<text x='8' y='15' fill='#4b9ee8' font-family='JetBrains Mono' font-size='9'>Input (small)</text>
+<line x1='8' y1='55' x2='120' y2='55' stroke='#252a38' stroke-width='1'/>
+<path d='M18,55 Q28,42 38,55 Q48,68 58,55 Q68,42 78,55 Q88,68 98,55' fill='none' stroke='#4b9ee8' stroke-width='1.5'/>
+<text x='64' y='80' fill='#4b9ee8' font-family='JetBrains Mono' font-size='8' text-anchor='middle'>1mV</text>
+<!-- Transistor box -->
+<rect x='138' y='30' width='80' height='50' rx='2' fill='#1a1e2a' stroke='#e8b84b' stroke-width='1.5'/>
+<text x='178' y='51' fill='#e8b84b' font-family='JetBrains Mono' font-size='9' text-anchor='middle'>Av = RC/re</text>
+<text x='178' y='65' fill='#8a8578' font-family='JetBrains Mono' font-size='9' text-anchor='middle'>= 1000/25 = 40</text>
+<!-- Arrows -->
+<line x1='118' y1='55' x2='136' y2='55' stroke='#4b9ee8' stroke-width='1.5' marker-end='url(#ab)'/>
+<line x1='220' y1='55' x2='238' y2='55' stroke='#4be8a0' stroke-width='1.5' marker-end='url(#agn)'/>
+<!-- Output large signal -->
+<text x='240' y='15' fill='#4be8a0' font-family='JetBrains Mono' font-size='9'>Output (large, inverted)</text>
+<line x1='240' y1='55' x2='390' y2='55' stroke='#252a38' stroke-width='1'/>
+<path d='M250,55 Q268,82 286,55 Q304,28 322,55 Q340,82 358,55 Q376,28 382,55' fill='none' stroke='#e84b6a' stroke-width='2.5'/>
+<text x='316' y='88' fill='#e84b6a' font-family='JetBrains Mono' font-size='8' text-anchor='middle'>40mV (inverted)</text>
+<!-- Formula -->
+<text x='200' y='120' fill='#e8b84b' font-family='JetBrains Mono' font-size='11' text-anchor='middle'>Av = RC / re = 1000 / 25 = 40</text>
+<text x='200' y='140' fill='#8a8578' font-family='JetBrains Mono' font-size='10' text-anchor='middle'>re = 26mV / IC (thermal voltage)</text>
+<text x='200' y='158' fill='#4b9ee8' font-family='JetBrains Mono' font-size='10' text-anchor='middle'>Higher RC or lower re → higher gain</text>
+</svg></div>
+  <div id="s_couple"><svg width='420' height='195' viewBox='0 0 420 195'><defs>
+<marker id='ag' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e8b84b'/></marker>
+<marker id='agn' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4be8a0'/></marker>
+<marker id='ab' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4b9ee8'/></marker>
+<marker id='ar' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e84b6a'/></marker>
+</defs>
+<!-- Mic -->
+<circle cx='28' cy='80' r='16' fill='#1a1e2a' stroke='#4b9ee8' stroke-width='1.5'/>
+<text x='28' y='85' fill='#4b9ee8' font-family='JetBrains Mono' font-size='9' text-anchor='middle'>MIC</text>
+<line x1='44' y1='80' x2='68' y2='80' stroke='#4b9ee8' stroke-width='1.5'/>
+<!-- C1 coupling -->
+<line x1='68' y1='68' x2='68' y2='92' stroke='#e8b84b' stroke-width='2.5'/>
+<line x1='76' y1='68' x2='76' y2='92' stroke='#e8b84b' stroke-width='2.5'/>
+<line x1='76' y1='80' x2='100' y2='80' stroke='#4b9ee8' stroke-width='1.5'/>
+<text x='72' y='108' fill='#e8b84b' font-family='JetBrains Mono' font-size='8' text-anchor='middle'>C1</text>
+<text x='72' y='118' fill='#e8b84b' font-family='JetBrains Mono' font-size='7' text-anchor='middle'>coupling</text>
+<!-- Transistor -->
+<line x1='116' y1='52' x2='116' y2='112' stroke='#e8b84b' stroke-width='2'/>
+<line x1='100' y1='82' x2='116' y2='82' stroke='#4b9ee8' stroke-width='1.5'/>
+<line x1='116' y1='65' x2='148' y2='48' stroke='#4be8a0' stroke-width='1.5'/>
+<line x1='116' y1='98' x2='148' y2='115' stroke='#4be8a0' stroke-width='1.5'/>
+<polygon points='135,109 147,114 136,120' fill='#4be8a0'/>
+<!-- RC -->
+<line x1='148' y1='15' x2='148' y2='48' stroke='#4be8a0' stroke-width='1.5'/>
+<rect x='136' y='15' width='24' height='28' rx='2' fill='#1a1e2a' stroke='#4be8a0' stroke-width='1.5'/>
+<text x='166' y='32' fill='#4be8a0' font-family='JetBrains Mono' font-size='9'>RC</text>
+<line x1='100' y1='5' x2='270' y2='5' stroke='#e8b84b' stroke-width='1.5'/>
+<line x1='100' y1='5' x2='100' y2='82' stroke='#e8b84b' stroke-width='1' stroke-dasharray='3,2'/>
+<line x1='148' y1='5' x2='148' y2='15' stroke='#4be8a0' stroke-width='1.5'/>
+<text x='130' y='3' fill='#e8b84b' font-family='JetBrains Mono' font-size='8'>VCC</text>
+<!-- RE + CE -->
+<line x1='148' y1='115' x2='148' y2='140' stroke='#4be8a0' stroke-width='1.5'/>
+<rect x='136' y='140' width='24' height='22' rx='2' fill='#1a1e2a' stroke='#e84b6a' stroke-width='1.5'/>
+<text x='166' y='155' fill='#e84b6a' font-family='JetBrains Mono' font-size='9'>RE</text>
+<line x1='136' y1='151' x2='112' y2='151' stroke='#e84b6a' stroke-width='1'/>
+<line x1='112' y1='143' x2='112' y2='159' stroke='#e8b84b' stroke-width='2'/>
+<line x1='106' y1='143' x2='106' y2='159' stroke='#e8b84b' stroke-width='2'/>
+<text x='96' y='172' fill='#e8b84b' font-family='JetBrains Mono' font-size='7'>CE bypass</text>
+<line x1='148' y1='162' x2='148' y2='185' stroke='#e84b6a' stroke-width='1.5'/>
+<line x1='100' y1='185' x2='270' y2='185' stroke='#8a8578' stroke-width='1.5'/>
+<line x1='100' y1='82' x2='100' y2='185' stroke='#8a8578' stroke-width='1' stroke-dasharray='3,2'/>
+<line x1='148' y1='185' x2='148' y2='180' stroke='#8a8578' stroke-width='1.5'/>
+<!-- C2 coupling -->
+<line x1='186' y1='80' x2='198' y2='80' stroke='#4be8a0' stroke-width='1.5'/>
+<line x1='198' y1='68' x2='198' y2='92' stroke='#e8b84b' stroke-width='2.5'/>
+<line x1='206' y1='68' x2='206' y2='92' stroke='#e8b84b' stroke-width='2.5'/>
+<line x1='148' y1='80' x2='186' y2='80' stroke='#4be8a0' stroke-width='1.5'/>
+<text x='202' y='108' fill='#e8b84b' font-family='JetBrains Mono' font-size='8' text-anchor='middle'>C2</text>
+<text x='202' y='118' fill='#e8b84b' font-family='JetBrains Mono' font-size='7' text-anchor='middle'>coupling</text>
+<line x1='206' y1='80' x2='240' y2='80' stroke='#4be8a0' stroke-width='1.5'/>
+<!-- Speaker -->
+<rect x='240' y='65' width='18' height='30' fill='#1a1e2a' stroke='#4be8a0' stroke-width='1.5'/>
+<path d='M258,65 L272,55 L272,105 L258,95 Z' fill='rgba(75,232,160,.15)' stroke='#4be8a0' stroke-width='1'/>
+<text x='280' y='85' fill='#4be8a0' font-family='JetBrains Mono' font-size='9'>SPK</text>
+<!-- Labels -->
+<text x='8' y='150' fill='#4b9ee8' font-family='JetBrains Mono' font-size='8'>C1: blocks DC bias from mic</text>
+<text x='8' y='162' fill='#4be8a0' font-family='JetBrains Mono' font-size='8'>C2: blocks DC from reaching speaker</text>
+<text x='8' y='174' fill='#e8b84b' font-family='JetBrains Mono' font-size='8'>Both pass AC signal freely</text>
+</svg></div>
+  <div id="s_freq"><svg width='420' height='210' viewBox='0 0 420 210'><defs>
+<marker id='ag' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e8b84b'/></marker>
+<marker id='agn' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4be8a0'/></marker>
+<marker id='ab' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#4b9ee8'/></marker>
+<marker id='ar' markerWidth='7' markerHeight='7' refX='5' refY='3' orient='auto'><path d='M0,0L0,6L7,3z' fill='#e84b6a'/></marker>
+</defs>
+<line x1='50' y1='15' x2='50' y2='175' stroke='#252a38' stroke-width='1.5'/>
+<line x1='50' y1='175' x2='390' y2='175' stroke='#252a38' stroke-width='1.5'/>
+<polygon points='50,9 45,21 55,21' fill='#252a38'/>
+<polygon points='396,175 384,170 384,180' fill='#252a38'/>
+<text x='8' y='98' fill='#8a8578' font-family='JetBrains Mono' font-size='9' transform='rotate(-90,8,98)'>Gain (dB)</text>
+<text x='358' y='189' fill='#8a8578' font-family='JetBrains Mono' font-size='9'>Freq →</text>
+<!-- Frequency response curve -->
+<path d='M55,175 Q80,170 100,140 Q115,55 130,40 L270,40 Q285,40 300,55 Q320,120 340,155 Q360,170 385,172' fill='none' stroke='#e8b84b' stroke-width='2.5'/>
+<!-- Midband flat region fill -->
+<path d='M130,40 L270,40 L270,175 L130,175 Z' fill='rgba(232,184,75,.04)'/>
+<!-- fL marker -->
+<line x1='130' y1='40' x2='130' y2='175' stroke='#4b9ee8' stroke-width='1' stroke-dasharray='3,3'/>
+<text x='115' y='190' fill='#4b9ee8' font-family='JetBrains Mono' font-size='8'>fL</text>
+<!-- fH marker -->
+<line x1='270' y1='40' x2='270' y2='175' stroke='#e84b6a' stroke-width='1' stroke-dasharray='3,3'/>
+<text x='264' y='190' fill='#e84b6a' font-family='JetBrains Mono' font-size='8'>fH</text>
+<!-- -3dB line -->
+<line x1='50' y1='68' x2='390' y2='68' stroke='#8a8578' stroke-width='1' stroke-dasharray='4,3'/>
+<text x='52' y='65' fill='#8a8578' font-family='JetBrains Mono' font-size='8'>-3dB</text>
+<!-- Bandwidth arrow -->
+<line x1='130' y1='30' x2='270' y2='30' stroke='#4be8a0' stroke-width='1.5' marker-end='url(#agn)'/>
+<line x1='270' y1='30' x2='130' y2='30' stroke='#4be8a0' stroke-width='1.5' marker-end='url(#agn)'/>
+<text x='200' y='27' fill='#4be8a0' font-family='JetBrains Mono' font-size='9' text-anchor='middle'>BANDWIDTH = fH - fL</text>
+<!-- Cause labels -->
+<text x='58' y='115' fill='#4b9ee8' font-family='JetBrains Mono' font-size='7'>C1,C2,CE</text>
+<text x='56' y='125' fill='#4b9ee8' font-family='JetBrains Mono' font-size='7'>high Xc</text>
+<text x='298' y='100' fill='#e84b6a' font-family='JetBrains Mono' font-size='7'>junction</text>
+<text x='298' y='110' fill='#e84b6a' font-family='JetBrains Mono' font-size='7'>capacitance</text>
+<!-- Midband label -->
+<text x='200' y='58' fill='#e8b84b' font-family='JetBrains Mono' font-size='9' text-anchor='middle'>MIDBAND</text>
+<text x='200' y='70' fill='#e8b84b' font-family='JetBrains Mono' font-size='8' text-anchor='middle'>full gain ✓</text>
+</svg></div>
+</div>
+<script>
+const SVGS={
+  ce:document.getElementById('s_ce').innerHTML,
+  inp:document.getElementById('s_inp').innerHTML,
+  out:document.getElementById('s_out').innerHTML,
+  reg:document.getElementById('s_reg').innerHTML,
+  base:document.getElementById('s_base').innerHTML,
+  bias:document.getElementById('s_bias').innerHTML,
+  ll:document.getElementById('s_ll').innerHTML,
+  phase:document.getElementById('s_phase').innerHTML,
+  clip:document.getElementById('s_clip').innerHTML,
+  gain:document.getElementById('s_gain').innerHTML,
+  couple:document.getElementById('s_couple').innerHTML,
+  freq:document.getElementById('s_freq').innerHTML
+};
+
+const MODULES = {
+  en:['Basics','AC Operation','Gain & Stability','Capacitors'],
+  ml:['അടിസ്ഥാനം','AC പ്രവർത്തനം','Gain & സ്ഥിരത','Capacitors'],
+  hi:['मूल बातें','AC संचालन','Gain & स्थिरता','Capacitors']
+};
+
+const T={
+en:{
+  tag:'Electronics · BJT Series',h1:'Common-Emitter <em>Transistor</em>',
+  subtitle:'A Socratic guide — learn by thinking, not memorising. Guided questions and everyday analogies throughout.',
+  progress:'Progress',prev:'← Prev',next:'Next →',complete:'Complete →',
+  analogy:'💡 Analogy',hint:'💡 Hint',score:'Score',restart:'↺ Restart',
+  comp_title:'Module Complete!',
+  comp_body:'You have mastered CE transistor theory — from terminal identification to frequency response.',
+  comp_next:'Next: Common-Base · Common-Collector · Differential Amplifiers',
+  lessons:[
+    {num:'01',sub:'Foundation',mod:0,title:'The CE Configuration',
+     body:`<p>A transistor has <strong>three terminals</strong> — Base (B), Collector (C), Emitter (E). In <em>Common-Emitter</em> configuration the emitter is shared between input and output.</p><p>Think of a <strong>water tap</strong> — a small twist (base current) controls a large flow (collector current).</p>`,
+     analogy:'A security gate: a small key (base) controls whether a large crowd (collector current) passes. The gate frame (emitter) is common to both sides.',
+     svg:'ce',cap:'NPN transistor — CE configuration',
+     ql:'Question 01',q:'Why is this called <em>Common-Emitter</em> configuration?',
+     opts:['Emitter carries highest current','Emitter is shared between input AND output circuits','Most commonly used transistor'],
+     ans:1,fb:['','✓ Exactly! Emitter appears in both the input loop (B→E) and output loop (C→E) — it is shared (common).','Think — which terminal is in both input and output circuits?']},
+    {num:'02',sub:'Amplifier Action',mod:0,title:'Transistor as Amplifier',
+     body:`<p>Small I_B controls large I_C. The ratio <em>β (Beta)</em> is the current gain, typically 50–300.</p><div class="formula">I_C = β × I_B</div><p>"Transistor" = <strong>transfer + resistor</strong> — transfers signal from low to high resistance.</p>`,
+     analogy:'A dam sluice gate — a tiny motor (I_B) controls massive water flow (I_C). Small input energy manages huge output. That is amplification.',
+     svg:'inp',cap:'Input characteristics — diode-like V_BE vs I_B',
+     ql:'Question 02',q:'If β = 200 and I_B = 50µA, what is I_C?',
+     opts:['50 µA','200 µA','10 mA (200 × 50µA = 10,000µA)'],
+     ans:2,fb:['','✓ Perfect! 200 × 50µA = 10mA. A 50µA input controls 10mA output — 200× amplification.','Use I_C = β × I_B. Multiply 200 × 50µA = 10,000µA = 10mA.']},
+    {num:'03',sub:'Three Regions',mod:0,title:'Saturation, Active & Cutoff',
+     body:`<p>Output characteristics show <strong>three regions</strong> based on junction biasing:</p><table class="data-table"><tr><th>Region</th><th>BE</th><th>CE</th><th>Acts as</th></tr><tr><td><b>Saturation</b></td><td>Forward</td><td>Forward</td><td>Closed switch</td></tr><tr><td><b>Active</b></td><td>Forward</td><td>Reverse</td><td>Amplifier</td></tr><tr><td><b>Cutoff</b></td><td>Reverse</td><td>Reverse</td><td>Open switch</td></tr></table>`,
+     analogy:'A light dimmer switch — fully OFF = Cutoff, middle = Active (amplifier), fully ON = Saturation (switch). A transistor moves between these exactly like a dimmer.',
+     svg:'reg',cap:'Three operating regions on output characteristics',
+     ql:'Question 03',q:'A temperature sensor activates a fan through a transistor. Which regions does the transistor switch between?',
+     opts:['Always in Active region','Always in Saturation','Cutoff (cool→fan off) to Saturation (hot→fan on)'],
+     ans:2,fb:['','✓ Correct! Cutoff = fully OFF, Saturation = fully ON. The sensor base current drives between these states.','Think fully ON and fully OFF — which two regions represent those extremes?']},
+    {num:'04',sub:'Thin Base Physics',mod:0,title:'Why the Thin Base Matters',
+     body:`<p>In active region CE is <strong>reverse biased</strong> — normally blocks current. Yet large I_C flows. The secret: <em>ultra-thin base (~1µm)</em>.</p><p>Electrons injected by BE forward bias cross the thin base before recombining — swept into collector by its electric field.</p>`,
+     analogy:'Throwing a ball through a very thin paper wall. The paper (base) is so thin the ball (electron) passes straight through. A thick wall absorbs it — thin base = high β.',
+     svg:'base',cap:'Thin base — 95-99% of electrons swept into collector',
+     ql:'Question 04',q:'If the base were made very thick, what happens to β?',
+     hint:'More thickness = more recombination. What happens to I_C and I_B separately?',
+     opts:['β increases — more material = more amplification','β decreases — more recombination raises I_B, lowers I_C, β = I_C/I_B drops','β stays same — thickness does not affect gain'],
+     ans:1,fb:['','✓ Brilliant! Thick base → more recombination → I_C drops, I_B rises → β = I_C/I_B falls. Ultra-thin base is why transistors have high gain.','Follow the electron: more thickness = more recombination in base. What does that do to I_C vs I_B?']},
+    {num:'05',sub:'Biasing',mod:0,title:'Voltage Divider Bias & Negative Feedback',
+     body:`<p><strong>Voltage divider bias</strong> (R1, R2, R_E) stabilises the Q-point using <em>negative feedback</em> through R_E.</p><p>Loop: I_C↑ → V_E↑ → V_BE↓ → I_B↓ → I_C pulled back. R_E senses and corrects drift automatically.</p><div class="formula">V_B fixed → V_E = V_B−0.6V → I_E = V_E/R_E ≈ I_C</div>`,
+     analogy:'A room thermostat — gets too hot (I_C rises), thermostat (R_E) senses it and reduces heating (I_B). Too cold — increases it. Self-correcting = negative feedback.',
+     svg:'bias',cap:'Voltage divider bias — R_E creates negative feedback',
+     ql:'Question 05',q:'R_E stabilises DC but reduces AC gain. How do engineers solve this?',
+     hint:'You need R_E for DC stability but want it gone for AC. What component blocks DC but passes AC?',
+     opts:['Increase R1, R2 to raise base voltage','Remove R_E entirely','Place bypass capacitor C_E parallel to R_E — open for DC (stability), short for AC (gain restored)'],
+     ans:2,fb:['','✓ Classic! C_E is open for DC (R_E gives full stability) but short for AC (R_E bypassed, full gain). Best of both worlds.','Think DC vs AC — what component has very high impedance at DC but low at signal frequencies?']},
+    {num:'06',sub:'Load Line',mod:0,title:'Load Line & Q-Point',
+     body:`<p>The <strong>DC load line</strong> connects two endpoints on output characteristics:</p><div class="formula">Cutoff: V_CE = V_CC, I_C = 0 &nbsp;|&nbsp; Saturation: V_CE = 0, I_C = V_CC/R_C</div><p>The <em>Q-point</em> is where load line meets the I_B curve. <strong>Midpoint placement</strong> gives equal swing both ways.</p>`,
+     analogy:'A see-saw — Q-point is the pivot. Centred pivot gives equal swing up and down. Off-centre and one side hits the ground. Centred Q-point = maximum undistorted output.',
+     svg:'ll',cap:'Load line — Q-point at midpoint for maximum swing',
+     ql:'Question 06',q:'With V_CC = 10V, R_C = 1kΩ, Q at midpoint — what are the Q-point values of V_CE and I_C?',
+     opts:['V_CE = 10V, I_C = 10mA','V_CE = 5V, I_C = 5mA','V_CE = 2V, I_C = 8mA'],
+     ans:1,fb:['','✓ Perfect! Saturation end: I_C = 10V/1kΩ = 10mA. Cutoff end: V_CE = 10V. Midpoint: V_CE = 5V, I_C = 5mA.','Saturation end: I_C = V_CC/R_C. Cutoff end: V_CE = V_CC. Midpoint is halfway between both.']},
+    {num:'07',sub:'Phase Inversion',mod:1,title:'180° Phase Inversion',
+     body:`<p>When AC signal is applied, I_B varies around the Q-point. Since V_CC = I_C×R_C + V_CE:</p><p><b>+ve half:</b> V_BE↑ → I_B↑ → I_C↑ → I_C×R_C↑ → <em>V_CE↓</em></p><p><b>−ve half:</b> V_BE↓ → I_B↓ → I_C↓ → I_C×R_C↓ → <em>V_CE↑</em></p><p>Input goes up → output goes down. This is <strong>180° phase inversion</strong> — the hallmark of CE amplifier.</p>`,
+     analogy:'A see-saw in action — when one side goes up (input +ve), the other comes down (output −ve). They are always mirror images of each other. That is 180° phase shift.',
+     svg:'phase',cap:'Input and output are 180° out of phase — inverted',
+     ql:'Question 07',q:'The CE amplifier output is described as having 180° phase shift. What does this mean physically?',
+     opts:['Output arrives 180 seconds after input','When input is at positive peak, output is at negative peak — they are inverted','Output frequency is halved'],
+     ans:1,fb:['','✓ Exactly! When V_BE is maximum positive, V_CE is at minimum (most negative). Input and output are always mirror images — inverted sine wave.','Think about the chain: V_BE↑ → I_C↑ → I_C×R_C↑ → V_CE↓. Input up = output down. That is 180°.']},
+    {num:'08',sub:'Clipping Distortion',mod:1,title:'Clipping & Q-Point Position',
+     body:`<p>The AC signal swings the operating point up and down the load line around Q. If Q is not centred:</p><p><b>Q near saturation:</b> positive swing hits ceiling → <em>positive half clipped</em></p><p><b>Q near cutoff:</b> negative swing hits zero → <em>negative half clipped</em></p><p><b>Input too large:</b> both halves clipped — output is flattened sine wave</p>`,
+     analogy:'The Q-point is the platform you jump from. Too close to the ceiling (saturation) — head hits on jump up. Too close to floor (cutoff) — legs hit on jump down. Stay in the middle for full jump both ways.',
+     svg:'clip',cap:'Three clipping scenarios — Q position determines which half clips',
+     ql:'Question 08',q:'Q is at 1mA (low). A signal tries to swing ±3mA. What happens?',
+     opts:['Signal passes cleanly — 1mA is enough headroom','Positive half clips — I_C tries to exceed saturation','Negative half clips — I_C tries to go below zero (cutoff)'],
+     ans:2,fb:['','✓ Perfect! I_C cannot go below zero. The negative swing tries to pull I_C from 1mA down by 3mA — impossible. Transistor enters cutoff. Negative half is flattened.','The Q-point is only 1mA above zero. A 3mA downward swing needs 3mA of headroom below Q. Is 1mA enough?']},
+    {num:'09',sub:'Voltage Gain',mod:2,title:'Voltage Gain — Av = R_C / r_e',
+     body:`<p>Voltage gain compares output swing to input swing:</p><div class="formula">Av = ΔV_out / ΔV_in = ΔI_C × R_C / ΔI_C × r_e = R_C / r_e</div><p>Where <em>r_e</em> is the transistor's dynamic emitter resistance — the internal resistance of the BE junction.</p><div class="formula">r_e = 26mV / I_C &nbsp; (26mV = thermal voltage V_T = kT/q at room temp)</div><p>Higher R_C or lower r_e = higher gain.</p>`,
+     analogy:'r_e is like internal friction in a pipe. Less friction (lower r_e) = more flow for same pressure. More pipe resistance (higher R_C) = bigger output voltage drop. Gain = output resistance ÷ internal friction.',
+     svg:'gain',cap:'Voltage gain = R_C / r_e — input amplified and inverted',
+     ql:'Question 09',q:'R_C = 2kΩ, I_C = 2mA. What is r_e and what is the voltage gain Av?',
+     hint:'First find r_e = 26mV / I_C. Then Av = R_C / r_e.',
+     opts:['r_e = 13Ω, Av = 154','r_e = 52Ω, Av = 38','r_e = 26Ω, Av = 100'],
+     ans:0,fb:['✓ Exact! r_e = 26mV/2mA = 13Ω. Av = 2000/13 ≈ 154. Higher I_C lowers r_e and raises gain.','','r_e = 26mV / I_C = 26mV / 2mA = 13Ω (not 26Ω — that is for 1mA). Av = 2000/13 = 154.']},
+    {num:'10',sub:'Thermal Runaway',mod:2,title:'Thermal Runaway & R_E Protection',
+     body:`<p>High I_C causes heat. Heat increases I_C further — a dangerous cycle called <strong>thermal runaway</strong>:</p><div class="formula">I_C↑ → Heat↑ → I_C↑ → Heat↑ → ... → transistor destroyed</div><p>R_E <em>breaks this cycle</em> via negative feedback — if I_C rises due to heat, V_E rises, V_BE drops, I_B falls, I_C is pulled back. R_E is the thermal guardian.</p>`,
+     analogy:'Thermal runaway is like a microphone squealing near a speaker — output feeds back into input, amplifying itself until destruction. R_E is the hand that covers the microphone — it breaks the feedback loop before it gets out of control.',
+     svg:'bias',cap:'R_E negative feedback prevents thermal runaway',
+     ql:'Question 10',q:'If temperature rises and I_C increases, what is the complete R_E feedback chain that corrects it?',
+     opts:['I_C↑ → V_E↑ → V_BE↑ → I_B↑ → I_C increases more (runaway)','I_C↑ → V_E↑ → V_BE = V_B−V_E decreases → I_B↓ → I_C pulled back down ✓','I_C↑ → V_B↑ → I_B↑ → I_C increases'],
+     ans:1,fb:['','✓ Perfect! V_B is fixed by R1/R2. V_E = I_C×R_E rises. V_BE = V_B−V_E falls. I_B falls. I_C corrected. R_E is the thermal guardian.','Remember V_B is fixed. V_E rises with I_C. So V_BE = V_B − V_E must fall, not rise.']},
+    {num:'11',sub:'Coupling Capacitors',mod:3,title:'Why Coupling Capacitors?',
+     body:`<p>Connecting a microphone directly to the base disturbs V_B — the mic resistance loads the voltage divider. Connecting a speaker directly loads R_C and reduces gain.</p><p><strong>Coupling capacitors</strong> C1 and C2 solve both problems:</p><p>• <b>DC side:</b> capacitor is open circuit → bias undisturbed, R_C load isolated</p><p>• <b>AC side:</b> capacitor is short circuit → signal passes freely</p>`,
+     analogy:'A coupling capacitor is like a one-way turnstile — it lets the AC crowd (signal) pass through freely but stops the DC bouncer (bias) from crossing over and causing trouble on the other side.',
+     svg:'couple',cap:'Complete CE amplifier with C1, C2 coupling and C_E bypass',
+     ql:'Question 11',q:'Without coupling capacitor C1, what happens when a microphone is connected directly to the base?',
+     hint:'The microphone has its own internal resistance. It would now appear in parallel with R2 of the voltage divider.',
+     opts:['Nothing — microphone does not affect DC','Microphone resistance loads R2, disturbing V_B and shifting the Q-point','Signal becomes stronger because there is no capacitor blocking it'],
+     ans:1,fb:['','✓ Exactly! The mic resistance appears in parallel with R2, changing the voltage divider ratio, shifting V_B, and ruining the carefully set Q-point.','The mic has internal resistance. Connected directly across R2 — it changes the effective R2 value. What does that do to V_B = V_CC × R2/(R1+R2)?']},
+    {num:'12',sub:'Frequency Response',mod:3,title:'Bandwidth & Frequency Response',
+     body:`<p>Coupling capacitors C1, C2 and bypass C_E have impedance <em>Xc = 1/(2πfC)</em>. At low frequencies Xc is high — signal is attenuated and C_E stops bypassing R_E, collapsing gain.</p><p>At high frequencies, <strong>junction capacitance Cbe</strong> shorts the signal to emitter — bypassing the transistor. Gain drops again.</p><div class="formula">Bandwidth = f_H − f_L &nbsp;|&nbsp; f = 1/(2πRC)</div>`,
+     analogy:'Like a window with two shutters — one closes at low wind (low frequency) and one closes at high wind (high frequency). Only in the middle range does air (signal) flow freely. That middle range is the bandwidth.',
+     svg:'freq',cap:'Frequency response — bandwidth between lower and upper cutoff',
+     ql:'Final Question',q:'At very high frequencies, junction capacitance Cbe becomes low impedance. Where does the signal go — and why does gain drop?',
+     opts:['Signal goes through R_C and comes out amplified with higher gain','Signal takes a shortcut through Cbe directly from base to emitter, bypassing the transistor — output is tiny','Signal frequency doubles due to capacitor resonance'],
+     ans:1,fb:['','✓ Perfect! At high frequency Xc of Cbe is very small — effectively a short from base to emitter. Signal bypasses the transistor entirely instead of being amplified. Gain collapses.','At high frequency Cbe is nearly a short circuit. If base and emitter are shorted through Cbe, can the transistor amplify the signal?']}
+  ]
+},
+
+ml:{
+  tag:'ഇലക്ട്രോണിക്സ് · BJT പരമ്പര',h1:'കോമൺ-എമിറ്റർ <em>ട്രാൻസിസ്റ്റർ</em>',
+  subtitle:'ചിന്തിച്ചുകൊണ്ട് പഠിക്കൂ — ഓർത്തുവെക്കാതെ. ചോദ്യങ്ങളിലൂടെയും ഉദാഹരണങ്ങളിലൂടെയും.',
+  progress:'പുരോഗതി',prev:'← മുൻ',next:'അടുത്തത് →',complete:'പൂർത്തി →',
+  analogy:'💡 ഉദാഹരണം',hint:'💡 സൂചന',score:'സ്കോർ',restart:'↺ വീണ്ടും',
+  comp_title:'Module പൂർത്തി!',
+  comp_body:'CE ട്രാൻസിസ്റ്റർ theory മുഴുവൻ — terminal identification മുതൽ frequency response വരെ.',
+  comp_next:'അടുത്തത്: Common-Base · Common-Collector · Differential Amplifiers',
+  lessons:[
+    {num:'01',sub:'അടിസ്ഥാനം',mod:0,title:'CE കോൺഫിഗറേഷൻ',
+     body:`<p>ട്രാൻസിസ്റ്ററിന് <strong>മൂന്ന് ടെർമിനലുകൾ</strong> — Base (B), Collector (C), Emitter (E). <em>Common-Emitter</em>-ൽ Emitter ഇൻപുട്ടും ഔട്ട്പുട്ടും തമ്മിൽ പങ്കിടുന്നു.</p><p>ഒരു <strong>വാട്ടർ ടാപ്</strong> ഓർക്കൂ — ചെറിയ തിരിക്കൽ (base current) വലിയ പ്രവാഹം (collector current) നിയന്ത്രിക്കുന്നു.</p>`,
+     analogy:'ഒരു സുരക്ഷാ ഗേറ്റ് — ചെറിയ താക്കോൽ (base) ഒരു വലിയ ജനക്കൂട്ടം (collector current) കടന്നുപോകണോ എന്ന് നിർണ്ണയിക്കുന്നു. ഗേറ്റ് ഫ്രേം (emitter) ഇരു വശത്തും പൊതുവാണ്.',
+     svg:'ce',cap:'NPN ട്രാൻസിസ്റ്റർ — CE കോൺഫിഗറേഷൻ',
+     ql:'ചോദ്യം 01',q:'ഈ കോൺഫിഗറേഷനെ <em>Common-Emitter</em> എന്ന് വിളിക്കുന്നത് എന്തുകൊണ്ട്?',
+     opts:['Emitter ഏറ്റവും കൂടുതൽ current വഹിക്കുന്നതിനാൽ','Emitter ഇൻപുട്ടും ഔട്ട്പുട്ടും തമ്മിൽ പങ്കുവെക്കപ്പെടുന്നതിനാൽ','ഇത് ഏറ്റവും കൂടുതൽ ഉപയോഗിക്കുന്ന ട്രാൻസിസ്റ്ററായതിനാൽ'],
+     ans:1,fb:['','✓ കൃത്യം! Emitter ഇൻപുട്ട് loop-ലും (B→E) output loop-ലും (C→E) ഉണ്ട്.','ഇൻപുട്ടിലും ഔട്ട്പുട്ടിലും ഉള്ള terminal ഏതാണ്?']},
+    {num:'02',sub:'ആംപ്ലിഫയർ',mod:0,title:'ട്രാൻസിസ്റ്റർ ആംപ്ലിഫയർ ആയി',
+     body:`<p>ചെറിയ I_B, വലിയ I_C നിയന്ത്രിക്കുന്നു. അനുപാതം <em>β (Beta)</em> — സാധാരണ 50–300.</p><div class="formula">I_C = β × I_B</div><p>"ട്രാൻസിസ്റ്റർ" = <strong>transfer + resistor</strong>.</p>`,
+     analogy:'ഒരു ഡാം — ചെറിയ മോട്ടോർ (I_B) ഗേറ്റ് നിയന്ത്രിക്കുന്നു, ഭീമൻ ജലപ്രവാഹം (I_C) നിയന്ത്രിക്കപ്പെടുന്നു.',
+     svg:'inp',cap:'ഇൻപുട്ട് ചാരക്ടറിസ്റ്റിക്സ് — ഡയോഡ് കർവ്',
+     ql:'ചോദ്യം 02',q:'β = 200, I_B = 50µA ആണെങ്കിൽ I_C എത്ര?',
+     opts:['50 µA','200 µA','10 mA (200 × 50µA)'],
+     ans:2,fb:['','✓ Perfect! 200 × 50µA = 10mA.','I_C = β × I_B. 200 × 50µA = 10,000µA = 10mA.']},
+    {num:'03',sub:'മൂന്ന് മേഖലകൾ',mod:0,title:'Saturation, Active & Cutoff',
+     body:`<p>Output characteristics-ൽ <strong>മൂന്ന് മേഖലകൾ</strong>:</p><table class="data-table"><tr><th>മേഖല</th><th>BE</th><th>CE</th><th>പ്രവർത്തനം</th></tr><tr><td><b>Saturation</b></td><td>Forward</td><td>Forward</td><td>അടഞ്ഞ switch</td></tr><tr><td><b>Active</b></td><td>Forward</td><td>Reverse</td><td>Amplifier</td></tr><tr><td><b>Cutoff</b></td><td>Reverse</td><td>Reverse</td><td>തുറന്ന switch</td></tr></table>`,
+     analogy:'ലൈറ്റ് ഡിമ്മർ — OFF = Cutoff, നടുവിൽ = Active, ON = Saturation.',
+     svg:'reg',cap:'Output characteristics-ൽ മൂന്ന് മേഖലകൾ',
+     ql:'ചോദ്യം 03',q:'Temperature sensor ഒരു fan ഓണാക്കുന്നു. ഏത് മേഖലകൾ തമ്മിൽ switch ചെയ്യുന്നു?',
+     opts:['എല്ലായ്പ്പോഴും Active-ൽ','എല്ലായ്പ്പോഴും Saturation-ൽ','Cutoff (തണുപ്പ്→fan off) → Saturation (ചൂട്→fan on)'],
+     ans:2,fb:['','✓ ശരി! Cutoff = OFF, Saturation = ON.','Fully ON, Fully OFF — ഏത് regions ആണ്?']},
+    {num:'04',sub:'നേർത്ത Base',mod:0,title:'നേർത്ത Base എന്തുകൊണ്ട് പ്രധാനം?',
+     body:`<p>Active region-ൽ CE junction reverse biased ആണ് — പക്ഷേ വലിയ I_C ഒഴുകുന്നു. രഹസ്യം: <em>ultra-thin base (~1µm)</em>.</p><p>Electrons recombine ആകാൻ സമയം കിട്ടാതെ collector-ലേക്ക് കടക്കുന്നു.</p>`,
+     analogy:'നേർത്ത പേപ്പർ ഭിത്തി — ബോൾ (electron) അതിലൂടെ നേരെ കടക്കുന്നു. കട്ടിയുള്ള ഭിത്തി (കട്ടിയുള്ള base) ഇലക്ട്രോൺ absorb ചെയ്യും.',
+     svg:'base',cap:'നേർത്ത base — 95-99% electrons collector-ലേക്ക്',
+     ql:'ചോദ്യം 04',q:'Base വളരെ കട്ടിയുള്ളതായാൽ β-ന് എന്ത് സംഭവിക്കും?',
+     hint:'കൂടുതൽ കനം = കൂടുതൽ recombination. I_C-ഉം I_B-ഉം എങ്ങനെ ബാധിക്കും?',
+     opts:['β കൂടും','β കുറയും — recombination കൂടി I_B ↑, I_C ↓, β = I_C/I_B കുറയും','β മാറില്ല'],
+     ans:1,fb:['','✓ ശരി! കട്ടി base → recombination → I_C↓, I_B↑ → β കുറയും.','Electron path: കൂടുതൽ recombination → I_C↓, I_B↑.']},
+    {num:'05',sub:'Biasing',mod:0,title:'Voltage Divider Bias',
+     body:`<p><strong>Voltage divider bias</strong> (R1, R2, R_E) R_E-ലൂടെ <em>negative feedback</em> ഉപയോഗിച്ച് Q-point സ്ഥിരപ്പെടുത്തുന്നു.</p><p>Loop: I_C↑ → V_E↑ → V_BE↓ → I_B↓ → I_C corrected.</p><div class="formula">V_B fixed → V_E = V_B−0.6V → I_E = V_E/R_E ≈ I_C</div>`,
+     analogy:'ഹോം thermostat — ചൂടായാൽ (I_C↑), thermostat (R_E) heating (I_B) കുറയ്ക്കുന്നു. System സ്വയം correct ആകുന്നു.',
+     svg:'bias',cap:'Voltage divider bias — R_E negative feedback',
+     ql:'ചോദ്യം 05',q:'R_E DC stability തരുന്നു പക്ഷേ AC gain കുറയ്ക്കുന്നു. പരിഹാരം?',
+     hint:'DC-ന് R_E circuit-ൽ വേണം. AC-ന് R_E bypass ആകണം. DC block ചെയ്ത് AC pass ചെയ്യുന്ന component?',
+     opts:['R1, R2 കൂട്ടി base voltage ഉയർത്തുക','R_E നീക്കം ചെയ്യുക','R_E-ന് parallel-ൽ bypass capacitor C_E — DC-ന് open, AC-ന് short'],
+     ans:2,fb:['','✓ Classic! C_E DC-ന് open (stability), AC-ന് short (gain restore).','DC vs AC — DC block ചെയ്ത് AC pass ചെയ്യുന്ന component?']},
+    {num:'06',sub:'Load Line',mod:0,title:'Load Line & Q-Point',
+     body:`<p><strong>DC load line</strong> output characteristics-ൽ:</p><div class="formula">Cutoff: V_CE=V_CC, I_C=0 | Saturation: V_CE=0, I_C=V_CC/R_C</div><p><em>Q-point</em> load line ഉം I_B curve-ഉം intersect ചെയ്യുന്ന സ്ഥാനം. <strong>Midpoint</strong>-ൽ ഇരുന്നാൽ equal swing.</p>`,
+     analogy:'See-saw — pivot നടുക്ക് = equal swing. ഒരു വശത്ത് = ഉടൻ ground touch.',
+     svg:'ll',cap:'Load line — Q-point midpoint-ൽ',
+     ql:'ചോദ്യം 06',q:'V_CC=10V, R_C=1kΩ, Q midpoint-ൽ — V_CE, I_C എത്ര?',
+     opts:['V_CE=10V, I_C=10mA','V_CE=5V, I_C=5mA','V_CE=2V, I_C=8mA'],
+     ans:1,fb:['','✓ Perfect! Saturation: I_C=10mA, Cutoff: V_CE=10V, Midpoint: 5V, 5mA.','Saturation end: I_C=V_CC/R_C. Cutoff end: V_CE=V_CC. Midpoint = halfway.']},
+    {num:'07',sub:'Phase Inversion',mod:1,title:'180° Phase Inversion',
+     body:`<p>AC signal Q-point-ന് ചുറ്റും I_B-ഐ vary ചെയ്യുന്നു. V_CC = I_C×R_C + V_CE ആയതിനാൽ:</p><p><b>+ve half:</b> V_BE↑ → I_B↑ → I_C↑ → I_C×R_C↑ → <em>V_CE↓</em></p><p><b>−ve half:</b> V_BE↓ → I_B↓ → I_C↓ → I_C×R_C↓ → <em>V_CE↑</em></p><p>Input up → output down. <strong>180° phase inversion</strong> — CE amplifier-ന്റെ signature.</p>`,
+     analogy:'See-saw in action — ഒരു വശം up (input +ve) ആകുമ്പോൾ മറ്റേ വശം down (output −ve). Mirror images — 180° phase shift.',
+     svg:'phase',cap:'Input, output 180° out of phase — inverted',
+     ql:'ചോദ്യം 07',q:'CE amplifier output-ൽ 180° phase shift എന്താണ് അർഥം?',
+     opts:['Output 180 seconds delay','Input positive peak-ൽ ആയിരിക്കുമ്പോൾ output negative peak-ൽ — inverted','Output frequency half ആകുന്നു'],
+     ans:1,fb:['','✓ Exactly! V_BE maximum → V_CE minimum. Input, output always mirror images.','V_BE↑ → I_C↑ → I_C×R_C↑ → V_CE↓. Input up = output down = 180°.']},
+    {num:'08',sub:'Clipping',mod:1,title:'Clipping & Q-Point',
+     body:`<p>AC signal load line-ൽ Q-point-ന് ചുറ്റും swing ചെയ്യുന്നു:</p><p><b>Q saturation-ന് അടുത്ത്:</b> positive swing ceiling hit → <em>+ve half clipped</em></p><p><b>Q cutoff-ന് അടുത്ത്:</b> negative swing zero hit → <em>−ve half clipped</em></p><p><b>Input too large:</b> both halves clipped</p>`,
+     analogy:'Platform analogy — ceiling-ന് (saturation) അടുത്ത് ഇരുന്നാൽ jump up-ൽ head hit. Floor-ന് (cutoff) അടുത്ത് ഇരുന്നാൽ jump down-ൽ floor hit. നടുക്ക് ഇരിക്കൂ.',
+     svg:'clip',cap:'മൂന്ന് clipping scenarios',
+     ql:'ചോദ്യം 08',q:'Q = 1mA. Signal ±3mA swing ചെയ്യുന്നു. എന്ത് സംഭവിക്കും?',
+     opts:['Signal clean ആണ്','Positive half clips','Negative half clips — I_C zero-ൽ താഴേക്ക് പോകാൻ കഴിയില്ല'],
+     ans:2,fb:['','✓ Perfect! I_C zero-ൽ കുറഞ്ഞ് പോകാൻ കഴിയില്ല. 1mA-ൽ നിന്ന് 3mA down → cutoff. Negative half flattened.','Q = 1mA. 3mA down swing-ന് 3mA headroom below Q വേണം. 1mA enough ആണോ?']},
+    {num:'09',sub:'Voltage Gain',mod:2,title:'Voltage Gain — Av = R_C / r_e',
+     body:`<p>Voltage gain = output swing / input swing:</p><div class="formula">Av = R_C / r_e</div><p><em>r_e</em> = transistor-ന്റെ dynamic emitter resistance.</p><div class="formula">r_e = 26mV / I_C &nbsp; (26mV = kT/q = thermal voltage)</div><p>R_C കൂടുതൽ അല്ലെങ്കിൽ r_e കുറവ് = gain കൂടുതൽ.</p>`,
+     analogy:'r_e = pipe-ൽ internal friction. Friction കുറവ് (low r_e) = same pressure-ൽ more flow. Pipe resistance കൂടുതൽ (high R_C) = bigger output voltage. Gain = output resistance ÷ internal friction.',
+     svg:'gain',cap:'Voltage gain = R_C/r_e — amplified, inverted',
+     ql:'ചോദ്യം 09',q:'R_C = 2kΩ, I_C = 2mA. r_e, Av എത്ര?',
+     hint:'r_e = 26mV/I_C. പിന്നെ Av = R_C/r_e.',
+     opts:['r_e=13Ω, Av=154','r_e=52Ω, Av=38','r_e=26Ω, Av=100'],
+     ans:0,fb:['✓ Exact! r_e=26mV/2mA=13Ω. Av=2000/13≈154.','','r_e = 26mV/2mA = 13Ω. Av = 2000/13 = 154.']},
+    {num:'10',sub:'Thermal Runaway',mod:2,title:'Thermal Runaway & R_E Protection',
+     body:`<p>High I_C → heat → I_C further increases — <strong>thermal runaway</strong>:</p><div class="formula">I_C↑ → Heat↑ → I_C↑ → Heat↑ → ... → transistor destroyed</div><p>R_E negative feedback ഈ cycle break ചെയ്യുന്നു — I_C↑ → V_E↑ → V_BE↓ → I_B↓ → I_C corrected.</p>`,
+     analogy:'Thermal runaway = microphone speaker-ന് അടുത്ത് squeal ചെയ്യുന്ന പോലെ — output input-ലേക്ക് feed back ആകുന്നു. R_E = microphone cover ചെയ്യുന്ന കൈ — feedback loop break ചെയ്യുന്നു.',
+     svg:'bias',cap:'R_E thermal runaway തടയുന്നു',
+     ql:'ചോദ്യം 10',q:'Temperature rise, I_C increase — R_E feedback chain?',
+     opts:['I_C↑ → V_E↑ → V_BE↑ → I_B↑ → runaway','I_C↑ → V_E↑ → V_BE=V_B−V_E decreases → I_B↓ → I_C corrected ✓','I_C↑ → V_B↑ → I_B↑'],
+     ans:1,fb:['','✓ Perfect! V_B fixed. V_E rises. V_BE = V_B−V_E falls. I_B falls. I_C corrected. R_E = thermal guardian.','V_B fixed by R1/R2. V_E rises. V_BE = V_B−V_E — rises or falls?']},
+    {num:'11',sub:'Coupling Capacitors',mod:3,title:'Coupling Capacitors എന്തിന്?',
+     body:`<p>Microphone base-ൽ direct connect ചെയ്താൽ V_B disturb ആകും — mic resistance R2-ഐ load ചെയ്യുന്നു. Speaker direct connect ചെയ്താൽ R_C load ആകും, gain കുറയും.</p><p><strong>Coupling capacitors</strong> C1, C2 ഇത് പരിഹരിക്കുന്നു:</p><p>• <b>DC:</b> open circuit → bias undisturbed</p><p>• <b>AC:</b> short circuit → signal freely passes</p>`,
+     analogy:'Coupling capacitor = ഒരു turnstile — AC crowd (signal) freely pass ചെയ്യുന്നു, DC bouncer (bias) cross ആകില്ല.',
+     svg:'couple',cap:'Complete CE amplifier — C1, C2 coupling, C_E bypass',
+     ql:'ചോദ്യം 11',q:'Coupling capacitor C1 ഇല്ലാതെ microphone base-ൽ direct connect ചെയ്താൽ?',
+     hint:'Mic internal resistance R2-ന് parallel ആകും. V_B = V_CC × R2/(R1+R2) — R2 effective value change ആകും.',
+     opts:['ഒന്നും സംഭവിക്കില്ല','Mic resistance R2-ഐ load ചെയ്ത് V_B disturb ആകും, Q-point shift','Signal stronger ആകും'],
+     ans:1,fb:['','✓ Exactly! Mic resistance R2-ന് parallel → effective R2 change → V_B change → Q-point ruined.','Mic internal resistance R2-ന് parallel. V_B = V_CC×R2/(R1+R2) — effective R2 change ആകുമ്പോൾ V_B?']},
+    {num:'12',sub:'Frequency Response',mod:3,title:'Bandwidth & Frequency Response',
+     body:`<p>Low frequency-ൽ: C1, C2, C_E-ന്റെ Xc = 1/(2πfC) high ആകും — signal attenuate ആകുന്നു, C_E R_E bypass ചെയ്യാതാകുന്നു, gain കുറയുന്നു.</p><p>High frequency-ൽ: <strong>junction capacitance Cbe</strong> signal-ഐ emitter-ലേക്ക് short circuit ചെയ്യുന്നു — transistor bypass ആകുന്നു.</p><div class="formula">Bandwidth = f_H − f_L</div>`,
+     analogy:'രണ്ട് shutters ഉള്ള ഒരു ജനൽ — ഒന്ന് low wind-ൽ അടഞ്ഞ്, ഒന്ന് high wind-ൽ അടഞ്ഞ്. Middle range-ൽ മാത്രം air (signal) freely flow ചെയ്യുന്നു. ആ range = bandwidth.',
+     svg:'freq',cap:'Frequency response — bandwidth fL to fH',
+     ql:'അന്തിമ ചോദ്യം',q:'High frequency-ൽ junction capacitance Cbe low impedance ആകുന്നു. Signal എവിടെ പോകുന്നു?',
+     opts:['R_C-ലൂടെ amplified output','Cbe-ലൂടെ base→emitter shortcut — transistor bypass — output tiny','Signal frequency double ആകുന്നു'],
+     ans:1,fb:['','✓ Perfect! High frequency-ൽ Cbe nearly short. Base-emitter short ആകുന്നു — transistor amplify ചെയ്യാൻ കഴിയില്ല.','Cbe nearly short circuit ആകുമ്പോൾ base, emitter shorted. Transistor amplify ചെയ്യാൻ കഴിയുമോ?']}
+  ]
+},
+
+hi:{
+  tag:'इलेक्ट्रॉनिक्स · BJT श्रृंखला',h1:'कॉमन-एमिटर <em>ट्रांज़िस्टर</em>',
+  subtitle:'सोचकर सीखिए — रटकर नहीं। प्रश्नों और रोज़मर्रा के उदाहरणों के माध्यम से।',
+  progress:'प्रगति',prev:'← पिछला',next:'अगला →',complete:'पूरा →',
+  analogy:'💡 उदाहरण',hint:'💡 संकेत',score:'स्कोर',restart:'↺ दोबारा',
+  comp_title:'Module पूरा!',
+  comp_body:'CE ट्रांज़िस्टर theory पूरी — terminal identification से frequency response तक।',
+  comp_next:'अगला: Common-Base · Common-Collector · Differential Amplifiers',
+  lessons:[
+    {num:'01',sub:'आधार',mod:0,title:'CE कॉन्फ़िगरेशन',
+     body:`<p>ट्रांज़िस्टर के <strong>तीन टर्मिनल</strong> — Base (B), Collector (C), Emitter (E)। <em>Common-Emitter</em> में Emitter इनपुट और आउटपुट दोनों के बीच साझा।</p><p><strong>पानी का नल</strong> — छोटी घुमाव (base current) बड़े प्रवाह (collector current) को नियंत्रित करती है।</p>`,
+     analogy:'सुरक्षा गेट — छोटी चाबी (base) तय करती है कि बड़ी भीड़ (collector current) गुज़रे या नहीं। गेट का ढांचा (emitter) दोनों तरफ समान।',
+     svg:'ce',cap:'NPN ट्रांज़िस्टर — CE कॉन्फ़िगरेशन',
+     ql:'प्रश्न 01',q:'इसे <em>Common-Emitter</em> क्यों कहते हैं?',
+     opts:['Emitter सबसे अधिक current वहन करता है','Emitter इनपुट AND आउटपुट दोनों सर्किट के बीच साझा है','सबसे अधिक उपयोग होने वाला ट्रांज़िस्टर'],
+     ans:1,fb:['','✓ बिल्कुल सही! Emitter इनपुट loop (B→E) और आउटपुट loop (C→E) दोनों में है।','इनपुट और आउटपुट दोनों में कौन सा terminal है?']},
+    {num:'02',sub:'एम्प्लीफायर',mod:0,title:'ट्रांज़िस्टर बतौर एम्प्लीफायर',
+     body:`<p>छोटा I_B बड़े I_C को नियंत्रित करता है। अनुपात <em>β (Beta)</em> — आमतौर पर 50–300।</p><div class="formula">I_C = β × I_B</div><p>"ट्रांज़िस्टर" = <strong>transfer + resistor</strong>।</p>`,
+     analogy:'डैम का sluice gate — छोटी मोटर (I_B) विशाल जल प्रवाह (I_C) नियंत्रित करती है।',
+     svg:'inp',cap:'इनपुट विशेषताएं — डायोड वक्र',
+     ql:'प्रश्न 02',q:'β = 200, I_B = 50µA हो तो I_C क्या होगा?',
+     opts:['50 µA','200 µA','10 mA (200 × 50µA)'],
+     ans:2,fb:['','✓ Perfect! 200 × 50µA = 10mA।','I_C = β × I_B. 200 × 50µA = 10mA।']},
+    {num:'03',sub:'तीन क्षेत्र',mod:0,title:'Saturation, Active और Cutoff',
+     body:`<p>Output characteristics में <strong>तीन क्षेत्र</strong>:</p><table class="data-table"><tr><th>क्षेत्र</th><th>BE</th><th>CE</th><th>व्यवहार</th></tr><tr><td><b>Saturation</b></td><td>Forward</td><td>Forward</td><td>बंद switch</td></tr><tr><td><b>Active</b></td><td>Forward</td><td>Reverse</td><td>Amplifier</td></tr><tr><td><b>Cutoff</b></td><td>Reverse</td><td>Reverse</td><td>खुला switch</td></tr></table>`,
+     analogy:'लाइट डिमर — पूरी OFF = Cutoff, बीच = Active, पूरी ON = Saturation।',
+     svg:'reg',cap:'Output characteristics में तीन क्षेत्र',
+     ql:'प्रश्न 03',q:'Temperature sensor एक fan चालू करता है। ट्रांज़िस्टर किन क्षेत्रों के बीच switch करता है?',
+     opts:['हमेशा Active में','हमेशा Saturation में','Cutoff (ठंडा→fan off) → Saturation (गर्म→fan on)'],
+     ans:2,fb:['','✓ सही! Cutoff = OFF, Saturation = ON।','Fully ON और Fully OFF — कौन से दो regions?']},
+    {num:'04',sub:'पतला Base',mod:0,title:'पतला Base क्यों महत्वपूर्ण?',
+     body:`<p>Active region में CE junction reverse biased — फिर भी बड़ा I_C बहता है। रहस्य: <em>ultra-thin base (~1µm)</em>।</p><p>Electrons recombine होने से पहले collector तक पहुंच जाते हैं।</p>`,
+     analogy:'पतली कागज़ की दीवार — गेंद (electron) सीधे पार। मोटी दीवार (मोटा base) उसे absorb कर लेती।',
+     svg:'base',cap:'पतला base — 95-99% electrons collector तक',
+     ql:'प्रश्न 04',q:'Base बहुत मोटा बना दें तो β का क्या होगा?',
+     hint:'अधिक मोटाई = अधिक recombination। I_C और I_B पर अलग-अलग क्या प्रभाव?',
+     opts:['β बढ़ेगा','β घटेगा — recombination से I_B↑, I_C↓, β=I_C/I_B गिरेगा','β नहीं बदलेगा'],
+     ans:1,fb:['','✓ सटीक! मोटा base → recombination → I_C↓, I_B↑ → β गिरेगा।','electron path: अधिक recombination → I_C↓, I_B↑।']},
+    {num:'05',sub:'Biasing',mod:0,title:'Voltage Divider Bias',
+     body:`<p><strong>Voltage divider bias</strong> (R1, R2, R_E) R_E के माध्यम से <em>negative feedback</em> से Q-point स्थिर।</p><p>Loop: I_C↑ → V_E↑ → V_BE↓ → I_B↓ → I_C corrected।</p><div class="formula">V_B fixed → V_E = V_B−0.6V → I_E = V_E/R_E ≈ I_C</div>`,
+     analogy:'कमरे का thermostat — गर्म हो (I_C↑), thermostat (R_E) heating (I_B) कम। System स्वयं सुधरता है।',
+     svg:'bias',cap:'Voltage divider bias — R_E negative feedback',
+     ql:'प्रश्न 05',q:'R_E DC stability देता है लेकिन AC gain कम करता है। समाधान?',
+     hint:'DC के लिए R_E चाहिए, AC के लिए नहीं। DC block करके AC pass करने वाला component?',
+     opts:['R1,R2 बढ़ाएं','R_E हटाएं','R_E के parallel में bypass capacitor C_E — DC के लिए open, AC के लिए short'],
+     ans:2,fb:['','✓ Classic! C_E DC के लिए open (stability), AC के लिए short (gain restore)।','DC vs AC — DC block, AC pass करने वाला component?']},
+    {num:'06',sub:'Load Line',mod:0,title:'Load Line & Q-Point',
+     body:`<p><strong>DC load line</strong> output characteristics पर:</p><div class="formula">Cutoff: V_CE=V_CC, I_C=0 | Saturation: V_CE=0, I_C=V_CC/R_C</div><p><em>Q-point</em> = load line और I_B curve का intersection। <strong>Midpoint</strong> = equal swing।</p>`,
+     analogy:'See-saw — pivot बीच में = equal swing। एक तरफ = तुरंत ज़मीन।',
+     svg:'ll',cap:'Load line — Q-point midpoint पर',
+     ql:'प्रश्न 06',q:'V_CC=10V, R_C=1kΩ, Q midpoint पर — V_CE, I_C क्या?',
+     opts:['V_CE=10V, I_C=10mA','V_CE=5V, I_C=5mA','V_CE=2V, I_C=8mA'],
+     ans:1,fb:['','✓ Perfect! Saturation: I_C=10mA, Cutoff: V_CE=10V, Midpoint: 5V, 5mA।','Saturation: I_C=V_CC/R_C. Cutoff: V_CE=V_CC. Midpoint = आधा।']},
+    {num:'07',sub:'Phase Inversion',mod:1,title:'180° Phase Inversion',
+     body:`<p>AC signal I_B को Q-point के आसपास vary करता है। V_CC = I_C×R_C + V_CE से:</p><p><b>+ve half:</b> V_BE↑ → I_B↑ → I_C↑ → I_C×R_C↑ → <em>V_CE↓</em></p><p><b>−ve half:</b> V_BE↓ → I_B↓ → I_C↓ → I_C×R_C↓ → <em>V_CE↑</em></p><p>इनपुट ऊपर → आउटपुट नीचे। <strong>180° phase inversion</strong> — CE amplifier की पहचान।</p>`,
+     analogy:'See-saw in action — एक तरफ ऊपर (input +ve) तो दूसरा नीचे (output −ve)। हमेशा mirror image — 180° phase shift।',
+     svg:'phase',cap:'Input और output 180° out of phase — inverted',
+     ql:'प्रश्न 07',q:'CE amplifier में 180° phase shift का अर्थ क्या है?',
+     opts:['Output 180 seconds बाद आता है','Input positive peak पर हो तो output negative peak पर — inverted','Output frequency आधी हो जाती है'],
+     ans:1,fb:['','✓ बिल्कुल! V_BE maximum → V_CE minimum। हमेशा mirror images।','V_BE↑ → I_C↑ → I_C×R_C↑ → V_CE↓। Input up = output down = 180°।']},
+    {num:'08',sub:'Clipping',mod:1,title:'Clipping & Q-Point',
+     body:`<p>AC signal load line पर Q के आसपास swing करता है:</p><p><b>Q saturation के पास:</b> positive swing ceiling hit → <em>+ve half clipped</em></p><p><b>Q cutoff के पास:</b> negative swing zero hit → <em>−ve half clipped</em></p><p><b>Input too large:</b> दोनों halves clipped</p>`,
+     analogy:'Platform — छत (saturation) के पास हों तो ऊपर jump में सिर लगे। फर्श (cutoff) के पास हों तो नीचे jump में पैर लगे। बीच में रहो।',
+     svg:'clip',cap:'तीन clipping scenarios',
+     ql:'प्रश्न 08',q:'Q = 1mA। Signal ±3mA swing करे तो क्या होगा?',
+     opts:['Signal साफ़ निकलेगा','Positive half clips','Negative half clips — I_C शून्य से नीचे नहीं जा सकता'],
+     ans:2,fb:['','✓ Perfect! I_C शून्य से नीचे नहीं जा सकता। 1mA से 3mA नीचे → cutoff। Negative half flatten।','Q = 1mA। 3mA नीचे swing के लिए 3mA headroom चाहिए। 1mA काफ़ी है?']},
+    {num:'09',sub:'Voltage Gain',mod:2,title:'Voltage Gain — Av = R_C / r_e',
+     body:`<p>Voltage gain = output swing / input swing:</p><div class="formula">Av = R_C / r_e</div><p><em>r_e</em> = transistor का dynamic emitter resistance।</p><div class="formula">r_e = 26mV / I_C &nbsp; (26mV = kT/q = thermal voltage)</div><p>अधिक R_C या कम r_e = अधिक gain।</p>`,
+     analogy:'r_e = pipe में internal friction। कम friction (low r_e) = same pressure में अधिक flow। अधिक pipe resistance (high R_C) = बड़ा output voltage। Gain = output resistance ÷ internal friction।',
+     svg:'gain',cap:'Voltage gain = R_C/r_e — amplified, inverted',
+     ql:'प्रश्न 09',q:'R_C = 2kΩ, I_C = 2mA। r_e और Av क्या?',
+     hint:'r_e = 26mV/I_C। फिर Av = R_C/r_e।',
+     opts:['r_e=13Ω, Av=154','r_e=52Ω, Av=38','r_e=26Ω, Av=100'],
+     ans:0,fb:['✓ सटीक! r_e=26mV/2mA=13Ω। Av=2000/13≈154।','','r_e = 26mV/2mA = 13Ω। Av = 2000/13 = 154।']},
+    {num:'10',sub:'Thermal Runaway',mod:2,title:'Thermal Runaway & R_E Protection',
+     body:`<p>High I_C → heat → I_C और बढ़ता है — <strong>thermal runaway</strong>:</p><div class="formula">I_C↑ → Heat↑ → I_C↑ → Heat↑ → ... → transistor नष्ट</div><p>R_E negative feedback इस cycle को तोड़ता है।</p>`,
+     analogy:'Thermal runaway = microphone speaker के पास squeal — output input को feed back, बढ़ता जाता है। R_E = microphone ढकने वाला हाथ — feedback loop तोड़ता है।',
+     svg:'bias',cap:'R_E thermal runaway रोकता है',
+     ql:'प्रश्न 10',q:'Temperature बढ़े, I_C बढ़े — R_E feedback chain क्या है?',
+     opts:['I_C↑ → V_E↑ → V_BE↑ → I_B↑ → runaway','I_C↑ → V_E↑ → V_BE=V_B−V_E घटता है → I_B↓ → I_C corrected ✓','I_C↑ → V_B↑ → I_B↑'],
+     ans:1,fb:['','✓ Perfect! V_B fixed। V_E बढ़ता है। V_BE = V_B−V_E घटता है। I_B घटता है। I_C correct।','V_B fixed है R1/R2 से। V_E बढ़ता है। V_BE = V_B−V_E — बढ़ता है या घटता है?']},
+    {num:'11',sub:'Coupling Capacitors',mod:3,title:'Coupling Capacitors क्यों?',
+     body:`<p>Microphone सीधे base से connect करने पर V_B disturb होता है — mic resistance R2 को load करता है। Speaker सीधे collector से connect करने पर R_C load होता है, gain कम।</p><p><strong>Coupling capacitors</strong> C1, C2 दोनों समस्याएं हल करते हैं:</p><p>• <b>DC:</b> open circuit → bias undisturbed</p><p>• <b>AC:</b> short circuit → signal freely passes</p>`,
+     analogy:'Coupling capacitor = एक turnstile — AC crowd (signal) freely pass, DC bouncer (bias) रुका रहता है।',
+     svg:'couple',cap:'Complete CE amplifier — C1, C2 coupling, C_E bypass',
+     ql:'प्रश्न 11',q:'Coupling capacitor C1 के बिना microphone सीधे base से connect करें तो?',
+     hint:'Mic internal resistance R2 के parallel हो जाएगा। V_B = V_CC × R2/(R1+R2) — effective R2 बदलेगा।',
+     opts:['कुछ नहीं होगा','Mic resistance R2 को load करेगा, V_B disturb होगा, Q-point shift','Signal मज़बूत होगा'],
+     ans:1,fb:['','✓ बिल्कुल! Mic resistance R2 के parallel → effective R2 बदला → V_B बदला → Q-point बर्बाद।','Mic internal resistance R2 के parallel। V_B = V_CC×R2/(R1+R2) — effective R2 बदले तो V_B?']},
+    {num:'12',sub:'Frequency Response',mod:3,title:'Bandwidth & Frequency Response',
+     body:`<p>Low frequency पर: C1, C2, C_E का Xc = 1/(2πfC) बढ़ता है — signal attenuation, C_E R_E bypass नहीं करता, gain गिरता है।</p><p>High frequency पर: <strong>junction capacitance Cbe</strong> signal को emitter तक short circuit करता है — transistor bypass हो जाता है।</p><div class="formula">Bandwidth = f_H − f_L</div>`,
+     analogy:'दो shutters वाली खिड़की — एक low wind में बंद, एक high wind में बंद। बीच की range में ही हवा (signal) freely बहती है। वही range = bandwidth।',
+     svg:'freq',cap:'Frequency response — bandwidth fL से fH तक',
+     ql:'अंतिम प्रश्न',q:'High frequency पर junction capacitance Cbe low impedance बनता है। Signal कहाँ जाता है?',
+     opts:['R_C से amplified output','Cbe से base→emitter shortcut — transistor bypass — output tiny','Signal frequency दोगुनी'],
+     ans:1,fb:['','✓ Perfect! High frequency पर Cbe nearly short। Base-emitter short → transistor amplify नहीं कर सकता।','Cbe nearly short circuit — base, emitter short हों तो transistor amplify कर सकता है?']}
+  ]
+}
+};
+
+let lang='en', cur=0, score=0;
+let answered=new Array(12).fill(false);
+let correct=new Array(12).fill(false);
+let chosen=new Array(12).fill(-1);
+let hintOpen=new Array(12).fill(false);
+const TOTAL=12;
+
+function L(){return T[lang];}
+
+function render(){
+  document.body.className=lang==='ml'?'lang-ml':lang==='hi'?'lang-hi':'';
+  document.getElementById('hTag').innerHTML=L().tag;
+  document.getElementById('hTitle').innerHTML=L().h1;
+  document.getElementById('hSub').innerHTML=L().subtitle;
+  document.getElementById('progLabel').textContent=L().progress;
+  renderModTabs();
+  updateProgress();
+  if(cur>=TOTAL){renderCompletion();return;}
+  renderLesson(cur);
+}
+
+function renderModTabs(){
+  const mods=MODULES[lang];
+  const lessons=L().lessons;
+  let html='';
+  [0,1,2,3].forEach(m=>{
+    const inMod=lessons.filter((_,i)=>lessons[i].mod===m);
+    const modIdxs=lessons.map((l,i)=>l.mod===m?i:-1).filter(x=>x>=0);
+    const allDone=modIdxs.every(i=>answered[i]);
+    const isCur=lessons[cur] && lessons[cur].mod===m;
+    const cls='mod-tab'+(isCur?' active':allDone?' done':'');
+    html+=`<button class="${cls}" onclick="goToMod(${m})">${mods[m]}</button>`;
+  });
+  document.getElementById('modTabs').innerHTML=html;
+}
+
+function goToMod(m){
+  const lessons=L().lessons;
+  const first=lessons.findIndex(l=>l.mod===m);
+  if(first>=0)goTo(first);
+}
+
+function renderLesson(idx){
+  const l=L();
+  const ls=l.lessons[idx];
+  const done=answered[idx];
+  const isLast=idx===TOTAL-1;
+
+  let svgHtml='';
+  if(ls.svg&&SVGS[ls.svg]) svgHtml=`<div class="diagram-wrap">${SVGS[ls.svg]}<div class="diagram-caption">${ls.cap}</div></div>`;
+
+  let optsHtml='';
+  ls.opts.forEach((o,i)=>{
+    let cls='opt';
+    if(done){
+      if(i===ls.ans)cls+=' correct';
+      else if(i===chosen[idx]&&i!==ls.ans)cls+=' wrong';
+    }
+    optsHtml+=`<button class="${cls}" onclick="checkAnswer(${i},${idx})" ${done?'disabled':''}><span class="opt-letter">${String.fromCharCode(65+i)}</span>${o}</button>`;
+  });
+
+  let fbHtml='';
+  if(done){
+    const c=correct[idx];
+    const txt=ls.fb[c?ls.ans:(chosen[idx]>=0?chosen[idx]:0)]||ls.fb[ls.ans];
+    fbHtml=`<div class="feedback ${c?'show-correct':'show-wrong'}">${txt}</div>`;
+  }
+
+  let hintHtml='';
+  if(ls.hint) hintHtml=`<button class="hint-btn" onclick="toggleHint(${idx})">${l.hint}</button><div class="hint-box${hintOpen[idx]?' open':''}">${ls.hint}</div>`;
+
+  const nextDis='';  // free navigation
+  const nextAct=isLast?'showCompletion()': `goTo(${idx+1})`;
+  const nextLbl=isLast?l.complete:l.next;
+
+  document.getElementById('lessonArea').innerHTML=`
+    <div class="lesson-header">
+      <div class="lesson-num">${ls.num}</div>
+      <div><div class="lesson-subtitle">${ls.sub}</div><div class="lesson-title">${ls.title}</div></div>
+    </div>
+    <div class="content-block">${ls.body}</div>
+    <div class="analogy-box"><span class="analogy-tag">${l.analogy}</span>${ls.analogy}</div>
+    ${svgHtml}
+    <div class="question-block">
+      <div class="question-label">${ls.ql}</div>
+      <div class="question-text">${ls.q}</div>
+      ${hintHtml}
+      <div class="options">${optsHtml}</div>
+      ${fbHtml}
+    </div>
+    <div class="lesson-dots">${Array.from({length:TOTAL},(_,i)=>`<button class="dot${i===idx?' dot-cur':answered[i]?' dot-done':''}" onclick="goTo(${i})" title="Lesson ${i+1}">${i+1}</button>`).join('')}</div>
+    <div class="nav-row">
+      <button class="nav-btn" onclick="goTo(${idx-1})" ${idx===0?'disabled':''}>${l.prev}</button>
+      <button class="nav-btn primary" onclick="${nextAct}" ${nextDis}>${nextLbl}</button>
+    </div>`;
+}
+
+function renderCompletion(){
+  const l=L();
+  document.getElementById('lessonArea').innerHTML=`
+    <div class="completion">
+      <div class="completion-icon">🎓</div>
+      <h2>${l.comp_title}</h2>
+      <p>${l.comp_body}</p>
+      <div class="score-badge">${l.score}: ${score} / ${TOTAL}</div><br>
+      <p style="font-size:12px;color:var(--text-dim);margin-bottom:18px;">${l.comp_next}</p>
+      <button class="restart-btn" onclick="restart()">${l.restart}</button>
+    </div>`;
+}
+
+function checkAnswer(ch,idx){
+  if(answered[idx])return;
+  answered[idx]=true; chosen[idx]=ch;
+  const ls=L().lessons[idx];
+  correct[idx]=ch===ls.ans;
+  if(correct[idx])score++;
+  updateProgress(); renderLesson(idx); renderModTabs();
+}
+
+function goTo(idx){
+  if(idx<0||idx>=TOTAL)return;
+  cur=idx;
+  const a=document.getElementById('lessonArea');
+  a.style.animation='none';
+  requestAnimationFrame(()=>{a.style.animation='';renderLesson(idx);renderModTabs();window.scrollTo({top:0,behavior:'smooth'});});
+}
+
+function showCompletion(){cur=TOTAL;renderCompletion();window.scrollTo({top:0,behavior:'smooth'});}
+
+function toggleHint(idx){
+  hintOpen[idx]=!hintOpen[idx];
+  const h=document.querySelector('.hint-box');
+  if(h)h.classList.toggle('open',hintOpen[idx]);
+}
+
+function setLang(v){lang=v;render();}
+
+function updateProgress(){
+  const done=answered.filter(Boolean).length;
+  document.getElementById('progressFill').style.width=(done/TOTAL*100)+'%';
+  document.getElementById('progressCount').textContent=done+' / '+TOTAL;
+}
+
+function restart(){
+  score=0;cur=0;
+  answered=new Array(TOTAL).fill(false);
+  correct=new Array(TOTAL).fill(false);
+  chosen=new Array(TOTAL).fill(-1);
+  hintOpen=new Array(TOTAL).fill(false);
+  render();
+}
+
+render();
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uni-Junction Transistor</title>
+<meta name="section" content="Electronics">
+<meta name="section-order" content="3">
+<meta name="order" content="6">
+<meta name="description" content="UJT construction and characteristics">
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════
+   PROJECTOR-OPTIMISED LIGHT THEME
+   Target: white screen, 15 feet, bright room
+   All text ≥ 14px, contrast ≥ 7:1, fonts bold
+═══════════════════════════════════════════════════ */
+:root {
+  --bg:      #F2F5FA;
+  --card:    #FFFFFF;
+  --card2:   #E8EEF8;
+  --border:  #B8C8DC;
+  --teal:    #005F5C;   /* deep teal  - on white */
+  --amber:   #A05800;   /* rich amber - on white */
+  --red:     #B31B22;   /* strong red */
+  --blue:    #1A3FAA;   /* strong blue */
+  --navy:    #0A1628;   /* near-black body text */
+  --mid:     #3A4A60;   /* secondary text */
+  --light:   #6A7A90;   /* muted labels */
+  --divider: #C8D4E4;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:var(--bg);
+  color:var(--navy);
+  font-family:'Noto Sans',sans-serif;
+  font-size:18px;
+  line-height:1.7;
+  overflow-x:hidden;
+}
+
+/* ─── HEADER ─── */
+header{
+  background:linear-gradient(135deg,#003440 0%,#005F5C 55%,#003440 100%);
+  padding:2.2rem 2rem 1.8rem;
+  text-align:center;
+  border-bottom:4px solid var(--teal);
+}
+header h1{
+  font-family:'Space Mono',monospace;
+  font-size:clamp(1.7rem,3.5vw,2.8rem);
+  color:#FFFFFF;
+  letter-spacing:0.06em;
+  text-shadow:0 2px 10px rgba(0,0,0,0.4);
+}
+header p{color:#8ECFCD;font-size:1.05rem;margin-top:0.5rem;font-weight:600;}
+.badge{
+  display:inline-block;
+  background:rgba(255,255,255,0.15);
+  border:2px solid rgba(255,255,255,0.45);
+  color:#fff;
+  font-family:'Space Mono',monospace;
+  font-size:0.72rem;
+  padding:0.28rem 0.9rem;
+  border-radius:20px;
+  margin-top:0.7rem;
+  letter-spacing:0.12em;
+  font-weight:700;
+}
+
+/* ─── PROGRESS BAR ─── */
+.prog-wrap{
+  position:sticky;top:0;z-index:100;
+  background:rgba(255,255,255,0.98);
+  border-bottom:2px solid var(--divider);
+  padding:0.65rem 1.4rem;
+  display:flex;align-items:center;gap:0.9rem;
+  box-shadow:0 3px 10px rgba(0,0,0,0.08);
+}
+.prog-track{flex:1;height:8px;background:#C8D4E4;border-radius:8px;overflow:hidden;}
+.prog-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--teal),var(--amber));
+  border-radius:8px;
+  transition:width 0.4s ease;
+  width:0%;
+}
+.prog-label{
+  font-family:'Space Mono',monospace;
+  font-size:0.78rem;
+  color:var(--teal);
+  font-weight:700;
+  white-space:nowrap;
+}
+.step-dots{display:flex;gap:5px;}
+.step-dot{
+  width:11px;height:11px;border-radius:50%;
+  background:#C8D4E4;
+  transition:all 0.3s;cursor:pointer;
+  border:2px solid transparent;
+}
+.step-dot.active{background:var(--teal);border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,95,92,0.2);}
+.step-dot.done{background:#60B0AE;}
+
+/* ─── CONTAINER ─── */
+.container{max-width:980px;margin:0 auto;padding:1.8rem 1.2rem 4rem;}
+
+/* ─── STEP CARDS ─── */
+.step-card{
+  background:var(--card);
+  border:2px solid var(--border);
+  border-radius:18px;
+  margin-bottom:2rem;
+  overflow:hidden;
+  opacity:0;transform:translateY(24px);
+  transition:opacity 0.45s ease,transform 0.45s ease,border-color 0.3s;
+  display:none;
+  box-shadow:0 4px 24px rgba(0,0,0,0.07);
+}
+.step-card.visible{display:block;}
+.step-card.animated{opacity:1;transform:translateY(0);}
+.step-card:hover{border-color:var(--teal);}
+
+.step-hdr{
+  padding:1.1rem 1.6rem;
+  background:var(--card2);
+  border-bottom:2px solid var(--divider);
+  display:flex;align-items:center;gap:1rem;
+}
+.step-num{
+  font-family:'Space Mono',monospace;
+  font-size:0.78rem;
+  color:#fff;
+  background:var(--teal);
+  padding:0.28rem 0.75rem;
+  border-radius:7px;
+  white-space:nowrap;
+  font-weight:700;
+  letter-spacing:0.04em;
+}
+.step-title{font-size:1.2rem;font-weight:700;color:var(--navy);}
+.step-body{padding:1.6rem 1.8rem;}
+
+/* ─── TEXT ─── */
+.lead{font-size:1.05rem;color:var(--navy);line-height:1.85;margin-bottom:1.1rem;font-weight:400;}
+.hl {color:var(--teal);  font-weight:700;}
+.hl2{color:var(--amber); font-weight:700;}
+.hl3{color:var(--red);   font-weight:700;}
+.hl4{color:var(--blue);  font-weight:700;}
+
+/* ─── BOXES ─── */
+.circuit-wrap{
+  background:#F8FBFF;
+  border:2px solid var(--divider);
+  border-radius:12px;
+  padding:1.2rem;
+  margin:1.1rem 0;
+  display:flex;justify-content:center;
+  overflow:hidden;
+}
+.circuit-wrap svg{max-width:100%;height:auto;}
+
+.anim-stage{
+  background:#F8FBFF;
+  border:2px solid var(--divider);
+  border-radius:12px;
+  padding:1.2rem;
+  margin:1.1rem 0;
+}
+
+.formula-box{
+  background:#E2F4F3;
+  border:2px solid var(--teal);
+  border-radius:10px;
+  padding:0.95rem 1.3rem;
+  font-family:'Space Mono',monospace;
+  font-size:1.08rem;
+  color:#003C3A;
+  text-align:center;
+  margin:0.9rem 0;
+  font-weight:700;
+}
+.formula-box .sub{font-size:0.85rem;color:var(--mid);margin-top:0.35rem;font-family:'Noto Sans',sans-serif;font-weight:600;}
+
+.info-box{
+  background:#EEF2FF;
+  border-left:5px solid var(--blue);
+  border-radius:0 9px 9px 0;
+  padding:0.95rem 1.2rem;
+  margin:0.9rem 0;
+  font-size:0.97rem;
+  color:var(--navy);
+  line-height:1.75;
+  font-weight:500;
+}
+.warn-box{
+  background:#FFF8EE;
+  border-left:5px solid var(--amber);
+  border-radius:0 9px 9px 0;
+  padding:0.95rem 1.2rem;
+  margin:0.9rem 0;
+  font-size:0.97rem;
+  color:var(--navy);
+  line-height:1.75;
+  font-weight:500;
+}
+.analogy-box{
+  background:#FFF3F3;
+  border:2px solid var(--red);
+  border-radius:10px;
+  padding:0.95rem 1.2rem;
+  margin:0.9rem 0;
+  font-size:0.97rem;
+  color:var(--navy);
+  line-height:1.75;
+  font-weight:500;
+}
+.analogy-box strong{color:var(--red);}
+
+/* ─── BUTTONS ─── */
+.btn{
+  font-family:'Space Mono',monospace;
+  font-size:0.78rem;
+  padding:0.58rem 1.1rem;
+  border-radius:8px;
+  border:2px solid var(--divider);
+  background:var(--card2);
+  color:var(--navy);
+  cursor:pointer;
+  transition:all 0.18s;
+  font-weight:700;
+  letter-spacing:0.03em;
+}
+.btn:hover{border-color:var(--teal);color:var(--teal);background:#E0F2F1;}
+.btn.active-btn{background:var(--teal);border-color:var(--teal);color:#fff;}
+.btn-primary{background:var(--teal);border-color:var(--teal);color:#fff;}
+.btn-primary:hover{background:#004A48;}
+.btn:disabled{opacity:0.38;cursor:not-allowed;}
+.anim-controls{display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.9rem;}
+
+/* ─── TABLE ─── */
+.tbl{width:100%;border-collapse:collapse;font-size:0.97rem;margin:0.9rem 0;border:2px solid var(--divider);border-radius:9px;overflow:hidden;}
+.tbl th{background:var(--teal);color:#fff;font-family:'Space Mono',monospace;font-size:0.78rem;letter-spacing:0.07em;padding:0.65rem 0.9rem;text-align:left;font-weight:700;}
+.tbl td{padding:0.6rem 0.9rem;border-bottom:1px solid #DCE8F4;color:var(--navy);line-height:1.6;font-weight:500;}
+.tbl tr:nth-child(even) td{background:#F4F8FD;}
+.tbl tr:hover td{background:#E2EEF8;}
+
+/* ─── QUIZ ─── */
+.quiz-box{
+  background:#FFFBEE;
+  border:2px solid var(--amber);
+  border-radius:12px;
+  padding:1.3rem 1.4rem;
+  margin-top:1.2rem;
+}
+.quiz-label{
+  font-family:'Space Mono',monospace;
+  font-size:0.74rem;
+  letter-spacing:0.12em;
+  color:var(--amber);
+  margin-bottom:0.7rem;
+  display:flex;align-items:center;gap:0.5rem;
+  font-weight:700;
+}
+.quiz-label::before{
+  content:'?';
+  display:inline-flex;align-items:center;justify-content:center;
+  width:20px;height:20px;
+  background:var(--amber);color:#fff;
+  border-radius:50%;font-size:0.74rem;font-weight:700;
+}
+.quiz-q{font-size:1rem;color:var(--navy);line-height:1.75;margin-bottom:0.9rem;font-weight:600;}
+.quiz-opts{display:flex;flex-direction:column;gap:0.48rem;}
+.quiz-opt{
+  background:#fff;
+  border:2px solid var(--divider);
+  border-radius:9px;
+  padding:0.65rem 1rem;
+  cursor:pointer;
+  font-size:0.97rem;
+  color:var(--navy);
+  transition:all 0.18s;
+  display:flex;align-items:center;gap:0.7rem;
+  font-weight:500;
+}
+.quiz-opt:hover:not(.locked){border-color:var(--blue);color:var(--blue);background:#EEF2FF;}
+.quiz-opt.correct{border-color:var(--teal);background:#E2F4F3;color:#003C3A;font-weight:700;}
+.quiz-opt.wrong{border-color:var(--red);background:#FDEAEA;color:#7A000A;}
+.quiz-opt.locked{cursor:not-allowed;}
+.opt-letter{
+  font-family:'Space Mono',monospace;
+  font-size:0.74rem;
+  background:var(--card2);
+  border:1px solid var(--divider);
+  border-radius:4px;
+  padding:0.12rem 0.42rem;
+  min-width:24px;text-align:center;
+  font-weight:700;color:var(--navy);
+}
+.quiz-fb{
+  margin-top:0.8rem;font-size:0.97rem;line-height:1.65;
+  display:none;padding:0.85rem 1rem;border-radius:8px;font-weight:500;
+}
+.quiz-fb.ok{display:block;background:#E2F4F3;color:#003C3A;border:2px solid var(--teal);}
+.quiz-fb.no{display:block;background:#FDEAEA;color:#7A000A;border:2px solid var(--red);}
+
+/* ─── STEP NAV ─── */
+.step-nav{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:1.3rem;padding-top:1rem;
+  border-top:2px solid var(--divider);
+}
+.nav-info{font-size:0.88rem;color:var(--mid);font-weight:600;}
+
+/* ─── SCORE ─── */
+.score-disp{
+  font-family:'Space Mono',monospace;font-size:0.82rem;
+  color:var(--amber);background:#FFF8EE;
+  border:2px solid var(--amber);border-radius:8px;
+  padding:0.32rem 0.88rem;font-weight:700;
+}
+
+/* ─── COMPLETION ─── */
+.completion{
+  text-align:center;padding:3rem 1.2rem;
+  display:none;
+  background:#fff;border-radius:18px;
+  border:2px solid var(--divider);
+  box-shadow:0 4px 24px rgba(0,0,0,0.07);
+}
+.completion.show{display:block;}
+.completion h2{font-size:2.2rem;color:var(--teal);font-family:'Space Mono',monospace;margin-bottom:0.8rem;}
+.completion p{color:var(--mid);max-width:460px;margin:0 auto;line-height:1.85;font-size:1rem;font-weight:600;}
+.grade-box{font-family:'Space Mono',monospace;font-size:1.1rem;color:var(--teal);margin:1rem 0;}
+.takeaways{
+  margin:1.8rem auto 0;padding:1.2rem 1.5rem;
+  background:var(--card2);border:2px solid var(--divider);
+  border-radius:12px;text-align:left;max-width:520px;
+}
+.takeaways h3{font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--teal);letter-spacing:0.1em;margin-bottom:0.7rem;font-weight:700;}
+.takeaways p{font-size:0.97rem;color:var(--navy);line-height:2.1;font-weight:600;}
+
+/* ─── ANIMATIONS ─── */
+@keyframes flow-dn{0%{stroke-dashoffset:20}100%{stroke-dashoffset:0}}
+@keyframes pulse-op{0%,100%{opacity:1}50%{opacity:0.35}}
+.flow-dn{stroke-dasharray:7 4;animation:flow-dn 0.5s linear infinite;}
+.pulse{animation:pulse-op 1s ease-in-out infinite;}
+
+/* legend row */
+.legend{display:flex;gap:1.2rem;flex-wrap:wrap;margin-bottom:0.7rem;font-size:0.8rem;font-family:'Space Mono',monospace;font-weight:700;}
+.legend span{display:flex;align-items:center;gap:0.4rem;}
+.lswatch{display:inline-block;width:22px;height:4px;border-radius:2px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ UJT — Unijunction Transistor</h1>
+  <p>Step-by-step interactive learning module for ITI Electronics Trainees</p>
+  <div class="badge">SWITCHING DEVICES · INDUSTRIAL ELECTRONICS</div>
+</header>
+
+<div class="prog-wrap">
+  <div class="step-dots" id="stepDots"></div>
+  <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+  <div class="prog-label" id="progLabel">Step 1 / 8</div>
+  <div class="score-disp" id="scoreDisp">Score: 0</div>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════════════════════════════════
+     STEP 1 — WHY UJT?
+══════════════════════════════════════════════════════ -->
+<div class="step-card" id="step1">
+  <div class="step-hdr">
+    <span class="step-num">STEP 01</span>
+    <span class="step-title">Why UJT? — Setting the Stage</span>
+  </div>
+  <div class="step-body">
+    <p class="lead">You already know the <span class="hl4">BJT</span> — it has <span class="hl4">2 junctions</span> and works great for <span class="hl2">amplification</span>. But what if you only need a device that <span class="hl3">fires automatically at a set voltage</span> — like a pulse generator or SCR trigger? Do you need all that BJT complexity?</p>
+
+    <div class="analogy-box">
+      <strong>💡 Real-world need:</strong> In industrial motor drives, SCR firing circuits, and timers — we need precise, repetitive pulses at low cost. A simpler device that snaps ON at a set voltage is ideal.
+    </div>
+
+    <p class="lead">Enter the <span class="hl">Unijunction Transistor (UJT)</span> — ONE junction, three terminals, and a unique trick called <span class="hl2">Negative Resistance</span> that no BJT does naturally.</p>
+
+    <!-- BJT vs UJT comparison SVG -->
+    <div class="circuit-wrap">
+      <svg width="640" height="170" viewBox="0 0 640 170">
+        <!-- BJT box -->
+        <text x="145" y="18" text-anchor="middle" fill="#3A4A60" font-size="13" font-family="Space Mono" font-weight="700">BJT</text>
+        <rect x="55" y="26" width="180" height="120" rx="10" fill="#F0F4FF" stroke="#1A3FAA" stroke-width="2"/>
+        <line x1="105" y1="52" x2="105" y2="118" stroke="#1A3FAA" stroke-width="3.5"/>
+        <line x1="105" y1="65"  x2="150" y2="44"  stroke="#1A3FAA" stroke-width="3"/>
+        <line x1="105" y1="105" x2="150" y2="126" stroke="#1A3FAA" stroke-width="3"/>
+        <polygon points="143,123 157,129 149,114" fill="#1A3FAA"/>
+        <line x1="55"  y1="85" x2="105" y2="85" stroke="#1A3FAA" stroke-width="3"/>
+        <text x="43"  y="89" fill="#1A3FAA" font-size="13" font-family="Space Mono" font-weight="700">B</text>
+        <text x="157" y="48" fill="#1A3FAA" font-size="13" font-family="Space Mono" font-weight="700">C</text>
+        <text x="157" y="130" fill="#1A3FAA" font-size="13" font-family="Space Mono" font-weight="700">E</text>
+        <text x="145" y="158" text-anchor="middle" fill="#B31B22" font-size="11" font-family="Noto Sans" font-weight="700">2 junctions · Amplifies</text>
+
+        <!-- arrow -->
+        <text x="320" y="84" text-anchor="middle" fill="#A05800" font-size="28" font-weight="700">→</text>
+        <text x="320" y="104" text-anchor="middle" fill="#3A4A60" font-size="11" font-family="Noto Sans" font-weight="600">simpler</text>
+
+        <!-- UJT box -->
+        <text x="497" y="18" text-anchor="middle" fill="#3A4A60" font-size="13" font-family="Space Mono" font-weight="700">UJT</text>
+        <rect x="407" y="26" width="180" height="120" rx="10" fill="#F0FAF9" stroke="#005F5C" stroke-width="2"/>
+        <!-- N bar — vertical, B2 top, B1 bottom, E on left side at ~60% from top -->
+        <rect x="467" y="40" width="60" height="96" rx="6" fill="#DCF0EE" stroke="#005F5C" stroke-width="2.5"/>
+        <text x="497" y="92" text-anchor="middle" fill="#005F5C" font-size="13" font-family="Space Mono" font-weight="700">N</text>
+        <!-- B2 top ohmic -->
+        <rect x="481" y="30" width="32" height="12" rx="3" fill="#A05800"/>
+        <text x="530" y="40" fill="#A05800" font-size="12" font-family="Space Mono" font-weight="700">B2</text>
+        <!-- B1 bottom ohmic -->
+        <rect x="481" y="134" width="32" height="12" rx="3" fill="#005F5C"/>
+        <text x="530" y="146" fill="#005F5C" font-size="12" font-family="Space Mono" font-weight="700">B1</text>
+        <!-- Emitter P dot — closer to B1, about 62% from top -->
+        <circle cx="467" cy="100" r="11" fill="#FDEAEA" stroke="#B31B22" stroke-width="2.5"/>
+        <text x="467" y="104" text-anchor="middle" fill="#B31B22" font-size="10" font-family="Space Mono" font-weight="700">P</text>
+        <line x1="428" y1="100" x2="456" y2="100" stroke="#B31B22" stroke-width="2.5"/>
+        <text x="413" y="104" text-anchor="middle" fill="#B31B22" font-size="13" font-family="Space Mono" font-weight="700">E</text>
+        <text x="497" y="165" text-anchor="middle" fill="#005F5C" font-size="11" font-family="Noto Sans" font-weight="700">1 junction · Switches</text>
+      </svg>
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">CHECKPOINT QUESTION</div>
+      <div class="quiz-q">A UJT has three terminals — E, B1, B2. How many PN junctions does it have, and which terminal forms that junction?</div>
+      <div class="quiz-opts" id="q1opts">
+        <div class="quiz-opt" onclick="answer(this,'q1','wrong')"><span class="opt-letter">A</span> Two junctions — one at B1 and one at B2</div>
+        <div class="quiz-opt" onclick="answer(this,'q1','correct')"><span class="opt-letter">B</span> One junction — formed at the Emitter (E) where P-type aluminium meets the N-bar</div>
+        <div class="quiz-opt" onclick="answer(this,'q1','wrong')"><span class="opt-letter">C</span> Three junctions — one at each terminal</div>
+        <div class="quiz-opt" onclick="answer(this,'q1','wrong')"><span class="opt-letter">D</span> Zero junctions — it is purely resistive throughout</div>
+      </div>
+      <div class="quiz-fb" id="q1fb"></div>
+    </div>
+
+    <div class="step-nav">
+      <span class="nav-info">Step 1 of 8</span>
+      <button class="btn btn-primary" onclick="nextStep(1)">Next: Construction →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     STEP 2 — CONSTRUCTION
+══════════════════════════════════════════════════════ -->
+<div class="step-card" id="step2">
+  <div class="step-hdr">
+    <span class="step-num">STEP 02</span>
+    <span class="step-title">Physical Construction</span>
+  </div>
+  <div class="step-body">
+    <p class="lead">Let's build a UJT step by step. Press each button to add the next part.</p>
+
+    <div class="anim-stage">
+      <!-- CORRECTED GEOMETRY:
+           Bar is VERTICAL. B2 = top end. B1 = bottom end.
+           Emitter P-dot is on the LEFT SIDE, positioned ~60% down
+           (closer to B1 than B2, reflecting η > 0.5 and RB1 > RB2)
+      -->
+      <svg width="100%" height="260" viewBox="0 0 620 260" id="cSVG">
+
+        <!-- Step 1: N-bar (vertical) -->
+        <g id="nbar" opacity="0" style="transition:opacity 0.6s">
+          <rect x="240" y="30" width="100" height="200" rx="8"
+                fill="#DCF0EE" stroke="#005F5C" stroke-width="2.5"/>
+          <text x="290" y="128" text-anchor="middle" fill="#005F5C"
+                font-size="15" font-family="Space Mono" font-weight="700">N-type Si</text>
+          <text x="290" y="148" text-anchor="middle" fill="#005F5C"
+                font-size="11" font-family="Noto Sans" font-weight="600">Lightly doped</text>
+        </g>
+
+        <!-- Step 2: B2 (top) and B1 (bottom) ohmic contacts -->
+        <g id="b2contact" opacity="0" style="transition:opacity 0.6s">
+          <!-- B2 block on top of bar -->
+          <rect x="258" y="14" width="64" height="18" rx="4" fill="#A05800"/>
+          <line x1="290" y1="30" x2="290" y2="14" stroke="#A05800" stroke-width="3"/>
+          <text x="290" y="10" text-anchor="middle" fill="#A05800"
+                font-size="13" font-family="Space Mono" font-weight="700">B2</text>
+          <text x="334" y="24" fill="#A05800" font-size="11" font-family="Noto Sans" font-weight="600">(+VBB, supply end)</text>
+        </g>
+        <g id="b1contact" opacity="0" style="transition:opacity 0.6s">
+          <!-- B1 block on bottom of bar -->
+          <rect x="258" y="228" width="64" height="18" rx="4" fill="#005F5C"/>
+          <line x1="290" y1="230" x2="290" y2="246" stroke="#005F5C" stroke-width="3"/>
+          <text x="290" y="258" text-anchor="middle" fill="#005F5C"
+                font-size="13" font-family="Space Mono" font-weight="700">B1</text>
+          <text x="334" y="242" fill="#005F5C" font-size="11" font-family="Noto Sans" font-weight="600">(output / GND side)</text>
+        </g>
+
+        <!-- Step 3: Emitter P-dot on left side, ~60% down = y≈150 -->
+        <g id="emitter" opacity="0" style="transition:opacity 0.6s">
+          <!-- P dot fused on left side of bar -->
+          <rect x="210" y="140" width="32" height="28" rx="5" fill="#FDEAEA" stroke="#B31B22" stroke-width="2.5"/>
+          <text x="226" y="158" text-anchor="middle" fill="#B31B22"
+                font-size="12" font-family="Space Mono" font-weight="700">P</text>
+          <!-- Junction line (horizontal, at emitter level) -->
+          <line x1="240" y1="154" x2="242" y2="154" stroke="#B31B22" stroke-width="3"/>
+          <!-- Emitter lead -->
+          <line x1="180" y1="154" x2="210" y2="154" stroke="#B31B22" stroke-width="2.5"/>
+          <text x="164" y="158" text-anchor="middle" fill="#B31B22"
+                font-size="13" font-family="Space Mono" font-weight="700">E</text>
+        </g>
+
+        <!-- Step 4: Labels & annotations -->
+        <g id="alllabels" opacity="0" style="transition:opacity 0.6s">
+          <!-- RB2 label (upper section: B2 to emitter) -->
+          <text x="190" y="96" fill="#A05800" font-size="11" font-family="Space Mono" font-weight="700">RB2</text>
+          <line x1="205" y1="88" x2="240" y2="88" stroke="#A05800" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="190" y="110" fill="#3A4A60" font-size="9" font-family="Noto Sans" font-weight="600">(smaller)</text>
+
+          <!-- RB1 label (lower section: emitter to B1) -->
+          <text x="190" y="190" fill="#005F5C" font-size="11" font-family="Space Mono" font-weight="700">RB1</text>
+          <line x1="205" y1="183" x2="240" y2="183" stroke="#005F5C" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="190" y="204" fill="#3A4A60" font-size="9" font-family="Noto Sans" font-weight="600">(larger, η&gt;0.5)</text>
+
+          <!-- Ohmic contact label -->
+          <text x="390" y="26" fill="#3A4A60" font-size="11" font-family="Noto Sans" font-weight="600">← Ohmic contact (non-rectifying)</text>
+          <line x1="386" y1="22" x2="322" y2="22" stroke="#B8C8DC" stroke-width="1" stroke-dasharray="4 3"/>
+
+          <!-- PN junction label -->
+          <text x="390" y="158" fill="#B31B22" font-size="11" font-family="Noto Sans" font-weight="700">← Only PN junction here!</text>
+          <line x1="386" y1="154" x2="242" y2="154" stroke="#B31B22" stroke-width="1" stroke-dasharray="4 3"/>
+
+          <!-- Emitter position note -->
+          <text x="390" y="244" fill="#3A4A60" font-size="11" font-family="Noto Sans" font-weight="600">← Ohmic contact (non-rectifying)</text>
+          <line x1="386" y1="240" x2="322" y2="240" stroke="#B8C8DC" stroke-width="1" stroke-dasharray="4 3"/>
+        </g>
+      </svg>
+      <div class="anim-controls">
+        <button class="btn btn-primary" onclick="buildUJT(1)">① Add N-bar</button>
+        <button class="btn" id="cbtn2" onclick="buildUJT(2)" disabled>② Add B1 &amp; B2</button>
+        <button class="btn" id="cbtn3" onclick="buildUJT(3)" disabled>③ Fuse Emitter</button>
+        <button class="btn" id="cbtn4" onclick="buildUJT(4)" disabled>④ See Labels</button>
+        <button class="btn" onclick="resetBuild()">↺ Reset</button>
+      </div>
+    </div>
+
+    <p class="lead" style="margin-top:1rem;">Key geometry fact: The emitter P-dot is positioned <span class="hl3">closer to B1</span> than B2. This is why <span class="hl">RB1 &gt; RB2</span> and η (eta) &gt; 0.5.</p>
+
+    <table class="tbl">
+      <tr><th>Terminal</th><th>Material</th><th>Position on bar</th><th>Function</th></tr>
+      <tr><td><span class="hl2">B2 — Base 2</span></td><td>Ohmic (N-contact)</td><td>TOP end of bar</td><td>Supply (+VBB)</td></tr>
+      <tr><td><span class="hl3">E — Emitter</span></td><td>P-type aluminium dot</td><td>SIDE, ~60% from top</td><td>Control input</td></tr>
+      <tr><td><span class="hl">B1 — Base 1</span></td><td>Ohmic (N-contact)</td><td>BOTTOM end of bar</td><td>Output / GND side</td></tr>
+    </table>
+
+    <div class="info-box">
+      <strong>Compare with BJT:</strong> BJT has 3 terminals and 2 PN junctions. UJT has 3 terminals but only 1 PN junction (at the emitter). B1 and B2 are simple ohmic contacts — they do NOT form junctions.
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">CHECKPOINT QUESTION</div>
+      <div class="quiz-q">B1 and B2 are called "ohmic contacts." What does this mean — and how are they different from the emitter?</div>
+      <div class="quiz-opts" id="q2opts">
+        <div class="quiz-opt" onclick="answer(this,'q2','wrong')"><span class="opt-letter">A</span> They form PN junctions just like the emitter does</div>
+        <div class="quiz-opt" onclick="answer(this,'q2','correct')"><span class="opt-letter">B</span> They are non-rectifying — current flows both ways like a resistor — no junction formed</div>
+        <div class="quiz-opt" onclick="answer(this,'q2','wrong')"><span class="opt-letter">C</span> They only allow current in one direction</div>
+        <div class="quiz-opt" onclick="answer(this,'q2','wrong')"><span class="opt-letter">D</span> They are made of P-type material like the emitter</div>
+      </div>
+      <div class="quiz-fb" id="q2fb"></div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn" onclick="prevStep(2)">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep(2)">Next: Equivalent Circuit →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     STEP 3 — EQUIVALENT CIRCUIT
+══════════════════════════════════════════════════════ -->
+<div class="step-card" id="step3">
+  <div class="step-hdr">
+    <span class="step-num">STEP 03</span>
+    <span class="step-title">Equivalent Circuit &amp; Intrinsic Standoff Ratio η</span>
+  </div>
+  <div class="step-body">
+    <p class="lead">The N-bar between B1 and B2 behaves as a <span class="hl">resistor</span>. The emitter-bar interface is a <span class="hl3">diode</span>. Together they form a simple equivalent circuit:</p>
+
+    <div class="circuit-wrap">
+      <svg width="560" height="270" viewBox="0 0 560 270">
+        <!-- VBB supply rail -->
+        <text x="42" y="30" fill="#A05800" font-size="13" font-family="Space Mono" font-weight="700">+VBB</text>
+        <line x1="80" y1="30" x2="210" y2="30" stroke="#A05800" stroke-width="2.5"/>
+        <line x1="80" y1="30" x2="80" y2="250" stroke="#B8C8DC" stroke-width="1.5"/>
+
+        <!-- B2 node -->
+        <circle cx="210" cy="30" r="5" fill="#A05800"/>
+        <text x="216" y="26" fill="#A05800" font-size="12" font-family="Space Mono" font-weight="700">B2</text>
+
+        <!-- RB2 resistor box -->
+        <line x1="210" y1="30" x2="210" y2="72" stroke="#1A3FAA" stroke-width="2.5"/>
+        <rect x="194" y="72" width="32" height="52" rx="5" fill="#EEF2FF" stroke="#1A3FAA" stroke-width="2.5"/>
+        <text x="210" y="103" text-anchor="middle" fill="#1A3FAA" font-size="11" font-family="Space Mono" font-weight="700">RB2</text>
+        <text x="234" y="85" fill="#3A4A60" font-size="10" font-family="Noto Sans" font-weight="600">Fixed</text>
+        <text x="234" y="99" fill="#3A4A60" font-size="10" font-family="Noto Sans" font-weight="600">~smaller</text>
+        <line x1="210" y1="124" x2="210" y2="148" stroke="#1A3FAA" stroke-width="2.5"/>
+
+        <!-- Emitter tap node — η·VBB -->
+        <circle cx="210" cy="150" r="6" fill="#005F5C" class="pulse"/>
+        <text x="220" y="155" fill="#005F5C" font-size="11" font-family="Space Mono" font-weight="700">η·VBB</text>
+
+        <!-- Emitter diode branch -->
+        <line x1="210" y1="150" x2="310" y2="150" stroke="#B31B22" stroke-width="2" stroke-dasharray="6 3"/>
+        <polygon points="310,137 310,163 332,150" fill="#FDEAEA" stroke="#B31B22" stroke-width="2.5"/>
+        <line x1="332" y1="136" x2="332" y2="164" stroke="#B31B22" stroke-width="3"/>
+        <line x1="332" y1="150" x2="405" y2="150" stroke="#B31B22" stroke-width="2.5"/>
+        <text x="412" y="154" fill="#B31B22" font-size="14" font-family="Space Mono" font-weight="700">E</text>
+        <text x="313" y="178" fill="#B31B22" font-size="10" font-family="Noto Sans" font-weight="600">Emitter diode (0.7V drop)</text>
+
+        <!-- RB1 resistor box (variable) -->
+        <line x1="210" y1="156" x2="210" y2="178" stroke="#005F5C" stroke-width="2.5"/>
+        <rect x="194" y="178" width="32" height="52" rx="5" fill="#E2F4F3" stroke="#005F5C" stroke-width="2.5" id="rb1rect"/>
+        <text x="210" y="209" text-anchor="middle" fill="#005F5C" font-size="11" font-family="Space Mono" font-weight="700">RB1</text>
+        <text x="234" y="191" fill="#B31B22" font-size="10" font-family="Noto Sans" font-weight="700">Variable!</text>
+        <text x="234" y="205" fill="#3A4A60" font-size="10" font-family="Noto Sans" font-weight="600">~larger</text>
+        <line x1="210" y1="230" x2="210" y2="252" stroke="#005F5C" stroke-width="2.5"/>
+
+        <!-- B1 node / GND -->
+        <circle cx="210" cy="252" r="5" fill="#005F5C"/>
+        <text x="216" y="256" fill="#005F5C" font-size="12" font-family="Space Mono" font-weight="700">B1</text>
+        <line x1="210" y1="252" x2="80" y2="252" stroke="#005F5C" stroke-width="2"/>
+        <text x="42" y="255" fill="#0A1628" font-size="12" font-family="Space Mono" font-weight="700">GND</text>
+
+        <!-- RBB annotation -->
+        <line x1="145" y1="30" x2="145" y2="252" stroke="#C8D4E4" stroke-width="1" stroke-dasharray="4 3"/>
+        <text x="108" y="90"  fill="#1A3FAA" font-size="10" font-family="Noto Sans" font-weight="700">RBB =</text>
+        <text x="108" y="104" fill="#1A3FAA" font-size="10" font-family="Noto Sans" font-weight="700">RB1+RB2</text>
+        <text x="108" y="118" fill="#1A3FAA" font-size="10" font-family="Noto Sans" font-weight="700">5–10 kΩ</text>
+
+        <!-- Voltage divider bracket -->
+        <text x="460" y="95"  fill="#3A4A60" font-size="11" font-family="Noto Sans" font-weight="600">Voltage</text>
+        <text x="460" y="109" fill="#3A4A60" font-size="11" font-family="Noto Sans" font-weight="600">Divider</text>
+        <line x1="456" y1="113" x2="244" y2="113" stroke="#C8D4E4" stroke-width="1" stroke-dasharray="3 3"/>
+        <line x1="456" y1="113" x2="456" y2="192" stroke="#C8D4E4" stroke-width="1" stroke-dasharray="3 3"/>
+        <line x1="456" y1="192" x2="244" y2="192" stroke="#C8D4E4" stroke-width="1" stroke-dasharray="3 3"/>
+      </svg>
+    </div>
+
+    <div class="formula-box">
+      η = RB1 / (RB1 + RB2) = RB1 / RBB
+      <div class="sub">η (eta) ranges 0.51 to 0.82 · Typical: 0.63 · Note: RB1 &gt; RB2 always</div>
+    </div>
+    <div class="formula-box">
+      VP = η × VBB + 0.7V &nbsp;&nbsp; (Peak / Firing Voltage)
+      <div class="sub">UJT fires the instant VE reaches VP. The 0.7V is the emitter diode's forward voltage.</div>
+    </div>
+
+    <div class="warn-box">
+      <strong>🔢 Worked Example:</strong> η = 0.65, VBB = 15V → VP = 0.65 × 15 + 0.7 = 9.75 + 0.7 = <strong>10.45V</strong>. The UJT will snap ON the moment the emitter reaches exactly 10.45V.
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">CHECKPOINT QUESTION</div>
+      <div class="quiz-q">A UJT has η = 0.7 and VBB = 10V. At what emitter voltage VP will it fire?</div>
+      <div class="quiz-opts" id="q3opts">
+        <div class="quiz-opt" onclick="answer(this,'q3','wrong')"><span class="opt-letter">A</span> 7.0V (only η × VBB, forgot diode drop)</div>
+        <div class="quiz-opt" onclick="answer(this,'q3','wrong')"><span class="opt-letter">B</span> 10.7V (added wrong)</div>
+        <div class="quiz-opt" onclick="answer(this,'q3','correct')"><span class="opt-letter">C</span> 7.7V (= 0.7 × 10 + 0.7)</div>
+        <div class="quiz-opt" onclick="answer(this,'q3','wrong')"><span class="opt-letter">D</span> 3.0V</div>
+      </div>
+      <div class="quiz-fb" id="q3fb"></div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn" onclick="prevStep(3)">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep(3)">Next: Operation →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     STEP 4 — OPERATION (CORRECTED ANIMATION)
+══════════════════════════════════════════════════════ -->
+<div class="step-card" id="step4">
+  <div class="step-hdr">
+    <span class="step-num">STEP 04</span>
+    <span class="step-title">How UJT Operates — 3 Stages</span>
+  </div>
+  <div class="step-body">
+    <p class="lead">Operation happens in <span class="hl">three clear stages</span>. Click each stage to see the animated current flow in both sections of the bar.</p>
+
+    <div class="anim-stage" style="min-height:360px;">
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.8rem;">
+        <button class="btn" id="stg1btn" onclick="showStage(1)">① OFF State</button>
+        <button class="btn" id="stg2btn" onclick="showStage(2)">② Firing!</button>
+        <button class="btn" id="stg3btn" onclick="showStage(3)">③ Saturation ON</button>
+      </div>
+
+      <div class="legend">
+        <span><span class="lswatch" style="background:#A05800"></span><span style="color:#A05800">IB2 — upper channel (B2→E, always present)</span></span>
+        <span><span class="lswatch" style="background:#B31B22"></span><span style="color:#B31B22">IE — hole injection at emitter</span></span>
+        <span><span class="lswatch" style="background:#005F5C"></span><span style="color:#005F5C">IB1 — lower surge (IB2+IE combined to B1)</span></span>
+      </div>
+
+      <svg width="100%" height="300" viewBox="0 0 640 300" id="stageSVG">
+
+        <!-- ── VERTICAL N-BAR (correct geometry) ── -->
+        <!-- Upper section: B2 → Emitter (RB2) -->
+        <rect x="240" y="20" width="90" height="108" rx="0"
+              fill="rgba(160,88,0,0.07)" stroke="none" id="bar-upper"/>
+        <!-- Lower section: Emitter → B1 (RB1) -->
+        <rect x="240" y="128" width="90" height="130" rx="0"
+              fill="rgba(0,95,92,0.06)" stroke="none" id="bar-lower"/>
+        <!-- Full bar border -->
+        <rect x="240" y="20" width="90" height="238" rx="8"
+              fill="none" stroke="#005F5C" stroke-width="2.5" id="ujt-bar"/>
+
+        <!-- Divider line at emitter position -->
+        <line x1="240" y1="128" x2="330" y2="128"
+              stroke="#B8C8DC" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+        <!-- RB2 section label -->
+        <text x="285" y="78" text-anchor="middle" fill="#A05800"
+              font-size="12" font-family="Space Mono" font-weight="700" id="rb2label">RB2</text>
+        <text x="285" y="95" text-anchor="middle" fill="#3A4A60"
+              font-size="10" font-family="Noto Sans" font-weight="600">(smaller)</text>
+
+        <!-- RB1 section label -->
+        <text x="285" y="182" text-anchor="middle" fill="#005F5C"
+              font-size="12" font-family="Space Mono" font-weight="700" id="rb1label">RB1</text>
+        <text x="285" y="199" text-anchor="middle" fill="#3A4A60"
+              font-size="10" font-family="Noto Sans" font-weight="600">(larger)</text>
+
+        <!-- B2 terminal top -->
+        <rect x="256" y="6" width="58" height="16" rx="4" fill="#A05800"/>
+        <text x="285" y="18" text-anchor="middle" fill="#fff"
+              font-size="11" font-family="Space Mono" font-weight="700">B2(+VBB)</text>
+
+        <!-- B1 terminal bottom -->
+        <rect x="256" y="256" width="58" height="16" rx="4" fill="#005F5C"/>
+        <text x="285" y="268" text-anchor="middle" fill="#fff"
+              font-size="11" font-family="Space Mono" font-weight="700">B1 (out)</text>
+
+        <!-- Emitter P dot on left side at ~60% down (y=128) -->
+        <rect x="210" y="118" width="32" height="22" rx="5"
+              fill="#FDEAEA" stroke="#B31B22" stroke-width="2.5" id="emDot"/>
+        <text x="226" y="133" text-anchor="middle" fill="#B31B22"
+              font-size="10" font-family="Space Mono" font-weight="700">P</text>
+
+        <!-- Emitter wire + VE source -->
+        <line x1="178" y1="129" x2="210" y2="129" stroke="#B31B22" stroke-width="2.5" id="eLine"/>
+        <text x="163" y="133" text-anchor="middle" fill="#B31B22"
+              font-size="12" font-family="Space Mono" font-weight="700">E</text>
+        <circle cx="108" cy="129" r="24" fill="none" stroke="#B8C8DC" stroke-width="1.5"/>
+        <text x="108" y="126" text-anchor="middle" fill="#3A4A60"
+              font-size="9" font-family="Space Mono">VE</text>
+        <text x="108" y="139" text-anchor="middle" fill="#3A4A60"
+              font-size="9" font-family="Space Mono" id="veLabel">rising</text>
+        <line x1="84" y1="129" x2="177" y2="129" stroke="#B31B22" stroke-width="1.5" stroke-dasharray="5 3"/>
+
+        <!-- ══ CURRENT FLOW GROUPS ══ -->
+
+        <!-- STAGE 1: tiny leakage full bar -->
+        <g id="flow-leakage" opacity="0" style="transition:opacity 0.5s">
+          <circle r="4" fill="#1A3FAA" opacity="0.6">
+            <animate attributeName="cy" values="24;255" dur="3s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="262;262" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="4" fill="#1A3FAA" opacity="0.6">
+            <animate attributeName="cy" values="24;255" dur="3s" begin="1.5s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="306;306" dur="3s" begin="1.5s" repeatCount="indefinite"/>
+          </circle>
+          <text x="285" y="290" text-anchor="middle" fill="#1A3FAA"
+                font-size="10" font-family="Noto Sans" font-weight="700">Tiny µA leakage — full bar, both sections</text>
+        </g>
+
+        <!-- STAGE 2: FIRING — both sections active -->
+        <g id="flow-firing" opacity="0" style="transition:opacity 0.5s">
+          <!-- UPPER: IB2 steady amber dots, slow -->
+          <circle r="5" fill="#A05800" opacity="0.95">
+            <animate attributeName="cy" values="24;123" dur="1.3s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="262;262" dur="1.3s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="5" fill="#A05800" opacity="0.95">
+            <animate attributeName="cy" values="24;123" dur="1.3s" begin="0.43s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="283;283" dur="1.3s" begin="0.43s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="5" fill="#A05800" opacity="0.95">
+            <animate attributeName="cy" values="24;123" dur="1.3s" begin="0.86s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="308;308" dur="1.3s" begin="0.86s" repeatCount="indefinite"/>
+          </circle>
+          <text x="370" y="62" fill="#A05800" font-size="11" font-family="Space Mono" font-weight="700">IB2 →</text>
+          <text x="370" y="76" fill="#3A4A60" font-size="9" font-family="Noto Sans" font-weight="600">steady interbase</text>
+
+          <!-- EMITTER injection: red dots burst from P into bar -->
+          <circle r="5" fill="#B31B22" opacity="1">
+            <animate attributeName="cx" values="242;272" dur="0.5s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="129;145" dur="0.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="5" fill="#B31B22" opacity="1">
+            <animate attributeName="cx" values="242;278" dur="0.5s" begin="0.17s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="129;158" dur="0.5s" begin="0.17s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="5" fill="#B31B22" opacity="1">
+            <animate attributeName="cx" values="242;268" dur="0.5s" begin="0.33s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="129;170" dur="0.5s" begin="0.33s" repeatCount="indefinite"/>
+          </circle>
+          <text x="128" y="116" fill="#B31B22" font-size="11" font-family="Space Mono" font-weight="700">IE →</text>
+          <text x="118" y="130" fill="#3A4A60" font-size="9" font-family="Noto Sans" font-weight="600">hole injection</text>
+
+          <!-- LOWER: heavy combined surge to B1 — large fast teal dots -->
+          <circle r="6.5" fill="#005F5C" opacity="1">
+            <animate attributeName="cy" values="133;253" dur="0.42s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="260;260" dur="0.42s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="6.5" fill="#005F5C" opacity="1">
+            <animate attributeName="cy" values="133;253" dur="0.42s" begin="0.14s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="277;277" dur="0.42s" begin="0.14s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="6.5" fill="#005F5C" opacity="1">
+            <animate attributeName="cy" values="133;253" dur="0.42s" begin="0.28s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="296;296" dur="0.42s" begin="0.28s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="6.5" fill="#005F5C" opacity="1">
+            <animate attributeName="cy" values="133;253" dur="0.42s" begin="0.35s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="314;314" dur="0.42s" begin="0.35s" repeatCount="indefinite"/>
+          </circle>
+          <!-- RB1 collapsed glow -->
+          <rect x="242" y="133" width="86" height="122" rx="5"
+                fill="rgba(0,95,92,0.15)" stroke="rgba(0,95,92,0.5)" stroke-width="1.5" id="rb1glow"/>
+          <!-- Arrow at B1 -->
+          <polygon points="273,262 297,262 285,272" fill="#005F5C"/>
+          <text x="370" y="178" fill="#005F5C" font-size="11" font-family="Space Mono" font-weight="700">IB1 →</text>
+          <text x="365" y="192" fill="#3A4A60" font-size="9" font-family="Noto Sans" font-weight="600">IB2 + IE combined!</text>
+
+          <text x="285" y="292" text-anchor="middle" fill="#B31B22"
+                font-size="10" font-family="Noto Sans" font-weight="700">Both sections active! B1 carries IB2 + IE surge</text>
+        </g>
+
+        <!-- STAGE 3: SATURATION — both sections, fully ON -->
+        <g id="flow-sat" opacity="0" style="transition:opacity 0.5s">
+          <circle r="5" fill="#A05800" opacity="0.85">
+            <animate attributeName="cy" values="24;123" dur="1.5s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="268;268" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="5" fill="#A05800" opacity="0.85">
+            <animate attributeName="cy" values="24;123" dur="1.5s" begin="0.75s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="305;305" dur="1.5s" begin="0.75s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="6" fill="#005F5C" opacity="1">
+            <animate attributeName="cy" values="133;253" dur="0.55s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="260;260" dur="0.55s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="6" fill="#005F5C" opacity="1">
+            <animate attributeName="cy" values="133;253" dur="0.55s" begin="0.18s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="280;280" dur="0.55s" begin="0.18s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="6" fill="#005F5C" opacity="1">
+            <animate attributeName="cy" values="133;253" dur="0.55s" begin="0.37s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="310;310" dur="0.55s" begin="0.37s" repeatCount="indefinite"/>
+          </circle>
+          <rect x="242" y="133" width="86" height="122" rx="5"
+                fill="rgba(0,95,92,0.20)" stroke="rgba(0,95,92,0.6)" stroke-width="1.5"/>
+          <polygon points="273,262 297,262 285,272" fill="#005F5C"/>
+          <text x="285" y="292" text-anchor="middle" fill="#005F5C"
+                font-size="10" font-family="Noto Sans" font-weight="700">Fully ON — IE &gt; IV — heavy current to B1</text>
+        </g>
+
+        <!-- STATUS PANEL -->
+        <rect x="420" y="14" width="210" height="255" rx="10"
+              fill="#FFFFFF" stroke="#B8C8DC" stroke-width="2"/>
+        <rect x="420" y="14" width="210" height="32" rx="10"
+              fill="var(--card2)" stroke="none"/>
+        <rect x="420" y="34" width="210" height="12" rx="0"
+              fill="var(--card2)" stroke="none"/>
+        <text x="525" y="34" text-anchor="middle" fill="#3A4A60"
+              font-size="11" font-family="Space Mono" font-weight="700">STATUS</text>
+        <text x="525" y="58" text-anchor="middle" fill="#0A1628"
+              font-size="14" font-family="Space Mono" font-weight="700" id="statusText">— Select stage —</text>
+        <text x="432" y="82"  fill="#3A4A60" font-size="10" font-family="Noto Sans" font-weight="600" id="s1">VE: —</text>
+        <text x="432" y="102" fill="#3A4A60" font-size="10" font-family="Noto Sans" font-weight="600" id="s2">E-junction: —</text>
+        <text x="432" y="122" fill="#3A4A60" font-size="10" font-family="Noto Sans" font-weight="600" id="s3">RB2 current (upper): —</text>
+        <text x="432" y="142" fill="#3A4A60" font-size="10" font-family="Noto Sans" font-weight="600" id="s4">RB1 current (lower): —</text>
+        <text x="432" y="162" fill="#3A4A60" font-size="10" font-family="Noto Sans" font-weight="600" id="s5">RB1 value: —</text>
+        <text x="432" y="182" fill="#3A4A60" font-size="10" font-family="Noto Sans" font-weight="600" id="s6">Device state: —</text>
+      </svg>
+    </div>
+
+    <div class="analogy-box">
+      <strong>🌊 Dam Analogy:</strong> Capacitor voltage slowly builds like water rising behind a dam. The moment it reaches the dam top (VP) — it BURSTS through completely and suddenly. UJT snaps ON hard. The water level drops to VV, dam resets, and the cycle repeats.
+    </div>
+
+    <div class="info-box" style="border-left-color:var(--amber)">
+      <strong style="color:var(--amber)">⚡ Key — Full channel is active:</strong><br>
+      <strong>Upper section (B2→E, RB2):</strong> Steady interbase current IB2 flows. RB2 stays roughly constant.<br>
+      <strong>Lower section (E→B1, RB1):</strong> Holes injected from emitter flood this section, collapsing RB1. B1 receives the combined surge IB2 + IE. This is why the animation shows <span style="color:#A05800;font-weight:700">amber</span> (upper) and large fast <span style="color:#005F5C;font-weight:700">teal</span> (lower) separately.
+    </div>
+
+    <p class="lead" style="margin-top:0.8rem;">In Stage 2, <span class="hl3">Negative Resistance</span> occurs:</p>
+    <div class="info-box">
+      Normal resistor: <strong>V↑ → I↑</strong> (Ohm's law)<br>
+      UJT negative resistance zone: <strong>V↓ while I↑</strong> — opposite of Ohm! Hole injection reduces RB1 → lower voltage drop → more current → yet more holes → self-reinforcing SNAP-ON action.
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">CHECKPOINT QUESTION</div>
+      <div class="quiz-q">When the UJT fires, which statement correctly describes current flow in BOTH sections of the N-bar?</div>
+      <div class="quiz-opts" id="q4opts">
+        <div class="quiz-opt" onclick="answer(this,'q4','wrong')"><span class="opt-letter">A</span> Only the lower section (E→B1) conducts. The upper section (B2→E) is completely OFF.</div>
+        <div class="quiz-opt" onclick="answer(this,'q4','correct')"><span class="opt-letter">B</span> Both sections are active. Upper carries steady IB2; lower carries a heavy combined surge (IB2 + IE) because RB1 collapses.</div>
+        <div class="quiz-opt" onclick="answer(this,'q4','wrong')"><span class="opt-letter">C</span> Both sections carry equal current from top to bottom.</div>
+        <div class="quiz-opt" onclick="answer(this,'q4','wrong')"><span class="opt-letter">D</span> The upper section (B2→E) carries all current; lower section is blocked.</div>
+      </div>
+      <div class="quiz-fb" id="q4fb"></div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn" onclick="prevStep(4)">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep(4)">Next: V-I Curve →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     STEP 5 — V-I CHARACTERISTIC
+══════════════════════════════════════════════════════ -->
+<div class="step-card" id="step5">
+  <div class="step-hdr">
+    <span class="step-num">STEP 05</span>
+    <span class="step-title">V-I Characteristic Curve</span>
+  </div>
+  <div class="step-body">
+    <p class="lead">The V-I curve of a UJT has three distinct regions. Click <strong>Animate Curve</strong> to see them appear one by one.</p>
+
+    <div class="anim-stage">
+      <div class="anim-controls" style="margin-bottom:0.8rem;">
+        <button class="btn btn-primary" onclick="animateVI()">▶ Animate Curve</button>
+        <button class="btn" onclick="resetVI()">↺ Reset</button>
+      </div>
+      <svg width="100%" height="280" viewBox="0 0 580 280">
+        <!-- Axes -->
+        <line x1="55" y1="16" x2="55" y2="245" stroke="#0A1628" stroke-width="2.5"/>
+        <line x1="55" y1="245" x2="545" y2="245" stroke="#0A1628" stroke-width="2.5"/>
+        <!-- Axis labels -->
+        <text x="50" y="12"  fill="#0A1628" font-size="13" font-family="Space Mono" font-weight="700">↑ VE</text>
+        <text x="520" y="258" fill="#0A1628" font-size="13" font-family="Space Mono" font-weight="700">IE →</text>
+        <!-- Grid lines -->
+        <line x1="55" y1="200" x2="545" y2="200" stroke="#DCE8F4" stroke-width="1"/>
+        <line x1="55" y1="155" x2="545" y2="155" stroke="#DCE8F4" stroke-width="1"/>
+        <line x1="55" y1="110" x2="545" y2="110" stroke="#DCE8F4" stroke-width="1"/>
+        <line x1="55" y1="60"  x2="545" y2="60"  stroke="#DCE8F4" stroke-width="1"/>
+
+        <!-- VP reference line -->
+        <line x1="55" y1="60" x2="545" y2="60" stroke="#A05800" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text x="58" y="56" fill="#A05800" font-size="12" font-family="Space Mono" font-weight="700">VP</text>
+        <!-- VV reference line -->
+        <line x1="55" y1="200" x2="545" y2="200" stroke="#B31B22" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text x="58" y="196" fill="#B31B22" font-size="12" font-family="Space Mono" font-weight="700">VV</text>
+
+        <!-- Region 1: Cut-off (vertical line, VE rises, IE tiny — near Y axis) -->
+        <!-- Path: from (75,245) up to (75,62) — almost vertical -->
+        <path id="curve-cutoff"
+              d="M75,245 L80,220 L82,180 L83,130 L84,90 L85,62"
+              stroke="#1A3FAA" stroke-width="3.5" fill="none"
+              stroke-dasharray="200" stroke-dashoffset="200"
+              style="transition:stroke-dashoffset 0.9s ease"/>
+        <circle id="peak-dot" cx="85" cy="62" r="8"
+                fill="#A05800" opacity="0"
+                style="transition:opacity 0.4s"/>
+        <text id="peak-label" x="92" y="52" fill="#A05800"
+              font-size="11" font-family="Space Mono" font-weight="700" opacity="0"
+              style="transition:opacity 0.4s">Peak (VP, IP)</text>
+        <text id="iplabel" x="58" y="240" fill="#1A3FAA"
+              font-size="10" font-family="Noto Sans" font-weight="600" opacity="0"
+              style="transition:opacity 0.4s">IP (tiny µA)</text>
+
+        <!-- Region 2: Negative resistance (curve drops right and down) -->
+        <path id="curve-neg"
+              d="M85,62 Q120,62 145,108 Q170,148 200,200"
+              stroke="#B31B22" stroke-width="3.5" fill="none"
+              stroke-dasharray="200" stroke-dashoffset="200"
+              style="transition:stroke-dashoffset 0.9s ease"/>
+        <circle id="valley-dot" cx="200" cy="200" r="8"
+                fill="#B31B22" opacity="0"
+                style="transition:opacity 0.4s"/>
+        <text id="valley-label" x="208" y="196" fill="#B31B22"
+              font-size="11" font-family="Space Mono" font-weight="700" opacity="0"
+              style="transition:opacity 0.4s">Valley (VV, IV)</text>
+        <text id="ivlabel" x="194" y="240" fill="#B31B22"
+              font-size="10" font-family="Noto Sans" font-weight="600" opacity="0"
+              style="transition:opacity 0.4s">IV</text>
+
+        <!-- Region 3: Saturation (nearly flat, VE slightly rises with IE) -->
+        <path id="curve-sat"
+              d="M200,200 Q290,194 360,188 Q430,182 500,178"
+              stroke="#005F5C" stroke-width="3.5" fill="none"
+              stroke-dasharray="320" stroke-dashoffset="320"
+              style="transition:stroke-dashoffset 1.0s ease"/>
+        <!-- Arrow at end of sat curve -->
+        <polygon id="curArrow" points="496,172 508,178 496,184"
+                 fill="#005F5C" opacity="0"
+                 style="transition:opacity 0.4s"/>
+
+        <!-- Region labels -->
+        <text id="reg1label" x="56" y="148" fill="#1A3FAA"
+              font-size="12" font-family="Space Mono" font-weight="700" opacity="0"
+              style="transition:opacity 0.4s">CUT-</text>
+        <text id="reg1label2" x="56" y="163" fill="#1A3FAA"
+              font-size="12" font-family="Space Mono" font-weight="700" opacity="0"
+              style="transition:opacity 0.4s">OFF</text>
+        <text id="reg2label" x="108" y="128" fill="#B31B22"
+              font-size="12" font-family="Space Mono" font-weight="700" opacity="0"
+              style="transition:opacity 0.4s">NEG. R</text>
+        <text id="reg2label2" x="108" y="143" fill="#B31B22"
+              font-size="12" font-family="Space Mono" font-weight="700" opacity="0"
+              style="transition:opacity 0.4s">REGION</text>
+        <text id="reg3label" x="290" y="175" fill="#005F5C"
+              font-size="12" font-family="Space Mono" font-weight="700" opacity="0"
+              style="transition:opacity 0.4s">SATURATION</text>
+      </svg>
+    </div>
+
+    <table class="tbl" style="margin-top:1rem;">
+      <tr><th>Region</th><th>VE vs VP</th><th>What happens</th><th>RB1</th></tr>
+      <tr><td><span class="hl4">① Cut-off</span></td><td>VE &lt; VP</td><td>Diode reverse biased, µA leakage, UJT OFF</td><td>High (normal)</td></tr>
+      <tr><td><span class="hl3">② Neg. Resistance</span></td><td>VP → VV</td><td>Holes inject, RB1 collapses, V drops while I rises — SNAP ON</td><td>Falling fast!</td></tr>
+      <tr><td><span class="hl">③ Saturation</span></td><td>VE = VV</td><td>Fully ON, high current to B1, stays ON while IE &gt; IV</td><td>Very low</td></tr>
+    </table>
+
+    <div class="quiz-box">
+      <div class="quiz-label">CHECKPOINT QUESTION</div>
+      <div class="quiz-q">In the negative resistance region, what is unusual about the relationship between VE and IE?</div>
+      <div class="quiz-opts" id="q5opts">
+        <div class="quiz-opt" onclick="answer(this,'q5','wrong')"><span class="opt-letter">A</span> Both VE and IE increase together (Ohm's law)</div>
+        <div class="quiz-opt" onclick="answer(this,'q5','correct')"><span class="opt-letter">B</span> VE decreases while IE increases — opposite of Ohm's law — caused by RB1 collapsing</div>
+        <div class="quiz-opt" onclick="answer(this,'q5','wrong')"><span class="opt-letter">C</span> VE increases while IE decreases</div>
+        <div class="quiz-opt" onclick="answer(this,'q5','wrong')"><span class="opt-letter">D</span> Both VE and IE stay constant</div>
+      </div>
+      <div class="quiz-fb" id="q5fb"></div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn" onclick="prevStep(5)">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep(5)">Next: Oscillator →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     STEP 6 — RELAXATION OSCILLATOR
+══════════════════════════════════════════════════════ -->
+<div class="step-card" id="step6">
+  <div class="step-hdr">
+    <span class="step-num">STEP 06</span>
+    <span class="step-title">Relaxation Oscillator — Key Application</span>
+  </div>
+  <div class="step-body">
+    <p class="lead">The most important UJT circuit — a <span class="hl">relaxation oscillator</span> using just R, C, and the UJT. It generates repeating pulses automatically.</p>
+
+    <div class="circuit-wrap">
+      <svg width="580" height="290" viewBox="0 0 580 290">
+        <!-- VBB supply top rail -->
+        <line x1="60"  y1="20" x2="500" y2="20"  stroke="#A05800" stroke-width="2.5"/>
+        <text x="20"   y="24" fill="#A05800" font-size="13" font-family="Space Mono" font-weight="700">+VBB</text>
+
+        <!-- Charging R -->
+        <line x1="120" y1="20" x2="120" y2="52" stroke="#0A1628" stroke-width="2.5"/>
+        <rect x="104" y="52" width="32" height="56" rx="5" fill="#EEF2FF" stroke="#1A3FAA" stroke-width="2.5"/>
+        <text x="120" y="84" text-anchor="middle" fill="#1A3FAA" font-size="11" font-family="Space Mono" font-weight="700">R</text>
+        <text x="142" y="68" fill="#3A4A60" font-size="10" font-family="Noto Sans" font-weight="600">10 kΩ</text>
+        <line x1="120" y1="108" x2="120" y2="138" stroke="#0A1628" stroke-width="2.5"/>
+
+        <!-- Node to capacitor and emitter -->
+        <circle cx="120" cy="140" r="5" fill="#0A1628"/>
+
+        <!-- Capacitor C -->
+        <line x1="120" y1="140" x2="120" y2="168" stroke="#0A1628" stroke-width="2.5"/>
+        <line x1="96"  y1="168" x2="144" y2="168" stroke="#0A1628" stroke-width="4"/>
+        <line x1="96"  y1="178" x2="144" y2="178" stroke="#0A1628" stroke-width="4"/>
+        <line x1="120" y1="178" x2="120" y2="210" stroke="#0A1628" stroke-width="2.5"/>
+        <text x="150" y="177" fill="#3A4A60" font-size="10" font-family="Noto Sans" font-weight="600">C = 10µF</text>
+
+        <!-- GND bottom rail -->
+        <line x1="60"  y1="270" x2="500" y2="270" stroke="#0A1628" stroke-width="2"/>
+        <line x1="120" y1="210" x2="120" y2="270" stroke="#0A1628" stroke-width="2.5"/>
+        <text x="20"   y="273" fill="#0A1628" font-size="13" font-family="Space Mono" font-weight="700">GND</text>
+
+        <!-- Emitter wire from node to UJT E -->
+        <line x1="120" y1="140" x2="220" y2="140" stroke="#B31B22" stroke-width="2.5"/>
+        <text x="165"  y="134" fill="#B31B22" font-size="11" font-family="Space Mono" font-weight="700">VE</text>
+
+        <!-- UJT body (vertical bar) -->
+        <rect x="220" y="60" width="80" height="200" rx="8"
+              fill="#E2F4F3" stroke="#005F5C" stroke-width="2.5"/>
+        <text x="260" y="162" text-anchor="middle" fill="#005F5C"
+              font-size="12" font-family="Space Mono" font-weight="700">UJT</text>
+        <text x="260" y="178" text-anchor="middle" fill="#3A4A60"
+              font-size="10" font-family="Noto Sans" font-weight="600">2N2646</text>
+
+        <!-- Emitter P on UJT -->
+        <circle cx="220" cy="140" r="10" fill="#FDEAEA" stroke="#B31B22" stroke-width="2.5"/>
+        <text x="220" y="144" text-anchor="middle" fill="#B31B22"
+              font-size="10" font-family="Space Mono" font-weight="700">E</text>
+
+        <!-- B2 on top of UJT bar -->
+        <line x1="260" y1="60" x2="260" y2="20" stroke="#A05800" stroke-width="2.5"/>
+        <text x="268" y="48" fill="#A05800" font-size="12" font-family="Space Mono" font-weight="700">B2</text>
+
+        <!-- R2 at B2 (between B2 and VBB) -->
+        <rect x="352" y="4" width="56" height="32" rx="5" fill="#FFF8EE" stroke="#A05800" stroke-width="2"/>
+        <text x="380" y="24" text-anchor="middle" fill="#A05800" font-size="10" font-family="Space Mono" font-weight="700">R2 100Ω</text>
+        <line x1="260" y1="20" x2="352" y2="20" stroke="#A05800" stroke-width="2"/>
+        <line x1="408" y1="20" x2="500" y2="20" stroke="#A05800" stroke-width="2"/>
+
+        <!-- B1 on bottom of UJT bar -->
+        <line x1="260" y1="260" x2="260" y2="270" stroke="#005F5C" stroke-width="2.5"/>
+        <text x="268" y="256" fill="#005F5C" font-size="12" font-family="Space Mono" font-weight="700">B1</text>
+
+        <!-- R1 at B1 -->
+        <rect x="352" y="246" width="56" height="32" rx="5" fill="#E2F4F3" stroke="#005F5C" stroke-width="2"/>
+        <text x="380" y="266" text-anchor="middle" fill="#005F5C" font-size="10" font-family="Space Mono" font-weight="700">R1 100Ω</text>
+        <line x1="260" y1="270" x2="352" y2="270" stroke="#005F5C" stroke-width="2"/>
+        <line x1="408" y1="270" x2="500" y2="270" stroke="#005F5C" stroke-width="2"/>
+
+        <!-- Output node -->
+        <circle cx="500" cy="270" r="5" fill="#005F5C"/>
+        <line x1="500" y1="270" x2="560" y2="270" stroke="#005F5C" stroke-width="2.5" stroke-dasharray="6 3"/>
+        <text x="555" y="256" fill="#005F5C" font-size="11" font-family="Space Mono" font-weight="700">OUT</text>
+        <text x="553" y="270" fill="#3A4A60" font-size="9" font-family="Noto Sans" font-weight="600">(pulses)</text>
+      </svg>
+    </div>
+
+    <!-- Waveform animation -->
+    <div class="anim-stage" style="min-height:200px;">
+      <p style="color:var(--mid);font-size:0.92rem;font-weight:600;margin-bottom:0.6rem;">Waveform — Press Play to watch the oscillator cycle:</p>
+      <svg width="100%" height="150" viewBox="0 0 560 150" id="waveSVG">
+        <line x1="30" y1="130" x2="540" y2="130" stroke="#B8C8DC" stroke-width="1.5"/>
+        <line x1="30" y1="10"  x2="30"  y2="130" stroke="#B8C8DC" stroke-width="1.5"/>
+        <text x="536" y="127" fill="#0A1628" font-size="10" font-family="Space Mono" font-weight="700">t →</text>
+        <line x1="30" y1="40" x2="540" y2="40" stroke="#A05800" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text x="33" y="37" fill="#A05800" font-size="10" font-family="Space Mono" font-weight="700">VP</text>
+        <line x1="30" y1="108" x2="540" y2="108" stroke="#B31B22" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text x="33" y="105" fill="#B31B22" font-size="10" font-family="Space Mono" font-weight="700">VV</text>
+        <path id="sawPath" d="M30,130 " stroke="#005F5C" stroke-width="3" fill="none"/>
+        <g id="pulseGroup" opacity="0"></g>
+        <text x="50"  y="145" fill="#005F5C" font-size="10" font-family="Noto Sans" font-weight="600">Capacitor voltage (sawtooth across C)</text>
+        <text x="350" y="145" fill="#B31B22" font-size="10" font-family="Noto Sans" font-weight="600">Output pulses at B1 (across R1)</text>
+      </svg>
+      <div class="anim-controls">
+        <button class="btn btn-primary" onclick="animateWave()">▶ Play Oscillator</button>
+        <button class="btn" onclick="resetWave()">↺ Reset</button>
+      </div>
+    </div>
+
+    <div class="formula-box">
+      f ≈ 1 / (R × C × ln(1 / (1 − η)))
+      <div class="sub">R=10kΩ, C=10µF, η=0.63 → f ≈ 4 Hz — visible blink rate!</div>
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">CHECKPOINT QUESTION</div>
+      <div class="quiz-q">In the relaxation oscillator, when the UJT fires, what happens to capacitor C?</div>
+      <div class="quiz-opts" id="q6opts">
+        <div class="quiz-opt" onclick="answer(this,'q6','wrong')"><span class="opt-letter">A</span> C charges rapidly through R up to VBB</div>
+        <div class="quiz-opt" onclick="answer(this,'q6','correct')"><span class="opt-letter">B</span> C discharges rapidly through the UJT (B1) and R1, producing the output pulse</div>
+        <div class="quiz-opt" onclick="answer(this,'q6','wrong')"><span class="opt-letter">C</span> C stays charged — UJT only passes current from B2 to B1</div>
+        <div class="quiz-opt" onclick="answer(this,'q6','wrong')"><span class="opt-letter">D</span> C is disconnected from the circuit during firing</div>
+      </div>
+      <div class="quiz-fb" id="q6fb"></div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn" onclick="prevStep(6)">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep(6)">Next: UJT vs BJT →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     STEP 7 — UJT vs BJT
+══════════════════════════════════════════════════════ -->
+<div class="step-card" id="step7">
+  <div class="step-hdr">
+    <span class="step-num">STEP 07</span>
+    <span class="step-title">UJT vs BJT — Comparison</span>
+  </div>
+  <div class="step-body">
+    <p class="lead">Since your trainees already know BJT, this table <span class="hl">locks in the differences</span> clearly.</p>
+
+    <table class="tbl">
+      <tr><th>Feature</th><th>BJT (e.g. BC547)</th><th>UJT (e.g. 2N2646)</th></tr>
+      <tr><td>Full name</td><td>Bipolar Junction Transistor</td><td>Unijunction Transistor</td></tr>
+      <tr><td>PN Junctions</td><td><span class="hl3">2</span> — Emitter-Base &amp; Base-Collector</td><td><span class="hl">1</span> — Emitter only</td></tr>
+      <tr><td>Terminals</td><td>E, B, C</td><td>E, B1, B2</td></tr>
+      <tr><td>Main use</td><td>Amplification</td><td>Switching / Oscillation</td></tr>
+      <tr><td>Control method</td><td>Base current IB</td><td>Emitter voltage VE</td></tr>
+      <tr><td>Negative resistance</td><td>No</td><td><span class="hl">Yes — key feature!</span></td></tr>
+      <tr><td>Circuit complexity</td><td>Higher (bias network needed)</td><td>Simpler (R + C only)</td></tr>
+      <tr><td>Typical application</td><td>Amplifier, logic switch</td><td>Oscillator, SCR/TRIAC trigger</td></tr>
+      <tr><td>Part number (N-type)</td><td>BC547, 2N2222</td><td>2N2646, 2N2647</td></tr>
+    </table>
+
+    <div class="info-box">
+      <strong>N-type bar UJT (most common) vs P-type bar UJT:</strong> The standard UJT has an N-type silicon bar with a P-type emitter dot (e.g. 2N2646). A P-bar UJT also exists — bar is P-type, emitter is N-type, supply polarity reverses. However, P-bar UJTs are extremely rare in practice. For all ITI work, UJT means the N-bar type.
+    </div>
+
+    <div class="warn-box">
+      <strong>When to choose UJT over BJT?</strong> Choose UJT when you need a simple, reliable pulse generator that fires at a precise voltage — e.g., firing an SCR or TRIAC in a motor speed control circuit. Just R + C + UJT = complete oscillator. No complex bias network needed.
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">CHECKPOINT QUESTION</div>
+      <div class="quiz-q">A technician needs a timer that fires an SCR at precise intervals using minimum components. Which is the better choice?</div>
+      <div class="quiz-opts" id="q7opts">
+        <div class="quiz-opt" onclick="answer(this,'q7','wrong')"><span class="opt-letter">A</span> BJT — because it has two junctions and is more powerful</div>
+        <div class="quiz-opt" onclick="answer(this,'q7','correct')"><span class="opt-letter">B</span> UJT — because it naturally oscillates and generates trigger pulses with just R and C</div>
+        <div class="quiz-opt" onclick="answer(this,'q7','wrong')"><span class="opt-letter">C</span> BJT — because UJT cannot generate pulses</div>
+        <div class="quiz-opt" onclick="answer(this,'q7','wrong')"><span class="opt-letter">D</span> Neither — a dedicated IC must always be used</div>
+      </div>
+      <div class="quiz-fb" id="q7fb"></div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn" onclick="prevStep(7)">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep(7)">Next: Final Quiz →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     STEP 8 — FINAL QUIZ
+══════════════════════════════════════════════════════ -->
+<div class="step-card" id="step8">
+  <div class="step-hdr">
+    <span class="step-num">STEP 08</span>
+    <span class="step-title">Final Assessment — Test Your Understanding</span>
+  </div>
+  <div class="step-body">
+    <p class="lead">5 questions covering the full module. Think carefully before selecting!</p>
+
+    <div class="quiz-box" style="margin-bottom:1rem;">
+      <div class="quiz-label">FINAL QUESTION 1</div>
+      <div class="quiz-q">A UJT has η = 0.75 and VBB = 20V. Calculate the peak firing voltage VP.</div>
+      <div class="quiz-opts" id="qf1opts">
+        <div class="quiz-opt" onclick="answer(this,'qf1','wrong')"><span class="opt-letter">A</span> 15.0V (forgot diode drop)</div>
+        <div class="quiz-opt" onclick="answer(this,'qf1','correct')"><span class="opt-letter">B</span> 15.7V (= 0.75 × 20 + 0.7)</div>
+        <div class="quiz-opt" onclick="answer(this,'qf1','wrong')"><span class="opt-letter">C</span> 20.7V (added VBB + 0.7)</div>
+        <div class="quiz-opt" onclick="answer(this,'qf1','wrong')"><span class="opt-letter">D</span> 14.3V (subtracted 0.7)</div>
+      </div>
+      <div class="quiz-fb" id="qf1fb"></div>
+    </div>
+
+    <div class="quiz-box" style="margin-bottom:1rem;">
+      <div class="quiz-label">FINAL QUESTION 2</div>
+      <div class="quiz-q">Which terminal of the UJT is connected to P-type material, forming the only PN junction?</div>
+      <div class="quiz-opts" id="qf2opts">
+        <div class="quiz-opt" onclick="answer(this,'qf2','wrong')"><span class="opt-letter">A</span> B1 — Base 1</div>
+        <div class="quiz-opt" onclick="answer(this,'qf2','wrong')"><span class="opt-letter">B</span> B2 — Base 2</div>
+        <div class="quiz-opt" onclick="answer(this,'qf2','correct')"><span class="opt-letter">C</span> E — Emitter (P-type aluminium dot fused on the N-bar)</div>
+        <div class="quiz-opt" onclick="answer(this,'qf2','wrong')"><span class="opt-letter">D</span> All three terminals equally</div>
+      </div>
+      <div class="quiz-fb" id="qf2fb"></div>
+    </div>
+
+    <div class="quiz-box" style="margin-bottom:1rem;">
+      <div class="quiz-label">FINAL QUESTION 3</div>
+      <div class="quiz-q">In the relaxation oscillator, the sawtooth waveform appears across C, but the sharp trigger pulses appear across which component?</div>
+      <div class="quiz-opts" id="qf3opts">
+        <div class="quiz-opt" onclick="answer(this,'qf3','wrong')"><span class="opt-letter">A</span> Across the charging resistor R</div>
+        <div class="quiz-opt" onclick="answer(this,'qf3','wrong')"><span class="opt-letter">B</span> Across the capacitor C (same as sawtooth)</div>
+        <div class="quiz-opt" onclick="answer(this,'qf3','correct')"><span class="opt-letter">C</span> Across R1 connected at B1 — discharge current pulse flows through it</div>
+        <div class="quiz-opt" onclick="answer(this,'qf3','wrong')"><span class="opt-letter">D</span> Across R2 connected at B2</div>
+      </div>
+      <div class="quiz-fb" id="qf3fb"></div>
+    </div>
+
+    <div class="quiz-box" style="margin-bottom:1rem;">
+      <div class="quiz-label">FINAL QUESTION 4</div>
+      <div class="quiz-q">What is the typical range of interbase resistance RBB for a UJT like the 2N2646?</div>
+      <div class="quiz-opts" id="qf4opts">
+        <div class="quiz-opt" onclick="answer(this,'qf4','wrong')"><span class="opt-letter">A</span> 100Ω – 500Ω</div>
+        <div class="quiz-opt" onclick="answer(this,'qf4','correct')"><span class="opt-letter">B</span> 5 kΩ – 10 kΩ</div>
+        <div class="quiz-opt" onclick="answer(this,'qf4','wrong')"><span class="opt-letter">C</span> 1 MΩ – 5 MΩ</div>
+        <div class="quiz-opt" onclick="answer(this,'qf4','wrong')"><span class="opt-letter">D</span> 50Ω – 200Ω</div>
+      </div>
+      <div class="quiz-fb" id="qf4fb"></div>
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">FINAL QUESTION 5</div>
+      <div class="quiz-q">After firing, what condition causes the UJT to reset (turn OFF) in a relaxation oscillator?</div>
+      <div class="quiz-opts" id="qf5opts">
+        <div class="quiz-opt" onclick="answer(this,'qf5','wrong')"><span class="opt-letter">A</span> VBB is removed from the circuit</div>
+        <div class="quiz-opt" onclick="answer(this,'qf5','wrong')"><span class="opt-letter">B</span> The emitter voltage rises above VP again</div>
+        <div class="quiz-opt" onclick="answer(this,'qf5','correct')"><span class="opt-letter">C</span> Emitter current IE drops below valley current IV as C discharges</div>
+        <div class="quiz-opt" onclick="answer(this,'qf5','wrong')"><span class="opt-letter">D</span> RB2 increases to block current flow</div>
+      </div>
+      <div class="quiz-fb" id="qf5fb"></div>
+    </div>
+
+    <div id="finalScoreBox" style="display:none;margin-top:1.4rem;">
+      <div class="formula-box" id="finalScoreText" style="font-size:1.15rem;"></div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn" onclick="prevStep(8)">← Back</button>
+      <button class="btn btn-primary" onclick="showCompletion()">✓ Complete Module</button>
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETION SCREEN -->
+<div class="completion" id="completion">
+  <div style="font-size:3.2rem;margin-bottom:0.8rem;">⚡</div>
+  <h2>Module Complete!</h2>
+  <p>Your trainees now understand UJT from construction to application — from the N-type silicon bar to the relaxation oscillator triggering an SCR.</p>
+  <div class="grade-box" id="finalGrade"></div>
+  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem;">
+    <button class="btn btn-primary" onclick="location.reload()">↺ Restart Module</button>
+    <button class="btn" onclick="window.print()">🖨 Print Summary</button>
+  </div>
+  <div class="takeaways">
+    <h3>KEY TAKEAWAYS</h3>
+    <p>
+      ✅ UJT = 1 PN junction, 3 terminals (E, B1, B2)<br>
+      ✅ B1 &amp; B2 are ohmic contacts at opposite ends of N-bar<br>
+      ✅ Emitter P-dot is on the side, closer to B1 (so RB1 &gt; RB2)<br>
+      ✅ η = RB1/RBB — determines firing voltage VP<br>
+      ✅ VP = η × VBB + 0.7V<br>
+      ✅ Both bar sections active on firing — B1 gets IB2 + IE<br>
+      ✅ Negative resistance → snap-ON switching action<br>
+      ✅ Used in oscillators, timers, SCR/TRIAC trigger circuits
+    </p>
+  </div>
+</div>
+
+</div><!-- end container -->
+
+<script>
+// ══════════════════════════
+// STATE
+// ══════════════════════════
+let currentStep = 1;
+const totalSteps = 8;
+let score = 0;
+let answeredQ = {};
+
+// ══════════════════════════
+// NAVIGATION
+// ══════════════════════════
+function showStep(n) {
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('visible','animated'));
+  const card = document.getElementById('step'+n);
+  if (!card) return;
+  card.classList.add('visible');
+  setTimeout(() => card.classList.add('animated'), 30);
+  card.scrollIntoView({ behavior:'smooth', block:'start' });
+  currentStep = n;
+  updateProgress();
+}
+function nextStep(from){ if(from<totalSteps) showStep(from+1); }
+function prevStep(from){ if(from>1) showStep(from-1); }
+
+function updateProgress(){
+  const pct = ((currentStep-1)/(totalSteps-1))*100;
+  document.getElementById('progFill').style.width = pct+'%';
+  document.getElementById('progLabel').textContent = 'Step '+currentStep+' / '+totalSteps;
+  document.querySelectorAll('.step-dot').forEach((d,i)=>{
+    d.classList.remove('active','done');
+    if(i+1===currentStep) d.classList.add('active');
+    else if(i+1<currentStep) d.classList.add('done');
+  });
+}
+function buildDots(){
+  const wrap = document.getElementById('stepDots');
+  for(let i=1;i<=totalSteps;i++){
+    const d = document.createElement('div');
+    d.className = 'step-dot'+(i===1?' active':'');
+    d.onclick = ()=>showStep(i);
+    wrap.appendChild(d);
+  }
+}
+
+// ══════════════════════════
+// QUIZ
+// ══════════════════════════
+const feedbacks = {
+  q1:  { ok:'✓ Correct! The Emitter (E) is the P-type aluminium dot fused onto the N-bar — that is the ONE PN junction. B1 and B2 are ohmic contacts — no junction.', no:'✗ There is exactly ONE PN junction — at the Emitter where P-type aluminium meets the N-bar. B1 and B2 are ohmic (non-rectifying) contacts.' },
+  q2:  { ok:'✓ Right! Ohmic contacts are non-rectifying — current flows both directions like a resistor. No junction is formed. The emitter is the only PN junction.', no:'✗ Ohmic means non-rectifying — like a pure resistive connection. Current flows both ways. B1 and B2 do NOT form PN junctions.' },
+  q3:  { ok:'✓ Well done! VP = η × VBB + 0.7 = 0.7 × 10 + 0.7 = 7.0 + 0.7 = 7.7V. Always add 0.7V for the emitter diode forward voltage drop.', no:'✗ Use VP = η × VBB + 0.7V. Here: 0.7 × 10 + 0.7 = 7.7V. The 0.7V is the emitter diode drop — don\'t forget it!' },
+  q4:  { ok:'✓ Exactly right! Both sections are active. Upper (RB2) carries steady IB2 — always present. Lower (RB1) gets a massive surge because RB1 collapses when holes inject. B1 sees IB2 + IE combined — this is why UJT snaps ON so hard.', no:'✗ Both sections are active! Upper (RB2) carries steady IB2. Lower (RB1) carries a heavy surge (IB2 + IE) because RB1 collapses on hole injection. It is NOT just the lower section.' },
+  q5:  { ok:'✓ Perfect! In negative resistance: as IE increases, VE decreases. This is the opposite of Ohm\'s law — caused by RB1 collapsing due to hole injection. This is what creates the snap-action switching.', no:'✗ In the negative resistance region, VE decreases while IE increases — opposite of Ohm\'s law. RB1 collapses due to hole injection, causing self-reinforcing snap-on.' },
+  q6:  { ok:'✓ Correct! When UJT fires it provides a low-resistance path. C rapidly discharges through UJT (B1 terminal) → R1 → GND. This discharge creates the sharp output pulse across R1.', no:'✗ When UJT fires, C discharges rapidly through the UJT (B1) and R1. This is the discharge path that creates the output pulse. C then starts charging again from R.' },
+  q7:  { ok:'✓ Spot on! UJT is ideal here. Its negative resistance behavior creates natural oscillations with just R + C. Perfect for SCR/TRIAC triggering. No complex bias network needed.', no:'✗ UJT is the right choice. Its negative resistance creates natural oscillations with just R and C — ideal for SCR triggering with minimum components.' },
+  qf1: { ok:'✓ Correct! VP = η × VBB + 0.7 = 0.75 × 20 + 0.7 = 15.0 + 0.7 = 15.7V. Always add the 0.7V diode drop.', no:'✗ Use VP = η × VBB + 0.7 = 0.75 × 20 + 0.7 = 15.0 + 0.7 = 15.7V. Don\'t forget the emitter diode forward voltage!' },
+  qf2: { ok:'✓ Correct! The Emitter (E) is the P-type aluminium dot — it forms the one and only PN junction. B1 and B2 are ohmic contacts.', no:'✗ The Emitter (E) is the P-type region that forms the PN junction. B1 and B2 are ohmic (resistive) contacts — no junction.' },
+  qf3: { ok:'✓ Right! The sharp output pulses appear across R1 at B1. When C discharges through the UJT, the discharge current pulse flows through R1, creating the trigger output.', no:'✗ Sawtooth is across C. Trigger pulses appear across R1 (at B1) — the discharge current pulse flows through R1 when UJT fires.' },
+  qf4: { ok:'✓ Correct! Typical RBB for UJT (2N2646) is 5–10 kΩ. This is the total N-bar resistance between B1 and B2.', no:'✗ RBB for UJT is typically 5–10 kΩ. The 2N2646 datasheet shows approximately 4–9.1 kΩ.' },
+  qf5: { ok:'✓ Exactly! UJT turns OFF (resets) when emitter current drops below valley current IV. In the oscillator, as C discharges, IE falls. When IE < IV, UJT snaps OFF and C starts charging again.', no:'✗ The UJT resets when IE drops below valley current IV — as the capacitor discharges, less current flows, and when it drops below IV the UJT turns OFF.' }
+};
+
+function answer(el, qid, result){
+  if(answeredQ[qid]) return;
+  answeredQ[qid] = true;
+  const opts = document.querySelectorAll('#'+qid+'opts .quiz-opt');
+  opts.forEach(o => o.classList.add('locked'));
+  const fb = document.getElementById(qid+'fb');
+  const isCorrect = (result==='correct');
+
+  if(isCorrect){
+    el.classList.add('correct');
+    el.querySelector('.opt-letter').textContent='✓';
+    fb.textContent = feedbacks[qid].ok;
+    fb.className = 'quiz-fb ok';
+    if(!answeredQ['_s_'+qid]){
+      answeredQ['_s_'+qid]=true;
+      score++;
+      document.getElementById('scoreDisp').textContent='Score: '+score;
+    }
+  } else {
+    el.classList.add('wrong');
+    el.querySelector('.opt-letter').textContent='✗';
+    fb.textContent = feedbacks[qid].no;
+    fb.className = 'quiz-fb no';
+    // highlight correct
+    const correctMap={q1:'B',q2:'B',q3:'C',q4:'B',q5:'B',q6:'B',q7:'B',qf1:'B',qf2:'C',qf3:'C',qf4:'B',qf5:'C'};
+    const cl = correctMap[qid];
+    const letters=['A','B','C','D'];
+    opts.forEach(o=>{
+      const lt = o.querySelector('.opt-letter');
+      if(lt.textContent!=='✗' && letters.indexOf(lt.textContent)===letters.indexOf(cl))
+        o.classList.add('correct');
+    });
+  }
+
+  // Final quiz score display
+  if(qid.startsWith('qf')){
+    const fqs=['qf1','qf2','qf3','qf4','qf5'];
+    if(fqs.every(q=>answeredQ[q])){
+      const cc = fqs.filter(q=>answeredQ['_s_'+q]).length;
+      const box=document.getElementById('finalScoreBox');
+      const txt=document.getElementById('finalScoreText');
+      box.style.display='block';
+      txt.innerHTML='Final Quiz: '+cc+' / 5 correct'
+        +'<div class="sub">'+(cc>=5?'🏆 Perfect!':cc>=4?'🥇 Excellent!':cc>=3?'👍 Good!':'📚 Keep revising')+'</div>';
+    }
+  }
+}
+
+// ══════════════════════════
+// CONSTRUCTION BUILD
+// ══════════════════════════
+function buildUJT(s){
+  if(s===1){
+    document.getElementById('nbar').style.opacity=1;
+    document.getElementById('cbtn2').disabled=false;
+  } else if(s===2){
+    document.getElementById('b1contact').style.opacity=1;
+    document.getElementById('b2contact').style.opacity=1;
+    document.getElementById('cbtn3').disabled=false;
+  } else if(s===3){
+    document.getElementById('emitter').style.opacity=1;
+    document.getElementById('cbtn4').disabled=false;
+  } else if(s===4){
+    document.getElementById('alllabels').style.opacity=1;
+  }
+}
+function resetBuild(){
+  ['nbar','b1contact','b2contact','emitter','alllabels'].forEach(id=>{
+    document.getElementById(id).style.opacity=0;
+  });
+  ['cbtn2','cbtn3','cbtn4'].forEach(id=>{
+    document.getElementById(id).disabled=true;
+  });
+}
+
+// ══════════════════════════
+// OPERATION STAGES
+// ══════════════════════════
+function showStage(n){
+  ['stg1btn','stg2btn','stg3btn'].forEach((id,i)=>{
+    document.getElementById(id).className='btn'+(i+1===n?' active-btn':'');
+  });
+  ['flow-leakage','flow-firing','flow-sat'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.opacity=0;
+  });
+
+  const st=document.getElementById('statusText');
+  const s1=document.getElementById('s1');
+  const s2=document.getElementById('s2');
+  const s3=document.getElementById('s3');
+  const s4=document.getElementById('s4');
+  const s5=document.getElementById('s5');
+  const s6=document.getElementById('s6');
+  const bu=document.getElementById('bar-upper');
+  const bl=document.getElementById('bar-lower');
+  const rb2=document.getElementById('rb2label');
+  const rb1=document.getElementById('rb1label');
+  const bar=document.getElementById('ujt-bar');
+
+  setTimeout(()=>{
+    if(n===1){
+      document.getElementById('flow-leakage').style.opacity=1;
+      st.textContent='OFF'; st.setAttribute('fill','#1A3FAA');
+      s1.textContent='VE: below VP — too low to fire'; s1.setAttribute('fill','#1A3FAA');
+      s2.textContent='E-junction: reverse biased';     s2.setAttribute('fill','#3A4A60');
+      s3.textContent='RB2 current: µA leakage only';   s3.setAttribute('fill','#1A3FAA');
+      s4.textContent='RB1 current: µA leakage only';   s4.setAttribute('fill','#1A3FAA');
+      s5.textContent='RB1 value: HIGH (normal)';       s5.setAttribute('fill','#3A4A60');
+      s6.textContent='Device state: OPEN / OFF';       s6.setAttribute('fill','#B31B22');
+      bu.setAttribute('fill','rgba(160,88,0,0.06)');
+      bl.setAttribute('fill','rgba(0,95,92,0.05)');
+      rb2.setAttribute('fill','#A05800');
+      rb1.setAttribute('fill','#005F5C');
+      bar.setAttribute('stroke','#B8C8DC');
+
+    } else if(n===2){
+      document.getElementById('flow-firing').style.opacity=1;
+      st.textContent='FIRING!'; st.setAttribute('fill','#A05800');
+      s1.textContent='VE: reached VP — fires!';          s1.setAttribute('fill','#A05800');
+      s2.textContent='E-junction: forward biased ✓';     s2.setAttribute('fill','#A05800');
+      s3.textContent='RB2 current: IB2 steady (upper)';  s3.setAttribute('fill','#A05800');
+      s4.textContent='RB1 current: IB2 + IE surge! ⚡';  s4.setAttribute('fill','#005F5C');
+      s5.textContent='RB1 value: COLLAPSES fast!';       s5.setAttribute('fill','#B31B22');
+      s6.textContent='Device state: SWITCHING ON';       s6.setAttribute('fill','#A05800');
+      bu.setAttribute('fill','rgba(160,88,0,0.12)');
+      bl.setAttribute('fill','rgba(0,95,92,0.22)');
+      rb2.setAttribute('fill','#A05800');
+      rb1.setAttribute('fill','#005F5C');
+      bar.setAttribute('stroke','rgba(0,95,92,0.7)');
+
+    } else if(n===3){
+      document.getElementById('flow-sat').style.opacity=1;
+      st.textContent='SATURATED'; st.setAttribute('fill','#005F5C');
+      s1.textContent='VE: at VV (valley voltage)';      s1.setAttribute('fill','#005F5C');
+      s2.textContent='E-junction: conducting';          s2.setAttribute('fill','#005F5C');
+      s3.textContent='RB2 current: IB2 steady';         s3.setAttribute('fill','#A05800');
+      s4.textContent='RB1 current: heavy IE + IB2';     s4.setAttribute('fill','#005F5C');
+      s5.textContent='RB1 value: very low';             s5.setAttribute('fill','#005F5C');
+      s6.textContent='Device state: FULLY ON';          s6.setAttribute('fill','#005F5C');
+      bu.setAttribute('fill','rgba(160,88,0,0.12)');
+      bl.setAttribute('fill','rgba(0,95,92,0.28)');
+      rb2.setAttribute('fill','#A05800');
+      rb1.setAttribute('fill','#005F5C');
+      bar.setAttribute('stroke','rgba(0,95,92,0.85)');
+    }
+  }, 50);
+}
+
+// ══════════════════════════
+// VI CURVE ANIMATION
+// ══════════════════════════
+let viDone=false;
+function animateVI(){
+  if(viDone) return; viDone=true;
+  setTimeout(()=>{ document.getElementById('curve-cutoff').style.strokeDashoffset='0';
+    document.getElementById('reg1label').style.opacity=1;
+    document.getElementById('reg1label2').style.opacity=1; },200);
+  setTimeout(()=>{ document.getElementById('peak-dot').style.opacity=1;
+    document.getElementById('peak-label').style.opacity=1;
+    document.getElementById('iplabel').style.opacity=1; },1100);
+  setTimeout(()=>{ document.getElementById('curve-neg').style.strokeDashoffset='0';
+    document.getElementById('reg2label').style.opacity=1;
+    document.getElementById('reg2label2').style.opacity=1; },1400);
+  setTimeout(()=>{ document.getElementById('valley-dot').style.opacity=1;
+    document.getElementById('valley-label').style.opacity=1;
+    document.getElementById('ivlabel').style.opacity=1; },2400);
+  setTimeout(()=>{ document.getElementById('curve-sat').style.strokeDashoffset='0';
+    document.getElementById('reg3label').style.opacity=1;
+    document.getElementById('curArrow').style.opacity=1; },2700);
+}
+function resetVI(){
+  viDone=false;
+  [['curve-cutoff',200],['curve-neg',200],['curve-sat',320]].forEach(([id,len])=>{
+    const el=document.getElementById(id);
+    el.style.transition='none';
+    el.style.strokeDashoffset=len;
+    setTimeout(()=>el.style.transition='stroke-dashoffset 0.9s ease',50);
+  });
+  ['peak-dot','peak-label','valley-dot','valley-label','reg1label','reg1label2',
+   'reg2label','reg2label2','reg3label','curArrow','iplabel','ivlabel'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.opacity=0;
+  });
+}
+
+// ══════════════════════════
+// WAVEFORM ANIMATION
+// ══════════════════════════
+let waveRunning=false, waveTimer=null;
+function animateWave(){
+  if(waveRunning) return; waveRunning=true;
+  const path=document.getElementById('sawPath');
+  const pg=document.getElementById('pulseGroup');
+  pg.style.opacity=1;
+  let d='M30,130 ', frame=0;
+  const cycleLen=80, totalFrames=330;
+  function tick(){
+    frame++;
+    const ci=Math.floor((frame-1)/cycleLen);
+    const cf=(frame-1)%cycleLen;
+    const xs=30+ci*cycleLen;
+    const xc=xs+cf;
+    const yc=130-(cf/cycleLen)*90;
+    if(cf===0 && ci>0){
+      d+='L'+xs+',108 ';
+      const sp=document.createElementNS('http://www.w3.org/2000/svg','line');
+      sp.setAttribute('x1',xs);sp.setAttribute('y1',130);
+      sp.setAttribute('x2',xs);sp.setAttribute('y2',22);
+      sp.setAttribute('stroke','#B31B22');sp.setAttribute('stroke-width','2.5');
+      pg.appendChild(sp);
+    } else {
+      d+='L'+xc+','+yc.toFixed(1)+' ';
+    }
+    path.setAttribute('d',d);
+    if(frame<totalFrames) waveTimer=requestAnimationFrame(tick);
+  }
+  waveTimer=requestAnimationFrame(tick);
+}
+function resetWave(){
+  waveRunning=false;
+  if(waveTimer) cancelAnimationFrame(waveTimer);
+  document.getElementById('sawPath').setAttribute('d','M30,130 ');
+  const pg=document.getElementById('pulseGroup');
+  pg.innerHTML='';pg.style.opacity=0;
+}
+
+// ══════════════════════════
+// COMPLETION
+// ══════════════════════════
+function showCompletion(){
+  document.querySelectorAll('.step-card').forEach(c=>c.classList.remove('visible','animated'));
+  const comp=document.getElementById('completion');
+  comp.classList.add('show');
+  comp.scrollIntoView({behavior:'smooth'});
+  const correct=score;
+  let grade='';
+  if(correct>=11) grade='🏆 Outstanding — Full Marks!';
+  else if(correct>=9) grade='🥇 Excellent Performance!';
+  else if(correct>=7) grade='👍 Good Understanding';
+  else grade='📚 Keep Revising — Review the key steps';
+  document.getElementById('finalGrade').innerHTML='Total Score: '+correct+' / 12 &nbsp;·&nbsp; '+grade;
+}
+
+// ══════════════════════════
+// INIT
+// ══════════════════════════
+buildDots();
+showStep(1);
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

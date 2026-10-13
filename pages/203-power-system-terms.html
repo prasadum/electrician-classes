@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wiring &amp; Power System Terms</title>
+<meta name="section" content="Circuits &amp; Power Systems">
+<meta name="section-order" content="2">
+<meta name="order" content="3">
+<meta name="description" content="Key terminology for electricians">
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#F7F6F2;
+    --surface:#FFFFFF;
+    --surface2:#F0EEE8;
+    --border:#E2DED6;
+    --text:#1A1814;
+    --muted:#6B6760;
+    --hint:#9E9A94;
+    --blue:#1A5FAB;--blue-bg:#EAF2FB;--blue-border:#BACED8;
+    --teal:#0C6E52;--teal-bg:#E3F4ED;--teal-border:#92CDB7;
+    --amber:#8A5A0A;--amber-bg:#FEF3DC;--amber-border:#E8C470;
+    --coral:#993020;--coral-bg:#FAEAE5;--coral-border:#E8A88E;
+    --purple:#4A3FA0;--purple-bg:#EEEDFB;--purple-border:#B5AFDF;
+    --green:#2D6615;--green-bg:#EAF4E0;--green-border:#9CC87A;
+    --pink:#8A2155;--pink-bg:#F8E8F2;--pink-border:#D898C0;
+    --gray:#4A4740;--gray-bg:#F0EEE8;--gray-border:#C0BDB4;
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0}
+
+  /* Header */
+  .page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 1.5rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .header-left{}
+  .page-title{font-size:17px;font-weight:600;color:var(--text);line-height:1.2}
+  .page-sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .lang-wrap{display:flex;align-items:center;gap:8px}
+  .lang-label{font-size:12px;color:var(--muted)}
+  select{font-family:'DM Sans',sans-serif;font-size:13px;padding:6px 28px 6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6760' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+  select:focus{outline:2px solid var(--blue);outline-offset:1px}
+
+  /* Layout */
+  .content{max-width:1100px;margin:0 auto;padding:1.5rem}
+  .section-wrap{margin-bottom:2rem}
+  .section-label{font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--hint);margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+
+  /* Cards */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.125rem;border-left:3px solid;transition:box-shadow .15s}
+  .card:hover{box-shadow:0 2px 12px rgba(0,0,0,.07)}
+  .card.blue{border-left-color:var(--blue)}
+  .card.teal{border-left-color:var(--teal)}
+  .card.amber{border-left-color:var(--amber)}
+  .card.coral{border-left-color:var(--coral)}
+  .card.purple{border-left-color:var(--purple)}
+  .card.green{border-left-color:var(--green)}
+  .card.pink{border-left-color:var(--pink)}
+  .card.gray{border-left-color:var(--gray)}
+
+  .card-head{margin-bottom:8px}
+  .card-term{font-size:14.5px;font-weight:600;color:var(--text);line-height:1.3}
+  .card-native{font-size:11.5px;color:var(--muted);margin-top:1px;font-style:italic}
+  .card-def{font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:8px}
+  .card-formula{display:block;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 9px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text);margin-bottom:6px;line-height:1.5}
+  .card-example{font-size:11.5px;color:var(--hint);font-style:italic;margin-bottom:6px;line-height:1.5}
+  .card-example span{color:var(--muted);font-style:normal;font-weight:500}
+
+  /* Badges */
+  .badge{display:inline-block;font-size:10.5px;font-weight:500;padding:3px 8px;border-radius:20px;margin-top:2px;line-height:1.4}
+  .badge.blue{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
+  .badge.teal{background:var(--teal-bg);color:var(--teal);border:1px solid var(--teal-border)}
+  .badge.amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+  .badge.coral{background:var(--coral-bg);color:var(--coral);border:1px solid var(--coral-border)}
+  .badge.purple{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border)}
+  .badge.green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+  .badge.pink{background:var(--pink-bg);color:var(--pink);border:1px solid var(--pink-border)}
+  .badge.gray{background:var(--gray-bg);color:var(--gray);border:1px solid var(--gray-border)}
+
+  /* Load curve */
+  .curve-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:12px}
+  .curve-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px}
+  .curve-sub{font-size:12px;color:var(--muted);margin-bottom:1rem}
+  svg.load-curve{width:100%;height:auto;display:block}
+
+  /* Footer */
+  .page-footer{text-align:center;padding:1.5rem;font-size:11px;color:var(--hint);border-top:1px solid var(--border);margin-top:1rem}
+
+  @media(max-width:600px){
+    .grid{grid-template-columns:1fr}
+    .page-header{padding:.75rem 1rem}
+    .content{padding:1rem}
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="header-left">
+    <div class="page-title">⚡ Wiring &amp; Power System Terminology</div>
+    <div class="page-sub" id="page-sub">ITI Electrician — Core Concepts</div>
+  </div>
+  <div class="lang-wrap">
+    <span class="lang-label">Language</span>
+    <select id="lang-select" onchange="setLang(this.value)">
+      <option value="en">English</option>
+      <option value="hi">हिन्दी</option>
+      <option value="ml">മലയാളം</option>
+    </select>
+  </div>
+</header>
+
+<div class="content">
+
+  <div class="section-wrap">
+    <div class="section-label" id="sec1">Load Concepts</div>
+    <div class="grid" id="grid-load"></div>
+  </div>
+
+  <div class="section-wrap">
+    <div class="section-label" id="sec2">Demand &amp; Factors</div>
+    <div class="grid" id="grid-demand"></div>
+  </div>
+
+  <div class="section-wrap">
+    <div class="section-label" id="sec3">Load Curves &amp; Duration</div>
+    <div class="curve-card">
+      <div class="curve-title" id="curve-title">Load Curve (24-Hour)</div>
+      <div class="curve-sub" id="curve-sub">Variation of load on a power station over time</div>
+      <svg class="load-curve" viewBox="0 0 660 220" xmlns="http://www.w3.org/2000/svg">
+        <!-- axes -->
+        <line x1="58" y1="12" x2="58" y2="178" stroke="#C0BDB4" stroke-width="1"/>
+        <line x1="58" y1="178" x2="648" y2="178" stroke="#C0BDB4" stroke-width="1"/>
+        <!-- y labels -->
+        <text x="50" y="16"  font-size="9" fill="#9E9A94" text-anchor="end" font-family="DM Sans">kW</text>
+        <text x="50" y="64"  font-size="9" fill="#9E9A94" text-anchor="end" font-family="DM Sans">800</text>
+        <text x="50" y="100" font-size="9" fill="#9E9A94" text-anchor="end" font-family="DM Sans">600</text>
+        <text x="50" y="134" font-size="9" fill="#9E9A94" text-anchor="end" font-family="DM Sans">400</text>
+        <text x="50" y="164" font-size="9" fill="#9E9A94" text-anchor="end" font-family="DM Sans">200</text>
+        <!-- y ticks -->
+        <line x1="55" y1="60"  x2="60" y2="60"  stroke="#C0BDB4" stroke-width="1"/>
+        <line x1="55" y1="96"  x2="60" y2="96"  stroke="#C0BDB4" stroke-width="1"/>
+        <line x1="55" y1="130" x2="60" y2="130" stroke="#C0BDB4" stroke-width="1"/>
+        <line x1="55" y1="160" x2="60" y2="160" stroke="#C0BDB4" stroke-width="1"/>
+        <!-- grid lines light -->
+        <line x1="58" y1="60"  x2="648" y2="60"  stroke="#E2DED6" stroke-width="0.5" stroke-dasharray="3,4"/>
+        <line x1="58" y1="96"  x2="648" y2="96"  stroke="#E2DED6" stroke-width="0.5" stroke-dasharray="3,4"/>
+        <line x1="58" y1="130" x2="648" y2="130" stroke="#E2DED6" stroke-width="0.5" stroke-dasharray="3,4"/>
+        <line x1="58" y1="160" x2="648" y2="160" stroke="#E2DED6" stroke-width="0.5" stroke-dasharray="3,4"/>
+        <!-- x labels -->
+        <text x="68"  y="192" font-size="9" fill="#9E9A94" font-family="DM Sans">0</text>
+        <text x="113" y="192" font-size="9" fill="#9E9A94" font-family="DM Sans">2</text>
+        <text x="158" y="192" font-size="9" fill="#9E9A94" font-family="DM Sans">4</text>
+        <text x="203" y="192" font-size="9" fill="#9E9A94" font-family="DM Sans">6</text>
+        <text x="248" y="192" font-size="9" fill="#9E9A94" font-family="DM Sans">8</text>
+        <text x="290" y="192" font-size="9" fill="#9E9A94" font-family="DM Sans">10</text>
+        <text x="335" y="192" font-size="9" fill="#9E9A94" font-family="DM Sans">12</text>
+        <text x="380" y="192" font-size="9" fill="#9E9A94" font-family="DM Sans">14</text>
+        <text x="425" y="192" font-size="9" fill="#9E9A94" font-family="DM Sans">16</text>
+        <text x="470" y="192" font-size="9" fill="#9E9A94" font-family="DM Sans">18</text>
+        <text x="515" y="192" font-size="9" fill="#9E9A94" font-family="DM Sans">20</text>
+        <text x="560" y="192" font-size="9" fill="#9E9A94" font-family="DM Sans">22</text>
+        <text x="330" y="210" font-size="9" fill="#9E9A94" text-anchor="middle" font-family="DM Sans">Hours →</text>
+        <!-- filled area under load curve -->
+        <path d="M63,160 L85,160 L85,140 L108,140 L108,128 L130,128 L130,122 L153,122 L153,112 L175,112 L175,82 L198,82 L198,60 L220,60 L220,72 L243,72 L243,78 L265,78 L265,83 L288,83 L288,76 L310,76 L310,67 L333,67 L333,60 L355,50 L378,50 L378,58 L400,58 L400,68 L423,68 L423,80 L445,84 L468,70 L490,58 L513,50 L535,58 L558,84 L580,106 L603,138 L625,160 Z"
+              fill="#EAF2FB" opacity="0.7"/>
+        <!-- load curve line -->
+        <path d="M63,160 L85,160 L85,140 L108,140 L108,128 L130,128 L130,122 L153,122 L153,112 L175,112 L175,82 L198,82 L198,60 L220,60 L220,72 L243,72 L243,78 L265,78 L265,83 L288,83 L288,76 L310,76 L310,67 L333,67 L333,60 L355,50 L378,50 L378,58 L400,58 L400,68 L423,68 L423,80 L445,84 L468,70 L490,58 L513,50 L535,58 L558,84 L580,106 L603,138 L625,160"
+              fill="none" stroke="#1A5FAB" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <!-- Max Demand line -->
+        <line x1="58" y1="50" x2="635" y2="50" stroke="#993020" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <text x="638" y="53" font-size="9" fill="#993020" font-weight="600" font-family="DM Sans" id="lbl-md">Max Demand</text>
+        <!-- Avg Load line -->
+        <line x1="58" y1="96" x2="635" y2="96" stroke="#0C6E52" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <text x="638" y="99" font-size="9" fill="#0C6E52" font-weight="600" font-family="DM Sans" id="lbl-al">Avg Load</text>
+        <!-- Base Load label -->
+        <text x="63" y="174" font-size="9" fill="#4A4740" font-family="DM Sans" id="lbl-bl">Base Load</text>
+        <!-- Legend -->
+        <rect x="490" y="14" width="120" height="42" rx="6" fill="#FFFFFF" stroke="#E2DED6" stroke-width="0.5"/>
+        <rect x="498" y="22" width="14" height="3" rx="1" fill="#1A5FAB"/>
+        <text x="516" y="26" font-size="9" fill="#6B6760" font-family="DM Sans" id="leg1">Load</text>
+        <line x1="498" y1="34" x2="512" y2="34" stroke="#993020" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="516" y="37" font-size="9" fill="#6B6760" font-family="DM Sans" id="leg2">Max Demand</text>
+        <line x1="498" y1="46" x2="512" y2="46" stroke="#0C6E52" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="516" y="49" font-size="9" fill="#6B6760" font-family="DM Sans" id="leg3">Avg Load</text>
+      </svg>
+    </div>
+    <div class="grid" id="grid-curve"></div>
+  </div>
+
+  <div class="section-wrap">
+    <div class="section-label" id="sec4">Wiring System Terms</div>
+    <div class="grid" id="grid-wiring"></div>
+  </div>
+
+  <div class="section-wrap">
+    <div class="section-label" id="sec5">Protection &amp; Circuit Terms</div>
+    <div class="grid" id="grid-prot"></div>
+  </div>
+
+</div>
+
+<div class="page-footer">CITS Electrician — Instructional Reference &nbsp;|&nbsp; NSTI Calicut</div>
+
+<script>
+const DATA = {
+  load:[
+    {term:{en:"Connected Load",hi:"संयोजित भार",ml:"കണക്ടഡ് ലോഡ്"},color:"blue",
+     def:{en:"Total rated wattage of all electrical equipment connected to the supply — whether in use or not.",
+          hi:"आपूर्ति से जुड़े सभी उपकरणों की कुल नामांकित वाट क्षमता — चाहे उपयोग में हों या नहीं।",
+          ml:"Supply-ലേക്ക് ബന്ധിപ്പിച്ച എല്ലാ ഉപകരണങ്ങളുടെയും ആകെ rated wattage — ഉപയോഗത്തിലുണ്ടോ ഇല്ലയോ."},
+     formula:{en:"Connected Load = ΣP (sum of all equipment ratings)",
+              hi:"संयोजित भार = ΣP (सभी उपकरणों की रेटिंग का योग)",
+              ml:"Connected Load = ΣP (ഉപകരണങ്ങളുടെ rating ആകെ)"},
+     example:{en:"5 fans (60W) + 3 ACs (1500W) = 4800 W connected load",
+              hi:"5 पंखे (60W) + 3 AC (1500W) = 4800 W",
+              ml:"5 ഫാൻ (60W) + 3 AC (1500W) = 4800 W"},
+     badge:{en:"Always ≥ Maximum Demand",hi:"हमेशा ≥ अधिकतम माँग",ml:"≥ Maximum Demand"},badgeColor:"blue"},
+
+    {term:{en:"Maximum Demand (MD)",hi:"अधिकतम माँग",ml:"പരമാവധി ഡിമാൻഡ്"},color:"coral",
+     def:{en:"Greatest load on the power station during a given period. The highest instantaneous load drawn from supply at any point of time.",
+          hi:"किसी अवधि में पावर स्टेशन पर सबसे अधिक भार। किसी भी समय आपूर्ति से लिया गया उच्चतम तात्कालिक भार।",
+          ml:"ഒരു period-ൽ power station-ൽ ഏറ്റവും വലിയ load. ഏതൊരു സമയത്തും supply-ൽ നിന്ന് draw ചെയ്യുന്ന highest instantaneous load."},
+     formula:{en:"MD = Peak load recorded in billing/measurement period",
+              hi:"MD = बिलिंग अवधि में दर्ज शिखर भार",
+              ml:"MD = Billing period-ൽ record ചെയ്ത peak load"},
+     example:{en:"If peak load recorded = 800 kW → MD = 800 kW",
+              hi:"शिखर भार = 800 kW → MD = 800 kW",
+              ml:"Peak load = 800 kW → MD = 800 kW"},
+     badge:{en:"Used for tariff & plant sizing",hi:"टैरिफ और संयंत्र आकार के लिए",ml:"Tariff & plant sizing-ന്"},badgeColor:"coral"},
+
+    {term:{en:"Average Load",hi:"औसत भार",ml:"ശരാശരി ലോഡ്"},color:"teal",
+     def:{en:"Average of loads on the power station over a given period. Equal to total units generated divided by hours in that period.",
+          hi:"किसी अवधि में पावर स्टेशन पर आने वाले भारों का औसत। उत्पन्न कुल इकाइयाँ ÷ घंटे।",
+          ml:"ഒരു period-ൽ power station-ലെ load-കളുടെ ശരാശരി. ഉൽപ്പാദിപ്പിച്ച units ÷ hours."},
+     formula:{en:"Avg Load = Units generated (kWh) ÷ Hours in period",
+              hi:"औसत भार = उत्पन्न इकाइयाँ (kWh) ÷ अवधि के घंटे",
+              ml:"Avg Load = Units (kWh) ÷ Period (hours)"},
+     example:{en:"14,400 kWh in 24 h → Avg Load = 600 kW",
+              hi:"14,400 kWh ÷ 24 h = 600 kW",
+              ml:"14,400 kWh ÷ 24 h = 600 kW"},
+     badge:{en:"",hi:"",ml:""},badgeColor:"teal"},
+
+    {term:{en:"Base Load",hi:"आधार भार",ml:"ബേസ് ലോഡ്"},color:"gray",
+     def:{en:"Minimum load on the power station throughout 24 hours. Never falls below this level; supplied by the most efficient (cheapest) generating plants.",
+          hi:"24 घंटे पावर स्टेशन पर न्यूनतम भार। इस स्तर से नीचे कभी नहीं जाता; सबसे कुशल संयंत्रों द्वारा आपूर्ति।",
+          ml:"24 മണിക്കൂർ power station-ൽ ഉണ്ടാകുന്ന minimum load. ഇതിൽ കുറയില്ല; ഏറ്റവും efficient plants supply ചെയ്യുന്നു."},
+     formula:{en:"Base Load = Minimum 24-hr sustained load level",
+              hi:"आधार भार = 24 घंटे का न्यूनतम निरंतर भार",
+              ml:"Base Load = 24 hr minimum sustained load"},
+     example:{en:"Load never drops below 200 kW → Base load = 200 kW",
+              hi:"भार 200 kW से नीचे नहीं जाता → आधार भार = 200 kW",
+              ml:"Load 200 kW-ൽ കുറയുന്നില്ല → Base load = 200 kW"},
+     badge:{en:"Supplied by thermal/nuclear plant",hi:"तापीय/परमाणु संयंत्र द्वारा",ml:"Thermal/nuclear plant"},badgeColor:"gray"},
+
+    {term:{en:"Peak Load",hi:"शिखर भार",ml:"പീക്ക് ലോഡ്"},color:"amber",
+     def:{en:"Maximum load above base load. Occurs for a short duration (morning and evening). Met by hydro or gas turbine peaking plants.",
+          hi:"बेस लोड से ऊपर अधिकतम भार। थोड़े समय (सुबह और शाम) के लिए आता है। जल विद्युत या गैस टरबाइन से पूरा किया जाता है।",
+          ml:"Base load-നു മുകളിലുള്ള maximum load. ഹ്രസ്വ duration-ൽ (രാവിലെ, വൈകുന്നേരം). Hydro/gas turbine plants ഇത് നേരിടുന്നു."},
+     formula:{en:"Peak Load = MD − Base Load",
+              hi:"शिखर भार = MD − आधार भार",
+              ml:"Peak Load = MD − Base Load"},
+     example:{en:"MD=800 kW, Base=200 kW → Peak = 600 kW",
+              hi:"MD=800 kW, आधार=200 kW → शिखर=600 kW",
+              ml:"MD=800 kW, Base=200 kW → Peak=600 kW"},
+     badge:{en:"Met by peaking stations",hi:"पीकिंग स्टेशन द्वारा",ml:"Peaking stations"},badgeColor:"amber"},
+  ],
+
+  demand:[
+    {term:{en:"Diversity Factor",hi:"विविधता गुणांक",ml:"ഡൈവേഴ്സിറ്റി ഫാക്ടർ"},color:"purple",
+     def:{en:"Ratio of sum of individual maximum demands to the system maximum demand. Always > 1 since all consumers never switch on loads simultaneously.",
+          hi:"व्यक्तिगत अधिकतम माँगों के योग और तंत्र की अधिकतम माँग का अनुपात। हमेशा > 1.",
+          ml:"Individual maximum demands-ന്റെ ആകെ sum-ഉം system maximum demand-ഉം തമ്മിലുള്ള ratio. > 1 ആണ്."},
+     formula:{en:"Diversity Factor = Σ(Individual MDs) ÷ System MD",
+              hi:"विविधता गुणांक = Σ(व्यक्तिगत MD) ÷ तंत्र MD",
+              ml:"DF = Σ(Individual MDs) ÷ System MD"},
+     example:{en:"(200+300+400) kW ÷ 600 kW = 1.5",
+              hi:"(200+300+400) kW ÷ 600 kW = 1.5",
+              ml:"(200+300+400) kW ÷ 600 kW = 1.5"},
+     badge:{en:"Higher DF → smaller plant size",hi:"अधिक DF → छोटा संयंत्र",ml:"ഉയർന്ന DF → ചെറിയ plant"},badgeColor:"purple"},
+
+    {term:{en:"Load Factor",hi:"भार गुणांक",ml:"ലോഡ് ഫാക്ടർ"},color:"teal",
+     def:{en:"Ratio of average load to maximum demand over a given period. Higher load factor = better plant utilisation = lower cost per unit.",
+          hi:"किसी अवधि में औसत भार और अधिकतम माँग का अनुपात। उच्च भार गुणांक = बेहतर उपयोग = कम लागत।",
+          ml:"Avg Load ÷ Max Demand. ഉയർന്ന load factor = plant-ന്റെ മികച്ച ഉപയോഗം = unit cost കുറവ്."},
+     formula:{en:"Load Factor = Avg Load ÷ Max Demand  (or kWh ÷ kW×h)",
+              hi:"भार गुणांक = औसत भार ÷ अधिकतम माँग",
+              ml:"LF = Avg Load ÷ Max Demand"},
+     example:{en:"LF = 600 kW ÷ 800 kW = 0.75 (75%)",
+              hi:"LF = 600 ÷ 800 = 0.75 (75%)",
+              ml:"LF = 600 ÷ 800 = 0.75 (75%)"},
+     badge:{en:"Range 0–1; higher is better",hi:"0 से 1; अधिक बेहतर",ml:"0–1; കൂടുതൽ നല്ലത്"},badgeColor:"teal"},
+
+    {term:{en:"Demand Factor",hi:"माँग गुणांक",ml:"ഡിമാൻഡ് ഫാക്ടർ"},color:"amber",
+     def:{en:"Ratio of maximum demand to connected load. Always ≤ 1. Not all connected equipment operates at full load simultaneously.",
+          hi:"अधिकतम माँग और संयोजित भार का अनुपात। हमेशा ≤ 1.",
+          ml:"Maximum Demand ÷ Connected Load. ≤ 1 ആണ്. ബന്ധിപ്പിച്ച equipment എല്ലാം ഒരേ സമയം full load-ൽ ഓടില്ല."},
+     formula:{en:"Demand Factor = Max Demand ÷ Connected Load",
+              hi:"माँग गुणांक = अधिकतम माँग ÷ संयोजित भार",
+              ml:"Demand Factor = Max Demand ÷ Connected Load"},
+     example:{en:"800 kW MD ÷ 4800 W CL = 0.167",
+              hi:"800 kW ÷ 4800 W = 0.167",
+              ml:"800 kW ÷ 4800 W = 0.167"},
+     badge:{en:"Always ≤ 1",hi:"हमेशा ≤ 1",ml:"എപ്പോഴും ≤ 1"},badgeColor:"amber"},
+
+    {term:{en:"Plant Capacity Factor",hi:"संयंत्र क्षमता गुणांक",ml:"പ്ലാൻ്റ് കപ്പാസിറ്റി ഫാക്ടർ"},color:"green",
+     def:{en:"Ratio of actual energy produced to the maximum possible energy the plant could have produced. Indicates how well the plant is utilised.",
+          hi:"वास्तव में उत्पादित ऊर्जा और अधिकतम संभव ऊर्जा का अनुपात। संयंत्र के उपयोग का संकेतक।",
+          ml:"Actual energy produced ÷ Maximum possible energy. Plant-ന്റെ utilisation indicator."},
+     formula:{en:"PCF = Units produced ÷ (Plant capacity kW × Hours)",
+              hi:"PCF = उत्पादित इकाइयाँ ÷ (क्षमता kW × घंटे)",
+              ml:"PCF = Units produced ÷ (Plant capacity × Hours)"},
+     example:{en:"PCF < Load Factor when MD < Plant capacity",
+              hi:"PCF < LF, जब MD < संयंत्र क्षमता",
+              ml:"PCF < LF, MD < Plant capacity ആകുമ്പോൾ"},
+     badge:{en:"Measures plant utilisation",hi:"संयंत्र उपयोग मापता है",ml:"Plant utilisation"},badgeColor:"green"},
+
+    {term:{en:"Plant Use Factor",hi:"संयंत्र उपयोग गुणांक",ml:"പ്ലാൻ്റ് യൂസ് ഫാക്ടർ"},color:"coral",
+     def:{en:"Ratio of units generated to (plant capacity × hours the plant was actually in use). Shows efficiency when running.",
+          hi:"उत्पन्न इकाइयों और (क्षमता × उपयोग में रहे घंटों) का अनुपात। चालू रहने पर दक्षता दर्शाता है।",
+          ml:"Units generated ÷ (Plant capacity × Hours actually in use). Running-ൽ ഉള്ള efficiency."},
+     formula:{en:"PUF = Units generated ÷ (Plant capacity × Hours in use)",
+              hi:"PUF = उत्पन्न इकाइयाँ ÷ (क्षमता × उपयोग घंटे)",
+              ml:"PUF = Units ÷ (Capacity × Hours in use)"},
+     example:{en:"",hi:"",ml:""},
+     badge:{en:"",hi:"",ml:""},badgeColor:"coral"},
+
+    {term:{en:"Reserve Capacity",hi:"आरक्षित क्षमता",ml:"റിസർവ്വ് കപ്പാസിറ്റി"},color:"pink",
+     def:{en:"Difference between installed plant capacity and maximum demand. Held to meet unexpected load increases or during plant outage/maintenance.",
+          hi:"स्थापित क्षमता और अधिकतम माँग का अंतर। अचानक भार वृद्धि या संयंत्र आउटेज के लिए।",
+          ml:"Installed capacity − Maximum demand. ആകസ്മിക load increase അല്ലെങ്കിൽ plant outage-ൽ supply-ന്."},
+     formula:{en:"Reserve = Installed Capacity − Maximum Demand",
+              hi:"आरक्षित = स्थापित क्षमता − अधिकतम माँग",
+              ml:"Reserve = Installed Capacity − Maximum Demand"},
+     example:{en:"1000 kW installed − 800 kW MD = 200 kW reserve",
+              hi:"1000 kW − 800 kW = 200 kW आरक्षित",
+              ml:"1000 kW − 800 kW = 200 kW reserve"},
+     badge:{en:"Essential for grid reliability",hi:"ग्रिड विश्वसनीयता के लिए",ml:"Grid reliability"},badgeColor:"pink"},
+  ],
+
+  curve:[
+    {term:{en:"Load Duration Curve",hi:"भार अवधि वक्र",ml:"ലോഡ് ഡ്യൂറേഷൻ കർവ്"},color:"blue",
+     def:{en:"Curve showing load (kW) vs time duration for which it occurred. Derived by rearranging load-curve data in descending order of magnitude.",
+          hi:"एक वक्र जो किसी भार की घटना की अवधि के सापेक्ष भार (kW) दर्शाता है। भार वक्र डेटा को अवरोही क्रम में व्यवस्थित करके प्राप्त होता है।",
+          ml:"Load (kW) vs ആ load ഉണ്ടായ time duration കാണിക്കുന്ന curve. Load curve data descending order-ൽ arrange ചെയ്ത് ഉണ്ടാക്കുന്നു."},
+     formula:{en:"X-axis: Hours (0–8760); Y-axis: kW (highest → lowest)",
+              hi:"X-अक्ष: घंटे; Y-अक्ष: kW (सर्वोच्च → न्यूनतम)",
+              ml:"X-axis: Hours; Y-axis: kW (highest → lowest)"},
+     example:{en:"Area under curve = Total energy generated (kWh)",
+              hi:"वक्र के नीचे का क्षेत्रफल = कुल ऊर्जा (kWh)",
+              ml:"Curve-ന് കീഴിലെ area = ആകെ energy (kWh)"},
+     badge:{en:"Derived from load curve",hi:"भार वक्र से प्राप्त",ml:"Load curve-ൽ നിന്ന്"},badgeColor:"blue"},
+
+    {term:{en:"Units Generated",hi:"उत्पन्न इकाइयाँ",ml:"ഉൽപ്പാദിപ്പിച്ച യൂണിറ്റ്"},color:"teal",
+     def:{en:"Total electrical energy (kWh) generated by the power station in a given period. Equals area under the load curve.",
+          hi:"किसी अवधि में पावर स्टेशन द्वारा उत्पन्न कुल विद्युत ऊर्जा (kWh)। यह भार वक्र के नीचे का क्षेत्रफल है।",
+          ml:"Power station ഒരു period-ൽ ഉൽപ്പാദിപ്പിക്കുന്ന ആകെ electrical energy (kWh). Load curve-ന് കീഴിലെ area-ന് തുല്യം."},
+     formula:{en:"Units = Avg Load (kW) × Time (h)",
+              hi:"इकाइयाँ = औसत भार (kW) × समय (घंटे)",
+              ml:"Units = Avg Load (kW) × Time (h)"},
+     example:{en:"600 kW × 24 h = 14,400 kWh",
+              hi:"600 kW × 24 h = 14,400 kWh",
+              ml:"600 kW × 24 h = 14,400 kWh"},
+     badge:{en:"",hi:"",ml:""},badgeColor:"teal"},
+  ],
+
+  wiring:[
+    {term:{en:"Tariff",hi:"विद्युत शुल्क",ml:"ടരിഫ്"},color:"amber",
+     def:{en:"Rate at which electrical energy is sold to consumers. Types: flat rate, block rate, two-part (fixed+variable), three-part, time-of-day (ToD) tariff.",
+          hi:"उपभोक्ताओं को विद्युत ऊर्जा बेचने की दर। प्रकार: फ्लैट, ब्लॉक, दो-भाग, तीन-भाग, ToD टैरिफ।",
+          ml:"ഉപഭോക്താക്കൾക്ക് electrical energy വിൽക്കുന്ന നിരക്ക്. Types: flat rate, block rate, two-part, three-part, ToD."},
+     formula:{en:"Two-part tariff: Bill = Fixed charge (per kW of MD) + Variable charge (per kWh)",
+              hi:"दो-भाग: बिल = स्थिर शुल्क (प्रति kW MD) + परिवर्तनीय (प्रति kWh)",
+              ml:"Two-part: Bill = Fixed (per kW MD) + Variable (per kWh)"},
+     example:{en:"Industrial consumers billed on MD + consumption",
+              hi:"औद्योगिक: MD + खपत पर बिल",
+              ml:"Industrial: MD + consumption billing"},
+     badge:{en:"",hi:"",ml:""},badgeColor:"amber"},
+
+    {term:{en:"Power Factor",hi:"शक्ति गुणांक",ml:"പവർ ഫാക്ടർ"},color:"teal",
+     def:{en:"Cosine of phase angle between voltage and current. Ratio of active power (kW) to apparent power (kVA). Unity PF = all power is useful (purely resistive).",
+          hi:"वोल्टेज और धारा के बीच कला कोण की कोज्या। सक्रिय शक्ति (kW) ÷ आभासी शक्ति (kVA)।",
+          ml:"Voltage-current phase angle-ന്റെ cosine. kW ÷ kVA. Unity PF = pure resistive load."},
+     formula:{en:"PF = cosφ = kW ÷ kVA = R ÷ Z",
+              hi:"PF = cosφ = kW ÷ kVA = R ÷ Z",
+              ml:"PF = cosφ = kW ÷ kVA = R ÷ Z"},
+     example:{en:"PF = 0.8 lag: 100 kVA delivers only 80 kW",
+              hi:"PF = 0.8 lag: 100 kVA से 80 kW मिलती है",
+              ml:"PF = 0.8 lag: 100 kVA, 80 kW മാത്രം"},
+     badge:{en:"Low PF penalised in tariff",hi:"कम PF पर जुर्माना",ml:"Low PF-ന് penalty"},badgeColor:"teal"},
+
+    {term:{en:"Distribution System",hi:"वितरण तंत्र",ml:"ഡിസ്ട്രിബ്യൂഷൻ സിസ്റ്റം"},color:"blue",
+     def:{en:"Network of conductors distributing power from substations to consumers. Primary distribution (33/11 kV) + Secondary distribution (11 kV/415 V).",
+          hi:"सबस्टेशन से उपभोक्ताओं तक शक्ति वितरित करने वाला नेटवर्क। प्राथमिक (33/11 kV) + द्वितीयक (11/0.415 kV)।",
+          ml:"Substation-ൽ നിന്ന് consumers-ലേക്ക് power distribute ചെയ്യുന്ന network. Primary (33/11 kV) + Secondary (11/415 V)."},
+     formula:{en:"33 kV → (primary sub) → 11 kV → (dist sub) → 415/230 V → consumer",
+              hi:"33 kV → 11 kV → 415/230 V → उपभोक्ता",
+              ml:"33 kV → 11 kV → 415/230 V → consumer"},
+     example:{en:"Radial, ring main, interconnected systems",
+              hi:"रेडियल, रिंग मेन, इंटरकनेक्टेड",
+              ml:"Radial, ring main, interconnected"},
+     badge:{en:"",hi:"",ml:""},badgeColor:"blue"},
+
+    {term:{en:"Feeder",hi:"फीडर",ml:"ഫീഡർ"},color:"gray",
+     def:{en:"Conductor connecting generating station/substation to distribution points. No consumer tapping taken from it. Designed for current capacity.",
+          hi:"जनरेटिंग स्टेशन/सबस्टेशन को वितरण बिंदुओं से जोड़ने वाला चालक। इससे टैपिंग नहीं ली जाती। धारा क्षमता के लिए डिज़ाइन।",
+          ml:"Generating station/substation → distribution points-ലേക്കുള്ള conductor. Tapping ഇല്ല. Current capacity-ക്ക് design."},
+     formula:{en:"Designed for current capacity (voltage drop not a design criterion)",
+              hi:"धारा क्षमता के लिए डिज़ाइन",
+              ml:"Current capacity-ക്ക് design (VD constraint ഇല്ല)"},
+     example:{en:"Express feeder, distributor feeder",
+              hi:"एक्सप्रेस फीडर, डिस्ट्रीब्यूटर फीडर",
+              ml:"Express feeder, distributor feeder"},
+     badge:{en:"No tapping allowed",hi:"टैपिंग नहीं",ml:"Tapping ഇല്ല"},badgeColor:"gray"},
+
+    {term:{en:"Distributor",hi:"वितरक",ml:"ഡിസ്ട്രിബ്യൂട്ടർ"},color:"purple",
+     def:{en:"Conductor from which service connections (tapings) are taken to consumer premises. Current varies along its length. Designed for permissible voltage drop.",
+          hi:"वह चालक जिससे उपभोक्ता परिसर तक सेवा कनेक्शन (टैपिंग) ली जाती है। धारा उसकी लंबाई के साथ बदलती है।",
+          ml:"Consumer premises-ലേക്ക് service connection (tapping) എടുക്കുന്ന conductor. Current ദൈർഘ്യം അനുസരിച്ച് varies. VD-ക്ക് design."},
+     formula:{en:"Designed for voltage drop: VD = I × R per section",
+              hi:"वोल्टेज ड्रॉप के लिए डिज़ाइन: VD = I × R प्रति खंड",
+              ml:"VD = I × R per section-ന് design"},
+     example:{en:"LV distributor along a street with house connections",
+              hi:"सड़क के साथ LV डिस्ट्रीब्यूटर",
+              ml:"Street-ൽ LV distributor + house connections"},
+     badge:{en:"Service tapping taken here",hi:"यहाँ से टैपिंग",ml:"Tapping ഇവിടെ"},badgeColor:"purple"},
+
+    {term:{en:"Service Main",hi:"सेवा मुख्य",ml:"സർവ്വീസ് മെയ്ൻ"},color:"green",
+     def:{en:"Conductor connecting the distributor to consumer's meter board. Last link in the LV distribution chain.",
+          hi:"डिस्ट्रीब्यूटर को उपभोक्ता के मीटर बोर्ड से जोड़ने वाला चालक। LV वितरण श्रृंखला की अंतिम कड़ी।",
+          ml:"Distributor → consumer meter board-ലേക്കുള്ള conductor. LV distribution chain-ന്റെ അവസാന link."},
+     formula:{en:"",hi:"",ml:""},
+     example:{en:"LT pole → consumer meter board",
+              hi:"LT पोल → उपभोक्ता मीटर बोर्ड",
+              ml:"LT pole → consumer meter board"},
+     badge:{en:"Consumer's entry point",hi:"उपभोक्ता प्रवेश बिंदु",ml:"Consumer entry"},badgeColor:"green"},
+  ],
+
+  prot:[
+    {term:{en:"Short Circuit Current",hi:"लघु परिपथ धारा",ml:"ഷോർട്ട് സർക്യൂട്ട് കറൻ്റ്"},color:"coral",
+     def:{en:"Very large current when conductors of different potential contact directly (very low impedance path). Causes fire, equipment damage. Cleared by HRC fuse/MCB/MCCB.",
+          hi:"जब दो चालक सीधे संपर्क में आते हैं तो बहुत बड़ी धारा प्रवाहित होती है। आग और उपकरण क्षति होती है।",
+          ml:"Conductors direct contact-ൽ വരുമ്പോൾ low impedance path-ൽ ഒഴുകുന്ന very large current. Fire, damage. HRC fuse/MCB/MCCB clear ചെയ്യുന്നു."},
+     formula:{en:"ISC = V ÷ ZSC  (ZSC very low → ISC very high)",
+              hi:"ISC = V ÷ ZSC (ZSC बहुत कम → ISC बहुत अधिक)",
+              ml:"ISC = V ÷ ZSC (ZSC കുറഞ്ഞതിനാൽ ISC കൂടുതൽ)"},
+     example:{en:"415 V system fault → ISC can reach 10–30 kA",
+              hi:"415 V तंत्र → ISC 10–30 kA हो सकती है",
+              ml:"415 V system → ISC 10–30 kA ആകാം"},
+     badge:{en:"Protected by HRC fuse / MCB / MCCB",hi:"HRC फ्यूज / MCB / MCCB",ml:"HRC fuse / MCB / MCCB"},badgeColor:"coral"},
+
+    {term:{en:"Overload Current",hi:"अतिभार धारा",ml:"ഓവർലോഡ് കറൻ്റ്"},color:"amber",
+     def:{en:"Current exceeding equipment's rated full-load current. Not a fault — just excess demand. Causes slow overheating, insulation damage. Protected by thermal relay / ELCB.",
+          hi:"उपकरण की नामांकित पूर्ण भार धारा से अधिक धारा। फॉल्ट नहीं — अधिक माँग है। धीरे-धीरे गर्म होता है।",
+          ml:"Equipment rated current-നേക്കൾ കൂടിയ current. Fault അല്ല — excess demand. Slow overheating, insulation damage. Thermal relay/ELCB protect."},
+     formula:{en:"Overload ratio = Actual I ÷ Rated I  (> 1.0)",
+              hi:"अतिभार अनुपात = वास्तविक I ÷ नामांकित I (> 1.0)",
+              ml:"Overload ratio = Actual I ÷ Rated I (> 1.0)"},
+     example:{en:"Motor rated 10 A drawing 13 A → 130% overload",
+              hi:"मोटर रेटिंग 10A, 13A खींच रही → 130% अतिभार",
+              ml:"Motor 10A rated, 13A draw → 130% overload"},
+     badge:{en:"Protected by thermal relay / ELCB",hi:"थर्मल रिले / ELCB",ml:"Thermal relay / ELCB"},badgeColor:"amber"},
+
+    {term:{en:"Voltage Drop",hi:"वोल्टेज गिरावट",ml:"വോൾടേജ് ഡ്രോപ്"},color:"blue",
+     def:{en:"Reduction in voltage along a conductor due to its resistance. As per IE Rules, max VD = 5% from source to consumer terminals.",
+          hi:"चालक के प्रतिरोध के कारण वोल्टेज में कमी। IE नियमों के अनुसार स्रोत से उपभोक्ता तक अधिकतम VD = 5%।",
+          ml:"Conductor resistance കാരണം voltage കുറയൽ. IE Rules: source → consumer = max 5% VD."},
+     formula:{en:"Single-phase: VD = I×R; Three-phase: VD = √3 × I × R",
+              hi:"एकल-कला: VD=I×R;  तीन-कला: VD=√3×I×R",
+              ml:"Single-phase: VD = I×R;  3-phase: VD = √3 × I × R"},
+     example:{en:"230 V supply → max VD allowed = 11.5 V at consumer terminals",
+              hi:"230 V → अधिकतम VD = 11.5 V",
+              ml:"230 V supply → max VD = 11.5 V at terminals"},
+     badge:{en:"Max 5% per IE Rules",hi:"IE नियम: अधिकतम 5%",ml:"IE Rules: max 5%"},badgeColor:"blue"},
+
+    {term:{en:"Earth Fault Current",hi:"भूमि दोष धारा",ml:"എർത്ത് ഫോൾട്ട് കറൻ്റ്"},color:"green",
+     def:{en:"Current when a live conductor accidentally contacts earth or earthed metal. Shock hazard. Detected and cleared by RCD / ELCB (trips at 30 mA for personnel protection).",
+          hi:"जब जीवित चालक पृथ्वी या भू-संपर्कित धातु से छूता है। झटके का खतरा। RCD/ELCB द्वारा पता लगाया और काटा जाता है।",
+          ml:"Live conductor earth/earthed metal touch ചെയ്യുമ്പോൾ current. Shock hazard. RCD/ELCB (30 mA-ൽ trip) detect ചെയ്ത് clear ചെയ്യുന്നു."},
+     formula:{en:"If = V ÷ (Zs + Ze),  where Zs = earth fault loop impedance",
+              hi:"If = V ÷ (Zs + Ze),  Zs = लूप प्रतिबाधा",
+              ml:"If = V ÷ (Zs + Ze) — Zs = fault loop impedance"},
+     example:{en:"Residual current ≥ 30 mA → RCD trips instantly",
+              hi:"अवशिष्ट धारा ≥ 30 mA → RCD ट्रिप",
+              ml:"Residual current ≥ 30 mA → RCD trip"},
+     badge:{en:"RCD trips at 30 mA",hi:"RCD 30 mA पर ट्रिप",ml:"RCD 30 mA-ൽ trip"},badgeColor:"green"},
+
+    {term:{en:"Insulation Resistance",hi:"रोधन प्रतिरोध",ml:"ഇൻസുലേഷൻ റെസിസ്റ്റൻസ്"},color:"purple",
+     def:{en:"Resistance offered by insulating material between conductors or conductor and earth. High value = healthy insulation. Measured with Megger (500 V DC for LV systems).",
+          hi:"चालकों के बीच या चालक और पृथ्वी के बीच विद्युतरोधी सामग्री का प्रतिरोध। उच्च मान = स्वस्थ इन्सुलेशन। Megger से मापें।",
+          ml:"Conductors/conductor-earth-ൽ insulating material-ന്റെ resistance. High value = healthy. Megger (500V DC) കൊണ്ട് measure."},
+     formula:{en:"New installation: IR ≥ 1 MΩ (IE Rule 50)",
+              hi:"नई स्थापना: IR ≥ 1 MΩ (IE नियम 50)",
+              ml:"New installation: IR ≥ 1 MΩ (IE Rule 50)"},
+     example:{en:"Damp wiring: IR drops to kΩ range → shock risk",
+              hi:"नम वायरिंग: IR kΩ तक गिरती है → झटके का जोखिम",
+              ml:"Damp wiring: IR kΩ-ലേക്ക് drop → shock risk"},
+     badge:{en:"Tested with Megger",hi:"Megger से परीक्षण",ml:"Megger test"},badgeColor:"purple"},
+
+    {term:{en:"Earthing",hi:"भूसम्पर्कण",ml:"എർത്തിങ്"},color:"teal",
+     def:{en:"Connecting non-current-carrying metal parts to the general mass of earth. Fault current flows to earth, operates the protective device, and prevents electric shock to persons.",
+          hi:"गैर-धारावाही धातु भागों को पृथ्वी से जोड़ना। दोष धारा पृथ्वी की ओर जाती है, सुरक्षात्मक उपकरण संचालित होता है, बिजली का झटका रुकता है।",
+          ml:"Non-current-carrying metal parts earth-ലേക്ക് connect ചെയ്യൽ. Fault current earth-ലേക്ക് flow ചെയ്ത് protective device operate → shock prevent."},
+     formula:{en:"Earth electrode resistance: ≤ 1 Ω (power stations), ≤ 8 Ω (domestic)",
+              hi:"अर्थ इलेक्ट्रोड प्रतिरोध: ≤ 1Ω (पावर स्टेशन), ≤ 8Ω (घरेलू)",
+              ml:"Earth electrode: ≤ 1Ω (power station), ≤ 8Ω (domestic)"},
+     example:{en:"Pipe earthing, plate earthing, rod earthing",
+              hi:"पाइप, प्लेट, रॉड अर्थिंग",
+              ml:"Pipe, plate, rod earthing"},
+     badge:{en:"Mandatory per IE Rules",hi:"IE नियमों द्वारा अनिवार्य",ml:"IE Rules-ൽ mandatory"},badgeColor:"teal"},
+
+    {term:{en:"Loop Impedance",hi:"लूप प्रतिबाधा",ml:"ലൂപ്പ് ഇംപിഡൻസ്"},color:"gray",
+     def:{en:"Total impedance of the earth fault current loop: source → live conductor → fault point → earth path → neutral/earth back to source. Must be low for protective device to operate.",
+          hi:"भूमि दोष धारा लूप की कुल प्रतिबाधा। सुरक्षा उपकरण के संचालन के लिए यह कम होनी चाहिए।",
+          ml:"Earth fault current loop-ന്റെ total impedance: source → live → fault → earth → back to source. Protective device operate ആകാൻ low ആണ് വേണ്ടത്."},
+     formula:{en:"Ze + Zs (Ze = external, Zs = installation impedance)",
+              hi:"Ze + Zs (Ze = बाहरी, Zs = स्थापना प्रतिबाधा)",
+              ml:"Ze + Zs (Ze = external, Zs = installation)"},
+     example:{en:"TN-S system: Zs typically < 0.8 Ω for 32A MCB to trip",
+              hi:"TN-S: 32A MCB के लिए Zs < 0.8 Ω",
+              ml:"32A MCB trip ആകാൻ Zs < 0.8 Ω"},
+     badge:{en:"Verified by loop tester",hi:"लूप टेस्टर से जाँचें",ml:"Loop tester-ൽ verify"},badgeColor:"gray"},
+
+    {term:{en:"Prospective Short Circuit Current",hi:"संभावित लघु परिपथ धारा",ml:"PSCC"},color:"pink",
+     def:{en:"Maximum fault current that can flow at a given point in the system under bolted (zero-impedance) fault conditions. Used to select the breaking capacity of fuses/MCBs/MCCBs.",
+          hi:"किसी बिंदु पर शून्य-प्रतिबाधा दोष स्थितियों में प्रवाहित होने वाली अधिकतम दोष धारा। फ्यूज/MCB/MCCB की तोड़ क्षमता चुनने के लिए।",
+          ml:"Zero impedance fault condition-ൽ ഒരു point-ൽ flow ആകാൻ കഴിയുന്ന maximum fault current. Fuse/MCB/MCCB breaking capacity select ചെയ്യാൻ."},
+     formula:{en:"PSCC = V ÷ Z_total  (at the fault point)",
+              hi:"PSCC = V ÷ Z_total (दोष बिंदु पर)",
+              ml:"PSCC = V ÷ Z_total (fault point-ൽ)"},
+     example:{en:"At LV panel: PSCC may be 10 kA → MCB needs ≥ 10 kA rating",
+              hi:"LV पैनल पर: PSCC = 10 kA → MCB रेटिंग ≥ 10 kA चाहिए",
+              ml:"LV panel: PSCC = 10 kA → MCB ≥ 10 kA rating"},
+     badge:{en:"Determines breaking capacity",hi:"तोड़ क्षमता निर्धारित करता है",ml:"Breaking capacity determine"},badgeColor:"pink"},
+  ],
+};
+
+const UI = {
+  en:{sub:"ITI Electrician — Core Concepts",sec1:"Load Concepts",sec2:"Demand & Factors",sec3:"Load Curves & Duration",sec4:"Wiring System Terms",sec5:"Protection & Circuit Terms",curve:"Load Curve (24-Hour)",curvesub:"Variation of load on a power station over time",lbMd:"Max Demand",lbAl:"Avg Load",lbBl:"Base Load",leg1:"Load",leg2:"Max Demand",leg3:"Avg Load",ex:"Example"},
+  hi:{sub:"ITI विद्युतकार — मुख्य अवधारणाएँ",sec1:"भार अवधारणाएँ",sec2:"माँग और गुणांक",sec3:"भार वक्र और अवधि",sec4:"वायरिंग तंत्र शब्द",sec5:"संरक्षण और परिपथ शब्द",curve:"भार वक्र (24 घंटे)",curvesub:"पावर स्टेशन पर समय के साथ भार का परिवर्तन",lbMd:"अधिकतम माँग",lbAl:"औसत भार",lbBl:"आधार भार",leg1:"भार",leg2:"अधिकतम माँग",leg3:"औसत भार",ex:"उदाहरण"},
+  ml:{sub:"ITI Electrician — അടിസ്ഥാന ആശയങ്ങൾ",sec1:"Load ആശയങ്ങൾ",sec2:"Demand & Factors",sec3:"Load Curves & Duration",sec4:"Wiring System Terms",sec5:"Protection & Circuit Terms",curve:"Load Curve (24 മണിക്കൂർ)",curvesub:"Power station-ൽ load-ന്റെ time variation",lbMd:"Max Demand",lbAl:"Avg Load",lbBl:"Base Load",leg1:"Load",leg2:"Max Demand",leg3:"Avg Load",ex:"ഉദാഹരണം"},
+};
+
+function renderGrid(id, items, l){
+  const ui = UI[l];
+  document.getElementById(id).innerHTML = items.map(item=>{
+    const native = l !== 'en' ? `<div class="card-native">${item.term.en}</div>` : '';
+    const formula = item.formula[l] ? `<div class="card-formula">${item.formula[l]}</div>` : '';
+    const ex = item.example[l] ? `<div class="card-example"><span>${ui.ex}:</span> ${item.example[l]}</div>` : '';
+    const badge = item.badge[l] ? `<span class="badge ${item.badgeColor}">${item.badge[l]}</span>` : '';
+    return `<div class="card ${item.color}">
+      <div class="card-head">
+        <div class="card-term">${item.term[l]}</div>
+        ${native}
+      </div>
+      <div class="card-def">${item.def[l]}</div>
+      ${formula}${ex}${badge}
+    </div>`;
+  }).join('');
+}
+
+function setLang(l){
+  const ui = UI[l];
+  document.getElementById('page-sub').textContent = ui.sub;
+  document.getElementById('sec1').textContent = ui.sec1;
+  document.getElementById('sec2').textContent = ui.sec2;
+  document.getElementById('sec3').textContent = ui.sec3;
+  document.getElementById('sec4').textContent = ui.sec4;
+  document.getElementById('sec5').textContent = ui.sec5;
+  document.getElementById('curve-title').textContent = ui.curve;
+  document.getElementById('curve-sub').textContent = ui.curvesub;
+  document.getElementById('lbl-md').textContent = ui.lbMd;
+  document.getElementById('lbl-al').textContent = ui.lbAl;
+  document.getElementById('lbl-bl').textContent = ui.lbBl;
+  document.getElementById('leg1').textContent = ui.leg1;
+  document.getElementById('leg2').textContent = ui.leg2;
+  document.getElementById('leg3').textContent = ui.leg3;
+  renderGrid('grid-load',   DATA.load,   l);
+  renderGrid('grid-demand', DATA.demand, l);
+  renderGrid('grid-curve',  DATA.curve,  l);
+  renderGrid('grid-wiring', DATA.wiring, l);
+  renderGrid('grid-prot',   DATA.prot,   l);
+}
+
+setLang('en');
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

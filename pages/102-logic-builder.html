@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Logic Builder</title>
+<meta name="section" content="Electrical Machines &amp; Control">
+<meta name="section-order" content="1">
+<meta name="order" content="2">
+<meta name="description" content="Industrial control circuit simulator with multimeter">
+
+    <style>
+        * { box-sizing: border-box; user-select: none; }
+        body { margin: 0; display: flex; flex-direction: column; height: 100vh; background: #e0e5ec; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        
+        header { height: 50px; background: #2c3e50; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 100; }
+        .status-box { font-weight: bold; font-size: 14px; display: flex; gap: 15px; align-items: center; }
+        .safe { color: #2ecc71; } .trip { color: #e74c3c; animation: flash 0.5s infinite; }
+        @keyframes flash { 50% { opacity: 0.5; } }
+        .io-btn { background: #34495e; color: #ecf0f1; border: 1px solid #7f8c8d; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: 5px; }
+        .io-btn:hover { background: #2c3e50; }
+
+        #main { flex: 1; display: flex; overflow: hidden; }
+        #toolbar { width: 240px; background: #fff; border-right: 1px solid #ccc; display: flex; flex-direction: column; padding: 10px; gap: 8px; z-index: 90; overflow-y: auto; }
+        .tool-head { font-size: 11px; color: #7f8c8d; font-weight: bold; margin-top: 10px; text-transform: uppercase; }
+        .tool-btn { padding: 10px; background: #f8f9fa; border: 1px solid #dcdcdc; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: 600; color: #333; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .tool-btn:hover { background: #e9ecef; border-color: #bdc3c7; transform: translateX(5px); }
+        .led-dot { width:12px; height:12px; border-radius:50%; display:inline-block; border:1px solid #999; }
+
+        #canvas-wrap { flex: 1; position: relative; background: #fdfdfd; background-image: radial-gradient(#bdc3c7 1px, transparent 1px); background-size: 20px 20px; overflow: hidden; cursor: crosshair; }
+        
+        #fab { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 5px; border-radius: 30px; display: flex; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #ddd; z-index: 95; }
+        .fab-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: #eee; cursor: pointer; font-size: 16px; color: #555; }
+        .fab-btn.active { background: #3498db; color: white; }
+        .fab-btn.del:hover { background: #e74c3c; color: white; }
+
+        #ctx-msg { position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; border-radius: 4px; font-size: 12px; pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 100; }
+        
+        #context-menu { position: absolute; display: none; background: white; border: 1px solid #ccc; box-shadow: 2px 2px 10px rgba(0,0,0,0.2); z-index: 200; border-radius: 4px; width: 150px; }
+        .ctx-item { padding: 10px 15px; font-size: 13px; cursor: pointer; color: #333; border-bottom: 1px solid #eee; }
+        .ctx-item:hover { background: #f5f5f5; color: #000; }
+        .ctx-del { color: #e74c3c; font-weight: bold; }
+
+        #multimeter { position: absolute; top: 50px; left: 50px; width: 140px; height: 230px; background: #2c3e50; border-radius: 10px; border: 4px solid #34495e; display: none; flex-direction: column; align-items: center; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 110; cursor: move; }
+        .mm-screen { width: 100%; height: 50px; background: #95a5a6; border-radius: 4px; margin-bottom: 10px; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; padding: 0 10px; font-family: monospace; border: 2px inset #7f8c8d; }
+        .mm-val { font-size: 22px; color: #000; font-weight: bold; }
+        .mm-mode-txt { font-size: 10px; color: #333; font-weight: bold; }
+        .mm-dial { width: 60px; height: 60px; border-radius: 50%; background: #ecf0f1; border: 2px solid #bdc3c7; margin: 10px 0; position: relative; cursor: pointer; transition: transform 0.2s cubic-bezier(0.4, 0.0, 0.2, 1); }
+        .mm-needle { position: absolute; top: 5px; left: 28px; width: 4px; height: 25px; background: #e74c3c; border-radius: 2px; }
+        .probe-socket { width: 15px; height: 15px; border-radius: 50%; border: 2px solid #555; background: #000; margin: 5px; display: inline-block; }
+        .probe-red { border-color: #e74c3c; }
+        #file-input { display: none; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>⚡ INDUSTRIAL SIMULATOR</div>
+    <div class="status-box" id="status">SYSTEM: <span class="safe">READY</span></div>
+    <div>
+        <button class="io-btn" onclick="undo()">↩ Undo (Ctrl+Z)</button>
+        <button class="io-btn" onclick="toggleMeter()">📟 Multimeter</button>
+        <button class="io-btn" onclick="saveFile()">💾 Save</button>
+        <button class="io-btn" onclick="document.getElementById('file-input').click()">📂 Load</button>
+        <button onclick="resetSim()" style="background:#c0392b; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; margin-left:10px;">RESET</button>
+    </div>
+</header>
+<input type="file" id="file-input" accept=".json" onchange="loadFile(this)">
+
+<div id="main">
+    <div id="toolbar">
+        <div class="tool-head">Components</div>
+        <div class="tool-btn" onclick="addComp('src')">🔋 3-Phase + N Source</div>
+        <div class="tool-btn" onclick="addComp('mcb')">🔌 4-Pole Isolator</div>
+        <div class="tool-btn" onclick="addComp('olr')">🛡️ Overload Relay</div>
+        <div class="tool-btn" onclick="addComp('contactor')">📦 Contactor (M/S/D)</div>
+        <div class="tool-btn" onclick="addComp('timer')">⏱️ SD Timer (T1..)</div>
+        <div class="tool-btn" onclick="addComp('ls')">🏗️ Limit Switch</div>
+        <div class="tool-btn" onclick="addComp('btn_no')">🟢 Start Button (Big)</div>
+        <div class="tool-btn" onclick="addComp('btn_nc')">🔴 Stop Button (Big)</div>
+        <div class="tool-btn" onclick="addComp('btn_emg')">🍄 Emergency Stop</div>
+        <div class="tool-btn" onclick="addComp('mot')">⚙️ Motor (6-Wire)</div>
+        <div class="tool-head">Indicators</div>
+        <div class="tool-btn" onclick="addComp('led_r')"><span class="led-dot" style="background:red"></span> Red Lamp</div>
+        <div class="tool-btn" onclick="addComp('led_y')"><span class="led-dot" style="background:orange"></span> Yellow Lamp</div>
+        <div class="tool-btn" onclick="addComp('led_b')"><span class="led-dot" style="background:blue"></span> Blue Lamp</div>
+    </div>
+    
+    <div id="canvas-wrap">
+        <div id="fab">
+            <button class="fab-btn active" id="m-wire" onclick="setMode('wire')" title="Wire">✎</button>
+            <button class="fab-btn" id="m-move" onclick="setMode('move')" title="Move">✥</button>
+            <button class="fab-btn del" id="m-del" onclick="setMode('del')" title="Delete">✖</button>
+        </div>
+        
+        <div id="multimeter" onmousedown="startDragMM(event)">
+            <div class="mm-screen">
+                <div class="mm-mode-txt" id="mm-mode-txt">MODE: AC 750V</div>
+                <div class="mm-val" id="mm-disp">0 V</div>
+            </div>
+            <div class="mm-dial" onclick="cycleMMMode()" id="mm-dial"><div class="mm-needle"></div></div>
+            <div style="font-size:9px; color:#bdc3c7; text-align:center;">CLICK DIAL</div>
+            <div><div class="probe-socket probe-red"></div><div class="probe-socket"></div></div>
+        </div>
+
+        <div id="context-menu">
+            <div class="ctx-item" onclick="ctxAction('move')">Move Component</div>
+            <div class="ctx-item ctx-del" onclick="ctxAction('del')">Delete</div>
+        </div>
+
+        <canvas id="c"></canvas>
+        <div id="ctx-msg">Ready</div>
+    </div>
+</div>
+
+<script>
+const cvs = document.getElementById('c');
+const ctx = cvs.getContext('2d');
+const msgBox = document.getElementById('ctx-msg');
+const ctxMenu = document.getElementById('context-menu');
+let W, H;
+
+// CONFIG
+const SCALE = 0.6; 
+const COLS = { R: '#d63031', Y: '#f1c40f', B: '#0984e3', N: '#2d3436', K: '#2d3436' }; 
+
+// STATE
+let components = [];
+let wires = [];
+let history = []; 
+let mode = 'wire';
+let activePin = null;
+let hoverPin = null;
+let dragComp = null;
+let dragOffset = {x:0, y:0};
+let uID = 1;
+let shortCircuit = false;
+let shortWires = []; 
+let ctxTarget = null; 
+let counts = { K: 0, T: 0, R: 0, Y: 0, B: 0 }; 
+let mmVisible = false; let mmMode = 'V'; 
+let probes = { red: {x: 200, y: 200, pin: null}, black: {x: 230, y: 230, pin: null}, dragging: null };
+
+// --- UNDO ---
+function saveState() {
+    if(history.length > 20) history.shift();
+    history.push(JSON.stringify({ c: components, w: wires, u: uID, cnt: counts }));
+}
+function undo() {
+    if(history.length === 0) { showMsg("Nothing to Undo"); return; }
+    let last = JSON.parse(history.pop());
+    components = last.c; wires = last.w; uID = last.u; counts = last.cnt;
+    draw(); showMsg("Undo Action");
+}
+document.addEventListener('keydown', e => { if((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); } });
+
+// --- ADD COMPONENT ---
+function addComp(type, savedData) {
+    if(!savedData) saveState(); 
+    let c = savedData || {
+        id: uID++, type: type, x: 50 + Math.random()*50, y: 50 + Math.random()*50,
+        state: { on: false, val: 0, timerState:'OFF', setting: 6 }, pins: []
+    };
+    if(!savedData) assignName(c); 
+    c.pins = [];
+    if (type === 'contactor') initContactor(c);
+    else if (type === 'timer') initTimer(c);
+    else if (type === 'ls') initLimitSwitch(c);
+    else if (type === 'src') initSource(c);
+    else if (type === 'mcb') initMCB(c);
+    else if (type === 'olr') initOLR(c); 
+    else if (type === 'mot') initMotor(c);
+    else if (type.includes('btn')) initBtn(c);
+    else if (type.includes('led')) initLED(c);
+    if(savedData) { c.x = savedData.x; c.y = savedData.y; c.state = savedData.state; c.lbl = savedData.lbl; }
+    components.push(c);
+    if(!savedData) { showMsg("Added " + c.lbl); draw(); }
+}
+
+function assignName(c) {
+    if(c.type === 'contactor') {
+        let seq = ['M','S','D']; 
+        if(counts.K < 3) c.lbl = "CONTACTOR - " + seq[counts.K]; else c.lbl = "CONTACTOR - " + String.fromCharCode(75 + (counts.K-3)); counts.K++;
+    }
+    else if(c.type === 'timer') { counts.T++; c.lbl = "TIMER T" + counts.T; }
+    else if(c.type.includes('led')) { let col = c.type.split('_')[1].toUpperCase(); counts[col]++; c.lbl = col + counts[col]; }
+}
+
+function addPinPair(c, id, x, y, lbl) { c.pins.push({ uid: c.id+'_'+id+'_1', id: id, x: x-15, y: y, l: lbl }); c.pins.push({ uid: c.id+'_'+id+'_2', id: id, x: x+15, y: y, l: lbl }); }
+function addSinglePin(c, id, x, y, lbl) { c.pins.push({ uid: c.id+'_'+id, id: id, x: x, y: y, l: lbl }); }
+
+// --- INITIALIZERS ---
+function initOLR(c) {
+    c.w = 270; c.h = 140; c.lbl = "THERMAL OLR";
+    let px = 30, gap = 50;
+    addSinglePin(c,'L1', px, 20, 'L1'); addSinglePin(c,'T1', px, 120, 'T1');
+    addSinglePin(c,'L2', px+gap, 20, 'L2'); addSinglePin(c,'T2', px+gap, 120, 'T2');
+    addSinglePin(c,'L3', px+gap*2, 20, 'L3'); addSinglePin(c,'T3', px+gap*2, 120, 'T3');
+    addSinglePin(c,'95', 200, 30, '95'); addSinglePin(c,'96', 200, 110, '96');
+    addSinglePin(c,'97', 240, 30, '97'); addSinglePin(c,'98', 240, 110, '98');
+}
+function initContactor(c) {
+    c.w = 600; c.h = 320; if(!c.lbl) c.lbl="CONTACTOR";
+    c.pBox={x:20,y:50,w:200,h:250}; c.cBox={x:240,y:80,w:60,h:190}; c.aBox={x:320,y:50,w:260,h:250};
+    [{x:50,lI:'L1',lO:'T1'},{x:100,lI:'L2',lO:'T2'},{x:150,lI:'L3',lO:'T3'}].forEach(k=>{ addPinPair(c,k.lI, c.pBox.x+k.x, c.pBox.y+20, k.lI); addPinPair(c,k.lO, c.pBox.x+k.x, c.pBox.y+c.pBox.h-20, k.lO); });
+    [{x:50,lI:'13',lO:'14'},{x:130,lI:'21',lO:'22'},{x:210,lI:'33',lO:'34'}].forEach(k=>{ addPinPair(c,k.lI, c.aBox.x+k.x, c.aBox.y+20, k.lI); addPinPair(c,k.lO, c.aBox.x+k.x, c.aBox.y+c.aBox.h-20, k.lO); });
+    let cx = c.cBox.x + c.cBox.w/2; addPinPair(c,'A1',cx,c.cBox.y+20,'A1'); addPinPair(c,'A2',cx,c.cBox.y+c.cBox.h-20,'A2');
+}
+function initMCB(c) {
+    c.w = 260; c.h = 160; c.lbl = "4-POLE ISOLATOR";
+    let startX = 35; let gap = 60;
+    addSinglePin(c,'L1', startX, 20, 'L1'); addSinglePin(c,'T1', startX, 140, 'T1');
+    addSinglePin(c,'L2', startX+gap, 20, 'L2'); addSinglePin(c,'T2', startX+gap, 140, 'T2');
+    addSinglePin(c,'L3', startX+gap*2, 20, 'L3'); addSinglePin(c,'T3', startX+gap*2, 140, 'T3');
+    addSinglePin(c,'N', startX+gap*3, 20, 'N'); addSinglePin(c,'TN', startX+gap*3, 140, 'N'); 
+}
+function initBtn(c) { 
+    c.w=120; c.h=140; 
+    if(c.type==='btn_emg') c.lbl="E-STOP"; else c.lbl=c.type.includes('no')?"START":"STOP"; 
+    addPinPair(c,'1', 60, 20, '1'); addPinPair(c,'2', 60, 120, '2'); 
+}
+function initLED(c) { c.w = 100; c.h = 140; let col = c.type.split('_')[1]; c.col = col==='r'?'red':(col==='y'?'orange':'#007bff'); if(!c.lbl) c.lbl = "LED"; addPinPair(c,'X1', 50, 20, 'X1'); addPinPair(c,'X2', 50, 120, 'X2'); }
+function initSource(c) { c.w=220; c.h=80; c.lbl="415V 3-PH + N"; c.pins.push({uid:c.id+'_R',id:'R',x:30,y:50,l:'R'}); c.pins.push({uid:c.id+'_Y',id:'Y',x:80,y:50,l:'Y'}); c.pins.push({uid:c.id+'_B',id:'B',x:130,y:50,l:'B'}); c.pins.push({uid:c.id+'_N',id:'N',x:180,y:50,l:'N'}); }
+function initTimer(c) { c.w=300;c.h=400; if(!c.lbl)c.lbl="TIMER"; c.coilBox={x:20,y:50,w:70,h:330}; c.elecBox={x:100,y:50,w:180,h:330}; let cx=c.coilBox.x+c.coilBox.w/2;addPinPair(c,'A1',cx,120,'A1');addPinPair(c,'A2',cx,c.h-40,'A2'); addPinPair(c,'17',c.elecBox.x+45,120,'17');addPinPair(c,'18',c.elecBox.x+45,c.h-40,'18'); addPinPair(c,'27',c.elecBox.x+135,120,'27');addPinPair(c,'28',c.elecBox.x+135,c.h-40,'28'); c.state.setting=3; }
+function initLimitSwitch(c) { c.w=200;c.h=280;c.lbl="LIMIT SW"; c.cBox={x:20,y:40,w:160,h:220}; addPinPair(c,'11',c.cBox.x+40,100,'11');addPinPair(c,'12',c.cBox.x+40,c.h-40,'12'); addPinPair(c,'13',c.cBox.x+120,100,'13');addPinPair(c,'14',c.cBox.x+120,c.h-40,'14'); }
+function initMotor(c) { c.w=180;c.h=180;c.lbl="MOTOR"; addSinglePin(c,'U1',30,30,'U1');addSinglePin(c,'V1',90,30,'V1');addSinglePin(c,'W1',150,30,'W1');addSinglePin(c,'W2',30,150,'W2');addSinglePin(c,'U2',90,150,'U2');addSinglePin(c,'V2',150,150,'V2'); }
+
+// --- PHYSICS ---
+function solvePhysics() {
+    shortCircuit = false; shortWires = [];
+    let parent={}; const find=(i)=>{if(!parent[i])parent[i]=i; if(parent[i]!==i)parent[i]=find(parent[i]); return parent[i];};
+    const union=(i,j)=>{let r1=find(i),r2=find(j); if(r1!==r2)parent[r1]=r2;};
+
+    wires.forEach(w=>union(w.f,w.t));
+    components.forEach(c => {
+        let map={}; c.pins.forEach(p=>{if(!map[p.id])map[p.id]=[]; map[p.id].push(p.uid);});
+        Object.values(map).forEach(u=>{if(u.length>1)union(u[0],u[1]);}); 
+        const gp=(id)=>c.pins.find(p=>p.id===id).uid;
+        try {
+            if(c.type==='mcb'&&c.state.on) { union(gp('L1'),gp('T1')); union(gp('L2'),gp('T2')); union(gp('L3'),gp('T3')); union(gp('N'),gp('TN')); }
+            if(c.type==='olr') {
+                union(gp('L1'),gp('T1')); union(gp('L2'),gp('T2')); union(gp('L3'),gp('T3'));
+                if(!c.state.on) { union(gp('95'),gp('96')); } else { union(gp('97'),gp('98')); } 
+            }
+            if(c.type==='contactor') {
+                if(c.state.on) { union(gp('L1'),gp('T1')); union(gp('L2'),gp('T2')); union(gp('L3'),gp('T3')); union(gp('13'),gp('14')); union(gp('33'),gp('34')); }
+                else union(gp('21'),gp('22'));
+            }
+            if(c.type==='btn_no' && c.state.on) union(gp('1'), gp('2'));
+            if(c.type==='btn_nc' && !c.state.on) union(gp('1'), gp('2'));
+            
+            // E-STOP FIX: NC Contact. Open when Pressed.
+            if(c.type==='btn_emg' && !c.state.on) union(gp('1'), gp('2')); 
+
+            if(c.type==='ls') { if(c.state.on)union(gp('13'),gp('14')); else union(gp('11'),gp('12')); }
+            if(c.type==='timer') { if(c.state.timerState==='STAR') union(gp('17'),gp('18')); if(c.state.timerState==='DELTA') union(gp('27'),gp('28')); }
+        } catch(e){}
+    });
+
+    let nodes={};
+    components.filter(c=>c.type==='src').forEach(s=>{
+        nodes[find(s.pins[0].uid)] |= 1; nodes[find(s.pins[1].uid)] |= 2; nodes[find(s.pins[2].uid)] |= 4; nodes[find(s.pins[3].uid)] |= 8;
+    });
+
+    wires.forEach(w => {
+        let m = nodes[find(w.f)];
+        if(m && (m & (m-1)) !== 0) { shortCircuit = true; shortWires.push(w); }
+    });
+
+    if(shortCircuit) { document.getElementById('status').innerHTML="<span class='trip'>SHORT!</span>"; return; }
+    else document.getElementById('status').innerHTML="SYSTEM: <span class='safe'>READY</span>";
+
+    components.forEach(c => {
+        const getV=(id)=>{let p=c.pins.find(x=>x.id===id); return p?nodes[find(p.uid)]||0:0;};
+        
+        if(c.type==='contactor'||c.type==='timer') {
+            let v1=getV('A1'), v2=getV('A2');
+            if(v1 && v2 && v1!==v2) {
+                c.state.on=true;
+                if(c.type==='timer') {
+                    c.state.val++;
+                    let max = c.state.setting * 60;
+                    if(c.state.val < max) c.state.timerState='STAR'; else if(c.state.val < max+15) c.state.timerState='PAUSE'; else c.state.timerState='DELTA';
+                }
+            } else { c.state.on=false; if(c.type==='timer'){c.state.val=0; c.state.timerState='OFF';} }
+        }
+        
+        if(c.type==='mot') {
+            let pU1=getV('U1'), pV1=getV('V1'), pW1=getV('W1');
+            let pU2=getV('U2'), pV2=getV('V2'), pW2=getV('W2');
+            let spin = 0; 
+            let rU2=find(c.pins.find(p=>p.id==='U2').uid);
+            let rV2=find(c.pins.find(p=>p.id==='V2').uid);
+            let rW2=find(c.pins.find(p=>p.id==='W2').uid);
+            let isStar = (rU2===rV2 && rV2===rW2);
+            let isDelta = (pU1!==pU2 && pV1!==pV2 && pW1!==pW2) && (pU1&&pU2&&pV1&&pV2&&pW1&&pW2);
+            if(isStar || isDelta) {
+                if(pU1===1 && pV1===2 && pW1===4) spin = 1;
+                else if(pU1===1 && pV1===4 && pW1===2) spin = -1;
+                else if(pU1===2 && pV1===4 && pW1===1) spin = 1;
+                else if(pU1===4 && pV1===1 && pW1===2) spin = 1;
+                else if(pU1===2 && pV1===1 && pW1===4) spin = -1;
+                else if(pU1===4 && pV1===2 && pW1===1) spin = -1;
+            }
+            if(spin !== 0) { c.state.on=true; c.state.val += (spin * 0.2); } else c.state.on=false;
+        }
+
+        if(c.type.includes('led')) {
+            let v1=getV('X1'), v2=getV('X2');
+            if(v1 && v2 && v1!==v2) c.state.on = true;
+            else if((v1 && v2===0) || (v1===0 && v2)) { if((v1&8) || (v2&8)) c.state.on = true; else c.state.on = false; } 
+            else c.state.on = false;
+        }
+    });
+
+    wires.forEach(w => {
+        w.col = COLS.K;
+        let m = nodes[find(w.f)];
+        if(m===1) w.col = COLS.R; else if(m===2) w.col = COLS.Y; else if(m===4) w.col = COLS.B; else if(m===8) w.col = COLS.N;
+    });
+    updateMultimeter(find, nodes);
+}
+
+// --- DRAWING ---
+function draw() {
+    ctx.clearRect(0,0,W,H);
+    components.forEach(c => {
+        ctx.save(); ctx.translate(c.x, c.y); ctx.scale(SCALE, SCALE);
+        ctx.shadowColor = "rgba(0,0,0,0.1)"; ctx.shadowBlur = 15;
+        if(c.type==='contactor') drawContactor(c); else if(c.type==='timer') drawTimer(c); else if(c.type==='ls') drawLimitSwitch(c); else if(c.type==='mcb') drawMCB(c); else if(c.type==='src') drawSource(c); else if(c.type==='mot') drawMotor(c); else if(c.type.includes('btn')) drawBtn(c); else if(c.type.includes('led')) drawLED(c); else if(c.type==='olr') drawOLR(c);
+        ctx.restore();
+    });
+    wires.forEach(w => {
+        let p1 = getGlobalPin(w.f), p2 = getGlobalPin(w.t); if(!p1 || !p2) return;
+        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.bezierCurveTo(p1.x, p1.y+30, p2.x, p2.y+30, p2.x, p2.y);
+        ctx.strokeStyle = w.col || COLS.K; ctx.lineWidth = 3;
+        if(shortWires.includes(w)) { ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 6; ctx.shadowBlur=10; ctx.shadowColor='red'; }
+        ctx.stroke(); ctx.shadowBlur=0;
+    });
+    if(mode==='wire' && activePin && dragComp === 'wire') {
+        let p = getGlobalPin(activePin);
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(dragOffset.x, dragOffset.y);
+        ctx.strokeStyle = '#3498db'; ctx.setLineDash([5,5]); ctx.lineWidth=2; ctx.stroke(); ctx.setLineDash([]);
+    }
+    components.forEach(c => {
+        ctx.save(); ctx.translate(c.x, c.y); ctx.scale(SCALE, SCALE);
+        c.pins.forEach(p => {
+            let isHover = (hoverPin === p.uid); let isAct = (activePin === p.uid);
+            ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 7); ctx.fillStyle = isAct ? '#2ecc71' : (isHover ? '#3498db' : '#95a5a6'); ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke(); ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, 7); ctx.fillStyle='#333'; ctx.fill();
+        });
+        ctx.restore();
+    });
+    if(mmVisible) { drawProbe(probes.red, 'red'); drawProbe(probes.black, 'black'); }
+}
+
+function lblPin(p) {
+    if(p.uid.endsWith('_2')) return; 
+    ctx.fillStyle='#000'; ctx.font='bold 22px sans-serif'; ctx.textAlign='center';
+    let off = (p.y < 50) ? -18 : 28;
+    ctx.fillText(p.l, p.x, p.y+off);
+}
+
+function drawOLR(c) {
+    ctx.fillStyle='#ecf0f1'; ctx.strokeStyle='#34495e'; ctx.lineWidth=2; ctx.fillRect(0,0,c.w,c.h); ctx.strokeRect(0,0,c.w,c.h);
+    ctx.fillStyle='#333'; ctx.textAlign='center'; ctx.font='bold 24px sans-serif'; ctx.fillText(c.lbl, c.w/2, 25);
+    ctx.beginPath(); ctx.arc(150, 70, 25, 0, 7); ctx.fillStyle=c.state.on?'red':'#2ecc71'; ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font='12px sans-serif'; ctx.fillText(c.state.on?"RESET":"TRIP", 150, 75);
+    ctx.beginPath(); ctx.strokeStyle='#e74c3c'; ctx.lineWidth=3;
+    [30,80,130].forEach(x => { ctx.moveTo(x, 20); ctx.lineTo(x, 40); for(let i=0; i<6; i++) ctx.lineTo(x + (i%2==0?5:-5), 40 + i*10); ctx.lineTo(x, 100); ctx.lineTo(x, 120); });
+    ctx.stroke();
+    ctx.fillStyle='#7f8c8d'; ctx.font='16px sans-serif'; ctx.fillText("NO", 240, 75); ctx.fillText("NC", 200, 75);
+    c.pins.forEach(p=>lblPin(p));
+}
+
+function drawBtn(c) { 
+    if(c.type==='btn_emg') {
+        if(!c.state.on) { ctx.fillStyle = '#ecf0f1'; ctx.fillRect(c.w/2-15, 40, 30, 60); ctx.strokeRect(c.w/2-15, 40, 30, 60); }
+        ctx.fillStyle = '#c0392b'; let hy = c.state.on ? 80 : 40; 
+        ctx.beginPath(); ctx.ellipse(c.w/2, hy, 50, 30, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke(); 
+        if(c.state.on) { ctx.fillStyle='yellow'; ctx.font='bold 16px sans-serif'; ctx.fillText("↻ RESET", c.w/2, hy+5); }
+        ctx.fillStyle='#333'; ctx.font='20px sans-serif'; ctx.fillText("⏊", c.w/2, 120);
+    } else {
+        let col = c.type.includes('no')?'#2ecc71':'#e74c3c'; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(c.w/2, c.h/2, 45, 0, 7); ctx.fill(); ctx.stroke(); if(c.state.on) { ctx.fillStyle='rgba(0,0,0,0.2)'; ctx.fill(); } 
+    }
+    // Updated Label Position to be clear of pins
+    ctx.fillStyle='#000'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; 
+    ctx.fillText(c.lbl, c.w/2, 15); // Top
+    c.pins.forEach(p=>lblPin(p)); 
+}
+
+// ... [STANDARD HELPERS] ...
+function drawLED(c) { ctx.fillStyle = '#bdc3c7'; ctx.fillRect(0,0,c.w,c.h); ctx.strokeRect(0,0,c.w,c.h); ctx.fillStyle='#333'; ctx.textAlign='center'; ctx.font='bold 22px sans-serif'; ctx.fillText(c.lbl, c.w/2, 20); ctx.beginPath(); ctx.arc(c.w/2, c.h/2, 35, 0, 7); ctx.fillStyle = c.state.on ? c.col : '#555'; ctx.fill(); ctx.stroke(); if(c.state.on) { let g = ctx.createRadialGradient(c.w/2, c.h/2, 10, c.w/2, c.h/2, 50); g.addColorStop(0, c.col); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fill(); } c.pins.forEach(p=>lblPin(p)); }
+function drawMCB(c) { ctx.fillStyle='#bdc3c7'; ctx.fillRect(0,0,c.w,c.h); ctx.strokeRect(0,0,c.w,c.h); ctx.fillStyle=c.state.on?'#2ecc71':'#e74c3c'; ctx.fillRect(20, 60, c.w-40, 40); ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.font='bold 20px sans-serif'; ctx.fillText(c.state.on?"ON":"OFF", c.w/2, 85); ctx.fillStyle='#000'; ctx.font='bold 24px sans-serif'; ctx.fillText(c.lbl, c.w/2, 25); c.pins.forEach(p=>lblPin(p)); }
+function drawTimer(T) { let cp = T.state.on; ctx.fillStyle='#fdfdfd'; ctx.strokeStyle='#999'; ctx.lineWidth=2; ctx.fillRect(0,0,T.w,T.h); ctx.strokeRect(0,0,T.w,T.h); ctx.fillStyle='#333'; ctx.font='bold 24px sans-serif'; ctx.textAlign='center'; ctx.fillText(T.lbl, T.w/2, 30); ctx.fillStyle=cp?'#fff3cd':'#eee'; ctx.fillRect(T.coilBox.x,T.coilBox.y,T.coilBox.w,T.coilBox.h); ctx.strokeRect(T.coilBox.x,T.coilBox.y,T.coilBox.w,T.coilBox.h); ctx.fillStyle='#e2e6ea'; ctx.fillRect(T.elecBox.x,T.elecBox.y,T.elecBox.w,T.elecBox.h); ctx.strokeRect(T.elecBox.x,T.elecBox.y,T.elecBox.w,T.elecBox.h); let ex=T.elecBox.x, ey=T.elecBox.y; ctx.beginPath(); ctx.arc(ex+90,ey+60,30,0,7); ctx.fillStyle='#fff'; ctx.fill(); ctx.stroke(); ctx.fillStyle='#333'; ctx.font='10px sans-serif'; ctx.fillText("Set: "+T.state.setting+"s", ex+90, ey+45); let pct=T.state.setting/12; let ang=Math.PI*0.7+(pct*Math.PI*1.6); ctx.beginPath(); ctx.moveTo(ex+90,ey+60); ctx.lineTo(ex+90+25*Math.cos(ang),ey+60+25*Math.sin(ang)); ctx.strokeStyle='#007bff'; ctx.lineWidth=3; ctx.stroke(); ctx.fillStyle='#000'; ctx.fillRect(ex+45, ey+80, 90, 30); ctx.fillStyle='red'; ctx.font='bold 24px monospace'; let remaining = Math.max(0, (T.state.setting - (T.state.val/60))).toFixed(1); if(!T.state.on) remaining = T.state.setting.toFixed(1); ctx.fillText(remaining, ex+90, ey+102); const led=(x,c,l)=>{ctx.beginPath();ctx.arc(x,ey+130,6,0,7);ctx.fillStyle=c;ctx.fill();ctx.stroke();ctx.fillStyle='#000';ctx.font='14px sans-serif';ctx.fillText(l,x,ey+150);}; led(ex+40,cp?'#2ecc71':'#333',"PWR"); led(ex+90,T.state.timerState==='STAR'?'#f1c40f':'#333',"STAR"); led(ex+140,T.state.timerState==='DELTA'?'#e74c3c':'#333',"DELTA"); const sw=(x,cl,typ)=>{let ym=ey+200;ctx.beginPath();ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.moveTo(x-15,120);ctx.lineTo(x,130);ctx.moveTo(x+15,120);ctx.lineTo(x,130);ctx.lineTo(x,ym-15);ctx.moveTo(x,ym+15);ctx.lineTo(x,T.h-50);ctx.lineTo(x-15,T.h-40);ctx.moveTo(x,T.h-50);ctx.lineTo(x+15,T.h-40);ctx.stroke();ctx.beginPath();ctx.fillStyle='#333';ctx.arc(x,ym-15,2,0,7);ctx.arc(x,ym+15,2,0,7);ctx.fill();ctx.beginPath();ctx.strokeStyle=cl?'#27ae60':'#7f8c8d';if(cl){ctx.moveTo(x,ym-15);ctx.lineTo(x,ym+15);}else{ctx.moveTo(x+8,ym-15);ctx.lineTo(x+8,ym+15);}ctx.stroke();ctx.fillStyle='#999';ctx.fillText(typ,x,ym);}; sw(T.elecBox.x+45, T.state.timerState==='STAR', 'NC'); sw(T.elecBox.x+135, T.state.timerState==='DELTA', 'NO'); T.pins.forEach(p=>lblPin(p)); }
+function drawContactor(K1){let coilState=K1.state.on;ctx.lineWidth=3;ctx.strokeStyle='#34495e';ctx.fillStyle='#ecf0f1';ctx.fillRect(0,0,K1.w,K1.h);ctx.strokeRect(0,0,K1.w,K1.h);ctx.fillStyle='#2c3e50';ctx.font='bold 24px sans-serif';ctx.textAlign='left';ctx.fillText(K1.lbl,20,30);const box=(b,f,s)=>{ctx.fillStyle=f;ctx.strokeStyle=s;ctx.lineWidth=1;ctx.fillRect(b.x,b.y,b.w,b.h);ctx.strokeRect(b.x,b.y,b.w,b.h);};box(K1.pBox,'#fff5f5','#e74c3c');box(K1.aBox,'#f0f8ff','#3498db');ctx.fillStyle=coilState?'#f1c40f':'#bdc3c7';ctx.strokeStyle='#7f8c8d';ctx.fillRect(K1.cBox.x,K1.cBox.y,K1.cBox.w,K1.cBox.h);ctx.strokeRect(K1.cBox.x,K1.cBox.y,K1.cBox.w,K1.cBox.h);ctx.fillStyle='#000';ctx.textAlign='center';ctx.font='bold 14px sans-serif';ctx.fillText("COIL",K1.cBox.x+K1.cBox.w/2,K1.cBox.y+K1.cBox.h/2);const trace=(x,no,pwr)=>{let ym=K1.pBox.y+K1.pBox.h/2;if(!pwr)ym=K1.aBox.y+K1.aBox.h/2;let yt=pwr?K1.pBox.y+20:K1.aBox.y+20;let yb=pwr?K1.pBox.y+K1.pBox.h-20:K1.aBox.y+K1.aBox.h-20;ctx.beginPath();ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.moveTo(x-15,yt);ctx.lineTo(x,yt+10);ctx.moveTo(x+15,yt);ctx.lineTo(x,yt+10);ctx.lineTo(x,ym-15);ctx.moveTo(x,ym+15);ctx.lineTo(x,yb-10);ctx.lineTo(x-15,yb);ctx.moveTo(x,yb-10);ctx.lineTo(x+15,yb);ctx.stroke();ctx.beginPath();ctx.fillStyle='#333';ctx.arc(x,ym-12,3,0,7);ctx.arc(x,ym+12,3,0,7);ctx.fill();ctx.beginPath();ctx.strokeStyle=K1.state.on?(pwr?'#27ae60':'#2980b9'):'#7f8c8d';ctx.lineWidth=pwr?3:2;if(no){if(K1.state.on){ctx.moveTo(x,ym-12);ctx.lineTo(x,ym+12);}else{ctx.moveTo(x+6,ym-12);ctx.lineTo(x+6,ym+12);}}else{if(K1.state.on){ctx.moveTo(x+6,ym-12);ctx.lineTo(x+6,ym+12);}else{ctx.moveTo(x,ym-12);ctx.lineTo(x,ym+12);}}ctx.stroke();};[50,100,150].forEach(x=>trace(K1.pBox.x+x,true,true));[{x:50,n:1},{x:130,n:0},{x:210,n:1}].forEach(k=>trace(K1.aBox.x+k.x,k.n,false));K1.pins.forEach(p=>lblPin(p));}
+function drawLimitSwitch(LS){ctx.fillStyle='#2c3e50';ctx.fillRect(0,100,LS.w,180);ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.fillText(LS.lbl,LS.w/2,125);ctx.fillStyle='#ecf0f1';ctx.fillRect(LS.cBox.x,140,LS.cBox.w,120);ctx.fillStyle='#95a5a6';ctx.strokeStyle='#34495e';ctx.lineWidth=2;ctx.fillRect(20,40,LS.w-40,60);ctx.strokeRect(20,40,LS.w-40,60);ctx.save();ctx.translate(30,70);ctx.rotate(LS.state.on?Math.PI/6:-Math.PI/6);ctx.fillStyle='#333';ctx.fillRect(0,-5,80,10);ctx.beginPath();ctx.arc(80,0,12,0,7);ctx.fillStyle='#e74c3c';ctx.fill();ctx.stroke();ctx.restore();const sw=(x,cl,typ)=>{let y=100+100;ctx.beginPath();ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.moveTo(x-15,100+60);ctx.lineTo(x,100+70);ctx.moveTo(x+15,100+60);ctx.lineTo(x,100+70);ctx.lineTo(x,y-15);ctx.moveTo(x,y+15);ctx.lineTo(x,240);ctx.lineTo(x-15,250);ctx.moveTo(x,240);ctx.lineTo(x+15,250);ctx.stroke();ctx.beginPath();ctx.fillStyle='#333';ctx.arc(x,y-15,2,0,7);ctx.arc(x,y+15,2,0,7);ctx.fill();ctx.strokeStyle=cl?'#27ae60':'#7f8c8d';ctx.beginPath();if(cl){ctx.moveTo(x,y-15);ctx.lineTo(x,y+15);}else{ctx.moveTo(x+8,y-15);ctx.lineTo(x+8,y+15);}ctx.stroke();ctx.fillStyle='#999';ctx.fillText(typ,x+10,y);};sw(LS.cBox.x+40,!LS.state.on,'NC');sw(LS.cBox.x+120,LS.state.on,'NO');LS.pins.forEach(p=>lblPin(p));}
+function drawSource(c){ctx.fillStyle='#f1c40f';ctx.fillRect(0,0,c.w,c.h);ctx.strokeRect(0,0,c.w,c.h);ctx.fillStyle='#000';ctx.font='bold 24px sans-serif';ctx.fillText(c.lbl,c.w/2,25);c.pins.forEach(p=>lblPin(p));}
+function drawMotor(c){ctx.fillStyle='#95a5a6';ctx.fillRect(0,0,c.w,c.h);ctx.strokeRect(0,0,c.w,c.h);ctx.translate(c.w/2,c.h/2);ctx.rotate(c.state.val);ctx.fillStyle=c.state.on?'#3498db':'#7f8c8d';ctx.beginPath();ctx.arc(0,0,40,0,7);ctx.fill();ctx.fillStyle='white';ctx.fillRect(-5,-35,10,70);ctx.fillRect(-35,-5,70,10);ctx.rotate(-c.state.val);ctx.translate(-c.w/2,-c.h/2);c.pins.forEach(p=>lblPin(p));}
+
+cvs.addEventListener('contextmenu', e => { e.preventDefault(); let m=getMouse(e); let hit=components.find(c=>m.x>c.x && m.x<(c.x+c.w*SCALE) && m.y>c.y && m.y<(c.y+c.h*SCALE)); if(hit){ctxTarget={type:'comp',obj:hit}; ctxMenu.style.left=e.pageX+'px'; ctxMenu.style.top=e.pageY+'px'; ctxMenu.style.display='block';} else ctxMenu.style.display='none'; });
+document.addEventListener('click', ()=>ctxMenu.style.display='none');
+function ctxAction(a) { if(!ctxTarget)return; if(a==='del'){components=components.filter(c=>c!==ctxTarget.obj);wires=wires.filter(w=>!w.f.startsWith(ctxTarget.obj.id)&&!w.t.startsWith(ctxTarget.obj.id));} if(a==='move'){setMode('move');dragComp=ctxTarget.obj;} draw(); }
+function getGlobalPin(uid) { for(let c of components) { let p=c.pins.find(x=>x.uid===uid); if(p)return {x:c.x+p.x*SCALE, y:c.y+p.y*SCALE}; } return null; }
+function getMouse(e) { let r=cvs.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
+cvs.addEventListener('mousedown', e => { let m=getMouse(e); if(mmVisible){if(Math.hypot(m.x-probes.red.x, m.y-probes.red.y)<30){probes.dragging='red';probes.red.pin=null;return;}if(Math.hypot(m.x-probes.black.x, m.y-probes.black.y)<30){probes.dragging='black';probes.black.pin=null;return;}} for(let c of components)for(let p of c.pins){let gx=c.x+p.x*SCALE, gy=c.y+p.y*SCALE; if(Math.hypot(m.x-gx,m.y-gy)<10){if(mode==='wire'){activePin=p.uid;dragComp='wire';dragOffset=m;}else if(mode==='del')wires=wires.filter(w=>w.f!==p.uid&&w.t!==p.uid);return;}} let hit=components.find(c=>m.x>c.x && m.x<(c.x+c.w*SCALE) && m.y>c.y && m.y<(c.y+c.h*SCALE)); if(hit){ if(hit.type==='timer'){let dx=hit.x+(hit.elecBox.x+90)*SCALE, dy=hit.y+(hit.elecBox.y+60)*SCALE; if(Math.hypot(m.x-dx,m.y-dy)<30*SCALE){hit.state.setting=(hit.state.setting>=12)?3:hit.state.setting+3;showMsg("Timer: "+hit.state.setting+"s");return;}} if(mode==='move'){dragComp=hit;dragOffset={x:m.x-hit.x,y:m.y-hit.y};} else if(mode==='del'){components=components.filter(c=>c!==hit);wires=wires.filter(w=>!w.f.startsWith(hit.id)&&!w.t.startsWith(hit.id));} else { if(hit.type==='mcb'||hit.type==='ls'||hit.type==='olr')hit.state.on=!hit.state.on; if(hit.type.includes('btn') && hit.type!=='btn_emg')hit.state.on=true; if(hit.type==='btn_emg')hit.state.on=!hit.state.on; if(shortCircuit&&hit.type==='mcb'&&!hit.state.on){shortCircuit=false;document.getElementById('status').innerHTML="READY";} } } });
+cvs.addEventListener('mousemove', e=>{let m=getMouse(e); if(probes.dragging){probes[probes.dragging].x=m.x;probes[probes.dragging].y=m.y;components.forEach(c=>c.pins.forEach(p=>{let gx=c.x+p.x*SCALE, gy=c.y+p.y*SCALE; if(Math.hypot(m.x-gx,m.y-gy)<15)probes[probes.dragging].pin=p.uid;}));return;} if(dragComp&&dragComp!=='wire'){dragComp.x=m.x-dragOffset.x;dragComp.y=m.y-dragOffset.y;} if(dragComp==='wire')dragOffset=m; hoverPin=null; components.forEach(c=>c.pins.forEach(p=>{let gx=c.x+p.x*SCALE, gy=c.y+p.y*SCALE; if(Math.hypot(m.x-gx,m.y-gy)<10)hoverPin=p.uid;})); });
+cvs.addEventListener('mouseup', ()=>{if(dragComp==='wire'&&activePin&&hoverPin&&activePin!==hoverPin)wires.push({f:activePin,t:hoverPin,col:COLS.K}); components.forEach(c=>{if(c.type.includes('btn') && c.type!=='btn_emg')c.state.on=false;}); dragComp=null;activePin=null;probes.dragging=null;});
+function startDragMM(e) { if(e.target.closest('.mm-dial')||e.target.closest('.mm-screen'))return; let mm=document.getElementById('multimeter'); let offX=e.clientX-mm.offsetLeft, offY=e.clientY-mm.offsetTop; function move(e){mm.style.left=(e.clientX-offX)+'px'; mm.style.top=(e.clientY-offY)+'px';} function up(){document.removeEventListener('mousemove',move);document.removeEventListener('mouseup',up);} document.addEventListener('mousemove',move);document.addEventListener('mouseup',up); }
+function drawProbe(probe, color) { let x=probe.x, y=probe.y; if(probe.pin) { let p=getGlobalPin(probe.pin); if(p) { x=p.x; y=p.y; } } let mm=document.getElementById('multimeter'); let mx=mm.offsetLeft+70, my=mm.offsetTop+200; ctx.beginPath(); ctx.moveTo(x,y); ctx.quadraticCurveTo(x,my,mx+(color==='red'?-20:20),my); ctx.strokeStyle=color==='red'?'#e74c3c':'#2c3e50'; ctx.lineWidth=3; ctx.stroke(); ctx.fillStyle=color==='red'?'#e74c3c':'#333'; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-5,y-40); ctx.lineTo(x+5,y-40); ctx.fill(); ctx.beginPath(); ctx.arc(x,y,3,0,7); ctx.fillStyle='#fff'; ctx.fill(); }
+function updateMultimeter(findFn, nodeData) { if(!mmVisible)return; let txt="---"; if(probes.red.pin && probes.black.pin) { let rRoot=findFn(probes.red.pin); let bRoot=findFn(probes.black.pin); if(mmMode==='V') { let v1=nodeData[rRoot]||0; let v2=nodeData[bRoot]||0; if(v1===0&&v2===0)txt="0 V"; else if(v1===v2)txt="0 V"; else txt="415 V"; } else { if(rRoot===bRoot)txt="0.0 Ω"; else txt="OL"; } } document.getElementById('mm-disp').innerText=txt; }
+function saveFile() { let data={components:components,wires:wires,uID:uID}; let blob=new Blob([JSON.stringify(data)],{type:'application/json'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='circuit.json'; a.click(); }
+function loadFile(input) { let file=input.files[0]; if(!file)return; let reader=new FileReader(); reader.onload=function(e){let data=JSON.parse(e.target.result); components=[]; data.components.forEach(c=>addComp(c.type,c)); wires=data.wires; uID=data.uID; draw(); showMsg("Loaded!");}; reader.readAsText(file); }
+function resetSim() { components=[]; wires=[]; shortCircuit=false; counts={K:0,T:0,R:0,Y:0,B:0}; document.getElementById('status').innerHTML="READY"; draw(); }
+function showMsg(t) { msgBox.innerText=t; msgBox.style.opacity=1; setTimeout(()=>msgBox.style.opacity=0, 1500); }
+function setMode(m) { mode=m; document.querySelectorAll('.fab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('m-'+m).classList.add('active'); }
+function toggleMeter() { mmVisible=!mmVisible; document.getElementById('multimeter').style.display=mmVisible?'flex':'none'; draw(); }
+function cycleMMMode() { mmMode=(mmMode==='V')?'Ohm':'V'; let rot=(mmMode==='V')?0:180; document.querySelector('.mm-dial').style.transform=`rotate(${rot}deg)`; document.getElementById('mm-mode-txt').innerText=(mmMode==='V')?"MODE: AC 750V":"MODE: CONT (Ω)"; }
+function resize() { W=cvs.parentElement.offsetWidth; H=cvs.parentElement.offsetHeight; cvs.width=W; cvs.height=H; }
+window.onresize=resize; setTimeout(resize, 100);
+function loop() { solvePhysics(); draw(); requestAnimationFrame(loop); }
+loop();
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

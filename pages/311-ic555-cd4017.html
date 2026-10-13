@@ -1,0 +1,2666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IC 555 &amp; CD4017</title>
+<meta name="section" content="Electronics">
+<meta name="section-order" content="3">
+<meta name="order" content="11">
+<meta name="description" content="Timer and decade counter circuits">
+
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Noto+Sans+Malayalam:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFF8F0;
+  --card: #FFFFFF;
+  --primary: #D94F00;
+  --secondary: #0057A8;
+  --accent: #F5A623;
+  --green: #1E8A3C;
+  --text: #1A1A1A;
+  --subtext: #555;
+  --border: #E0D0C0;
+  --highlight: #FFF3CD;
+  --correct: #d4edda;
+  --wrong: #f8d7da;
+  --shadow: 0 4px 20px rgba(0,0,0,0.10);
+  --radius: 16px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 22px;
+  min-height: 100vh;
+}
+.lang-ml { font-family: 'Noto Sans Malayalam', sans-serif; }
+.lang-hi { font-family: 'Noto Sans Devanagari', sans-serif; }
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, var(--primary) 0%, #A83000 100%);
+  color: white;
+  padding: 18px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  position: sticky; top: 0; z-index: 100;
+}
+.header h1 { font-size: 2rem; font-weight: 800; letter-spacing: 1px; }
+.header-sub { font-size: 1rem; opacity: 0.88; }
+.lang-select {
+  background: rgba(255,255,255,0.18);
+  border: 2px solid rgba(255,255,255,0.5);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  outline: none;
+  transition: background 0.2s;
+}
+.lang-select option { color: #222; background: white; }
+.lang-select:hover { background: rgba(255,255,255,0.28); }
+
+/* NAV TABS */
+.nav-bar {
+  background: var(--secondary);
+  display: flex;
+  overflow-x: auto;
+  padding: 0 16px;
+  gap: 4px;
+  scrollbar-width: none;
+}
+.nav-bar::-webkit-scrollbar { display: none; }
+.nav-btn {
+  background: transparent;
+  color: rgba(255,255,255,0.75);
+  border: none;
+  padding: 14px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 4px solid transparent;
+  transition: all 0.2s;
+}
+.nav-btn.active, .nav-btn:hover {
+  color: white;
+  border-bottom-color: var(--accent);
+  background: rgba(255,255,255,0.10);
+}
+
+/* PAGES */
+.page { display: none; padding: 32px 40px; max-width: 1200px; margin: 0 auto; }
+.page.active { display: block; }
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  box-shadow: var(--shadow);
+  border: 2px solid var(--border);
+  margin-bottom: 28px;
+}
+.card-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-body { font-size: 1.1rem; line-height: 1.75; color: var(--text); }
+
+/* SECTION TITLE */
+.section-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--secondary);
+  margin-bottom: 24px;
+  border-left: 8px solid var(--accent);
+  padding-left: 16px;
+}
+
+/* PINOUT SVG CONTAINER */
+.pinout-container {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.pin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.05rem;
+}
+.pin-table th {
+  background: var(--secondary);
+  color: white;
+  padding: 10px 14px;
+  text-align: left;
+}
+.pin-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.pin-table tr:nth-child(even) td { background: #F5F0EB; }
+.pin-no {
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  width: 36px; height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+/* ANALOGY BOX */
+.analogy-box {
+  background: linear-gradient(135deg, #FFF3CD, #FFE59A);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 18px 0;
+}
+.analogy-box .label {
+  font-weight: 800;
+  font-size: 1rem;
+  color: #7A4F00;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+/* FORMULA BOX */
+.formula-box {
+  background: linear-gradient(135deg, #E8F0FE, #C7D9FF);
+  border: 2px solid var(--secondary);
+  border-radius: var(--radius);
+  padding: 20px 28px;
+  margin: 18px 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--secondary);
+  text-align: center;
+  font-family: 'Courier New', monospace;
+}
+.formula-steps { margin-top: 12px; font-size: 1rem; text-align: left; font-family: 'Baloo 2', sans-serif; color: var(--text); }
+
+/* QUIZ */
+.quiz-q {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: var(--secondary);
+}
+.quiz-options { display: flex; flex-direction: column; gap: 12px; }
+.quiz-opt {
+  background: white;
+  border: 2.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+  text-align: left;
+}
+.quiz-opt:hover { border-color: var(--secondary); background: #EEF4FF; }
+.quiz-opt.correct { background: var(--correct); border-color: var(--green); color: var(--green); font-weight: 700; }
+.quiz-opt.wrong { background: var(--wrong); border-color: #dc3545; color: #7a0015; }
+.quiz-feedback {
+  margin-top: 14px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  display: none;
+}
+.quiz-score {
+  background: var(--secondary);
+  color: white;
+  border-radius: var(--radius);
+  padding: 20px 28px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 20px;
+  display: none;
+}
+.next-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 14px;
+  font-family: inherit;
+  display: none;
+  transition: background 0.2s;
+}
+.next-btn:hover { background: #A83000; }
+
+/* ANIMATION CANVAS */
+canvas {
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: #111;
+  width: 100%;
+  max-width: 700px;
+  display: block;
+  margin: 0 auto;
+}
+.anim-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+  align-items: center;
+}
+.anim-btn {
+  background: var(--secondary);
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+.anim-btn:hover { background: #003E7A; }
+.anim-btn.active { background: var(--green); }
+
+/* TWO COLUMN */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } .page { padding: 20px; } }
+
+/* CHASER */
+.chaser-leds {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: 18px 0;
+  justify-content: center;
+}
+.led {
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  background: #333;
+  border: 3px solid #555;
+  transition: all 0.12s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #777;
+}
+.led.on {
+  background: radial-gradient(circle at 35% 35%, #FFFF80, #FF6600);
+  border-color: #FF8800;
+  box-shadow: 0 0 22px 8px #FF8800AA, 0 2px 6px rgba(0,0,0,0.3);
+  color: white;
+}
+
+/* BADGE */
+.badge {
+  display: inline-block;
+  background: var(--primary);
+  color: white;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.badge.green { background: var(--green); }
+.badge.blue { background: var(--secondary); }
+
+/* SVG IC */
+.ic-svg { max-width: 420px; width: 100%; margin: 0 auto; display: block; }
+
+/* HIGHLIGHT TEXT */
+.hl { background: #FFF3CD; border-radius: 6px; padding: 2px 8px; font-weight: 700; }
+.hl-blue { background: #C7D9FF; border-radius: 6px; padding: 2px 8px; font-weight: 700; }
+.hl-green { background: #C3EFCD; border-radius: 6px; padding: 2px 8px; font-weight: 700; }
+.hl-red { background: #FFD0C7; border-radius: 6px; padding: 2px 8px; font-weight: 700; }
+
+/* STEP BOX */
+.steps { counter-reset: step; }
+.step {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 18px;
+  align-items: flex-start;
+}
+.step::before {
+  counter-increment: step;
+  content: counter(step);
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  min-width: 40px; min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  margin-top: 2px;
+}
+.step-text { font-size: 1.05rem; line-height: 1.7; }
+
+/* APPLICATION GRID */
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+  margin: 16px 0;
+}
+.app-card {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.app-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+.app-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.app-name { font-weight: 700; font-size: 1rem; color: var(--secondary); }
+.app-desc { font-size: 0.88rem; color: var(--subtext); margin-top: 4px; }
+
+/* PROGRESS */
+.progress-bar {
+  height: 10px;
+  background: #E0D0C0;
+  border-radius: 10px;
+  margin: 6px 0 20px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 10px;
+  transition: width 0.4s;
+}
+
+/* TOOLTIP */
+[data-tip] { position: relative; cursor: help; }
+[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* WAVEFORM LABEL */
+.wave-label {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+  font-size: 0.95rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.wave-key { display: flex; align-items: center; gap: 6px; }
+.wave-dot { width: 16px; height: 4px; border-radius: 2px; }
+
+/* SCROLL smooth */
+html { scroll-behavior: smooth; }
+
+/* INTRO HERO */
+.hero {
+  background: linear-gradient(135deg, #0057A8 0%, #003E7A 100%);
+  border-radius: 20px;
+  color: white;
+  padding: 36px 40px;
+  margin-bottom: 32px;
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.hero-text h2 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; }
+.hero-text p { font-size: 1.15rem; opacity: 0.9; line-height: 1.7; }
+.hero-chip {
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.35);
+  border-radius: 14px;
+  padding: 18px 24px;
+  min-width: 170px;
+  text-align: center;
+}
+.hero-chip .big { font-size: 2.6rem; font-weight: 800; }
+.hero-chip .small { font-size: 0.88rem; opacity: 0.8; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="header h1" style="font-size:1.8rem;font-weight:800;color:white;" id="main-title">⚡ IC 555 & CD4017 Trainer</div>
+    <div class="header-sub" id="main-sub">CITS Electrician Course – Interactive Lesson</div>
+  </div>
+  <select class="lang-select" id="langSelect" onchange="setLang(this.value)">
+    <option value="en">🇬🇧 English</option>
+    <option value="hi">🇮🇳 हिंदी</option>
+    <option value="ml">🇮🇳 മലയാളം</option>
+  </select>
+</div>
+
+<!-- NAV -->
+<div class="nav-bar" id="navBar">
+  <button class="nav-btn active" onclick="showPage(0)" id="nav0">🏠 Intro</button>
+  <button class="nav-btn" onclick="showPage(1)" id="nav1">📌 555 Pinout</button>
+  <button class="nav-btn" onclick="showPage(2)" id="nav2">⚙️ 555 Modes</button>
+  <button class="nav-btn" onclick="showPage(3)" id="nav3">🧮 Calculations</button>
+  <button class="nav-btn" onclick="showPage(4)" id="nav4">📦 Applications</button>
+  <button class="nav-btn" onclick="showPage(5)" id="nav5">🔢 CD4017</button>
+  <button class="nav-btn" onclick="showPage(6)" id="nav6">💡 LED Chaser</button>
+  <button class="nav-btn" onclick="showPage(7)" id="nav7">🧠 Quiz</button>
+</div>
+
+<!-- ============ PAGE 0: INTRO ============ -->
+<div class="page active" id="page0">
+  <div class="hero">
+    <div class="hero-text" style="flex:2;min-width:260px;">
+      <h2 id="p0-hero-title">Welcome to the 555 & CD4017 World!</h2>
+      <p id="p0-hero-body">The IC 555 timer is one of the most popular and useful integrated circuits ever made. Combined with the CD4017 decade counter, you can build amazing circuits – from blinking LEDs to running light shows. Let's learn everything step by step!</p>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div class="hero-chip"><div class="big">555</div><div class="small" id="p0-chip1">Timer IC</div></div>
+      <div class="hero-chip"><div class="big">4017</div><div class="small" id="p0-chip2">Decade Counter</div></div>
+      <div class="hero-chip"><div class="big">10</div><div class="small" id="p0-chip3">LEDs Running</div></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">🤔 <span id="p0-what-title">What is IC 555?</span></div>
+      <div class="card-body" id="p0-what-body">
+        The IC 555 is a tiny black chip with 8 legs (pins). Inside it has resistors, transistors, and comparators all working together. It was invented in 1972 by Hans Camenzind. Even after 50+ years, it is still used in millions of devices every day!<br><br>
+        Think of it as a <span class="hl">programmable switch</span> – you control when it turns ON and OFF using just two resistors and a capacitor.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎯 <span id="p0-why-title">Why Learn This?</span></div>
+      <div class="card-body" id="p0-why-body">
+        As an electrician, you will find the IC 555 in:<br><br>
+        ✅ Automatic street lights (delay timers)<br>
+        ✅ Doorbells and buzzers<br>
+        ✅ Motor speed controllers<br>
+        ✅ Security alarm systems<br>
+        ✅ Battery charger cut-off circuits<br><br>
+        <span class="hl-green">Understanding this IC = Understanding 100s of real circuits!</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏏 <span id="p0-analogy-title">Real World Analogy – The Cricket Umpire</span></div>
+    <div class="card-body">
+      <div class="analogy-box">
+        <div class="label" id="p0-analogy-label">🌟 Analogy</div>
+        <span id="p0-analogy-text">Imagine the IC 555 is like a cricket umpire. The umpire watches the ball (voltage on the capacitor). When the ball reaches a certain height (2/3 of supply), the umpire raises his finger – OUT! (output goes LOW). When the ball drops to 1/3, the umpire signals – NOT OUT! (output goes HIGH). The resistors and capacitor decide how fast the ball moves up and down – that is your timing!</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 <span id="p0-overview-title">What We Will Learn</span></div>
+    <div class="card-body">
+      <div class="steps">
+        <div class="step"><div class="step-text" id="p0-s1"><strong>IC 555 Pinout</strong> – All 8 pins explained with functions and analogies</div></div>
+        <div class="step"><div class="step-text" id="p0-s2"><strong>Operating Modes</strong> – Astable (auto blinking) and Monostable (one-shot timer) with animated waveforms</div></div>
+        <div class="step"><div class="step-text" id="p0-s3"><strong>Calculations</strong> – How to choose R and C values for any frequency or time delay</div></div>
+        <div class="step"><div class="step-text" id="p0-s4"><strong>CD4017 Decade Counter</strong> – Pinout, truth table, and how it works with 555</div></div>
+        <div class="step"><div class="step-text" id="p0-s5"><strong>10 LED Chaser Circuit</strong> – Complete circuit with animation</div></div>
+        <div class="step"><div class="step-text" id="p0-s6"><strong>Quiz</strong> – Test your knowledge with scored questions</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE 1: 555 PINOUT ============ -->
+<div class="page" id="page1">
+  <div class="section-title" id="p1-title">📌 IC 555 – Pin by Pin</div>
+
+  <div class="card">
+    <div class="card-title">🔌 <span id="p1-physical-title">Physical Look of IC 555</span></div>
+    <div class="card-body">
+      <div class="pinout-container">
+        <div style="flex:1;min-width:280px;">
+          <!-- SVG of 555 IC -->
+          <svg viewBox="0 0 400 300" class="ic-svg" id="pinout-svg">
+            <rect x="130" y="60" width="140" height="180" rx="12" fill="#2a2a2a" stroke="#888" stroke-width="3"/>
+            <text x="200" y="115" text-anchor="middle" fill="#FFD700" font-size="20" font-weight="bold" font-family="'Baloo 2',sans-serif">IC 555</text>
+            <text x="200" y="140" text-anchor="middle" fill="#FF8800" font-size="13" font-family="'Baloo 2',sans-serif">NE555 / LM555</text>
+            <!-- Notch -->
+            <path d="M170,60 Q200,45 230,60" fill="none" stroke="#888" stroke-width="2"/>
+            <circle cx="200" cy="60" r="6" fill="#555" stroke="#888" stroke-width="1.5"/>
+            <!-- Left pins -->
+            <line x1="90" y1="90" x2="130" y2="90" stroke="#CCC" stroke-width="4"/>
+            <text x="85" y="96" text-anchor="end" fill="#1A1A1A" font-size="16" font-family="'Baloo 2',sans-serif" font-weight="700">1</text>
+            <line x1="90" y1="120" x2="130" y2="120" stroke="#CCC" stroke-width="4"/>
+            <text x="85" y="126" text-anchor="end" fill="#1A1A1A" font-size="16" font-family="'Baloo 2',sans-serif" font-weight="700">2</text>
+            <line x1="90" y1="150" x2="130" y2="150" stroke="#CCC" stroke-width="4"/>
+            <text x="85" y="156" text-anchor="end" fill="#1A1A1A" font-size="16" font-family="'Baloo 2',sans-serif" font-weight="700">3</text>
+            <line x1="90" y1="180" x2="130" y2="180" stroke="#CCC" stroke-width="4"/>
+            <text x="85" y="186" text-anchor="end" fill="#1A1A1A" font-size="16" font-family="'Baloo 2',sans-serif" font-weight="700">4</text>
+            <!-- Right pins -->
+            <line x1="270" y1="90" x2="310" y2="90" stroke="#CCC" stroke-width="4"/>
+            <text x="315" y="96" fill="#1A1A1A" font-size="16" font-family="'Baloo 2',sans-serif" font-weight="700">8</text>
+            <line x1="270" y1="120" x2="310" y2="120" stroke="#CCC" stroke-width="4"/>
+            <text x="315" y="126" fill="#1A1A1A" font-size="16" font-family="'Baloo 2',sans-serif" font-weight="700">7</text>
+            <line x1="270" y1="150" x2="310" y2="150" stroke="#CCC" stroke-width="4"/>
+            <text x="315" y="156" fill="#1A1A1A" font-size="16" font-family="'Baloo 2',sans-serif" font-weight="700">6</text>
+            <line x1="270" y1="180" x2="310" y2="180" stroke="#CCC" stroke-width="4"/>
+            <text x="315" y="186" fill="#1A1A1A" font-size="16" font-family="'Baloo 2',sans-serif" font-weight="700">5</text>
+            <!-- Pin labels inside -->
+            <text x="138" y="96" fill="#AAF0FF" font-size="11" font-family="'Baloo 2',sans-serif">GND</text>
+            <text x="138" y="126" fill="#FFD080" font-size="11" font-family="'Baloo 2',sans-serif">TRIGGER</text>
+            <text x="138" y="156" fill="#80FF80" font-size="11" font-family="'Baloo 2',sans-serif">OUTPUT</text>
+            <text x="138" y="186" fill="#FF8080" font-size="11" font-family="'Baloo 2',sans-serif">RESET</text>
+            <text x="262" y="96" text-anchor="end" fill="#FF8888" font-size="11" font-family="'Baloo 2',sans-serif">VCC</text>
+            <text x="262" y="126" text-anchor="end" fill="#FFCC60" font-size="11" font-family="'Baloo 2',sans-serif">DISCH</text>
+            <text x="262" y="156" text-anchor="end" fill="#FF9060" font-size="11" font-family="'Baloo 2',sans-serif">THRESH</text>
+            <text x="262" y="186" text-anchor="end" fill="#CC88FF" font-size="11" font-family="'Baloo 2',sans-serif">CTRL V</text>
+          </svg>
+          <p style="text-align:center;font-size:0.9rem;color:var(--subtext);margin-top:6px;" id="p1-svg-note">✅ Pin 1 is at <strong>top-left</strong> when the notch/dot faces UP. Pins count down the left (1→4), then up the right (5→8).</p>
+        </div>
+        <div style="flex:2;min-width:320px;">
+          <table class="pin-table">
+            <tr><th id="p1-th1">Pin</th><th id="p1-th2">Name</th><th id="p1-th3">Function</th></tr>
+            <tr>
+              <td><span class="pin-no">1</span></td>
+              <td><strong>GND</strong></td>
+              <td id="p1-pin1">Ground – Negative terminal of battery (0V)</td>
+            </tr>
+            <tr>
+              <td><span class="pin-no" style="background:#C07000">2</span></td>
+              <td><strong>Trigger</strong></td>
+              <td id="p1-pin2">Starts the timing. When voltage drops below 1/3 VCC → Output goes HIGH</td>
+            </tr>
+            <tr>
+              <td><span class="pin-no" style="background:#1E8A3C">3</span></td>
+              <td><strong>Output</strong></td>
+              <td id="p1-pin3">The OUTPUT pin. Goes HIGH or LOW. Can source/sink up to 200mA</td>
+            </tr>
+            <tr>
+              <td><span class="pin-no" style="background:#991111">4</span></td>
+              <td><strong>Reset</strong></td>
+              <td id="p1-pin4">Forces output LOW when connected to GND. Normally connected to VCC.</td>
+            </tr>
+            <tr>
+              <td><span class="pin-no" style="background:#770088">5</span></td>
+              <td><strong>Control V</strong></td>
+              <td id="p1-pin5">Changes internal threshold voltage. Usually connected via 0.01µF cap to GND if not used.</td>
+            </tr>
+            <tr>
+              <td><span class="pin-no" style="background:#B06000">6</span></td>
+              <td><strong>Threshold</strong></td>
+              <td id="p1-pin6">Stops timing. When voltage exceeds 2/3 VCC → Output goes LOW</td>
+            </tr>
+            <tr>
+              <td><span class="pin-no" style="background:#005599">7</span></td>
+              <td><strong>Discharge</strong></td>
+              <td id="p1-pin7">Discharges timing capacitor. Connected to junction of R and C.</td>
+            </tr>
+            <tr>
+              <td><span class="pin-no" style="background:#880000">8</span></td>
+              <td><strong>VCC</strong></td>
+              <td id="p1-pin8">Positive supply voltage. 5V to 15V. Usually 9V or 12V.</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRACTICAL CONNECTIONS DIAGRAM on Pinout page -->
+  <div class="card">
+    <div class="card-title">🔌 <span id="p1-practical-title">Practical Pin Connections – What Goes Where?</span></div>
+    <div class="card-body">
+      <p id="p1-practical-intro" style="margin-bottom:16px;">Every time you use IC 555, these connections are <span class="hl">always the same</span> no matter what circuit you build. Think of them as the "standard setup" before you add R1, R2, C for timing.</p>
+      <!--
+        LAYOUT PLAN — no overlaps:
+        Canvas: 860 wide × 500 tall
+
+        IC 555 body:  x=300..470, y=130..360
+          Pin rows (left side, x=300):  Pin1 y=160, Pin2 y=210, Pin3 y=260, Pin4 y=310
+          Pin rows (right side, x=470): Pin8 y=160, Pin7 y=210, Pin6 y=260, Pin5 y=310
+
+        VCC rail:  y=30
+        GND rail:  y=470
+        Battery:   x=60, between y=30 and y=470
+
+        LEFT-SIDE WIRES (all exit IC at x=300, go further left):
+          Pin 1 GND  → short stub left to x=280, drops straight to GND rail y=470
+          Pin 2 TRIG → exits left to x=200, drops to y=380 (Node B row), goes right to Node B
+          Pin 3 OUT  → exits left to x=160, stub — label "To CD4017 CLK / Load"
+          Pin 4 RST  → exits left to x=240, rises to y=30 (VCC rail) — far left of Pin 1 wire, no cross
+
+        RIGHT-SIDE WIRES (all exit IC at x=470, go further right):
+          Pin 8 VCC   → short stub right to x=520, rises to VCC rail y=30
+          Pin 7 DISCH → exits right to x=560, R1 hangs above it (x=560, y=30..y=210), R2 below (y=210..y=380)
+          Pin 6 THRESH→ exits right to x=580, drops to y=380 (Node B row)
+          Pin 5 CTRL  → exits right to x=620, drops to bypass cap at y=400, then to GND
+
+        Node B at x=560, y=380:
+          R2 bottom lands here
+          Pin 2 wire (from left) arrives here via bottom route
+          Pin 6 wire arrives here from right
+          Timing C hangs below: x=560, y=380→450, cap plates at y=450/460, then to GND
+
+        R1: x=560, y=30→130 (between VCC rail and Node A=Pin7)
+        R2: x=560, y=210→380 (between Node A=Pin7 and Node B)
+      -->
+      <svg viewBox="0 0 860 500" style="width:100%;background:#FAFAFA;border-radius:14px;border:2px solid #E0D0C0;font-family:'Baloo 2',sans-serif;">
+
+        <!-- TITLE -->
+        <text x="430" y="20" text-anchor="middle" fill="#0057A8" font-size="13" font-weight="800">IC 555 – Practical Connections (Astable Mode shown)</text>
+
+        <!-- VCC RAIL (red dashed) y=35 -->
+        <line x1="55" y1="35" x2="820" y2="35" stroke="#CC0000" stroke-width="2.5" stroke-dasharray="8,4"/>
+        <text x="760" y="30" fill="#CC0000" font-size="11" font-weight="700">+VCC (5–15V)</text>
+
+        <!-- GND RAIL (black dashed) y=470 -->
+        <line x1="55" y1="470" x2="820" y2="470" stroke="#333" stroke-width="2.5" stroke-dasharray="8,4"/>
+        <text x="760" y="465" fill="#333" font-size="11" font-weight="700">GND</text>
+
+        <!-- BATTERY (left edge) -->
+        <line x1="68" y1="35" x2="68" y2="56" stroke="#CC0000" stroke-width="3"/>
+        <line x1="56" y1="56" x2="80" y2="56" stroke="#CC0000" stroke-width="4"/>
+        <line x1="60" y1="64" x2="76" y2="64" stroke="#CC0000" stroke-width="2.5"/>
+        <line x1="68" y1="64" x2="68" y2="470" stroke="#333" stroke-width="2.5"/>
+        <text x="84" y="63" fill="#880000" font-size="12" font-weight="700">9V</text>
+
+        <!-- ══════════ IC 555 BODY ══════════
+             x=300..470, y=130..360
+             Notch at top (y=130). Pin 1 = TOP-LEFT.
+             Left:  Pin1 y=160, Pin2 y=210, Pin3 y=260, Pin4 y=310
+             Right: Pin8 y=160, Pin7 y=210, Pin6 y=260, Pin5 y=310 -->
+        <rect x="300" y="130" width="172" height="232" rx="14" fill="#1a1a1a" stroke="#999" stroke-width="3"/>
+        <!-- Notch -->
+        <path d="M356,130 Q386,115 416,130" fill="none" stroke="#999" stroke-width="2.5"/>
+        <circle cx="386" cy="130" r="6" fill="#444"/>
+        <!-- IC name -->
+        <text x="386" y="240" text-anchor="middle" fill="#FFD700" font-size="22" font-weight="800">IC 555</text>
+        <text x="386" y="262" text-anchor="middle" fill="#AAAAAA" font-size="11">NE555 / LM555</text>
+
+        <!-- Pin labels INSIDE IC (left side) -->
+        <text x="308" y="165" fill="#88EEFF" font-size="11" font-weight="700">1 GND</text>
+        <text x="308" y="215" fill="#FFCC44" font-size="11" font-weight="700">2 TRIG</text>
+        <text x="308" y="265" fill="#66FF88" font-size="11" font-weight="700">3 OUT</text>
+        <text x="308" y="315" fill="#FF8888" font-size="11" font-weight="700">4 RST</text>
+
+        <!-- Pin labels INSIDE IC (right side) -->
+        <text x="464" y="165" text-anchor="end" fill="#FF9999" font-size="11" font-weight="700">8 VCC</text>
+        <text x="464" y="215" text-anchor="end" fill="#FFCC66" font-size="11" font-weight="700">7 DISCH</text>
+        <text x="464" y="265" text-anchor="end" fill="#FF9944" font-size="11" font-weight="700">6 THRESH</text>
+        <text x="464" y="315" text-anchor="end" fill="#DD99FF" font-size="11" font-weight="700">5 CTRL</text>
+
+        <!-- ══════════ LEFT SIDE WIRES ══════════ -->
+
+        <!-- PIN 1 (GND): exits left to x=280, drops straight to GND rail -->
+        <line x1="300" y1="160" x2="276" y2="160" stroke="#88EEFF" stroke-width="2.5"/>
+        <line x1="276" y1="160" x2="276" y2="470" stroke="#555" stroke-width="2"/>
+        <circle cx="276" cy="470" r="4" fill="#333"/>
+        <!-- label above -->
+        <text x="200" y="156" fill="#336688" font-size="10" font-weight="700">Pin 1 → GND ↓</text>
+
+        <!-- PIN 2 (TRIG): exits left to x=220, drops down to y=385 (Node B level), then goes right to Node B -->
+        <line x1="300" y1="210" x2="220" y2="210" stroke="#FFCC44" stroke-width="2.5"/>
+        <line x1="220" y1="210" x2="220" y2="385" stroke="#FFCC44" stroke-width="2.5"/>
+        <line x1="220" y1="385" x2="560" y2="385" stroke="#1E8A3C" stroke-width="2.5"/>
+        <!-- junction dot where it meets Node B -->
+        <circle cx="560" cy="385" r="5" fill="#1E8A3C"/>
+        <!-- label -->
+        <text x="108" y="208" fill="#AA8800" font-size="10" font-weight="700">Pin 2 TRIG</text>
+        <text x="116" y="220" fill="#AA8800" font-size="9">→ Node B</text>
+
+        <!-- PIN 3 (OUT): exits left, with LED+resistor symbol, label -->
+        <line x1="300" y1="260" x2="190" y2="260" stroke="#00CC44" stroke-width="3"/>
+        <!-- 470Ω resistor box -->
+        <rect x="150" y="252" width="28" height="16" rx="3" fill="#E8D44D" stroke="#888" stroke-width="1.5"/>
+        <text x="164" y="263" text-anchor="middle" fill="#333" font-size="8" font-weight="700">470Ω</text>
+        <!-- LED triangle -->
+        <line x1="108" y1="260" x2="150" y2="260" stroke="#00CC44" stroke-width="2.5"/>
+        <polygon points="108,253 108,267 122,260" fill="#FF8800" stroke="#FF6600" stroke-width="1.5"/>
+        <line x1="122" y1="253" x2="122" y2="267" stroke="#FF6600" stroke-width="2.5"/>
+        <line x1="90" y1="260" x2="108" y2="260" stroke="#00CC44" stroke-width="2.5"/>
+        <!-- label -->
+        <text x="68" y="277" fill="#007722" font-size="10" font-weight="700">Pin 3 OUT</text>
+        <text x="60" y="289" fill="#007722" font-size="9">→ Load / CD4017 CLK</text>
+
+        <!-- PIN 4 (RST): exits left to x=258, rises up and over to VCC rail -->
+        <!-- Route: left to x=258, UP to y=35, with a small step around Pin 1 wire at x=276 -->
+        <!-- We go to x=258 which is LEFT of Pin1 wire (x=276), no crossing -->
+        <line x1="300" y1="310" x2="258" y2="310" stroke="#FF6666" stroke-width="2.5"/>
+        <line x1="258" y1="310" x2="258" y2="35" stroke="#FF4444" stroke-width="2"/>
+        <circle cx="258" cy="35" r="5" fill="#CC0000"/>
+        <!-- label (placed at a free spot, between IC and left edge) -->
+        <text x="116" y="310" fill="#CC2222" font-size="10" font-weight="700">Pin 4 RST → VCC</text>
+        <text x="122" y="322" fill="#CC2222" font-size="9">(always connect to VCC!)</text>
+
+        <!-- ══════════ RIGHT SIDE WIRES ══════════ -->
+
+        <!-- PIN 8 (VCC): exits right to x=510, rises to VCC rail -->
+        <line x1="472" y1="160" x2="510" y2="160" stroke="#FF9999" stroke-width="2.5"/>
+        <line x1="510" y1="160" x2="510" y2="35" stroke="#CC0000" stroke-width="2"/>
+        <circle cx="510" cy="35" r="5" fill="#CC0000"/>
+        <text x="514" y="156" fill="#880000" font-size="10" font-weight="700">Pin 8 → VCC ↑</text>
+
+        <!-- R1 (10kΩ): VCC rail (y=35) down via x=560 to Node A (Pin 7 junction) at y=210 -->
+        <!-- VCC tap at x=560 -->
+        <line x1="560" y1="35" x2="560" y2="55" stroke="#CC0000" stroke-width="2"/>
+        <circle cx="560" cy="35" r="4" fill="#CC0000"/>
+        <!-- R1 body -->
+        <rect x="546" y="55" width="28" height="50" rx="5" fill="#F5C518" stroke="#888" stroke-width="2"/>
+        <text x="560" y="76" text-anchor="middle" fill="#1a1a1a" font-size="11" font-weight="800">R1</text>
+        <text x="560" y="93" text-anchor="middle" fill="#1a1a1a" font-size="10">10kΩ</text>
+        <!-- R1 bottom → Node A at (560, 210) -->
+        <line x1="560" y1="105" x2="560" y2="210" stroke="#555" stroke-width="2"/>
+        <!-- Node A dot -->
+        <circle cx="560" cy="210" r="5" fill="#D94F00"/>
+        <text x="568" y="207" fill="#D94F00" font-size="10" font-weight="700">Node A</text>
+        <text x="568" y="219" fill="#D94F00" font-size="9">(Pin 7 = DISCH)</text>
+
+        <!-- PIN 7 (DISCH): exits right to x=560 = Node A -->
+        <line x1="472" y1="210" x2="560" y2="210" stroke="#FFCC66" stroke-width="2.5"/>
+
+        <!-- R2 (47kΩ): Node A (560, 210) down to Node B (560, 385) -->
+        <line x1="560" y1="210" x2="560" y2="228" stroke="#555" stroke-width="2"/>
+        <!-- R2 body -->
+        <rect x="546" y="228" width="28" height="52" rx="5" fill="#42A5F5" stroke="#888" stroke-width="2"/>
+        <text x="560" y="250" text-anchor="middle" fill="white" font-size="11" font-weight="800">R2</text>
+        <text x="560" y="267" text-anchor="middle" fill="white" font-size="10">47kΩ</text>
+        <!-- R2 bottom → Node B (560, 385) -->
+        <line x1="560" y1="280" x2="560" y2="385" stroke="#555" stroke-width="2"/>
+
+        <!-- PIN 6 (THRESH): exits right, routes cleanly to Node B -->
+        <!-- Goes right to x=590, drops to y=385, then left to Node B x=560 -->
+        <line x1="472" y1="260" x2="590" y2="260" stroke="#FF9944" stroke-width="2.5"/>
+        <line x1="590" y1="260" x2="590" y2="385" stroke="#FF9944" stroke-width="2.5"/>
+        <line x1="590" y1="385" x2="560" y2="385" stroke="#1E8A3C" stroke-width="2.5"/>
+        <circle cx="590" cy="385" r="4" fill="#1E8A3C"/>
+        <!-- label -->
+        <text x="594" y="258" fill="#AA4400" font-size="10" font-weight="700">Pin 6 THRESH → Node B</text>
+
+        <!-- NODE B label box -->
+        <rect x="612" y="372" width="150" height="42" rx="8" fill="#E8FFE8" stroke="#1E8A3C" stroke-width="2"/>
+        <text x="622" y="388" fill="#1E8A3C" font-size="10" font-weight="800">Node B (Key Junction)</text>
+        <text x="622" y="403" fill="#1E8A3C" font-size="9">Pin 2 = Pin 6 = C top</text>
+        <!-- leader line from box to node -->
+        <line x1="612" y1="390" x2="562" y2="385" stroke="#1E8A3C" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+        <!-- TIMING CAPACITOR C (10µF): Node B (560,385) downward to GND -->
+        <line x1="560" y1="385" x2="560" y2="415" stroke="#555" stroke-width="2"/>
+        <!-- Cap plates (electrolytic: + plate first) -->
+        <text x="538" y="420" fill="#CC0000" font-size="15" font-weight="800">+</text>
+        <line x1="548" y1="418" x2="572" y2="418" stroke="#555" stroke-width="4"/>
+        <line x1="548" y1="428" x2="572" y2="428" stroke="#555" stroke-width="4"/>
+        <text x="576" y="427" fill="#333" font-size="10" font-weight="700">C (10µF)</text>
+        <line x1="560" y1="428" x2="560" y2="470" stroke="#555" stroke-width="2"/>
+        <circle cx="560" cy="470" r="4" fill="#333"/>
+
+        <!-- PIN 5 (CTRL) 0.01µF bypass cap:
+             Goes right to x=640, drops to a cap, then to GND
+             Completely separate column from R2/Node B/C -->
+        <line x1="472" y1="310" x2="640" y2="310" stroke="#DD99FF" stroke-width="2"/>
+        <line x1="640" y1="310" x2="640" y2="390" stroke="#DD99FF" stroke-width="2"/>
+        <!-- Cap plates -->
+        <line x1="626" y1="390" x2="654" y2="390" stroke="#9944AA" stroke-width="3"/>
+        <line x1="626" y1="400" x2="654" y2="400" stroke="#9944AA" stroke-width="3"/>
+        <line x1="640" y1="400" x2="640" y2="470" stroke="#555" stroke-width="2"/>
+        <circle cx="640" cy="470" r="3" fill="#333"/>
+        <!-- Pin 5 annotation box -->
+        <rect x="656" y="370" width="158" height="54" rx="8" fill="#FFF0FF" stroke="#9944AA" stroke-width="1.5"/>
+        <text x="665" y="386" fill="#770088" font-size="10" font-weight="800">⚠ Pin 5 (CTRL)</text>
+        <text x="665" y="400" fill="#770088" font-size="9">0.01µF to GND</text>
+        <text x="665" y="413" fill="#770088" font-size="9">→ prevents noise!</text>
+        <text x="658" y="355" fill="#9944AA" font-size="10">0.01µF</text>
+
+        <!-- PIN NUMBERING REMINDER box (bottom-left) -->
+        <rect x="66" y="370" width="210" height="80" rx="10" fill="#EEF4FF" stroke="#0057A8" stroke-width="2"/>
+        <text x="76" y="387" fill="#0057A8" font-size="11" font-weight="800">📌 DIP-8 Pin Order</text>
+        <text x="76" y="402" fill="#0057A8" font-size="10">Notch UP → Pin 1 = TOP-LEFT</text>
+        <text x="76" y="417" fill="#0057A8" font-size="10">Left side: 1↓2↓3↓4 (top→bottom)</text>
+        <text x="76" y="432" fill="#0057A8" font-size="10">Right side: 8↑7↑6↑5 (bottom→top)</text>
+
+      </svg>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏏 <span id="p1-analogy-title">Pin Analogy – The Water Tank Controller</span></div>
+    <div class="card-body">
+      <div class="analogy-box">
+        <div class="label" id="p1-alabel">🌟 Real World Analogy</div>
+        <p id="p1-atext">Think of the IC 555 as a <strong>water tank level controller</strong>. The capacitor is the tank. The <span class="hl">Trigger pin (2)</span> is the LOW sensor – when water is low, it starts the pump (output HIGH). The <span class="hl-red">Threshold pin (6)</span> is the HIGH sensor – when tank is full, it stops the pump (output LOW). The <span class="hl-blue">Discharge pin (7)</span> is the drain pipe that empties the tank when the pump stops. Pins 8 and 1 are simply the power supply!</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚡ <span id="p1-spec-title">Important Specifications</span></div>
+    <div class="card-body">
+      <div class="two-col">
+        <div>
+          <p id="p1-spec1">📌 <strong>Supply Voltage:</strong> <span class="hl">5V to 15V DC</span> (works on a 9V battery easily)</p><br>
+          <p id="p1-spec2">📌 <strong>Output Current:</strong> <span class="hl-green">Up to 200mA</span> (can drive small motors, relays, buzzers directly)</p><br>
+          <p id="p1-spec3">📌 <strong>Operating Temperature:</strong> 0°C to 70°C (commercial) / -55°C to 125°C (military)</p>
+        </div>
+        <div>
+          <p id="p1-spec4">📌 <strong>Frequency Range:</strong> <span class="hl-blue">DC to 500kHz</span> in astable mode</p><br>
+          <p id="p1-spec5">📌 <strong>Timing Accuracy:</strong> Very stable – even with temperature changes</p><br>
+          <p id="p1-spec6">📌 <strong>Package:</strong> 8-pin DIP (Dual Inline Package) – Black rectangular chip</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE 2: 555 MODES ============ -->
+<div class="page" id="page2">
+  <div class="section-title" id="p2-title">⚙️ Operating Modes of IC 555</div>
+
+  <div class="card">
+    <div class="card-title">🔁 <span id="p2-astable-title">Mode 1: Astable (Auto-Oscillator)</span> <span class="badge">Most Used</span></div>
+    <div class="card-body">
+      <p id="p2-astable-body">In <strong>Astable mode</strong>, the output automatically keeps switching HIGH and LOW – no trigger needed. It keeps oscillating on its own like a heartbeat. The time it stays HIGH and LOW depends on two resistors (R1, R2) and one capacitor (C).</p>
+      <div class="analogy-box">
+        <div class="label">🌟 Analogy</div>
+        <p id="p2-ast-analogy">Think of a <strong>swing in a park</strong>. Once you give it a push, it keeps going back and forth automatically. The resistors control how heavy the swing is (how fast it moves). That is astable mode – automatic, never stops!</p>
+      </div>
+      <br>
+      <strong id="p2-ast-circuit-title">Astable Circuit Connections:</strong>
+      <div style="margin:14px 0;">
+        <!--
+          LAYOUT: IC 555 on left (x=100..260), component column on right (x=370).
+          Clear zones:
+            Left of IC  (x<100): Pin 1,2,3,4 labels + wires
+            Right of IC (x>260): Pin 8,7,6,5 labels
+            Component column at x=370: VCC at top, R1, NodeA, R2, NodeB, C, GND
+            Pin 2 wire: goes left from IC, sweeps under to x=340, rises to NodeB y=175
+            Pin 6 wire: goes right at y=162, straight to x=370 NodeB
+            Pin 4 RST:  goes left, then UP along x=82 to VCC line
+            All labels placed in free zones with enough spacing.
+        -->
+        <svg viewBox="0 0 620 300" style="width:100%;max-width:680px;display:block;margin:0 auto;background:#FAFAFA;border-radius:12px;border:2px solid #E0D0C0;font-family:'Baloo 2',sans-serif;">
+
+          <!-- VCC rail at y=18 -->
+          <text x="370" y="14" text-anchor="middle" fill="#880000" font-size="12" font-weight="700">VCC (9V)</text>
+          <line x1="82" y1="22" x2="500" y2="22" stroke="#CC0000" stroke-width="1.5" stroke-dasharray="6,3"/>
+
+          <!-- GND symbol at bottom of C -->
+          <!-- drawn later below C -->
+
+          <!-- ══ IC 555 BODY (x=105..255, y=60..230) ══
+               4 pins per side, spaced 38px apart:
+               Left:  P1 y=80, P2 y=118, P3 y=156, P4 y=194
+               Right: P8 y=80, P7 y=118, P6 y=156, P5 y=194  -->
+          <rect x="105" y="58" width="152" height="152" rx="10" fill="#1a1a1a" stroke="#888" stroke-width="2.5"/>
+          <!-- Notch -->
+          <path d="M148,58 Q181,44 214,58" fill="none" stroke="#888" stroke-width="2"/>
+          <circle cx="181" cy="58" r="5" fill="#444"/>
+          <text x="181" y="138" text-anchor="middle" fill="#FFD700" font-size="17" font-weight="800">IC 555</text>
+          <!-- Left labels inside -->
+          <text x="113" y="84"  fill="#88EEFF" font-size="10" font-weight="700">1·GND</text>
+          <text x="113" y="122" fill="#FFCC44" font-size="10" font-weight="700">2·TRIG</text>
+          <text x="113" y="160" fill="#66FF88" font-size="10" font-weight="700">3·OUT</text>
+          <text x="113" y="198" fill="#FF8888" font-size="10" font-weight="700">4·RST</text>
+          <!-- Right labels inside -->
+          <text x="249" y="84"  text-anchor="end" fill="#FF9999" font-size="10" font-weight="700">8·VCC</text>
+          <text x="249" y="122" text-anchor="end" fill="#FFCC66" font-size="10" font-weight="700">7·DISCH</text>
+          <text x="249" y="160" text-anchor="end" fill="#FF9944" font-size="10" font-weight="700">6·THRESH</text>
+          <text x="249" y="198" text-anchor="end" fill="#DD99FF" font-size="10" font-weight="700">5·CTRL</text>
+
+          <!-- ══ RIGHT SIDE COMPONENTS at x=370 ══ -->
+
+          <!-- Pin 8 VCC: exits right at y=80, goes right to x=370, up to VCC rail y=22 -->
+          <line x1="257" y1="80"  x2="370" y2="80"  stroke="#FF9999" stroke-width="2"/>
+          <line x1="370" y1="80"  x2="370" y2="22"  stroke="#CC0000" stroke-width="2"/>
+          <circle cx="370" cy="22" r="4" fill="#CC0000"/>
+
+          <!-- R1 (VCC → Node A): x=370, y=22 down through resistor to y=118 -->
+          <line x1="370" y1="22" x2="370" y2="40" stroke="#CC0000" stroke-width="2"/>
+          <rect x="354" y="40" width="32" height="36" rx="5" fill="#F5C518" stroke="#888" stroke-width="1.5"/>
+          <text x="370" y="55"  text-anchor="middle" fill="#1a1a1a" font-size="10" font-weight="800">R1</text>
+          <text x="370" y="69"  text-anchor="middle" fill="#1a1a1a" font-size="9">10kΩ</text>
+          <line x1="370" y1="76" x2="370" y2="118" stroke="#555" stroke-width="2"/>
+
+          <!-- Node A at (370, 118) = Pin 7 junction -->
+          <circle cx="370" cy="118" r="5" fill="#D94F00"/>
+          <!-- Pin 7 wire: exits right at y=118, straight to Node A -->
+          <line x1="257" y1="118" x2="370" y2="118" stroke="#FFCC66" stroke-width="2.5"/>
+          <!-- Node A label (above, to the right) -->
+          <text x="378" y="112" fill="#D94F00" font-size="10" font-weight="700">Node A (Pin 7)</text>
+
+          <!-- R2 (Node A → Node B): x=370, y=118 down to y=200 -->
+          <line x1="370" y1="118" x2="370" y2="136" stroke="#555" stroke-width="2"/>
+          <rect x="354" y="136" width="32" height="36" rx="5" fill="#42A5F5" stroke="#888" stroke-width="1.5"/>
+          <text x="370" y="151" text-anchor="middle" fill="white" font-size="10" font-weight="800">R2</text>
+          <text x="370" y="165" text-anchor="middle" fill="white" font-size="9">47kΩ</text>
+          <line x1="370" y1="172" x2="370" y2="200" stroke="#555" stroke-width="2"/>
+
+          <!-- Node B at (370, 200) = Pin 2 + Pin 6 + C junction -->
+          <circle cx="370" cy="200" r="5" fill="#1E8A3C"/>
+          <!-- Node B label -->
+          <text x="378" y="196" fill="#1E8A3C" font-size="10" font-weight="700">Node B (Pin 2 = Pin 6)</text>
+
+          <!-- Pin 6 wire: exits right at y=156, goes right to x=370, drops to Node B y=200 -->
+          <line x1="257" y1="156" x2="310" y2="156" stroke="#FF9944" stroke-width="2.5"/>
+          <line x1="310" y1="156" x2="310" y2="200" stroke="#FF9944" stroke-width="2.5"/>
+          <line x1="310" y1="200" x2="370" y2="200" stroke="#1E8A3C" stroke-width="2.5"/>
+          <circle cx="310" cy="200" r="4" fill="#1E8A3C"/>
+
+          <!-- Pin 2 wire: exits LEFT at y=118, goes to x=80, drops to y=248 (below IC), goes right to x=340, rises to Node B y=200 -->
+          <line x1="105" y1="118" x2="80"  y2="118" stroke="#FFCC44" stroke-width="2.5"/>
+          <line x1="80"  y1="118" x2="80"  y2="248" stroke="#FFCC44" stroke-width="2.5"/>
+          <line x1="80"  y1="248" x2="340" y2="248" stroke="#FFCC44" stroke-width="2.5"/>
+          <line x1="340" y1="248" x2="340" y2="200" stroke="#FFCC44" stroke-width="2.5"/>
+          <line x1="340" y1="200" x2="370" y2="200" stroke="#1E8A3C" stroke-width="2.5"/>
+          <circle cx="340" cy="200" r="4" fill="#1E8A3C"/>
+          <!-- Pin 2 label at bottom route -->
+          <text x="155" y="262" fill="#AA8800" font-size="9" font-weight="700">Pin 2 (TRIG) → Node B via bottom route</text>
+
+          <!-- Timing Capacitor C: Node B (370,200) down to GND symbol -->
+          <line x1="370" y1="200" x2="370" y2="225" stroke="#555" stroke-width="2"/>
+          <!-- + plate -->
+          <text x="350" y="230" fill="#CC0000" font-size="13" font-weight="800">+</text>
+          <line x1="354" y1="228" x2="386" y2="228" stroke="#555" stroke-width="4"/>
+          <line x1="354" y1="237" x2="386" y2="237" stroke="#555" stroke-width="4"/>
+          <text x="390" y="237" fill="#333" font-size="10" font-weight="700">C (timing)</text>
+          <line x1="370" y1="237" x2="370" y2="258" stroke="#555" stroke-width="2"/>
+          <!-- GND symbol -->
+          <line x1="354" y1="258" x2="386" y2="258" stroke="#555" stroke-width="3"/>
+          <line x1="358" y1="264" x2="382" y2="264" stroke="#555" stroke-width="2"/>
+          <line x1="363" y1="270" x2="377" y2="270" stroke="#555" stroke-width="1.5"/>
+          <text x="370" y="284" text-anchor="middle" fill="#333" font-size="10" font-weight="700">GND</text>
+
+          <!-- Pin 5 CTRL: exits right at y=194, small wire + cap + GND all in one clean column at x=440 -->
+          <line x1="257" y1="194" x2="440" y2="194" stroke="#DD99FF" stroke-width="1.5"/>
+          <line x1="440" y1="194" x2="440" y2="220" stroke="#DD99FF" stroke-width="1.5"/>
+          <line x1="428" y1="220" x2="452" y2="220" stroke="#9944AA" stroke-width="3"/>
+          <line x1="428" y1="228" x2="452" y2="228" stroke="#9944AA" stroke-width="3"/>
+          <line x1="440" y1="228" x2="440" y2="258" stroke="#555" stroke-width="1.5"/>
+          <!-- GND symbol for Pin5 cap -->
+          <line x1="430" y1="258" x2="450" y2="258" stroke="#555" stroke-width="2.5"/>
+          <line x1="433" y1="264" x2="447" y2="264" stroke="#555" stroke-width="1.5"/>
+          <text x="455" y="225" fill="#770088" font-size="9">0.01µF</text>
+          <text x="455" y="213" fill="#770088" font-size="9">Pin 5→cap→GND</text>
+
+          <!-- Pin 1 GND wire: exits left at y=80, straight down along x=86 to bottom GND connection -->
+          <line x1="105" y1="80" x2="86" y2="80" stroke="#88EEFF" stroke-width="2"/>
+          <line x1="86"  y1="80" x2="86" y2="258" stroke="#555" stroke-width="2"/>
+          <line x1="74"  y1="258" x2="98" y2="258" stroke="#555" stroke-width="3"/>
+          <line x1="78"  y1="264" x2="94" y2="264" stroke="#555" stroke-width="2"/>
+          <line x1="82"  y1="270" x2="90" y2="270" stroke="#555" stroke-width="1.5"/>
+          <text x="86" y="284" text-anchor="middle" fill="#333" font-size="9" font-weight="700">GND</text>
+
+          <!-- Pin 4 RST → VCC: exits left at y=194, goes to x=82, rises to VCC rail y=22 -->
+          <!-- x=82 is slightly left of Pin1 wire at x=86 — no crossing issue as they are at different y-entry points and we arc around -->
+          <!-- Actually let's route it to x=70 to ensure clean separation from x=86 GND wire -->
+          <line x1="105" y1="194" x2="70"  y2="194" stroke="#FF6666" stroke-width="2"/>
+          <line x1="70"  y1="194" x2="70"  y2="22"  stroke="#FF4444" stroke-width="2"/>
+          <circle cx="70" cy="22" r="4" fill="#CC0000"/>
+          <!-- label at free area -->
+          <text x="8" y="194" fill="#CC2222" font-size="9" font-weight="700">RST</text>
+          <text x="4" y="205" fill="#CC2222" font-size="8">→VCC</text>
+
+          <!-- Pin 3 OUT: exits left at y=156, LED + load label -->
+          <line x1="105" y1="156" x2="20"  y2="156" stroke="#00CC44" stroke-width="2.5"/>
+          <!-- LED symbol -->
+          <polygon points="32,150 32,162 44,156" fill="#FF8800" stroke="#FF6600" stroke-width="1"/>
+          <line x1="44" y1="150" x2="44" y2="162" stroke="#FF6600" stroke-width="2"/>
+          <text x="10" y="172" fill="#008833" font-size="8" font-weight="700">OUT/Load</text>
+
+          <!-- Legend box -->
+          <rect x="460" y="60" width="148" height="110" rx="8" fill="#EEF4FF" stroke="#0057A8" stroke-width="1.5"/>
+          <text x="470" y="77"  fill="#0057A8" font-size="10" font-weight="800">Astable connections:</text>
+          <text x="470" y="93"  fill="#555"    font-size="9">Pin 1 → GND</text>
+          <text x="470" y="107" fill="#555"    font-size="9">Pin 4 RST → VCC</text>
+          <text x="470" y="121" fill="#555"    font-size="9">Pin 8 VCC → VCC</text>
+          <text x="470" y="135" fill="#555"    font-size="9">Pin 5 → 0.01µF → GND</text>
+          <text x="470" y="149" fill="#555"    font-size="9">Node B: Pin2=Pin6=C</text>
+          <text x="470" y="163" fill="#555"    font-size="9">Pin 7 = R1-R2 junction</text>
+
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Astable Waveform Animation -->
+  <div class="card">
+    <div class="card-title">📊 <span id="p2-wave-title">Astable Waveform – Live Animation</span></div>
+    <div class="card-body">
+      <canvas id="astableCanvas" width="700" height="220"></canvas>
+      <div class="wave-label">
+        <div class="wave-key"><div class="wave-dot" style="background:#00FF88"></div><span id="wl-cap">Capacitor Voltage (sawtooth)</span></div>
+        <div class="wave-key"><div class="wave-dot" style="background:#FFD700"></div><span id="wl-out">Output (square wave)</span></div>
+        <div class="wave-key"><div class="wave-dot" style="background:#FF4444;width:2px;height:16px;border-radius:1px"></div><span id="wl-thresh">2/3 VCC (Threshold)</span></div>
+        <div class="wave-key"><div class="wave-dot" style="background:#4488FF;width:2px;height:16px;border-radius:1px"></div><span id="wl-trig">1/3 VCC (Trigger)</span></div>
+      </div>
+      <div class="anim-controls">
+        <button class="anim-btn" onclick="startAstable()" id="btn-start-ast">▶ Start</button>
+        <button class="anim-btn" onclick="stopAstable()" id="btn-stop-ast">⏹ Stop</button>
+        <label style="font-size:0.95rem;" id="lbl-speed">Speed:</label>
+        <input type="range" min="1" max="5" value="2" id="astSpeedSlider" style="width:120px;" oninput="astSpeed=this.value">
+      </div>
+    </div>
+  </div>
+
+  <!-- Monostable -->
+  <div class="card">
+    <div class="card-title">⏱ <span id="p2-mono-title">Mode 2: Monostable (One-Shot Timer)</span></div>
+    <div class="card-body">
+      <p id="p2-mono-body">In <strong>Monostable mode</strong>, the 555 gives ONE pulse of fixed duration when triggered. After the pulse, it goes back to LOW and waits. The time of the pulse depends on R and C values.</p>
+      <div class="analogy-box">
+        <div class="label">🌟 Analogy</div>
+        <p id="p2-mono-analogy">Like a <strong>toilet flush</strong>! When you press the lever (trigger), water flows for a fixed time (output HIGH). Then it stops and waits until you press again. No matter how many times you press quickly, it completes one full cycle first!</p>
+      </div>
+      <br>
+      <strong id="p2-mono-use">Common Uses of Monostable:</strong>
+      <ul style="margin:10px 0 0 20px;font-size:1.05rem;line-height:2;">
+        <li id="p2-mu1">⏰ Delay timer after a button press</li>
+        <li id="p2-mu2">🔔 Doorbell that rings for exactly 2 seconds</li>
+        <li id="p2-mu3">💡 Lights that stay ON for 30 seconds after motion detected</li>
+        <li id="p2-mu4">🔒 Electronic lock with timed release</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Monostable Waveform -->
+  <div class="card">
+    <div class="card-title">📊 <span id="p2-monowave-title">Monostable Waveform – Click to Trigger</span></div>
+    <div class="card-body">
+      <canvas id="monoCanvas" width="700" height="180"></canvas>
+      <div class="anim-controls">
+        <button class="anim-btn" onclick="triggerMono()" id="btn-trigger">⚡ Send Trigger Pulse</button>
+        <span style="font-size:0.95rem;margin-left:10px;" id="mono-status-label">Status: <strong id="mono-status">Waiting...</strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE 3: CALCULATIONS ============ -->
+<div class="page" id="page3">
+  <div class="section-title" id="p3-title">🧮 IC 555 – Timing Calculations</div>
+
+  <div class="card">
+    <div class="card-title">📐 <span id="p3-astcalc-title">Astable Mode Formulas</span></div>
+    <div class="card-body">
+      <p id="p3-ast-intro">In astable mode, the output is a square wave. Here is how to calculate the timing:</p>
+      <div class="formula-box">
+        t<sub>HIGH</sub> = 0.693 × (R1 + R2) × C<br>
+        t<sub>LOW</sub> = 0.693 × R2 × C<br>
+        T (Period) = t<sub>HIGH</sub> + t<sub>LOW</sub> = 0.693 × (R1 + 2R2) × C<br>
+        <span style="font-size:1rem;">Frequency f = 1.44 / [(R1 + 2R2) × C]</span>
+      </div>
+      <div class="formula-steps" id="p3-ast-units">
+        <strong>Units:</strong> R in Ohms (Ω), C in Farads (F), t in Seconds (s), f in Hertz (Hz)<br>
+        <strong>Tip:</strong> Use R in kΩ and C in µF for easy calculation (result still in seconds)
+      </div>
+
+      <!-- Interactive Calculator -->
+      <div style="background:#F0F4FF;border-radius:14px;padding:22px;margin-top:20px;border:2px solid var(--secondary);">
+        <div style="font-size:1.2rem;font-weight:800;color:var(--secondary);margin-bottom:14px;" id="p3-calc-title">🔢 Interactive Calculator</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;">
+          <label style="font-size:1rem;font-weight:700;" id="lbl-r1">R1 (kΩ): <input type="number" id="r1In" value="10" min="1" oninput="calcAstable()" style="width:90px;padding:6px;border-radius:8px;border:2px solid var(--border);font-size:1rem;"></label>
+          <label style="font-size:1rem;font-weight:700;" id="lbl-r2">R2 (kΩ): <input type="number" id="r2In" value="10" min="1" oninput="calcAstable()" style="width:90px;padding:6px;border-radius:8px;border:2px solid var(--border);font-size:1rem;"></label>
+          <label style="font-size:1rem;font-weight:700;" id="lbl-c">C (µF): <input type="number" id="cIn" value="10" min="0.001" step="0.001" oninput="calcAstable()" style="width:90px;padding:6px;border-radius:8px;border:2px solid var(--border);font-size:1rem;"></label>
+        </div>
+        <div id="calcResult" style="margin-top:16px;padding:16px;background:white;border-radius:12px;border:2px solid var(--green);font-size:1.05rem;line-height:2;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⏱ <span id="p3-monocalc-title">Monostable Mode Formula</span></div>
+    <div class="card-body">
+      <p id="p3-mono-intro">In monostable mode, only ONE resistor and ONE capacitor set the pulse time:</p>
+      <div class="formula-box">
+        t = 1.1 × R × C
+        <div style="font-size:0.9rem;margin-top:8px;" id="p3-mono-unit">R in Ohms, C in Farads → t in Seconds</div>
+      </div>
+      <div style="background:#F0F4FF;border-radius:14px;padding:22px;margin-top:18px;border:2px solid var(--secondary);">
+        <div style="font-size:1.2rem;font-weight:800;color:var(--secondary);margin-bottom:14px;" id="p3-mono-calc-title">🔢 Monostable Calculator</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;">
+          <label style="font-size:1rem;font-weight:700;" id="lbl-rm">R (kΩ): <input type="number" id="rmIn" value="100" min="1" oninput="calcMono()" style="width:90px;padding:6px;border-radius:8px;border:2px solid var(--border);font-size:1rem;"></label>
+          <label style="font-size:1rem;font-weight:700;" id="lbl-cm">C (µF): <input type="number" id="cmIn" value="10" min="0.001" step="0.001" oninput="calcMono()" style="width:90px;padding:6px;border-radius:8px;border:2px solid var(--border);font-size:1rem;"></label>
+        </div>
+        <div id="monoResult" style="margin-top:16px;padding:16px;background:white;border-radius:12px;border:2px solid var(--green);font-size:1.05rem;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📝 <span id="p3-worked-title">Worked Example</span></div>
+    <div class="card-body">
+      <p id="p3-worked-q"><strong>Problem:</strong> Design an astable 555 circuit that blinks an LED at <span class="hl">2 Hz</span> (2 times per second). Use R1=10kΩ, R2=47kΩ.</p>
+      <div class="steps" style="margin-top:16px;">
+        <div class="step"><div class="step-text" id="p3-w1">We need T = 1/f = 1/2 = <span class="hl">0.5 seconds</span> per cycle</div></div>
+        <div class="step"><div class="step-text" id="p3-w2">Formula: T = 0.693 × (R1 + 2×R2) × C<br>0.5 = 0.693 × (10k + 2×47k) × C<br>0.5 = 0.693 × 104,000 × C</div></div>
+        <div class="step"><div class="step-text" id="p3-w3">C = 0.5 / (0.693 × 104,000) = 0.5 / 72,072 = <span class="hl-green">6.93 µF → Use 6.8 µF or 10 µF</span></div></div>
+        <div class="step"><div class="step-text" id="p3-w4">Verify: f = 1.44 / [(10k + 2×47k) × 6.8µ] = 1.44 / (104000 × 0.0000068) = 1.44 / 0.7072 ≈ <span class="hl-blue">2.04 Hz ✅</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📊 <span id="p3-dc-title">Duty Cycle</span></div>
+    <div class="card-body">
+      <p id="p3-dc-body">Duty cycle tells us what percentage of time the output is HIGH:</p>
+      <div class="formula-box">
+        Duty Cycle = t<sub>HIGH</sub> / T × 100%<br>
+        = (R1 + R2) / (R1 + 2×R2) × 100%
+      </div>
+      <p style="margin-top:12px;" id="p3-dc-note">💡 <strong>Note:</strong> In basic astable 555, output is always MORE than 50% (because R1 always adds to the HIGH time). To get exactly 50% duty cycle or less, add a diode in parallel with R2.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE 4: APPLICATIONS ============ -->
+<div class="page" id="page4">
+  <div class="section-title" id="p4-title">📦 Applications of IC 555</div>
+
+  <div class="card">
+    <div class="card-title">🌟 <span id="p4-apps-title">20+ Real-World Applications</span></div>
+    <div class="card-body">
+      <div class="app-grid" id="appsGrid">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔔 <span id="p4-buzzer-title">Application Spotlight: Adjustable Buzzer</span></div>
+    <div class="card-body">
+      <p id="p4-buzzer-body">A buzzer circuit uses 555 in astable mode. By changing R2 (use a potentiometer), you can change the tone of the sound. At high frequency (above 1kHz), you get a beep. At low frequency, you get a ticking sound.</p>
+      <div class="analogy-box">
+        <div class="label">🌟 Analogy</div>
+        <p id="p4-buzzer-analogy">The frequency of the 555 is like turning a fan speed knob. Slow speed = slow ticking (low frequency). High speed = high-pitched buzz (high frequency). Same circuit, different R value!</p>
+      </div>
+      <div style="margin-top:18px;">
+        <strong id="p4-buzz-sim-title">🎵 Simulate Buzzer Tone:</strong><br><br>
+        <input type="range" min="200" max="3000" value="1000" id="buzzFreq" oninput="updateBuzzLabel(this.value)" style="width:300px;">
+        <span id="buzzLabel" style="font-size:1.1rem;font-weight:700;margin-left:12px;color:var(--primary);">1000 Hz</span><br><br>
+        <button class="anim-btn" onclick="playBuzz()" id="btn-buzz">🔊 Play Tone (Browser)</button>
+        <button class="anim-btn" onclick="stopBuzz()" id="btn-stopbuzz" style="background:#991111;">⏹ Stop</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🌆 <span id="p4-pwm-title">PWM – Motor Speed / LED Brightness Control</span></div>
+    <div class="card-body">
+      <p id="p4-pwm-body">The 555 can generate PWM (Pulse Width Modulation) signals. By changing the duty cycle, you can control the average power reaching a motor or LED – making it faster/slower or brighter/dimmer without wasting energy as heat.</p>
+      <div class="analogy-box">
+        <div class="label">🌟 Analogy</div>
+        <p id="p4-pwm-analogy">PWM is like a water tap that you rapidly open-close. If you open it for 90% of the time → lots of water (full speed motor). If you open it only 10% → very little water (slow motor). The <strong>percentage of ON time</strong> = duty cycle.</p>
+      </div>
+      <canvas id="pwmCanvas" width="600" height="120" style="margin-top:14px;"></canvas>
+      <div class="anim-controls">
+        <label style="font-size:1rem;font-weight:700;" id="lbl-duty">Duty Cycle: <span id="dutyVal">50%</span></label>
+        <input type="range" min="10" max="90" value="50" id="dutySlider" oninput="updatePWM(this.value)" style="width:180px;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE 5: CD4017 ============ -->
+<div class="page" id="page5">
+  <div class="section-title" id="p5-title">🔢 CD4017 – Decade Counter</div>
+
+  <div class="card">
+    <div class="card-title">🤔 <span id="p5-what-title">What is CD4017?</span></div>
+    <div class="card-body">
+      <p id="p5-what-body">The CD4017 is a <strong>decade counter</strong> with 10 decoded outputs. Every time it receives a clock pulse (from the 555 timer), it activates the NEXT output pin in sequence: Q0 → Q1 → Q2 → ... → Q9 → Q0 (repeats). Only ONE output is HIGH at any time.</p>
+      <div class="analogy-box">
+        <div class="label">🌟 Analogy</div>
+        <p id="p5-analogy">Think of CD4017 as a <strong>10-position rotary switch</strong> operated by a motor. Each clock pulse from the 555 timer rotates the switch by one position. The switch connects power to one of 10 LED positions in sequence – creating a running light effect! You cannot skip positions – it always goes one at a time, in order.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📌 <span id="p5-pinout-title">CD4017 Pin Details (16-pin DIP)</span></div>
+    <div class="card-body">
+      <div class="pinout-container">
+        <div style="flex:1;min-width:260px;">
+          <svg viewBox="0 0 380 340" style="width:100%;max-width:400px;display:block;margin:0 auto;">
+            <rect x="120" y="40" width="140" height="260" rx="12" fill="#1a3a5c" stroke="#88AACC" stroke-width="3"/>
+            <text x="190" y="130" text-anchor="middle" fill="#FFD700" font-size="16" font-weight="bold" font-family="'Baloo 2',sans-serif">CD4017</text>
+            <text x="190" y="152" text-anchor="middle" fill="#88CCFF" font-size="12" font-family="'Baloo 2',sans-serif">Decade Counter</text>
+            <!-- Notch -->
+            <path d="M160,40 Q190,26 220,40" fill="none" stroke="#88AACC" stroke-width="2"/>
+            <!-- Left pins 1-8 -->
+            <line x1="80" y1="70" x2="120" y2="70" stroke="#CCC" stroke-width="3"/><text x="75" y="76" text-anchor="end" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">5</text><text x="128" y="75" fill="#80FF80" font-size="10" font-family="'Baloo 2',sans-serif">Q5</text>
+            <line x1="80" y1="98" x2="120" y2="98" stroke="#CCC" stroke-width="3"/><text x="75" y="104" text-anchor="end" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">4</text><text x="128" y="103" fill="#80FF80" font-size="10" font-family="'Baloo 2',sans-serif">Q1</text>
+            <line x1="80" y1="126" x2="120" y2="126" stroke="#CCC" stroke-width="3"/><text x="75" y="132" text-anchor="end" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">3</text><text x="128" y="131" fill="#80FF80" font-size="10" font-family="'Baloo 2',sans-serif">Q0</text>
+            <line x1="80" y1="154" x2="120" y2="154" stroke="#CCC" stroke-width="3"/><text x="75" y="160" text-anchor="end" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">2</text><text x="128" y="159" fill="#80FF80" font-size="10" font-family="'Baloo 2',sans-serif">Q2</text>
+            <line x1="80" y1="182" x2="120" y2="182" stroke="#CCC" stroke-width="3"/><text x="75" y="188" text-anchor="end" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">1</text><text x="128" y="187" fill="#FFD700" font-size="10" font-family="'Baloo 2',sans-serif">CLK (Clock In)</text>
+            <line x1="80" y1="210" x2="120" y2="210" stroke="#CCC" stroke-width="3"/><text x="75" y="216" text-anchor="end" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">15</text><text x="128" y="215" fill="#FF8888" font-size="10" font-family="'Baloo 2',sans-serif">RST (Reset)</text>
+            <line x1="80" y1="238" x2="120" y2="238" stroke="#CCC" stroke-width="3"/><text x="75" y="244" text-anchor="end" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">14</text><text x="128" y="243" fill="#AACCFF" font-size="10" font-family="'Baloo 2',sans-serif">CLK ENA (Clock Enable)</text>
+            <line x1="80" y1="266" x2="120" y2="266" stroke="#CCC" stroke-width="3"/><text x="75" y="272" text-anchor="end" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">8</text><text x="128" y="271" fill="#88AAFF" font-size="10" font-family="'Baloo 2',sans-serif">VSS (GND)</text>
+            <!-- Right pins -->
+            <line x1="260" y1="70" x2="300" y2="70" stroke="#CCC" stroke-width="3"/><text x="305" y="76" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">10</text><text x="252" y="75" text-anchor="end" fill="#80FF80" font-size="10" font-family="'Baloo 2',sans-serif">Q6</text>
+            <line x1="260" y1="98" x2="300" y2="98" stroke="#CCC" stroke-width="3"/><text x="305" y="104" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">11</text><text x="252" y="103" text-anchor="end" fill="#80FF80" font-size="10" font-family="'Baloo 2',sans-serif">Q8</text>
+            <line x1="260" y1="126" x2="300" y2="126" stroke="#CCC" stroke-width="3"/><text x="305" y="132" fill="#222" font-size="13" font-family="'Ballo 2',sans-serif" font-weight="700">12</text><text x="252" y="131" text-anchor="end" fill="#80FF80" font-size="10" font-family="'Baloo 2',sans-serif">Q9</text>
+            <line x1="260" y1="154" x2="300" y2="154" stroke="#CCC" stroke-width="3"/><text x="305" y="160" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">13</text><text x="252" y="159" text-anchor="end" fill="#FFD0A0" font-size="10" font-family="'Baloo 2',sans-serif">Carry Out</text>
+            <line x1="260" y1="182" x2="300" y2="182" stroke="#CCC" stroke-width="3"/><text x="305" y="188" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">16</text><text x="252" y="187" text-anchor="end" fill="#FF8888" font-size="10" font-family="'Baloo 2',sans-serif">VDD (VCC)</text>
+            <line x1="260" y1="210" x2="300" y2="210" stroke="#CCC" stroke-width="3"/><text x="305" y="216" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">7</text><text x="252" y="215" text-anchor="end" fill="#80FF80" font-size="10" font-family="'Baloo 2',sans-serif">Q4</text>
+            <line x1="260" y1="238" x2="300" y2="238" stroke="#CCC" stroke-width="3"/><text x="305" y="244" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">6</text><text x="252" y="243" text-anchor="end" fill="#80FF80" font-size="10" font-family="'Baloo 2',sans-serif">Q3</text>
+            <line x1="260" y1="266" x2="300" y2="266" stroke="#CCC" stroke-width="3"/><text x="305" y="272" fill="#222" font-size="13" font-family="'Baloo 2',sans-serif" font-weight="700">9</text><text x="252" y="271" text-anchor="end" fill="#80FF80" font-size="10" font-family="'Baloo 2',sans-serif">Q7</text>
+          </svg>
+        </div>
+        <div style="flex:2;min-width:280px;">
+          <table class="pin-table">
+            <tr><th id="p5-th1">Output</th><th id="p5-th2">Pin Number</th><th id="p5-th3">Active on Pulse #</th></tr>
+            <tr><td><span class="pin-no" style="background:#1E8A3C">Q0</span></td><td>3</td><td id="p5-q0">1st pulse (count = 0)</td></tr>
+            <tr><td><span class="pin-no" style="background:#1E8A3C">Q1</span></td><td>2</td><td id="p5-q1">2nd pulse</td></tr>
+            <tr><td><span class="pin-no" style="background:#1E8A3C">Q2</span></td><td>4</td><td id="p5-q2">3rd pulse</td></tr>
+            <tr><td><span class="pin-no" style="background:#1E8A3C">Q3</span></td><td>7</td><td id="p5-q3">4th pulse</td></tr>
+            <tr><td><span class="pin-no" style="background:#1E8A3C">Q4</span></td><td>10</td><td id="p5-q4">5th pulse</td></tr>
+            <tr><td><span class="pin-no" style="background:#1E8A3C">Q5</span></td><td>1</td><td id="p5-q5">6th pulse</td></tr>
+            <tr><td><span class="pin-no" style="background:#1E8A3C">Q6</span></td><td>5</td><td id="p5-q6">7th pulse</td></tr>
+            <tr><td><span class="pin-no" style="background:#1E8A3C">Q7</span></td><td>6</td><td id="p5-q7">8th pulse</td></tr>
+            <tr><td><span class="pin-no" style="background:#1E8A3C">Q8</span></td><td>9</td><td id="p5-q8">9th pulse</td></tr>
+            <tr><td><span class="pin-no" style="background:#1E8A3C">Q9</span></td><td>11</td><td id="p5-q9">10th pulse → resets</td></tr>
+            <tr><td colspan="2"><strong>CLK (Clock)</strong> – Pin 14</td><td id="p5-clk">Rising edge advances count</td></tr>
+            <tr><td colspan="2"><strong>RST (Reset)</strong> – Pin 15</td><td id="p5-rst">HIGH = resets to Q0</td></tr>
+            <tr><td colspan="2"><strong>CLK ENA</strong> – Pin 13</td><td id="p5-clken">LOW = counting enabled</td></tr>
+            <tr><td colspan="2"><strong>Carry Out</strong> – Pin 12</td><td id="p5-carry">Goes HIGH after 5 counts (use to cascade)</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CD4017 Sequence animation -->
+  <div class="card">
+    <div class="card-title">🎬 <span id="p5-seq-title">CD4017 Output Sequence Animation</span></div>
+    <div class="card-body">
+      <div id="cd4017Outputs" style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;justify-content:center;">
+      </div>
+      <div style="text-align:center;margin:10px 0;font-size:1rem;" id="p5-pulse-label">Clock Pulse Count: <strong id="p5-count">0</strong></div>
+      <canvas id="clkCanvas" width="600" height="80"></canvas>
+      <div class="anim-controls">
+        <button class="anim-btn" onclick="start4017()" id="btn-start4017">▶ Start Sequence</button>
+        <button class="anim-btn" onclick="stop4017()" id="btn-stop4017">⏹ Stop</button>
+        <button class="anim-btn" onclick="reset4017()" id="btn-rst4017" style="background:#991111;">🔄 Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE 6: LED CHASER ============ -->
+<div class="page" id="page6">
+  <div class="section-title" id="p6-title">💡 10-LED Chaser Circuit</div>
+
+  <div class="card">
+    <div class="card-title">⚡ <span id="p6-circuit-title">How It Works</span></div>
+    <div class="card-body">
+      <p id="p6-how-body">The <strong>555 timer</strong> generates clock pulses (astable mode). These pulses go into the <strong>CLK pin of CD4017</strong>. Each pulse advances the count by 1, lighting up the next LED. After LED 10, it resets to LED 1 automatically – creating a running/chaser effect!</p>
+      <div class="two-col" style="margin-top:16px;">
+        <div>
+          <div class="analogy-box">
+            <div class="label">🌟 Analogy</div>
+            <p id="p6-analogy">Think of it like a <strong>security guard doing rounds</strong>. He starts at Room 1, then moves to Room 2, 3... up to Room 10, then comes back to Room 1 and starts again. The 555 tells him "move to next room now" – and the CD4017 decides which room light should be ON!</p>
+          </div>
+        </div>
+        <div>
+          <strong id="p6-parts-title">📦 Components Needed:</strong>
+          <ul style="margin:10px 0 0 20px;line-height:2.2;font-size:1rem;">
+            <li>IC 555 – ×1</li>
+            <li>CD4017 – ×1</li>
+            <li>R1 = 10kΩ – ×1</li>
+            <li>R2 = 47kΩ – ×1 (adjustable for speed)</li>
+            <li>C = 10µF – ×1 (timing)</li>
+            <li>C = 0.01µF – ×1 (bypass for pin 5)</li>
+            <li>LEDs (any color) – ×10</li>
+            <li>LED resistors 470Ω – ×10</li>
+            <li>9V Battery + clip</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL CIRCUIT DIAGRAM SVG — CORRECTED -->
+  <div class="card">
+    <div class="card-title">📐 <span id="p6-sch-title">Circuit Schematic</span></div>
+    <div class="card-body">
+      <!--
+        CORRECT TOPOLOGY SUMMARY:
+        IC 555 (Astable):
+          Pin 1 (GND)   → GND rail
+          Pin 2 (TRIG)  → junction of R2 bottom / C top  (same node as Pin 6)
+          Pin 3 (OUT)   → CLK of CD4017 (Pin 14)
+          Pin 4 (RESET) → VCC rail  (keeps 555 running)
+          Pin 5 (CTRL)  → 0.01µF → GND rail  (noise bypass)
+          Pin 6 (THRESH)→ junction of R2 bottom / C top  (same node as Pin 2)
+          Pin 7 (DISCH) → junction of R1 bottom / R2 top
+          Pin 8 (VCC)   → VCC rail
+
+        R1 (10kΩ): VCC rail → Pin 7
+        R2 (47kΩ): Pin 7 → Pin 2/6 junction
+        C  (10µF): Pin 2/6 junction → GND rail
+
+        CD4017:
+          Pin  8 (GND/VSS)  → GND rail
+          Pin 13 (CLK INH)  → GND rail  (LOW = counting enabled)
+          Pin 14 (CLK)      → Pin 3 of 555 (clock input)
+          Pin 15 (RST)      → GND rail  (LOW = not resetting)
+          Pin 16 (VCC/VDD)  → VCC rail
+
+          Outputs Q0–Q9 (pins 3,2,4,7,10,1,5,6,9,11) → 470Ω → LED anode → LED cathode → GND
+      -->
+      <svg viewBox="0 0 900 520" style="width:100%;background:#FAFAFA;border-radius:14px;border:2px solid #E0D0C0;font-family:'Baloo 2',sans-serif;">
+
+        <!-- ═══════════════════════════════════════════════
+             POWER RAILS
+        ═══════════════════════════════════════════════ -->
+        <!-- VCC rail (red dashed, top) -->
+        <line x1="20" y1="32" x2="880" y2="32" stroke="#CC0000" stroke-width="2.5" stroke-dasharray="8,4"/>
+        <text x="840" y="27" fill="#CC0000" font-size="11" font-weight="700">+9V VCC</text>
+        <!-- GND rail (black dashed, bottom) -->
+        <line x1="20" y1="500" x2="880" y2="500" stroke="#333" stroke-width="2.5" stroke-dasharray="8,4"/>
+        <text x="840" y="495" fill="#333" font-size="11" font-weight="700">GND</text>
+
+        <!-- Battery symbol (left side) -->
+        <text x="22" y="26" fill="#CC0000" font-size="12" font-weight="800">+9V</text>
+        <line x1="32" y1="32" x2="32" y2="56" stroke="#CC0000" stroke-width="3"/>
+        <line x1="22" y1="56" x2="42" y2="56" stroke="#CC0000" stroke-width="3.5"/>
+        <line x1="26" y1="63" x2="38" y2="63" stroke="#CC0000" stroke-width="2"/>
+        <text x="46" y="63" fill="#880000" font-size="10">9V Bat</text>
+        <line x1="32" y1="63" x2="32" y2="500" stroke="#333" stroke-width="2.5"/>
+
+        <!-- ═══════════════════════════════════════════════
+             IC 555 BLOCK  (left IC, pins on both sides)
+             Body: x=100..230, y=150..340
+             Left pins  (1,2,3,4) at x=100, evenly spaced y=175,215,255,295
+             Right pins (8,7,6,5) at x=230, evenly spaced y=175,215,255,295
+        ═══════════════════════════════════════════════ -->
+        <rect x="100" y="148" width="132" height="160" rx="10" fill="#1e1e1e" stroke="#888" stroke-width="2.5"/>
+        <!-- Notch -->
+        <path d="M148,148 Q166,136 184,148" fill="none" stroke="#888" stroke-width="2"/>
+        <circle cx="166" cy="148" r="5" fill="#444"/>
+        <text x="166" y="225" text-anchor="middle" fill="#FFD700" font-size="18" font-weight="800">IC 555</text>
+        <text x="166" y="243" text-anchor="middle" fill="#AAAAAA" font-size="10">NE555 / LM555</text>
+
+        <!-- Left-side pin labels inside IC -->
+        <text x="108" y="181" fill="#88EEFF" font-size="10">1·GND</text>
+        <text x="108" y="221" fill="#FFCC44" font-size="10">2·TRIG</text>
+        <text x="108" y="261" fill="#66FF66" font-size="10">3·OUT</text>
+        <text x="108" y="301" fill="#FF7777" font-size="10">4·RST</text>
+
+        <!-- Right-side pin labels inside IC -->
+        <text x="222" y="181" text-anchor="end" fill="#FF9999" font-size="10">8·VCC</text>
+        <text x="222" y="221" text-anchor="end" fill="#FFCC66" font-size="10">7·DISCH</text>
+        <text x="222" y="261" text-anchor="end" fill="#FF9944" font-size="10">6·THRESH</text>
+        <text x="222" y="301" text-anchor="end" fill="#CC88FF" font-size="10">5·CTRL</text>
+
+        <!-- === PIN 1 (GND) left, y=175 → down to GND rail === -->
+        <line x1="100" y1="175" x2="72" y2="175" stroke="#88EEFF" stroke-width="2"/>
+        <line x1="72" y1="175" x2="72" y2="500" stroke="#555" stroke-width="2"/>
+        <!-- dot at GND rail junction -->
+        <circle cx="72" cy="500" r="4" fill="#333"/>
+
+        <!-- === PIN 8 (VCC) right, y=175 → up to VCC rail === -->
+        <line x1="232" y1="175" x2="260" y2="175" stroke="#FF9999" stroke-width="2"/>
+        <line x1="260" y1="175" x2="260" y2="32" stroke="#CC0000" stroke-width="2"/>
+        <circle cx="260" cy="32" r="4" fill="#CC0000"/>
+
+        <!-- === PIN 4 (RESET) left y=295 → up, then right to VCC rail === -->
+        <!-- Route: left out at y=295, go left to x=82, then up to y=32 -->
+        <line x1="100" y1="295" x2="82" y2="295" stroke="#FF7777" stroke-width="2"/>
+        <line x1="82" y1="295" x2="82" y2="32" stroke="#FF7777" stroke-width="1.5"/>
+        <circle cx="82" cy="32" r="4" fill="#CC0000"/>
+        <!-- Label: RESET→VCC -->
+        <text x="58" y="290" fill="#CC2222" font-size="9" font-weight="700">RST→VCC</text>
+
+        <!-- === R1 (10kΩ): VCC rail down to Pin 7 junction ===
+             R1 sits at x=260, between y=32 and y=215 (Pin 7 row)
+             Body at y=55..95 -->
+        <line x1="260" y1="32" x2="260" y2="55" stroke="#CC0000" stroke-width="2"/>
+        <!-- R1 resistor body -->
+        <rect x="248" y="55" width="24" height="38" rx="5" fill="#F5C518" stroke="#888" stroke-width="1.5"/>
+        <text x="260" y="70" text-anchor="middle" fill="#1a1a1a" font-size="9" font-weight="800">R1</text>
+        <text x="260" y="84" text-anchor="middle" fill="#1a1a1a" font-size="9">10kΩ</text>
+        <!-- R1 bottom → node A (Pin 7 level) at y=110 -->
+        <line x1="260" y1="93" x2="260" y2="215" stroke="#555" stroke-width="2"/>
+        <!-- Node A = Pin 7 junction -->
+        <circle cx="260" cy="215" r="5" fill="#D94F00"/>
+        <!-- Pin 7 wire: right side of IC at y=215 → node A -->
+        <line x1="232" y1="215" x2="260" y2="215" stroke="#FFCC66" stroke-width="2.5"/>
+
+        <!-- === R2 (47kΩ): Node A (y=215) down to Node B (y=310) ===
+             Body at y=230..280 -->
+        <line x1="260" y1="215" x2="260" y2="228" stroke="#555" stroke-width="2"/>
+        <rect x="248" y="228" width="24" height="38" rx="5" fill="#42A5F5" stroke="#888" stroke-width="1.5"/>
+        <text x="260" y="243" text-anchor="middle" fill="white" font-size="9" font-weight="800">R2</text>
+        <text x="260" y="257" text-anchor="middle" fill="white" font-size="9">47kΩ</text>
+        <!-- R2 bottom → node B at y=310 -->
+        <line x1="260" y1="266" x2="260" y2="310" stroke="#555" stroke-width="2"/>
+        <!-- Node B = Pin 2 & Pin 6 junction -->
+        <circle cx="260" cy="310" r="5" fill="#1E8A3C"/>
+        <!-- Label Node B -->
+        <text x="268" y="314" fill="#1E8A3C" font-size="9" font-weight="700">Node B (Pin2=Pin6)</text>
+
+        <!-- Pin 2 (TRIG) left side at y=215, runs left to x=72, down to node B y=310 -->
+        <line x1="100" y1="215" x2="72" y2="215" stroke="#FFCC44" stroke-width="2"/>
+        <!-- vertical along left edge from y=215 down to y=310 -->
+        <line x1="72" y1="215" x2="72" y2="310" stroke="#FFCC44" stroke-width="2"/>
+        <!-- horizontal to node B -->
+        <line x1="72" y1="310" x2="260" y2="310" stroke="#1E8A3C" stroke-width="2"/>
+        <circle cx="72" cy="310" r="4" fill="#1E8A3C"/>
+
+        <!-- Pin 6 (THRESH) right side at y=255, route right to x=270, down to node B y=310 -->
+        <line x1="232" y1="255" x2="270" y2="255" stroke="#FF9944" stroke-width="2"/>
+        <line x1="270" y1="255" x2="270" y2="310" stroke="#FF9944" stroke-width="2"/>
+        <line x1="270" y1="310" x2="260" y2="310" stroke="#1E8A3C" stroke-width="2"/>
+        <circle cx="270" cy="310" r="4" fill="#1E8A3C"/>
+
+        <!-- C (10µF): Node B (y=310) down to GND rail -->
+        <line x1="260" y1="310" x2="260" y2="360" stroke="#555" stroke-width="2"/>
+        <!-- Cap plates at y=360/368 -->
+        <line x1="242" y1="360" x2="278" y2="360" stroke="#555" stroke-width="3.5"/>
+        <line x1="242" y1="370" x2="278" y2="370" stroke="#555" stroke-width="3.5"/>
+        <!-- + label for electrolytic -->
+        <text x="282" y="363" fill="#333" font-size="10" font-weight="700">C</text>
+        <text x="282" y="375" fill="#333" font-size="10">10µF</text>
+        <text x="228" y="363" fill="#CC0000" font-size="12" font-weight="800">+</text>
+        <line x1="260" y1="370" x2="260" y2="500" stroke="#555" stroke-width="2"/>
+        <circle cx="260" cy="500" r="4" fill="#333"/>
+
+        <!-- === PIN 5 (CTRL) bypass cap: right side y=295 → cap → GND ===
+             Route right out to x=285, down with cap to GND -->
+        <line x1="232" y1="295" x2="290" y2="295" stroke="#CC88FF" stroke-width="1.5"/>
+        <line x1="290" y1="295" x2="290" y2="420" stroke="#CC88FF" stroke-width="1.5"/>
+        <!-- 0.01µF cap plates -->
+        <line x1="277" y1="420" x2="303" y2="420" stroke="#CC88FF" stroke-width="3"/>
+        <line x1="277" y1="428" x2="303" y2="428" stroke="#CC88FF" stroke-width="3"/>
+        <text x="306" y="428" fill="#770088" font-size="9">0.01µF</text>
+        <line x1="290" y1="428" x2="290" y2="500" stroke="#555" stroke-width="1.5"/>
+        <circle cx="290" cy="500" r="3" fill="#333"/>
+
+        <!-- === PIN 3 (OUT): Clock signal to CD4017 Pin 14 ===
+             Route: left out of IC at y=255, go left to x=60, 
+             then route below IC down to y=465, 
+             then right all the way to CD4017 CLK pin at x=480, up to y=230 -->
+        <line x1="100" y1="255" x2="60" y2="255" stroke="#00CC44" stroke-width="3"/>
+        <line x1="60" y1="255" x2="60" y2="465" stroke="#00CC44" stroke-width="3"/>
+        <line x1="60" y1="465" x2="490" y2="465" stroke="#00CC44" stroke-width="3"/>
+        <line x1="490" y1="465" x2="490" y2="230" stroke="#00CC44" stroke-width="3"/>
+        <!-- Arrow tip at CD4017 CLK entry -->
+        <polygon points="490,230 486,240 494,240" fill="#00CC44"/>
+        <!-- Label in the middle of the bottom wire -->
+        <text x="260" y="480" text-anchor="middle" fill="#008833" font-size="11" font-weight="800">← Clock Signal: 555 Pin 3 (OUT) → CD4017 Pin 14 (CLK) →</text>
+
+        <!-- ═══════════════════════════════════════════════
+             CD4017 BLOCK
+             Body: x=480..620, y=115..410
+             16-pin DIP — left 8 pins, right 8 pins
+             Pin layout (left top-to-bottom): Q5,Q1,Q0,Q2,CLK(14),RST(15),CLKinh(13),GND(8)
+             Pin layout (right top-to-bottom): Q6,Q8,Q9,CO,VCC(16),Q4,Q3,Q7
+        ═══════════════════════════════════════════════ -->
+        <rect x="480" y="112" width="142" height="296" rx="10" fill="#0d2b50" stroke="#4488BB" stroke-width="2.5"/>
+        <!-- Notch -->
+        <path d="M532,112 Q551,100 570,112" fill="none" stroke="#4488BB" stroke-width="2"/>
+        <circle cx="551" cy="112" r="5" fill="#1a3a60"/>
+        <text x="551" y="255" text-anchor="middle" fill="#FFD700" font-size="17" font-weight="800">CD4017</text>
+        <text x="551" y="272" text-anchor="middle" fill="#88CCFF" font-size="10">Decade Counter</text>
+
+        <!-- Pin row spacing: 8 pins on each side, body height=296, top at y=112
+             Pin rows: y = 140, 175, 210, 245, 280, 315, 350, 385 -->
+
+        <!-- LEFT PINS of CD4017 (x=480) -->
+        <!-- p1 = Q5  y=140 -->
+        <line x1="440" y1="140" x2="480" y2="140" stroke="#CCC" stroke-width="2"/>
+        <text x="435" y="145" text-anchor="end" fill="#222" font-size="11" font-weight="700">1</text>
+        <text x="486" y="145" fill="#66EE66" font-size="10">Q5</text>
+
+        <!-- p2 = Q1  y=175 -->
+        <line x1="440" y1="175" x2="480" y2="175" stroke="#CCC" stroke-width="2"/>
+        <text x="435" y="180" text-anchor="end" fill="#222" font-size="11" font-weight="700">2</text>
+        <text x="486" y="180" fill="#66EE66" font-size="10">Q1</text>
+
+        <!-- p3 = Q0  y=210 -->
+        <line x1="440" y1="210" x2="480" y2="210" stroke="#CCC" stroke-width="2"/>
+        <text x="435" y="215" text-anchor="end" fill="#222" font-size="11" font-weight="700">3</text>
+        <text x="486" y="215" fill="#66EE66" font-size="10">Q0</text>
+
+        <!-- p4 = Q2  y=245 -->
+        <line x1="440" y1="245" x2="480" y2="245" stroke="#CCC" stroke-width="2"/>
+        <text x="435" y="250" text-anchor="end" fill="#222" font-size="11" font-weight="700">4</text>
+        <text x="486" y="250" fill="#66EE66" font-size="10">Q2</text>
+
+        <!-- p14 = CLK  y=280  ← Clock input from 555 Pin3 -->
+        <line x1="440" y1="280" x2="480" y2="280" stroke="#CCC" stroke-width="2"/>
+        <text x="435" y="285" text-anchor="end" fill="#222" font-size="11" font-weight="700">14</text>
+        <text x="486" y="285" fill="#FFD700" font-size="10" font-weight="700">CLK ←</text>
+        <!-- connect the clock wire that came from 555: goes from y=230(arrow) to CLK at y=280 -->
+        <!-- Arrow was at x=490,y=230 — extend down to CLK row y=280 -->
+        <line x1="490" y1="230" x2="490" y2="280" stroke="#00CC44" stroke-width="3"/>
+        <line x1="490" y1="280" x2="480" y2="280" stroke="#00CC44" stroke-width="3"/>
+        <circle cx="490" cy="280" r="4" fill="#00CC44"/>
+
+        <!-- p15 = RST  y=315  → GND (LOW keeps it running) -->
+        <line x1="440" y1="315" x2="480" y2="315" stroke="#CCC" stroke-width="2"/>
+        <text x="435" y="320" text-anchor="end" fill="#222" font-size="11" font-weight="700">15</text>
+        <text x="486" y="320" fill="#FF8888" font-size="10">RST→GND</text>
+        <!-- wire RST to GND rail -->
+        <line x1="450" y1="315" x2="450" y2="500" stroke="#884444" stroke-width="1.5"/>
+        <circle cx="450" cy="500" r="3" fill="#333"/>
+
+        <!-- p13 = CLK INH  y=350  → GND (LOW = counting enabled) -->
+        <line x1="440" y1="350" x2="480" y2="350" stroke="#CCC" stroke-width="2"/>
+        <text x="435" y="355" text-anchor="end" fill="#222" font-size="11" font-weight="700">13</text>
+        <text x="486" y="355" fill="#AACCFF" font-size="10">INH→GND</text>
+        <!-- wire CLK INH to GND rail -->
+        <line x1="460" y1="350" x2="460" y2="500" stroke="#6688AA" stroke-width="1.5"/>
+        <circle cx="460" cy="500" r="3" fill="#333"/>
+
+        <!-- p8 = GND  y=385 → GND rail -->
+        <line x1="440" y1="385" x2="480" y2="385" stroke="#CCC" stroke-width="2"/>
+        <text x="435" y="390" text-anchor="end" fill="#222" font-size="11" font-weight="700">8</text>
+        <text x="486" y="390" fill="#88EEFF" font-size="10">GND</text>
+        <line x1="450" y1="385" x2="450" y2="500" stroke="#444" stroke-width="2"/>
+        <!-- (shares GND rail with RST wire — they'll both hit the rail at different x) -->
+
+        <!-- RIGHT PINS of CD4017 (x=622) -->
+        <!-- p10=Q6 y=140 -->
+        <line x1="622" y1="140" x2="662" y2="140" stroke="#CCC" stroke-width="2"/>
+        <text x="666" y="145" fill="#222" font-size="11" font-weight="700">10</text>
+        <text x="614" y="145" text-anchor="end" fill="#66EE66" font-size="10">Q6</text>
+
+        <!-- p11=Q8 y=175 -->
+        <line x1="622" y1="175" x2="662" y2="175" stroke="#CCC" stroke-width="2"/>
+        <text x="666" y="180" fill="#222" font-size="11" font-weight="700">11</text>
+        <text x="614" y="180" text-anchor="end" fill="#66EE66" font-size="10">Q8</text>
+
+        <!-- p12=Q9 y=210 -->
+        <line x1="622" y1="210" x2="662" y2="210" stroke="#CCC" stroke-width="2"/>
+        <text x="666" y="215" fill="#222" font-size="11" font-weight="700">12</text>
+        <text x="614" y="215" text-anchor="end" fill="#66EE66" font-size="10">Q9</text>
+
+        <!-- p12=CO  y=245  (Carry Out – not connected, label only) -->
+        <line x1="622" y1="245" x2="662" y2="245" stroke="#CCC" stroke-width="2"/>
+        <text x="666" y="250" fill="#222" font-size="11" font-weight="700">12</text>
+        <text x="614" y="250" text-anchor="end" fill="#FFD0A0" font-size="10">CO n/c</text>
+
+        <!-- p16=VCC y=280 → VCC rail -->
+        <line x1="622" y1="280" x2="662" y2="280" stroke="#CCC" stroke-width="2"/>
+        <text x="666" y="285" fill="#222" font-size="11" font-weight="700">16</text>
+        <text x="614" y="285" text-anchor="end" fill="#FF9999" font-size="10">VCC</text>
+        <line x1="650" y1="280" x2="650" y2="32" stroke="#CC0000" stroke-width="2"/>
+        <circle cx="650" cy="32" r="4" fill="#CC0000"/>
+
+        <!-- p7=Q4 y=315 -->
+        <line x1="622" y1="315" x2="662" y2="315" stroke="#CCC" stroke-width="2"/>
+        <text x="666" y="320" fill="#222" font-size="11" font-weight="700">7</text>
+        <text x="614" y="320" text-anchor="end" fill="#66EE66" font-size="10">Q4</text>
+
+        <!-- p6=Q3 y=350 -->
+        <line x1="622" y1="350" x2="662" y2="350" stroke="#CCC" stroke-width="2"/>
+        <text x="666" y="355" fill="#222" font-size="11" font-weight="700">6</text>
+        <text x="614" y="355" text-anchor="end" fill="#66EE66" font-size="10">Q3</text>
+
+        <!-- p9=Q7 y=385 -->
+        <line x1="622" y1="385" x2="662" y2="385" stroke="#CCC" stroke-width="2"/>
+        <text x="666" y="390" fill="#222" font-size="11" font-weight="700">9</text>
+        <text x="614" y="390" text-anchor="end" fill="#66EE66" font-size="10">Q7</text>
+
+        <!-- ═══════════════════════════════════════════════
+             LED ARRAY
+             All 10 outputs (Q0–Q9) come from both sides of CD4017.
+             We collect ALL outputs on a vertical bus at x=700,
+             then fan out to 10 LED rows.
+
+             OUTPUT PIN LOCATIONS on CD4017 right/left:
+               Q0 → left p3  y=210
+               Q1 → left p2  y=175
+               Q2 → left p4  y=245
+               Q3 → right p6 y=350
+               Q4 → right p7 y=315
+               Q5 → left p1  y=140
+               Q6 → right p10 y=140
+               Q7 → right p9  y=385
+               Q8 → right p11 y=175
+               Q9 → right p12 y=210
+
+             Each LED row: x=700..870, 10 rows spaced 28px from y=140
+        ═══════════════════════════════════════════════ -->
+
+        <!-- LED Array header -->
+        <text x="760" y="100" text-anchor="middle" fill="#D94F00" font-size="12" font-weight="800">LED Array (×10, 470Ω each)</text>
+        <rect x="690" y="108" width="190" height="300" rx="8" fill="#FFFAF5" stroke="#E0C8A0" stroke-width="2"/>
+
+        <!-- Helper macro: For each Q output we draw:
+             [Qn output wire from IC] →→ horizontal to x=700 →
+             [Label Qn→470Ω] → [LED circle] → [→GND wire to rail]
+             LED rows at y = 127,155,183,211,239,267,295,323,351,379  (28px spacing) -->
+
+        <!-- Q0 (left p3, IC y=210) → horizontal wire to x=700, LED row y=127 -->
+        <line x1="440" y1="210" x2="420" y2="210" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="420" y1="210" x2="420" y2="127" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="420" y1="127" x2="692" y2="127" stroke="#00CC44" stroke-width="1.5"/>
+
+        <!-- Q1 (left p2, y=175) → LED row y=155 -->
+        <line x1="440" y1="175" x2="415" y2="175" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="415" y1="175" x2="415" y2="155" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="415" y1="155" x2="692" y2="155" stroke="#00CC44" stroke-width="1.5"/>
+
+        <!-- Q2 (left p4, y=245) → LED row y=183 -->
+        <line x1="440" y1="245" x2="410" y2="245" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="410" y1="245" x2="410" y2="183" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="410" y1="183" x2="692" y2="183" stroke="#00CC44" stroke-width="1.5"/>
+
+        <!-- Q3 (right p6, y=350) → route right to x=680, up to y=211, across to LED row -->
+        <line x1="662" y1="350" x2="675" y2="350" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="675" y1="350" x2="675" y2="211" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="675" y1="211" x2="692" y2="211" stroke="#00CC44" stroke-width="1.5"/>
+
+        <!-- Q4 (right p7, y=315) → route right x=672, up y=239, across -->
+        <line x1="662" y1="315" x2="672" y2="315" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="672" y1="315" x2="672" y2="239" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="672" y1="239" x2="692" y2="239" stroke="#00CC44" stroke-width="1.5"/>
+
+        <!-- Q5 (left p1, y=140) → LED row y=267 — route left to x=405, down, across -->
+        <line x1="440" y1="140" x2="405" y2="140" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="405" y1="140" x2="405" y2="267" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="405" y1="267" x2="692" y2="267" stroke="#00CC44" stroke-width="1.5"/>
+
+        <!-- Q6 (right p10, y=140) → route right to x=669, down to y=295, across -->
+        <line x1="662" y1="140" x2="669" y2="140" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="669" y1="140" x2="669" y2="295" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="669" y1="295" x2="692" y2="295" stroke="#00CC44" stroke-width="1.5"/>
+
+        <!-- Q7 (right p9, y=385) → route right to x=666, up to y=323, across -->
+        <line x1="662" y1="385" x2="666" y2="385" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="666" y1="385" x2="666" y2="323" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="666" y1="323" x2="692" y2="323" stroke="#00CC44" stroke-width="1.5"/>
+
+        <!-- Q8 (right p11, y=175) → route right to x=663, down to y=351, across -->
+        <line x1="662" y1="175" x2="663" y2="175" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="663" y1="175" x2="663" y2="351" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="663" y1="351" x2="692" y2="351" stroke="#00CC44" stroke-width="1.5"/>
+
+        <!-- Q9 (right p12, y=210) → route right to x=660, down to y=379, across -->
+        <line x1="662" y1="210" x2="660" y2="210" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="660" y1="210" x2="660" y2="379" stroke="#00CC44" stroke-width="1.5"/>
+        <line x1="660" y1="379" x2="692" y2="379" stroke="#00CC44" stroke-width="1.5"/>
+
+        <!-- Now draw each LED row: label | 470Ω box | LED circle | →GND line
+             Rows at y = 127,155,183,211,239,267,295,323,351,379 -->
+        <!-- Helper: LED symbol is a small triangle+bar (simplified as circle with anode mark) -->
+
+        <!-- ---- LED ROW MACRO (10 rows) ---- -->
+        <!-- Q0 y=127 -->
+        <text x="695" y="131" fill="#444" font-size="9" font-weight="700">Q0</text>
+        <rect x="710" y="119" width="26" height="15" rx="3" fill="#E8D44D" stroke="#888" stroke-width="1"/>
+        <text x="723" y="130" text-anchor="middle" fill="#333" font-size="8">470Ω</text>
+        <line x1="736" y1="127" x2="748" y2="127" stroke="#555" stroke-width="1.5"/>
+        <!-- LED symbol: triangle pointing right -->
+        <polygon points="748,121 748,133 760,127" fill="#FF8800" stroke="#FF6600" stroke-width="1"/>
+        <line x1="760" y1="121" x2="760" y2="133" stroke="#FF6600" stroke-width="2"/>
+        <line x1="760" y1="127" x2="772" y2="127" stroke="#555" stroke-width="1.5"/>
+        <line x1="772" y1="127" x2="772" y2="500" stroke="#555" stroke-width="1.5"/>
+        <circle cx="772" cy="500" r="3" fill="#333"/>
+
+        <!-- Q1 y=155 -->
+        <text x="695" y="159" fill="#444" font-size="9" font-weight="700">Q1</text>
+        <rect x="710" y="147" width="26" height="15" rx="3" fill="#E8D44D" stroke="#888" stroke-width="1"/>
+        <text x="723" y="158" text-anchor="middle" fill="#333" font-size="8">470Ω</text>
+        <line x1="736" y1="155" x2="748" y2="155" stroke="#555" stroke-width="1.5"/>
+        <polygon points="748,149 748,161 760,155" fill="#FF8800" stroke="#FF6600" stroke-width="1"/>
+        <line x1="760" y1="149" x2="760" y2="161" stroke="#FF6600" stroke-width="2"/>
+        <line x1="760" y1="155" x2="778" y2="155" stroke="#555" stroke-width="1.5"/>
+        <line x1="778" y1="155" x2="778" y2="500" stroke="#555" stroke-width="1.5"/>
+        <circle cx="778" cy="500" r="3" fill="#333"/>
+
+        <!-- Q2 y=183 -->
+        <text x="695" y="187" fill="#444" font-size="9" font-weight="700">Q2</text>
+        <rect x="710" y="175" width="26" height="15" rx="3" fill="#E8D44D" stroke="#888" stroke-width="1"/>
+        <text x="723" y="186" text-anchor="middle" fill="#333" font-size="8">470Ω</text>
+        <line x1="736" y1="183" x2="748" y2="183" stroke="#555" stroke-width="1.5"/>
+        <polygon points="748,177 748,189 760,183" fill="#FF8800" stroke="#FF6600" stroke-width="1"/>
+        <line x1="760" y1="177" x2="760" y2="189" stroke="#FF6600" stroke-width="2"/>
+        <line x1="760" y1="183" x2="783" y2="183" stroke="#555" stroke-width="1.5"/>
+        <line x1="783" y1="183" x2="783" y2="500" stroke="#555" stroke-width="1.5"/>
+        <circle cx="783" cy="500" r="3" fill="#333"/>
+
+        <!-- Q3 y=211 -->
+        <text x="695" y="215" fill="#444" font-size="9" font-weight="700">Q3</text>
+        <rect x="710" y="203" width="26" height="15" rx="3" fill="#E8D44D" stroke="#888" stroke-width="1"/>
+        <text x="723" y="214" text-anchor="middle" fill="#333" font-size="8">470Ω</text>
+        <line x1="736" y1="211" x2="748" y2="211" stroke="#555" stroke-width="1.5"/>
+        <polygon points="748,205 748,217 760,211" fill="#FF8800" stroke="#FF6600" stroke-width="1"/>
+        <line x1="760" y1="205" x2="760" y2="217" stroke="#FF6600" stroke-width="2"/>
+        <line x1="760" y1="211" x2="786" y2="211" stroke="#555" stroke-width="1.5"/>
+        <line x1="786" y1="211" x2="786" y2="500" stroke="#555" stroke-width="1.5"/>
+        <circle cx="786" cy="500" r="3" fill="#333"/>
+
+        <!-- Q4 y=239 -->
+        <text x="695" y="243" fill="#444" font-size="9" font-weight="700">Q4</text>
+        <rect x="710" y="231" width="26" height="15" rx="3" fill="#E8D44D" stroke="#888" stroke-width="1"/>
+        <text x="723" y="242" text-anchor="middle" fill="#333" font-size="8">470Ω</text>
+        <line x1="736" y1="239" x2="748" y2="239" stroke="#555" stroke-width="1.5"/>
+        <polygon points="748,233 748,245 760,239" fill="#FF8800" stroke="#FF6600" stroke-width="1"/>
+        <line x1="760" y1="233" x2="760" y2="245" stroke="#FF6600" stroke-width="2"/>
+        <line x1="760" y1="239" x2="789" y2="239" stroke="#555" stroke-width="1.5"/>
+        <line x1="789" y1="239" x2="789" y2="500" stroke="#555" stroke-width="1.5"/>
+        <circle cx="789" cy="500" r="3" fill="#333"/>
+
+        <!-- Q5 y=267 -->
+        <text x="695" y="271" fill="#444" font-size="9" font-weight="700">Q5</text>
+        <rect x="710" y="259" width="26" height="15" rx="3" fill="#E8D44D" stroke="#888" stroke-width="1"/>
+        <text x="723" y="270" text-anchor="middle" fill="#333" font-size="8">470Ω</text>
+        <line x1="736" y1="267" x2="748" y2="267" stroke="#555" stroke-width="1.5"/>
+        <polygon points="748,261 748,273 760,267" fill="#FF8800" stroke="#FF6600" stroke-width="1"/>
+        <line x1="760" y1="261" x2="760" y2="273" stroke="#FF6600" stroke-width="2"/>
+        <line x1="760" y1="267" x2="792" y2="267" stroke="#555" stroke-width="1.5"/>
+        <line x1="792" y1="267" x2="792" y2="500" stroke="#555" stroke-width="1.5"/>
+        <circle cx="792" cy="500" r="3" fill="#333"/>
+
+        <!-- Q6 y=295 -->
+        <text x="695" y="299" fill="#444" font-size="9" font-weight="700">Q6</text>
+        <rect x="710" y="287" width="26" height="15" rx="3" fill="#E8D44D" stroke="#888" stroke-width="1"/>
+        <text x="723" y="298" text-anchor="middle" fill="#333" font-size="8">470Ω</text>
+        <line x1="736" y1="295" x2="748" y2="295" stroke="#555" stroke-width="1.5"/>
+        <polygon points="748,289 748,301 760,295" fill="#FF8800" stroke="#FF6600" stroke-width="1"/>
+        <line x1="760" y1="289" x2="760" y2="301" stroke="#FF6600" stroke-width="2"/>
+        <line x1="760" y1="295" x2="795" y2="295" stroke="#555" stroke-width="1.5"/>
+        <line x1="795" y1="295" x2="795" y2="500" stroke="#555" stroke-width="1.5"/>
+        <circle cx="795" cy="500" r="3" fill="#333"/>
+
+        <!-- Q7 y=323 -->
+        <text x="695" y="327" fill="#444" font-size="9" font-weight="700">Q7</text>
+        <rect x="710" y="315" width="26" height="15" rx="3" fill="#E8D44D" stroke="#888" stroke-width="1"/>
+        <text x="723" y="326" text-anchor="middle" fill="#333" font-size="8">470Ω</text>
+        <line x1="736" y1="323" x2="748" y2="323" stroke="#555" stroke-width="1.5"/>
+        <polygon points="748,317 748,329 760,323" fill="#FF8800" stroke="#FF6600" stroke-width="1"/>
+        <line x1="760" y1="317" x2="760" y2="329" stroke="#FF6600" stroke-width="2"/>
+        <line x1="760" y1="323" x2="798" y2="323" stroke="#555" stroke-width="1.5"/>
+        <line x1="798" y1="323" x2="798" y2="500" stroke="#555" stroke-width="1.5"/>
+        <circle cx="798" cy="500" r="3" fill="#333"/>
+
+        <!-- Q8 y=351 -->
+        <text x="695" y="355" fill="#444" font-size="9" font-weight="700">Q8</text>
+        <rect x="710" y="343" width="26" height="15" rx="3" fill="#E8D44D" stroke="#888" stroke-width="1"/>
+        <text x="723" y="354" text-anchor="middle" fill="#333" font-size="8">470Ω</text>
+        <line x1="736" y1="351" x2="748" y2="351" stroke="#555" stroke-width="1.5"/>
+        <polygon points="748,345 748,357 760,351" fill="#FF8800" stroke="#FF6600" stroke-width="1"/>
+        <line x1="760" y1="345" x2="760" y2="357" stroke="#FF6600" stroke-width="2"/>
+        <line x1="760" y1="351" x2="800" y2="351" stroke="#555" stroke-width="1.5"/>
+        <line x1="800" y1="351" x2="800" y2="500" stroke="#555" stroke-width="1.5"/>
+        <circle cx="800" cy="500" r="3" fill="#333"/>
+
+        <!-- Q9 y=379 -->
+        <text x="695" y="383" fill="#444" font-size="9" font-weight="700">Q9</text>
+        <rect x="710" y="371" width="26" height="15" rx="3" fill="#E8D44D" stroke="#888" stroke-width="1"/>
+        <text x="723" y="382" text-anchor="middle" fill="#333" font-size="8">470Ω</text>
+        <line x1="736" y1="379" x2="748" y2="379" stroke="#555" stroke-width="1.5"/>
+        <polygon points="748,373 748,385 760,379" fill="#FF8800" stroke="#FF6600" stroke-width="1"/>
+        <line x1="760" y1="373" x2="760" y2="385" stroke="#FF6600" stroke-width="2"/>
+        <line x1="760" y1="379" x2="803" y2="379" stroke="#555" stroke-width="1.5"/>
+        <line x1="803" y1="379" x2="803" y2="500" stroke="#555" stroke-width="1.5"/>
+        <circle cx="803" cy="500" r="3" fill="#333"/>
+
+        <!-- Anode/Cathode labels for first LED -->
+        <text x="744" y="116" fill="#888" font-size="8">A</text>
+        <text x="762" y="116" fill="#888" font-size="8">K</text>
+
+      </svg>
+
+      <!-- Colour legend below schematic -->
+      <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:0.88rem;font-weight:700;">
+        <span style="color:#CC0000;">━━ VCC / Power</span>
+        <span style="color:#333;">━━ GND</span>
+        <span style="color:#00CC44;">━━ Clock Signal (555→4017)</span>
+        <span style="color:#FFCC44;">━━ Discharge / Timing RC</span>
+        <span style="color:#FF9944;">━━ Threshold (Pin 6)</span>
+        <span style="color:#CC88FF;">━━ Pin 5 Bypass Cap</span>
+        <span style="color:#FF7777;">━━ Reset→VCC</span>
+        <span style="color:#66EE66;">━━ 4017 Outputs Q0-Q9</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE CHASER ANIMATION -->
+  <div class="card">
+    <div class="card-title">🎬 <span id="p6-chaser-title">Live LED Chaser Simulation</span></div>
+    <div class="card-body">
+      <div class="chaser-leds" id="chaserLEDs"></div>
+      <div style="text-align:center;font-size:1rem;margin:8px 0;" id="p6-led-label">Active: <strong id="p6-led-num">LED 1 (Q0)</strong></div>
+      <canvas id="chaserWave" width="700" height="100"></canvas>
+      <div class="anim-controls">
+        <button class="anim-btn" onclick="startChaser()" id="btn-chaser-start">▶ Start Chaser</button>
+        <button class="anim-btn" onclick="stopChaser()" id="btn-chaser-stop">⏹ Stop</button>
+        <label style="font-size:0.95rem;" id="lbl-cspeed">Speed:</label>
+        <input type="range" min="1" max="8" value="3" id="chaserSpeed" style="width:120px;" oninput="chaserSpeedVal=this.value">
+        <select id="chaserMode" onchange="chaserModeChange(this.value)" style="padding:8px 14px;border-radius:20px;border:2px solid var(--secondary);font-size:0.95rem;font-family:inherit;font-weight:700;">
+          <option value="single" id="cm-single">Single LED</option>
+          <option value="trail" id="cm-trail">Trail Effect</option>
+          <option value="bounce" id="cm-bounce">Bounce</option>
+          <option value="random" id="cm-random">Random</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE 7: QUIZ ============ -->
+<div class="page" id="page7">
+  <div class="section-title" id="p7-title">🧠 Quiz – Test Your Knowledge</div>
+  <div class="progress-bar"><div class="progress-fill" id="quizProgress" style="width:0%"></div></div>
+  <div class="card" id="quizCard">
+    <div class="quiz-q" id="quizQuestion"></div>
+    <div class="quiz-options" id="quizOptions"></div>
+    <div class="quiz-feedback" id="quizFeedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+  </div>
+  <div class="quiz-score" id="quizScore"></div>
+</div>
+
+<script>
+// ===========================
+// LANGUAGE DATA
+// ===========================
+const LANG = {
+  en: {
+    navLabels: ['🏠 Intro','📌 555 Pinout','⚙️ 555 Modes','🧮 Calculations','📦 Applications','🔢 CD4017','💡 LED Chaser','🧠 Quiz'],
+    p0_hero_title: 'Welcome to the 555 & CD4017 World!',
+    p0_hero_body: 'The IC 555 timer is one of the most popular and useful integrated circuits ever made. Combined with the CD4017 decade counter, you can build amazing circuits – from blinking LEDs to running light shows. Let\'s learn everything step by step!',
+    p0_chip1:'Timer IC', p0_chip2:'Decade Counter', p0_chip3:'LEDs Running',
+    p0_what_title:'What is IC 555?',
+    p0_what_body:'The IC 555 is a tiny black chip with 8 legs (pins). Inside it has resistors, transistors, and comparators all working together. It was invented in 1972 by Hans Camenzind. Even after 50+ years, it is still used in millions of devices every day!<br><br>Think of it as a <span class="hl">programmable switch</span> – you control when it turns ON and OFF using just two resistors and a capacitor.',
+    p0_why_title:'Why Learn This?',
+    p0_why_body:'As an electrician, you will find the IC 555 in:<br><br>✅ Automatic street lights (delay timers)<br>✅ Doorbells and buzzers<br>✅ Motor speed controllers<br>✅ Security alarm systems<br>✅ Battery charger cut-off circuits<br><br><span class="hl-green">Understanding this IC = Understanding 100s of real circuits!</span>',
+    p0_analogy_title:'Real World Analogy – The Cricket Umpire',
+    p0_analogy_label:'🌟 Analogy',
+    p0_analogy_text:'Imagine the IC 555 is like a cricket umpire. The umpire watches the ball (voltage on the capacitor). When the ball reaches a certain height (2/3 of supply), the umpire raises his finger – OUT! (output goes LOW). When the ball drops to 1/3, the umpire signals – NOT OUT! (output goes HIGH). The resistors and capacitor decide how fast the ball moves up and down – that is your timing!',
+    p0_overview_title:'What We Will Learn',
+    p1_title:'📌 IC 555 – Pin by Pin',
+    p1_physical_title:'Physical Look of IC 555',
+    p1_pin1:'Ground – Negative terminal of battery (0V)',
+    p1_pin2:'Starts timing. Voltage < 1/3 VCC → Output HIGH',
+    p1_pin3:'The OUTPUT pin. Goes HIGH or LOW. Drives up to 200mA',
+    p1_pin4:'Forces output LOW when grounded. Connect to VCC normally.',
+    p1_pin5:'Changes internal threshold. Connect 0.01µF cap to GND if unused.',
+    p1_pin6:'Stops timing. Voltage > 2/3 VCC → Output LOW',
+    p1_pin7:'Discharges timing capacitor. Junction of R and C.',
+    p1_pin8:'Positive supply. 5V to 15V DC.',
+    p2_title:'⚙️ Operating Modes of IC 555',
+    p2_astable_title:'Mode 1: Astable (Auto-Oscillator)',
+    p2_astable_body:'In <strong>Astable mode</strong>, the output keeps switching HIGH and LOW automatically – no trigger needed. The timing depends on R1, R2 and C.',
+    p2_ast_analogy:'Think of a <strong>swing in a park</strong>. Once pushed, it keeps going back and forth. Resistors control the speed. That is astable mode – automatic, never stops!',
+    p2_mono_title:'Mode 2: Monostable (One-Shot Timer)',
+    p2_mono_body:'In <strong>Monostable mode</strong>, the 555 gives ONE pulse of fixed duration when triggered. After the pulse, it goes back to LOW and waits.',
+    p2_mono_analogy:'Like a <strong>toilet flush</strong>! Press the lever → water flows for fixed time → stops and waits for next press.',
+    p3_title:'🧮 IC 555 – Timing Calculations',
+    p5_title:'🔢 CD4017 – Decade Counter',
+    p6_title:'💡 10-LED Chaser Circuit',
+    p7_title:'🧠 Quiz – Test Your Knowledge',
+    quiz_next:'Next Question →',
+    quiz_score:'Your Score',
+    quiz_excellent:'Excellent! You are a 555/4017 expert! 🏆',
+    quiz_good:'Good work! Review the topics you missed.',
+    quiz_poor:'Keep studying! Review all pages again.',
+    wl_cap:'Capacitor Voltage', wl_out:'Output (square wave)', wl_thresh:'2/3 VCC (Threshold)', wl_trig:'1/3 VCC (Trigger)',
+  },
+  hi: {
+    navLabels: ['🏠 परिचय','📌 555 पिन','⚙️ 555 मोड','🧮 गणना','📦 उपयोग','🔢 CD4017','💡 LED चेज़र','🧠 प्रश्नोत्तरी'],
+    p0_hero_title: 'IC 555 और CD4017 की दुनिया में आपका स्वागत!',
+    p0_hero_body: 'IC 555 टाइमर अब तक बनाया गया सबसे लोकप्रिय और उपयोगी इंटीग्रेटेड सर्किट है। CD4017 दशक काउंटर के साथ मिलकर, आप LED चेज़र जैसे शानदार सर्किट बना सकते हैं!',
+    p0_chip1:'टाइमर IC', p0_chip2:'दशक काउंटर', p0_chip3:'LEDs चल रही हैं',
+    p0_what_title:'IC 555 क्या है?',
+    p0_what_body:'IC 555 एक छोटी काली चिप है जिसमें 8 टाँगें (पिन) होती हैं। अंदर रेसिस्टर, ट्रांजिस्टर और कम्पेरेटर एक साथ काम करते हैं। इसे 1972 में Hans Camenzind ने बनाया था।<br><br>इसे <span class="hl">प्रोग्रामयोग्य स्विच</span> समझें – सिर्फ दो रेसिस्टर और एक कैपेसिटर से ON/OFF समय तय करें।',
+    p0_why_title:'यह क्यों सीखें?',
+    p0_why_body:'एक इलेक्ट्रीशियन के रूप में, आपको IC 555 मिलेगी:<br><br>✅ स्वचालित स्ट्रीट लाइट<br>✅ डोरबेल और बज़र<br>✅ मोटर स्पीड कंट्रोलर<br>✅ सुरक्षा अलार्म सिस्टम<br>✅ बैटरी चार्जर कट-ऑफ<br><br><span class="hl-green">इस IC को समझना = 100 असली सर्किट समझना!</span>',
+    p0_analogy_title:'वास्तविक उदाहरण – क्रिकेट अंपायर',
+    p0_analogy_label:'🌟 उपमा',
+    p0_analogy_text:'IC 555 को क्रिकेट अंपायर की तरह सोचें। अंपायर गेंद (कैपेसिटर पर वोल्टेज) देखता है। जब वोल्टेज 2/3 VCC पहुँचती है – OUT! (आउटपुट LOW)। जब 1/3 पर गिरती है – NOT OUT! (आउटपुट HIGH)। R और C टाइमिंग तय करते हैं!',
+    p0_overview_title:'हम क्या सीखेंगे',
+    p1_title:'📌 IC 555 – पिन-दर-पिन',
+    p1_physical_title:'IC 555 की भौतिक संरचना',
+    p1_pin1:'ग्राउंड – बैटरी का नेगेटिव टर्मिनल (0V)',
+    p1_pin2:'टाइमिंग शुरू करता है। V < 1/3 VCC → आउटपुट HIGH',
+    p1_pin3:'आउटपुट पिन। HIGH या LOW। 200mA तक करंट दे सकता है।',
+    p1_pin4:'ग्राउंड से जोड़ने पर आउटपुट LOW करता है। सामान्यतः VCC से जोड़ें।',
+    p1_pin5:'आंतरिक थ्रेशोल्ड बदलता है। उपयोग न हो तो 0.01µF कैप GND से जोड़ें।',
+    p1_pin6:'टाइमिंग रोकता है। V > 2/3 VCC → आउटपुट LOW',
+    p1_pin7:'टाइमिंग कैपेसिटर डिस्चार्ज करता है।',
+    p1_pin8:'पॉजिटिव सप्लाई। 5V से 15V DC।',
+    p2_title:'⚙️ IC 555 के ऑपरेटिंग मोड',
+    p2_astable_title:'मोड 1: एस्टेबल (स्वतः दोलन)',
+    p2_astable_body:'<strong>एस्टेबल मोड</strong> में, आउटपुट स्वतः HIGH और LOW बदलता रहता है – कोई ट्रिगर नहीं चाहिए। टाइमिंग R1, R2 और C पर निर्भर है।',
+    p2_ast_analogy:'पार्क में <strong>झूले</strong> की तरह! एक बार धक्का दो, झूलता रहता है। रेसिस्टर गति नियंत्रित करते हैं।',
+    p2_mono_title:'मोड 2: मोनोस्टेबल (एक-बार टाइमर)',
+    p2_mono_body:'<strong>मोनोस्टेबल मोड</strong> में, ट्रिगर मिलने पर एक निश्चित समय के लिए आउटपुट HIGH होता है, फिर LOW हो जाता है।',
+    p2_mono_analogy:'<strong>टॉयलेट फ्लश</strong> की तरह! लीवर दबाओ → पानी बहे → बंद हो जाए।',
+    p3_title:'🧮 IC 555 – टाइमिंग गणना',
+    p5_title:'🔢 CD4017 – दशक काउंटर',
+    p6_title:'💡 10-LED चेज़र सर्किट',
+    p7_title:'🧠 प्रश्नोत्तरी – अपना ज्ञान जाँचें',
+    quiz_next:'अगला प्रश्न →',
+    quiz_score:'आपका स्कोर',
+    quiz_excellent:'शाबाश! आप 555/4017 के विशेषज्ञ हैं! 🏆',
+    quiz_good:'अच्छा काम! जो प्रश्न चूके उन्हें दोबारा पढ़ें।',
+    quiz_poor:'पढ़ाई जारी रखें! सभी पेज फिर से देखें।',
+    wl_cap:'कैपेसिटर वोल्टेज', wl_out:'आउटपुट (स्क्वेयर वेव)', wl_thresh:'2/3 VCC (थ्रेशोल्ड)', wl_trig:'1/3 VCC (ट्रिगर)',
+  },
+  ml: {
+    navLabels: ['🏠 ആമുഖം','📌 555 പിൻ','⚙️ 555 മോഡ്','🧮 കണക്കുകൂട്ടൽ','📦 ഉപയോഗം','🔢 CD4017','💡 LED ചേസർ','🧠 ക്വിസ്'],
+    p0_hero_title: 'IC 555, CD4017 ലോകത്തിലേക്ക് സ്വാഗതം!',
+    p0_hero_body: 'IC 555 ടൈമർ ഇതുവരെ നിർമ്മിച്ചതിൽ ഏറ്റവും ജനപ്രിയവും ഉപകാരപ്രദവുമായ ഇൻ്റഗ്രേറ്റഡ് സർക്യൂട്ടുകളിൽ ഒന്നാണ്. CD4017 ഡെക്കേഡ് കൗണ്ടറുമായി ചേർന്ന് LED ചേസർ പോലുള്ള അദ്ഭുതകരമായ സർക്യൂട്ടുകൾ നിർമ്മിക്കാം!',
+    p0_chip1:'ടൈമർ IC', p0_chip2:'ഡെക്കേഡ് കൗണ്ടർ', p0_chip3:'LEDs ഓടുന്നു',
+    p0_what_title:'IC 555 എന്താണ്?',
+    p0_what_body:'IC 555 8 കാലുകളുള്ള ചെറിയ കറുത്ത ചിപ്പ് ആണ്. ഉള്ളിൽ റെസിസ്റ്ററുകൾ, ട്രാൻസിസ്റ്ററുകൾ, കോംപറേറ്ററുകൾ ഒന്നിച്ചു പ്രവർത്തിക്കുന്നു. 1972-ൽ Hans Camenzind ഇത് കണ്ടുപിടിച്ചു.<br><br>ഇതൊരു <span class="hl">പ്രോഗ്രാം ചെയ്യാവുന്ന സ്വിച്ച്</span> ആണ് – രണ്ട് റെസിസ്റ്ററും ഒരു കപ്പാസിറ്ററും ഉപയോഗിച്ച് ON/OFF സമയം നിയന്ത്രിക്കാം.',
+    p0_why_title:'ഇത് എന്തിന് പഠിക്കണം?',
+    p0_why_body:'ഒരു ഇലക്ട്രീഷ്യൻ എന്ന നിലയിൽ IC 555 ഇവിടെ കാണും:<br><br>✅ ഓട്ടോമാറ്റിക് സ്ട്രീറ്റ് ലൈറ്റ്<br>✅ ഡോർബെൽ, ബസ്സർ<br>✅ മോട്ടോർ സ്പീഡ് കൺട്രോളർ<br>✅ സെക്യൂരിറ്റി അലാം<br>✅ ബാറ്ററി ചാർജർ കട്ട്-ഓഫ്<br><br><span class="hl-green">ഈ IC മനസ്സിലാക്കുക = 100 സർക്യൂട്ടുകൾ മനസ്സിലാക്കുക!</span>',
+    p0_analogy_title:'ക്രിക്കറ്റ് അമ്പയർ – ഒരു ഉദാഹരണം',
+    p0_analogy_label:'🌟 ഉപമ',
+    p0_analogy_text:'IC 555-നെ ക്രിക്കറ്റ് അമ്പയർ ആയി സങ്കൽപ്പിക്കൂ. അമ്പയർ പന്ത് (കപ്പാസിറ്ററിലെ വോൾട്ടേജ്) നോക്കുന്നു. 2/3 VCC-ൽ എത്തുമ്പോൾ – OUT! (ഔട്ട്പുട്ട് LOW). 1/3-ൽ താഴുമ്പോൾ – NOT OUT! (ഔട്ട്പുട്ട് HIGH). R, C എന്നിവ സമയം നിർണ്ണയിക്കുന്നു!',
+    p0_overview_title:'നാം എന്ത് പഠിക്കും',
+    p1_title:'📌 IC 555 – ഓരോ പിൻ',
+    p1_physical_title:'IC 555-ന്റെ ഭൗതിക രൂപം',
+    p1_pin1:'ഗ്രൗണ്ട് – ബാറ്ററിയുടെ നെഗറ്റീവ് ടെർമിനൽ (0V)',
+    p1_pin2:'ടൈമിംഗ് ആരംഭിക്കുന്നു. V < 1/3 VCC → ഔട്ട്പുട്ട് HIGH',
+    p1_pin3:'ഔട്ട്പുട്ട് പിൻ. HIGH അല്ലെങ്കിൽ LOW. 200mA വരെ നൽകാം.',
+    p1_pin4:'GND-ൽ ബന്ധിപ്പിക്കുമ്പോൾ ഔട്ട്പുട്ട് LOW. സാധാരണ VCC-ൽ ബന്ധിപ്പിക്കുക.',
+    p1_pin5:'ആന്തരിക ത്രെഷോൾഡ് മാറ്റുന്നു. ഉപയോഗിക്കാതിരുന്നാൽ 0.01µF GND-ൽ.',
+    p1_pin6:'ടൈമിംഗ് നിർത്തുന്നു. V > 2/3 VCC → ഔട്ട്പുട്ട് LOW',
+    p1_pin7:'ടൈമിംഗ് കപ്പാസിറ്റർ ഡിസ്ചാർജ് ചെയ്യുന്നു.',
+    p1_pin8:'പോസിറ്റീവ് സപ്ലൈ. 5V മുതൽ 15V DC.',
+    p2_title:'⚙️ IC 555-ന്റെ ഓപ്പറേറ്റിംഗ് മോഡുകൾ',
+    p2_astable_title:'മോഡ് 1: ആസ്റ്റേബിൾ (സ്വയം ഓസിലേറ്റർ)',
+    p2_astable_body:'<strong>ആസ്റ്റേബിൾ മോഡിൽ</strong> ഔട്ട്പുട്ട് സ്വയം HIGH, LOW ആകുന്നു – ട്രിഗർ ആവശ്യമില്ല. R1, R2, C ഇവ ടൈമിംഗ് നിർണ്ണയിക്കുന്നു.',
+    p2_ast_analogy:'പാർക്കിലെ <strong>ഊഞ്ഞാൽ</strong> പോലെ! ഒരു തള്ളൽ കൊടുത്താൽ സ്വയം ആടും. റെസിസ്റ്ററുകൾ വേഗം നിയന്ത്രിക്കുന്നു.',
+    p2_mono_title:'മോഡ് 2: മോണോസ്റ്റേബിൾ (ഒരു-ഷോട്ട് ടൈമർ)',
+    p2_mono_body:'<strong>മോണോസ്റ്റേബിൾ മോഡിൽ</strong> ഒരു ട്രിഗർ ലഭിക്കുമ്പോൾ നിശ്ചിത സമയം ഔട്ട്പുട്ട് HIGH ആകും, പിന്നെ LOW ആകും.',
+    p2_mono_analogy:'<strong>ടോയ്‌ലറ്റ് ഫ്ലഷ്</strong> പോലെ! ഒരു അമർത്തൽ → നിശ്ചിത സമയം വെള്ളം → നിർത്തും.',
+    p3_title:'🧮 IC 555 – ടൈമിംഗ് കണക്കുകൂട്ടൽ',
+    p5_title:'🔢 CD4017 – ഡെക്കേഡ് കൗണ്ടർ',
+    p6_title:'💡 10-LED ചേസർ സർക്യൂട്ട്',
+    p7_title:'🧠 ക്വിസ് – നിങ്ങളുടെ അറിവ് പരീക്ഷിക്കൂ',
+    quiz_next:'അടുത്ത ചോദ്യം →',
+    quiz_score:'നിങ്ങളുടെ സ്കോർ',
+    quiz_excellent:'മികച്ചത്! നിങ്ങൾ 555/4017 വിദഗ്ദ്ധനാണ്! 🏆',
+    quiz_good:'നല്ല പ്രവർത്തനം! നഷ്ടപ്പെട്ട വിഷയങ്ങൾ ആവർത്തിക്കൂ.',
+    quiz_poor:'പഠനം തുടരൂ! എല്ലാ പേജുകളും വീണ്ടും കാണൂ.',
+    wl_cap:'കപ്പാസിറ്ററിലെ വോൾട്ടേജ്', wl_out:'ഔട്ട്പുട്ട് (സ്ക്വയർ വേവ്)', wl_thresh:'2/3 VCC (ത്രെഷോൾഡ്)', wl_trig:'1/3 VCC (ട്രിഗർ)',
+  }
+};
+
+let currentLang = 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  const L = LANG[lang];
+  // Update nav
+  for (let i = 0; i < 8; i++) {
+    const btn = document.getElementById('nav'+i);
+    if (btn) btn.textContent = L.navLabels[i];
+  }
+  // Update text elements with lang-specific content
+  const fields = [
+    ['p0-hero-title','p0_hero_title'],['p0-hero-body','p0_hero_body'],
+    ['p0-chip1','p0_chip1'],['p0-chip2','p0_chip2'],['p0-chip3','p0_chip3'],
+    ['p0-what-title','p0_what_title'],['p0-what-body','p0_what_body'],
+    ['p0-why-title','p0_why_title'],['p0-why-body','p0_why_body'],
+    ['p0-analogy-title','p0_analogy_title'],['p0-analogy-label','p0_analogy_label'],['p0-analogy-text','p0_analogy_text'],
+    ['p0-overview-title','p0_overview_title'],
+    ['p1-title','p1_title'],['p1-physical-title','p1_physical_title'],
+    ['p1-pin1','p1_pin1'],['p1-pin2','p1_pin2'],['p1-pin3','p1_pin3'],['p1-pin4','p1_pin4'],
+    ['p1-pin5','p1_pin5'],['p1-pin6','p1_pin6'],['p1-pin7','p1_pin7'],['p1-pin8','p1_pin8'],
+    ['p2-title','p2_title'],['p2-astable-title','p2_astable_title'],['p2-astable-body','p2_astable_body'],
+    ['p2-ast-analogy','p2_ast_analogy'],['p2-mono-title','p2_mono_title'],
+    ['p2-mono-body','p2_mono_body'],['p2-mono-analogy','p2_mono_analogy'],
+    ['p3-title','p3_title'],['p5-title','p5_title'],['p6-title','p6_title'],['p7-title','p7_title'],
+    ['wl-cap','wl_cap'],['wl-out','wl_out'],['wl-thresh','wl_thresh'],['wl-trig','wl_trig'],
+  ];
+  fields.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el && L[key]) el.innerHTML = L[key];
+  });
+  // Apply font class to body content
+  document.querySelectorAll('.card-body,.card-title,.section-title,.quiz-q,.quiz-opt,.quiz-feedback').forEach(el => {
+    el.classList.remove('lang-ml','lang-hi');
+    if (lang === 'ml') el.classList.add('lang-ml');
+    else if (lang === 'hi') el.classList.add('lang-hi');
+  });
+  // Quiz language update
+  loadQuiz();
+}
+
+// ===========================
+// PAGE NAVIGATION
+// ===========================
+function showPage(n) {
+  document.querySelectorAll('.page').forEach((p,i) => {
+    p.classList.toggle('active', i === n);
+  });
+  document.querySelectorAll('.nav-btn').forEach((b,i) => {
+    b.classList.toggle('active', i === n);
+  });
+  if (n === 4) populateApps();
+  if (n === 5) init4017Outputs();
+  if (n === 6) initChaserLEDs();
+  if (n === 7) loadQuiz();
+  if (n === 2) { startAstable(); drawMonoIdle(); }
+  if (n === 3) { calcAstable(); calcMono(); drawPWM(50); }
+  if (n === 4) drawPWM(50);
+  window.scrollTo(0,0);
+}
+
+// ===========================
+// ASTABLE WAVEFORM ANIMATION
+// ===========================
+const astableCanvas = document.getElementById('astableCanvas');
+const astCtx = astableCanvas.getContext('2d');
+let astT = 0, astTimer = null, astSpeed = 2;
+
+function startAstable() { if (!astTimer) astTimer = setInterval(drawAstable, 30); }
+function stopAstable() { clearInterval(astTimer); astTimer = null; }
+
+function drawAstable() {
+  const W = astableCanvas.width, H = astableCanvas.height;
+  const spd = parseFloat(astSpeed) * 0.012;
+  astT += spd;
+  astCtx.fillStyle = '#111';
+  astCtx.fillRect(0,0,W,H);
+  // Grid
+  astCtx.strokeStyle = '#333'; astCtx.lineWidth = 1;
+  for (let y = 20; y < H; y += 40) { astCtx.beginPath(); astCtx.moveTo(0,y); astCtx.lineTo(W,y); astCtx.stroke(); }
+  for (let x = 0; x < W; x += 60) { astCtx.beginPath(); astCtx.moveTo(x,0); astCtx.lineTo(x,H); astCtx.stroke(); }
+  // Threshold lines
+  const th = H * 0.25; // 2/3 → top 25%
+  const tl = H * 0.65; // 1/3 → 65%
+  astCtx.strokeStyle = '#FF4444'; astCtx.lineWidth = 1.5; astCtx.setLineDash([6,4]);
+  astCtx.beginPath(); astCtx.moveTo(0,th); astCtx.lineTo(W,th); astCtx.stroke();
+  astCtx.strokeStyle = '#4488FF';
+  astCtx.beginPath(); astCtx.moveTo(0,tl); astCtx.lineTo(W,tl); astCtx.stroke();
+  astCtx.setLineDash([]);
+  // Labels
+  astCtx.fillStyle = '#FF4444'; astCtx.font = 'bold 12px Baloo 2,sans-serif';
+  astCtx.fillText('2/3 VCC', W-70, th-4);
+  astCtx.fillStyle = '#4488FF';
+  astCtx.fillText('1/3 VCC', W-70, tl-4);
+  // Capacitor waveform (sawtooth-like)
+  astCtx.strokeStyle = '#00FF88'; astCtx.lineWidth = 2.5;
+  astCtx.beginPath();
+  for (let x = 0; x < W; x++) {
+    const t = astT + x / W * 4;
+    const cyc = t % 1;
+    // charge: 0 to 0.6 (rise), discharge: 0.6 to 1 (fall)
+    let v;
+    if (cyc < 0.6) v = tl - (tl - th) * (cyc / 0.6);
+    else v = th + (tl - th) * ((cyc - 0.6) / 0.4);
+    if (x === 0) astCtx.moveTo(x, v); else astCtx.lineTo(x, v);
+  }
+  astCtx.stroke();
+  // Output square wave
+  astCtx.strokeStyle = '#FFD700'; astCtx.lineWidth = 2.5;
+  astCtx.beginPath();
+  let prevOut = null;
+  for (let x = 0; x < W; x++) {
+    const t = astT + x / W * 4;
+    const cyc = t % 1;
+    const outHigh = cyc < 0.6;
+    const y = outHigh ? H * 0.10 : H * 0.87;
+    if (x === 0) { astCtx.moveTo(x, y); }
+    else {
+      if (prevOut !== outHigh) astCtx.lineTo(x, y);
+      astCtx.lineTo(x, y);
+    }
+    prevOut = outHigh;
+  }
+  astCtx.stroke();
+  // Moving dot on cap wave
+  const cyc0 = astT % 1;
+  let dotY;
+  if (cyc0 < 0.6) dotY = tl - (tl - th) * (cyc0 / 0.6);
+  else dotY = th + (tl - th) * ((cyc0 - 0.6) / 0.4);
+  const dotX = W / 2;
+  astCtx.beginPath(); astCtx.arc(dotX, dotY, 6, 0, Math.PI*2);
+  astCtx.fillStyle = '#00FF88'; astCtx.fill();
+}
+
+// ===========================
+// MONOSTABLE ANIMATION
+// ===========================
+const monoCanvas = document.getElementById('monoCanvas');
+const monoCtx = monoCanvas.getContext('2d');
+let monoPhase = 'idle', monoT = 0, monoPulseLen = 120, monoTimer2 = null;
+
+function drawMonoIdle() {
+  const W = monoCanvas.width, H = monoCanvas.height;
+  monoCtx.fillStyle = '#111'; monoCtx.fillRect(0,0,W,H);
+  // grid
+  monoCtx.strokeStyle = '#333'; monoCtx.lineWidth = 1;
+  for (let y=20; y<H; y+=40) { monoCtx.beginPath(); monoCtx.moveTo(0,y); monoCtx.lineTo(W,y); monoCtx.stroke(); }
+  // trigger line (LOW)
+  monoCtx.strokeStyle = '#FF4444'; monoCtx.lineWidth = 2;
+  monoCtx.beginPath(); monoCtx.moveTo(0, H*0.2); monoCtx.lineTo(W, H*0.2); monoCtx.stroke();
+  // output (LOW baseline)
+  monoCtx.strokeStyle = '#FFD700'; monoCtx.lineWidth = 3;
+  monoCtx.beginPath(); monoCtx.moveTo(0, H*0.85); monoCtx.lineTo(W, H*0.85); monoCtx.stroke();
+  // Labels
+  monoCtx.fillStyle = '#FF4444'; monoCtx.font = 'bold 12px Baloo 2,sans-serif'; monoCtx.fillText('Trigger Input', 8, H*0.2-6);
+  monoCtx.fillStyle = '#FFD700'; monoCtx.fillText('Output', 8, H*0.85-6);
+  monoCtx.fillStyle = '#AAA'; monoCtx.font = '12px Baloo 2,sans-serif'; monoCtx.fillText('← Click "Send Trigger Pulse" →', W/2-90, H/2);
+}
+
+function triggerMono() {
+  if (monoPhase === 'pulse') return;
+  monoPhase = 'pulse'; monoT = 0;
+  document.getElementById('mono-status').textContent = 'OUTPUT HIGH ▲';
+  clearInterval(monoTimer2);
+  monoTimer2 = setInterval(() => {
+    monoT += 3;
+    if (monoT > monoPulseLen + 60) { clearInterval(monoTimer2); monoPhase = 'idle'; document.getElementById('mono-status').textContent = 'Waiting...'; drawMonoIdle(); return; }
+    drawMonoPulse();
+  }, 30);
+}
+
+function drawMonoPulse() {
+  const W = monoCanvas.width, H = monoCanvas.height;
+  monoCtx.fillStyle = '#111'; monoCtx.fillRect(0,0,W,H);
+  monoCtx.strokeStyle = '#333'; monoCtx.lineWidth = 1;
+  for (let y=20; y<H; y+=40) { monoCtx.beginPath(); monoCtx.moveTo(0,y); monoCtx.lineTo(W,y); monoCtx.stroke(); }
+  const trigX = W * 0.15;
+  // Trigger signal (goes LOW briefly then back)
+  monoCtx.strokeStyle = '#FF4444'; monoCtx.lineWidth = 2.5;
+  monoCtx.beginPath();
+  monoCtx.moveTo(0, H*0.18); monoCtx.lineTo(trigX-20, H*0.18);
+  monoCtx.lineTo(trigX-20, H*0.75); monoCtx.lineTo(trigX+20, H*0.75);
+  monoCtx.lineTo(trigX+20, H*0.18); monoCtx.lineTo(W, H*0.18);
+  monoCtx.stroke();
+  // Output HIGH pulse
+  const pulseStart = W * 0.20;
+  const pulseEnd = pulseStart + monoPulseLen * 1.5;
+  monoCtx.strokeStyle = '#FFD700'; monoCtx.lineWidth = 3;
+  monoCtx.beginPath();
+  monoCtx.moveTo(0, H*0.85); monoCtx.lineTo(pulseStart, H*0.85);
+  monoCtx.lineTo(pulseStart, H*0.15); monoCtx.lineTo(pulseEnd, H*0.15);
+  monoCtx.lineTo(pulseEnd, H*0.85); monoCtx.lineTo(W, H*0.85);
+  monoCtx.stroke();
+  // Animated fill
+  const progress = Math.min(monoT / monoPulseLen, 1);
+  monoCtx.fillStyle = 'rgba(255,215,0,0.15)';
+  monoCtx.fillRect(pulseStart, H*0.15, (pulseEnd-pulseStart)*progress, H*0.70);
+  // Moving cursor
+  const curX = pulseStart + (pulseEnd-pulseStart)*progress;
+  if (progress < 1) {
+    monoCtx.strokeStyle = '#00FF88'; monoCtx.lineWidth = 2; monoCtx.setLineDash([4,4]);
+    monoCtx.beginPath(); monoCtx.moveTo(curX, 0); monoCtx.lineTo(curX, H); monoCtx.stroke();
+    monoCtx.setLineDash([]);
+  }
+  monoCtx.fillStyle = '#FFD700'; monoCtx.font = 'bold 12px Baloo 2,sans-serif';
+  monoCtx.fillText('Output', 8, H*0.15-4);
+  monoCtx.fillStyle = '#FF4444'; monoCtx.fillText('Trigger', 8, H*0.18-4);
+  // t = 1.1RC label
+  monoCtx.fillStyle = '#AAA'; monoCtx.font = '11px Baloo 2,sans-serif';
+  monoCtx.fillText('← t = 1.1 × R × C →', pulseStart + 20, H*0.12);
+}
+
+// ===========================
+// CALCULATORS
+// ===========================
+function calcAstable() {
+  const R1 = parseFloat(document.getElementById('r1In').value) * 1000;
+  const R2 = parseFloat(document.getElementById('r2In').value) * 1000;
+  const C = parseFloat(document.getElementById('cIn').value) / 1e6;
+  if (!R1||!R2||!C) return;
+  const tH = 0.693*(R1+R2)*C;
+  const tL = 0.693*R2*C;
+  const T = tH+tL;
+  const f = 1/T;
+  const dc = (R1+R2)/(R1+2*R2)*100;
+  const res = document.getElementById('calcResult');
+  res.innerHTML = `
+    <strong>⏱ t<sub>HIGH</sub></strong> = 0.693 × (${R1/1000}k + ${R2/1000}k) × ${C*1e6}µF = <span class="hl-green">${tH.toFixed(4)} s</span><br>
+    <strong>⏱ t<sub>LOW</sub></strong> = 0.693 × ${R2/1000}k × ${C*1e6}µF = <span class="hl-blue">${tL.toFixed(4)} s</span><br>
+    <strong>📏 Period T</strong> = ${T.toFixed(4)} s<br>
+    <strong>🎵 Frequency f</strong> = <span class="hl" style="font-size:1.2rem;">${f < 1 ? f.toFixed(3)+' Hz' : f < 1000 ? f.toFixed(2)+' Hz' : (f/1000).toFixed(2)+' kHz'}</span><br>
+    <strong>📊 Duty Cycle</strong> = ${dc.toFixed(1)}%
+  `;
+}
+function calcMono() {
+  const R = parseFloat(document.getElementById('rmIn').value) * 1000;
+  const C = parseFloat(document.getElementById('cmIn').value) / 1e6;
+  if (!R||!C) return;
+  const t = 1.1*R*C;
+  document.getElementById('monoResult').innerHTML = `
+    <strong>⏱ Pulse Time t</strong> = 1.1 × ${R/1000}kΩ × ${C*1e6}µF = <span class="hl-green" style="font-size:1.25rem;">${t >= 60 ? (t/60).toFixed(2)+' minutes' : t.toFixed(4)+' seconds'}</span>
+  `;
+}
+
+// ===========================
+// PWM CANVAS
+// ===========================
+const pwmCanvas = document.getElementById('pwmCanvas');
+const pwmCtx = pwmCanvas ? pwmCanvas.getContext('2d') : null;
+function drawPWM(duty) {
+  if (!pwmCtx) return;
+  const W = pwmCanvas.width, H = pwmCanvas.height;
+  pwmCtx.fillStyle = '#111'; pwmCtx.fillRect(0,0,W,H);
+  const cycles = 4;
+  const cycW = W / cycles;
+  const onW = cycW * (duty/100);
+  pwmCtx.strokeStyle = '#FFD700'; pwmCtx.lineWidth = 3;
+  pwmCtx.beginPath();
+  for (let i=0; i<cycles; i++) {
+    const x0 = i*cycW;
+    pwmCtx.moveTo(x0, H*0.85); pwmCtx.lineTo(x0+2, H*0.85);
+    pwmCtx.lineTo(x0+2, H*0.15); pwmCtx.lineTo(x0+onW, H*0.15);
+    pwmCtx.lineTo(x0+onW, H*0.85); pwmCtx.lineTo(x0+cycW, H*0.85);
+    // fill ON area
+    pwmCtx.fillStyle = 'rgba(255,215,0,0.18)';
+    pwmCtx.fillRect(x0+2, H*0.15, onW-2, H*0.7);
+  }
+  pwmCtx.stroke();
+  pwmCtx.fillStyle = '#FFD700'; pwmCtx.font = 'bold 14px Baloo 2,sans-serif';
+  pwmCtx.fillText(`Duty: ${duty}% | ON time = ${duty}% × period`, 14, H-8);
+}
+function updatePWM(v) {
+  document.getElementById('dutyVal').textContent = v + '%';
+  drawPWM(parseInt(v));
+}
+
+// ===========================
+// APPLICATIONS GRID
+// ===========================
+const APPS = [
+  {icon:'🔔', name:{en:'Doorbell',hi:'डोरबेल',ml:'ഡോർബെൽ'}, desc:{en:'Fixed-time buzzer on button press',hi:'बटन दबाने पर निश्चित समय की बज़',ml:'ബട്ടൺ ഒരിക്കൽ അമർത്തിയാൽ ബസ്സർ'}},
+  {icon:'💡', name:{en:'LED Blinker',hi:'LED ब्लिंकर',ml:'LED ബ്ലിങ്കർ'}, desc:{en:'Auto LED ON/OFF at set frequency',hi:'निर्धारित आवृत्ति पर LED बंद/चालू',ml:'സ്വയം LED ON/OFF ടൈമർ'}},
+  {icon:'🕐', name:{en:'Delay Timer',hi:'विलंब टाइमर',ml:'ഡിലേ ടൈമർ'}, desc:{en:'Turns ON load after set delay',hi:'निश्चित देरी के बाद लोड ON',ml:'നിശ്ചിത ദേ  ൽ ലോഡ് ON'}},
+  {icon:'⚡', name:{en:'PWM Controller',hi:'PWM नियंत्रक',ml:'PWM കൺട്രോളർ'}, desc:{en:'Motor/LED brightness control',hi:'मोटर/LED चमक नियंत्रण',ml:'മോട്ടോർ/LED ബ്രൈറ്റ്നസ്'}},
+  {icon:'🔒', name:{en:'Security Alarm',hi:'सुरक्षा अलार्म',ml:'സെക്യൂരിറ്റി അലാം'}, desc:{en:'Triggered alarm with auto-reset',hi:'ट्रिगर अलार्म स्वतः रीसेट',ml:'ട്രിഗർ ആകും, ഓട്ടോ-റീസെറ്റ്'}},
+  {icon:'🔋', name:{en:'Battery Cut-off',hi:'बैटरी कट-ऑफ',ml:'ബാറ്ററി കട്ടോഫ്'}, desc:{en:'Stops charging when full',hi:'पूरी चार्ज होने पर बंद',ml:'ഫുൾ ചാർജ്ജ് ആകുമ്പോൾ നിർത്തും'}},
+  {icon:'🏠', name:{en:'Night Light',hi:'रात की रोशनी',ml:'നൈറ്റ് ലൈറ്റ്'}, desc:{en:'Auto ON at dark, OFF at dawn',hi:'अँधेरे में ON, सुबह OFF',ml:'ഇരുട്ടിൽ ON, ദി ON ആകുമ്പോൾ OFF'}},
+  {icon:'🎵', name:{en:'Tone Generator',hi:'टोन जनरेटर',ml:'ടോൺ ജനറേറ്റർ'}, desc:{en:'Musical notes, alarms, SOS',hi:'संगीत नोट, अलार्म, SOS',ml:'മ്യൂസിക്കൽ നോട്ടുകൾ'}},
+  {icon:'🚗', name:{en:'Car Alarm',hi:'कार अलार्म',ml:'കാർ അലാം'}, desc:{en:'Anti-theft beep circuit',hi:'चोरी-रोधी बीप सर्किट',ml:'ആൻ്റി-തെഫ്റ്റ് ബീപ്'}},
+  {icon:'🌡', name:{en:'Temperature Alarm',hi:'तापमान अलार्म',ml:'താപ അലാം'}, desc:{en:'Beeps when temp crosses limit',hi:'सीमा पार होने पर बीप',ml:'ലിമിറ്റ് കടക്കുമ്പോൾ ബീപ്'}},
+  {icon:'💧', name:{en:'Water Level',hi:'जल स्तर',ml:'ജലനിരപ്പ്'}, desc:{en:'Tank full/empty indicator',hi:'टंकी भरने/खाली होने पर संकेत',ml:'ടാങ്ക് നിറഞ്ഞ/ഒഴിഞ്ഞ സൂചന'}},
+  {icon:'🎛', name:{en:'Frequency Meter',hi:'आवृत्ति मीटर',ml:'ഫ്രീക്വൻസി മീറ്റർ'}, desc:{en:'Converts frequency to voltage',hi:'आवृत्ति को वोल्टेज में बदलें',ml:'ഫ്രീക്വൻസി → വോൾട്ടേജ്'}},
+  {icon:'🔌', name:{en:'Staircase Light',hi:'सीढ़ी की लाइट',ml:'കോണി ലൈറ്റ്'}, desc:{en:'Auto OFF after 1-2 min',hi:'1-2 मिनट बाद स्वतः OFF',ml:'1-2 മിനിറ്റ് ശേഷം ഓഫ്'}},
+  {icon:'📡', name:{en:'Remote Control',hi:'रिमोट कंट्रोल',ml:'റിമോട്ട് കൺട്രോൾ'}, desc:{en:'IR pulse generator',hi:'IR पल्स जनरेटर',ml:'IR പൾസ് ജനറേറ്റർ'}},
+  {icon:'🔧', name:{en:'Missing Pulse Detector',hi:'पल्स डिटेक्टर',ml:'മിസ്സിംഗ് പൾസ്'}, desc:{en:'Detects missing clock pulses',hi:'गुम पल्स का पता लगाए',ml:'ക്ലോക്ക് പൾസ് നഷ്ടം ആകുമ്പോൾ'}},
+  {icon:'🌊', name:{en:'Capacitance Meter',hi:'कैपेसिटेंस मीटर',ml:'കപ്പാസിറ്റൻസ് മീറ്റർ'}, desc:{en:'Measure C from timing',hi:'टाइमिंग से C मापें',ml:'ടൈമിംഗ് ഉപയോഗിച്ച് C അളക്കുക'}},
+];
+
+function populateApps() {
+  const L = currentLang;
+  const grid = document.getElementById('appsGrid');
+  if (!grid || grid.children.length > 0) return;
+  APPS.forEach(app => {
+    const d = document.createElement('div');
+    d.className = 'app-card';
+    d.innerHTML = `<div class="app-icon">${app.icon}</div><div class="app-name">${app.name[L]||app.name.en}</div><div class="app-desc">${app.desc[L]||app.desc.en}</div>`;
+    grid.appendChild(d);
+  });
+}
+
+// ===========================
+// BUZZER SIMULATION
+// ===========================
+let buzzCtx = null, buzzOsc = null;
+function playBuzz() {
+  stopBuzz();
+  buzzCtx = new (window.AudioContext || window.webkitAudioContext)();
+  buzzOsc = buzzCtx.createOscillator();
+  buzzOsc.type = 'square';
+  buzzOsc.frequency.value = parseInt(document.getElementById('buzzFreq').value);
+  buzzOsc.connect(buzzCtx.destination);
+  buzzOsc.start();
+}
+function stopBuzz() { if (buzzOsc) { try { buzzOsc.stop(); } catch(e){} buzzOsc = null; } if (buzzCtx) { buzzCtx.close(); buzzCtx = null; } }
+function updateBuzzLabel(v) { document.getElementById('buzzLabel').textContent = v + ' Hz'; }
+
+// ===========================
+// CD4017 ANIMATION
+// ===========================
+let cd4017Idx = 0, cd4017Timer = null;
+const CD4017_COLORS = ['#FF5555','#FF8800','#FFCC00','#66FF44','#00FFCC','#44AAFF','#8844FF','#FF44CC','#FF7700','#AAFFAA'];
+
+function init4017Outputs() {
+  const div = document.getElementById('cd4017Outputs');
+  if (div.children.length > 0) return;
+  for (let i = 0; i < 10; i++) {
+    const b = document.createElement('div');
+    b.className = 'led';
+    b.style.cssText = `width:60px;height:60px;background:#333;border:3px solid #555;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;color:#777;transition:all 0.15s;`;
+    b.id = 'cd4017-q'+i;
+    b.textContent = 'Q'+i;
+    div.appendChild(b);
+  }
+  draw4017Clock();
+}
+
+function start4017() {
+  if (cd4017Timer) return;
+  cd4017Timer = setInterval(() => {
+    advance4017();
+  }, 400);
+}
+function stop4017() { clearInterval(cd4017Timer); cd4017Timer = null; }
+function reset4017() {
+  stop4017(); cd4017Idx = 0;
+  for (let i = 0; i < 10; i++) {
+    const el = document.getElementById('cd4017-q'+i);
+    if (el) { el.style.background='#333'; el.style.borderColor='#555'; el.style.boxShadow='none'; el.style.color='#777'; }
+  }
+  document.getElementById('p5-count').textContent = '0';
+  draw4017Clock();
+}
+function advance4017() {
+  for (let i = 0; i < 10; i++) {
+    const el = document.getElementById('cd4017-q'+i);
+    if (!el) return;
+    if (i === cd4017Idx) {
+      el.style.background = CD4017_COLORS[i];
+      el.style.borderColor = CD4017_COLORS[i];
+      el.style.boxShadow = `0 0 18px 6px ${CD4017_COLORS[i]}88`;
+      el.style.color = 'white';
+    } else {
+      el.style.background = '#333'; el.style.borderColor = '#555'; el.style.boxShadow = 'none'; el.style.color = '#777';
+    }
+  }
+  document.getElementById('p5-count').textContent = cd4017Idx + 1;
+  cd4017Idx = (cd4017Idx + 1) % 10;
+  draw4017Clock();
+}
+
+const clkCanvas = document.getElementById('clkCanvas');
+const clkCtx = clkCanvas ? clkCanvas.getContext('2d') : null;
+let clkHistory = Array(40).fill(0);
+function draw4017Clock() {
+  if (!clkCtx) return;
+  clkHistory.shift();
+  clkHistory.push(1);
+  setTimeout(() => { clkHistory.shift(); clkHistory.push(0); if(clkCtx) drawClkWave(); }, 150);
+  drawClkWave();
+}
+function drawClkWave() {
+  const W = clkCanvas.width, H = clkCanvas.height;
+  clkCtx.fillStyle = '#111'; clkCtx.fillRect(0,0,W,H);
+  clkCtx.strokeStyle = '#FFD700'; clkCtx.lineWidth = 2.5;
+  const segW = W / clkHistory.length;
+  clkCtx.beginPath();
+  clkHistory.forEach((v,i) => {
+    const x = i*segW, y = v ? H*0.12 : H*0.85;
+    if (i===0) clkCtx.moveTo(x,y); else clkCtx.lineTo(x,y);
+    clkCtx.lineTo((i+1)*segW, y);
+  });
+  clkCtx.stroke();
+  clkCtx.fillStyle = '#FFD700'; clkCtx.font = 'bold 12px Baloo 2,sans-serif';
+  clkCtx.fillText('CLK signal from IC 555', 8, H-6);
+}
+
+// ===========================
+// LED CHASER
+// ===========================
+let chaserIdx = 0, chaserTimer = null, chaserSpeedVal = 3, chaserModeVal = 'single';
+let chaserDir = 1, chaserTrail = [];
+const CHASER_COLORS = ['#FF4444','#FF8800','#FFCC00','#66FF22','#00FFCC','#44AAFF','#AA44FF','#FF44AA','#FF6600','#AAFF44'];
+
+function initChaserLEDs() {
+  const div = document.getElementById('chaserLEDs');
+  if (div.children.length > 0) return;
+  for (let i = 0; i < 10; i++) {
+    const l = document.createElement('div');
+    l.className = 'led';
+    l.id = 'cled'+i;
+    l.textContent = (i+1);
+    div.appendChild(l);
+  }
+  drawChaserWave();
+}
+function startChaser() {
+  if (chaserTimer) return;
+  const delay = Math.max(80, 600 - chaserSpeedVal * 80);
+  chaserTimer = setInterval(() => { stepChaser(); }, delay);
+}
+function stopChaser() { clearInterval(chaserTimer); chaserTimer = null; }
+function chaserModeChange(v) { chaserModeVal = v; chaserTrail = []; }
+
+function stepChaser() {
+  const speed = Math.max(80, 600 - chaserSpeedVal * 80);
+  clearInterval(chaserTimer); chaserTimer = setInterval(stepChaser, speed);
+  for (let i = 0; i < 10; i++) {
+    const led = document.getElementById('cled'+i);
+    if (!led) return;
+    led.classList.remove('on');
+    led.style.background = '#333'; led.style.borderColor = '#555'; led.style.boxShadow = 'none'; led.style.color = '#777';
+  }
+  let activeSet = new Set();
+  if (chaserModeVal === 'single') {
+    activeSet.add(chaserIdx);
+    chaserIdx = (chaserIdx + 1) % 10;
+  } else if (chaserModeVal === 'trail') {
+    chaserTrail.push(chaserIdx);
+    if (chaserTrail.length > 3) chaserTrail.shift();
+    chaserTrail.forEach(i => activeSet.add(i));
+    chaserIdx = (chaserIdx + 1) % 10;
+  } else if (chaserModeVal === 'bounce') {
+    activeSet.add(chaserIdx);
+    chaserIdx += chaserDir;
+    if (chaserIdx >= 10 || chaserIdx < 0) { chaserDir *= -1; chaserIdx += chaserDir*2; }
+  } else if (chaserModeVal === 'random') {
+    activeSet.add(Math.floor(Math.random()*10));
+  }
+  activeSet.forEach(idx => {
+    const led = document.getElementById('cled'+idx);
+    if (!led) return;
+    const c = CHASER_COLORS[idx];
+    led.classList.add('on');
+    led.style.background = `radial-gradient(circle at 35% 35%, ${c}FF, ${c}AA)`;
+    led.style.borderColor = c;
+    led.style.boxShadow = `0 0 22px 8px ${c}AA`;
+    led.style.color = 'white';
+  });
+  const activeLEDs = [...activeSet].map(i => `LED ${i+1} (Q${i})`).join(', ');
+  const lbl = document.getElementById('p6-led-num');
+  if (lbl) lbl.textContent = activeLEDs;
+  drawChaserWave();
+}
+
+const chaserWave = document.getElementById('chaserWave');
+const chaserCtx = chaserWave ? chaserWave.getContext('2d') : null;
+let chaserPulseHistory = Array(40).fill(0);
+function drawChaserWave() {
+  if (!chaserCtx) return;
+  chaserPulseHistory.shift(); chaserPulseHistory.push(1);
+  setTimeout(() => { chaserPulseHistory.shift(); chaserPulseHistory.push(0); if(chaserCtx) renderChaserWave(); }, 120);
+  renderChaserWave();
+}
+function renderChaserWave() {
+  const W = chaserWave.width, H = chaserWave.height;
+  chaserCtx.fillStyle = '#111'; chaserCtx.fillRect(0,0,W,H);
+  chaserCtx.strokeStyle = '#00FF88'; chaserCtx.lineWidth = 2.5;
+  const segW = W / chaserPulseHistory.length;
+  chaserCtx.beginPath();
+  chaserPulseHistory.forEach((v,i) => {
+    const x = i*segW, y = v ? H*0.12 : H*0.85;
+    if (i===0) chaserCtx.moveTo(x,y); else chaserCtx.lineTo(x,y);
+    chaserCtx.lineTo((i+1)*segW, y);
+  });
+  chaserCtx.stroke();
+  chaserCtx.fillStyle = '#00FF88'; chaserCtx.font = 'bold 12px Baloo 2,sans-serif';
+  chaserCtx.fillText('555 Clock → CD4017 CLK Pin', 8, H-6);
+}
+
+// ===========================
+// QUIZ
+// ===========================
+const QUIZ_EN = [
+  { q: 'How many pins does IC 555 have?', opts: ['4','6','8','16'], ans: 2, exp: 'IC 555 is an 8-pin DIP IC. Pin 1 is GND and Pin 8 is VCC.' },
+  { q: 'Which pin of IC 555 is the OUTPUT pin?', opts: ['Pin 2','Pin 3','Pin 6','Pin 7'], ans: 1, exp: 'Pin 3 is the output pin of IC 555.' },
+  { q: 'In Astable mode, the 555 output is:', opts: ['Always HIGH','Always LOW','Square wave','Sawtooth wave'], ans: 2, exp: 'Astable mode produces a continuous square wave – automatically switching HIGH and LOW.' },
+  { q: 'The formula for frequency in Astable 555 is:', opts: ['f = 1.1 / (R×C)','f = 1.44 / [(R1+2R2)×C]','f = 0.693 × R × C','f = R × C / 1.44'], ans: 1, exp: 'f = 1.44 / [(R1 + 2×R2) × C] is the standard astable frequency formula.' },
+  { q: 'The Monostable mode formula for pulse time is:', opts: ['t = 0.693 × R × C','t = 1.44 × R × C','t = 1.1 × R × C','t = R + C'], ans: 2, exp: 'In monostable mode, t = 1.1 × R × C gives the output pulse duration.' },
+  { q: 'The CD4017 is a:', opts: ['Timer IC','Voltage regulator','Decade counter','Op-amp'], ans: 2, exp: 'CD4017 is a decade counter – it counts from 0 to 9 and repeats.' },
+  { q: 'How many outputs does CD4017 have?', opts: ['4','8','10','16'], ans: 2, exp: 'CD4017 has 10 decoded outputs Q0 to Q9.' },
+  { q: 'What is connected to Pin 15 (RESET) of CD4017 normally?', opts: ['VCC','GND','CLK','Output'], ans: 1, exp: 'Pin 15 (RESET) is normally connected to GND so counting is not interrupted.' },
+  { q: 'In the LED chaser circuit, what provides the clock pulses?', opts: ['CD4017','The LEDs','IC 555 in astable mode','Battery'], ans: 2, exp: 'IC 555 in astable mode generates clock pulses for the CD4017.' },
+  { q: 'The maximum current that Pin 3 of 555 can source/sink is:', opts: ['50mA','100mA','200mA','500mA'], ans: 2, exp: 'Pin 3 of IC 555 can source or sink up to 200mA – enough to drive LEDs, buzzers, and small relays.' },
+  { q: 'What does PWM stand for?', opts: ['Power Wave Mode','Pulse Width Modulation','Phase Width Meter','Programmable Waveform Mode'], ans: 1, exp: 'PWM = Pulse Width Modulation. It controls average power by changing the ON time percentage.' },
+  { q: 'Pin 5 of IC 555 is normally connected via 0.01µF to:', opts: ['VCC','Output','GND','Trigger'], ans: 2, exp: 'Pin 5 (Control Voltage) is bypassed via a 0.01µF capacitor to GND to prevent noise interference.' },
+  { q: 'If R1=10kΩ, R2=10kΩ, C=10µF – what is the approximate frequency?', opts: ['1 Hz','4.8 Hz','10 Hz','100 Hz'], ans: 1, exp: 'f = 1.44 / [(10k + 20k) × 10µ] = 1.44 / 0.3 = 4.8 Hz' },
+  { q: 'What happens when Pin 4 (RESET) of 555 is connected to GND?', opts: ['Timer starts','Output goes LOW permanently','Output goes HIGH','Capacitor discharges fast'], ans: 1, exp: 'When Reset (Pin 4) is grounded, output goes LOW and stays there until Reset is released to VCC.' },
+  { q: 'In CD4017, what signal advances the count?', opts: ['LOW on CLK','Rising edge on CLK','Any change on RESET','HIGH on output'], ans: 1, exp: 'The CD4017 advances its count on the RISING EDGE of the clock pulse (Pin 14).' },
+];
+
+const QUIZ_HI = [
+  { q: 'IC 555 में कितने पिन होते हैं?', opts: ['4','6','8','16'], ans: 2, exp: 'IC 555 में 8 पिन होते हैं। पिन 1 GND और पिन 8 VCC है।' },
+  { q: 'IC 555 का OUTPUT पिन कौन सा है?', opts: ['पिन 2','पिन 3','पिन 6','पिन 7'], ans: 1, exp: 'पिन 3 IC 555 का आउटपुट पिन है।' },
+  { q: 'एस्टेबल मोड में 555 का आउटपुट है:', opts: ['हमेशा HIGH','हमेशा LOW','स्क्वेयर वेव','सॉटूथ वेव'], ans: 2, exp: 'एस्टेबल मोड में स्वतः स्क्वेयर वेव उत्पन्न होती है।' },
+  { q: 'मोनोस्टेबल 555 में पल्स समय का सूत्र है:', opts: ['t = 0.693 × R × C','t = 1.44 × R × C','t = 1.1 × R × C','t = R + C'], ans: 2, exp: 'मोनोस्टेबल मोड में t = 1.1 × R × C' },
+  { q: 'CD4017 क्या है?', opts: ['टाइमर IC','वोल्टेज रेगुलेटर','दशक काउंटर','ऑप-एम्प'], ans: 2, exp: 'CD4017 एक दशक काउंटर है – 0 से 9 तक गिनता है।' },
+  { q: 'LED चेज़र में क्लॉक पल्स कौन देता है?', opts: ['CD4017','LEDs','IC 555 (एस्टेबल मोड)','बैटरी'], ans: 2, exp: 'IC 555 एस्टेबल मोड में CD4017 के लिए क्लॉक पल्स बनाता है।' },
+  { q: 'IC 555 का पिन 3 अधिकतम कितना करंट दे सकता है?', opts: ['50mA','100mA','200mA','500mA'], ans: 2, exp: 'पिन 3 अधिकतम 200mA करंट दे/ले सकता है।' },
+  { q: 'PWM का पूरा नाम है:', opts: ['Power Wave Mode','Pulse Width Modulation','Phase Width Meter','Programmable Waveform Mode'], ans: 1, exp: 'PWM = Pulse Width Modulation – ON समय का प्रतिशत बदलकर औसत पावर नियंत्रित करते हैं।' },
+];
+
+const QUIZ_ML = [
+  { q: 'IC 555-ൽ എത്ര പിനുകൾ ഉണ്ട്?', opts: ['4','6','8','16'], ans: 2, exp: 'IC 555-ൽ 8 പിനുകൾ ഉണ്ട്. പിൻ 1 GND, പിൻ 8 VCC.' },
+  { q: 'IC 555-ൻ്റെ OUTPUT പിൻ ഏതാണ്?', opts: ['പിൻ 2','പിൻ 3','പിൻ 6','പിൻ 7'], ans: 1, exp: 'പിൻ 3 IC 555-ൻ്റെ ഔട്ട്പുട്ട് പിൻ ആണ്.' },
+  { q: 'ആസ്റ്റേബിൾ മോഡിൽ 555-ൻ്റെ ഔട്ട്പുട്ട്:', opts: ['എല്ലായ്പ്പോഴും HIGH','എല്ലായ്പ്പോഴും LOW','സ്ക്വയർ വേവ്','സോടൂത്ത് വേവ്'], ans: 2, exp: 'ആസ്റ്റേബിൾ മോഡിൽ സ്വയം സ്ക്വയർ വേവ് ഉണ്ടാകും.' },
+  { q: 'മോണോസ്റ്റേബിൾ 555-ൻ്റെ പൾസ് ടൈം ഫോർമുല:', opts: ['t = 0.693 × R × C','t = 1.44 × R × C','t = 1.1 × R × C','t = R + C'], ans: 2, exp: 'മോണോസ്റ്റേബിൾ: t = 1.1 × R × C' },
+  { q: 'CD4017 എന്താണ്?', opts: ['ടൈമർ IC','വോൾട്ടേജ് റെഗുലേറ്റർ','ഡെക്കേഡ് കൗണ്ടർ','ഓപ്-ആംപ്'], ans: 2, exp: 'CD4017 ഒരു ഡെക്കേഡ് കൗണ്ടർ ആണ് – 0 മുതൽ 9 വരെ എണ്ണുന്നു.' },
+  { q: 'LED ചേസറിൽ ക്ലോക്ക് പൾസ് നൽകുന്നത് ആര്?', opts: ['CD4017','LEDs','IC 555 (ആസ്റ്റേബിൾ)','ബാറ്ററി'], ans: 2, exp: 'IC 555 ആസ്റ്റേബിൾ മോഡിൽ CD4017-നു ക്ലോക്ക് നൽകുന്നു.' },
+  { q: 'IC 555-ൻ്റെ പിൻ 3 പരമാവധി എത്ര കറൻ്റ് നൽകും?', opts: ['50mA','100mA','200mA','500mA'], ans: 2, exp: 'പിൻ 3 പരമാവധി 200mA കറൻ്റ് നൽകും/വലിക്കും.' },
+  { q: 'PWM-ൻ്റെ പൂർണ്ണ രൂപം:', opts: ['Power Wave Mode','Pulse Width Modulation','Phase Width Meter','Programmable Waveform Mode'], ans: 1, exp: 'PWM = Pulse Width Modulation – ON സമയം മാറ്റി ശരാശരി പവർ നിയന്ത്രിക്കുന്നു.' },
+];
+
+const QUIZ_DATA = { en: QUIZ_EN, hi: QUIZ_HI, ml: QUIZ_ML };
+
+let quizIdx = 0, quizScore = 0, quizAnswered = false, quizData = [];
+
+function loadQuiz() {
+  quizData = QUIZ_DATA[currentLang] || QUIZ_EN;
+  quizIdx = 0; quizScore = 0;
+  document.getElementById('quizProgress').style.width = '0%';
+  document.getElementById('quizScore').style.display = 'none';
+  document.getElementById('quizCard').style.display = '';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  if (quizIdx >= quizData.length) {
+    showFinalScore();
+    return;
+  }
+  const L = LANG[currentLang];
+  const q = quizData[quizIdx];
+  document.getElementById('quizQuestion').textContent = `Q${quizIdx+1}/${quizData.length}: ${q.q}`;
+  const opts = document.getElementById('quizOptions');
+  opts.innerHTML = '';
+  document.getElementById('quizFeedback').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('quizProgress').style.width = (quizIdx/quizData.length*100)+'%';
+  quizAnswered = false;
+  q.opts.forEach((opt,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = opt;
+    btn.onclick = () => answerQuiz(i, btn);
+    if (currentLang === 'ml') btn.classList.add('lang-ml');
+    else if (currentLang === 'hi') btn.classList.add('lang-hi');
+    opts.appendChild(btn);
+  });
+}
+
+function answerQuiz(idx, btn) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = quizData[quizIdx];
+  const fb = document.getElementById('quizFeedback');
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts[q.ans].classList.add('correct');
+  const L = LANG[currentLang];
+  if (idx === q.ans) {
+    quizScore++;
+    fb.textContent = '✅ Correct! ' + q.exp;
+    fb.style.background = '#d4edda'; fb.style.color = '#155724';
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent = '❌ ' + q.exp;
+    fb.style.background = '#f8d7da'; fb.style.color = '#7a0015';
+  }
+  fb.style.display = 'block';
+  document.getElementById('nextBtn').textContent = quizIdx+1 < quizData.length ? (L.quiz_next||'Next →') : '🏁 See Result';
+  document.getElementById('nextBtn').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  quizIdx++;
+  if (quizIdx >= quizData.length) { showFinalScore(); return; }
+  renderQuestion();
+}
+
+function showFinalScore() {
+  const L = LANG[currentLang];
+  document.getElementById('quizCard').style.display = 'none';
+  document.getElementById('quizProgress').style.width = '100%';
+  const scoreDiv = document.getElementById('quizScore');
+  const pct = Math.round(quizScore/quizData.length*100);
+  let msg = pct >= 80 ? (L.quiz_excellent||'Excellent!') : pct >= 50 ? (L.quiz_good||'Good work!') : (L.quiz_poor||'Keep studying!');
+  scoreDiv.innerHTML = `🏆 ${L.quiz_score||'Score'}: ${quizScore} / ${quizData.length} (${pct}%)<br><span style="font-size:1rem;font-weight:400;">${msg}</span><br><br><button onclick="loadQuiz()" style="background:var(--primary);color:white;border:none;padding:12px 24px;border-radius:20px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;">🔄 Try Again</button>`;
+  scoreDiv.style.display = 'block';
+}
+
+// ===========================
+// INIT
+// ===========================
+window.addEventListener('load', () => {
+  calcAstable();
+  calcMono();
+  drawMonoIdle();
+  drawPWM(50);
+  populateApps();
+  init4017Outputs();
+  initChaserLEDs();
+  loadQuiz();
+  startAstable(); // auto-start on page 2 load later
+  // don't start astable until page 2 is shown; we stop it first
+  stopAstable();
+});
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

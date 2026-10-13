@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estimation &amp; Costing</title>
+<meta name="section" content="Installation, Estimation &amp; Appliances">
+<meta name="section-order" content="4">
+<meta name="order" content="1">
+<meta name="description" content="Material estimation and cost calculation">
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Malayalam:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #1a4a8a;
+  --primary-light: #2563ab;
+  --accent: #f59e0b;
+  --accent2: #10b981;
+  --accent3: #ef4444;
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --border: #d1dde8;
+  --text: #1e293b;
+  --text2: #475569;
+  --text3: #94a3b8;
+  --domestic: #2563ab;
+  --commercial: #059669;
+  --industrial: #dc2626;
+  --shadow: 0 4px 20px rgba(26,74,138,0.10);
+  --radius: 12px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Nunito', 'Noto Sans Malayalam', 'Noto Sans Devanagari', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+/* ─── TOP BAR ─── */
+.topbar {
+  background: linear-gradient(135deg, var(--primary) 60%, #0f2d5e 100%);
+  color: #fff;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-title { font-size: 1.1rem; font-weight: 900; letter-spacing: 0.02em; }
+.topbar-sub { font-size: 0.78rem; opacity: 0.82; }
+.lang-select {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background 0.2s;
+}
+.lang-select:hover { background: rgba(255,255,255,0.25); }
+.lang-select option { color: #1e293b; background: #fff; }
+/* ─── NAV TABS ─── */
+.nav-wrap {
+  background: var(--card);
+  border-bottom: 2px solid var(--border);
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 0 12px;
+  box-shadow: var(--shadow);
+}
+.nav-tabs { display: inline-flex; gap: 4px; padding: 8px 0; }
+.nav-tab {
+  padding: 8px 18px;
+  border-radius: 8px 8px 0 0;
+  border: none;
+  background: none;
+  color: var(--text2);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.nav-tab:hover { background: var(--bg); color: var(--primary); }
+.nav-tab.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(26,74,138,0.18);
+}
+/* ─── MAIN CONTENT ─── */
+.main { max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; }
+.page { display: none; }
+.page.active { display: block; }
+/* ─── SECTION HEADERS ─── */
+.section-title {
+  font-size: 1.35rem; font-weight: 900;
+  color: var(--primary);
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-title .icon { font-size: 1.5rem; }
+.section-sub { color: var(--text2); font-size: 0.93rem; margin-bottom: 22px; }
+/* ─── CARDS ─── */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 24px;
+  margin-bottom: 22px;
+  border-left: 5px solid var(--primary);
+}
+.card.domestic { border-left-color: var(--domestic); }
+.card.commercial { border-left-color: var(--commercial); }
+.card.industrial { border-left-color: var(--industrial); }
+.card-title {
+  font-size: 1.05rem; font-weight: 800;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-title .badge {
+  font-size: 0.72rem; font-weight: 700; padding: 2px 9px;
+  border-radius: 99px; color: #fff; background: var(--primary);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.badge.dom { background: var(--domestic); }
+.badge.com { background: var(--commercial); }
+.badge.ind { background: var(--industrial); }
+/* ─── STEPS ─── */
+.steps { display: flex; flex-direction: column; gap: 12px; }
+.step {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--bg); border-radius: 10px; padding: 14px 16px;
+}
+.step-num {
+  min-width: 34px; height: 34px; border-radius: 50%;
+  background: var(--primary); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 1rem; flex-shrink: 0;
+}
+.step-content { flex: 1; }
+.step-title { font-weight: 800; margin-bottom: 3px; }
+.step-desc { font-size: 0.88rem; color: var(--text2); line-height: 1.55; }
+/* ─── COMPONENT DROPDOWN ─── */
+.comp-selector {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 24px;
+  margin-bottom: 22px;
+}
+.comp-select-row {
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 18px;
+}
+.comp-dropdown {
+  flex: 1; min-width: 200px;
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 0.95rem; font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+  cursor: pointer;
+  transition: border 0.18s;
+}
+.comp-dropdown:focus { outline: none; border-color: var(--primary); }
+.comp-info { display: none; }
+.comp-info.visible { display: block; }
+.comp-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+.comp-info-item {
+  background: var(--bg); border-radius: 9px; padding: 13px 15px;
+}
+.comp-info-label { font-size: 0.75rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.comp-info-val { font-weight: 700; color: var(--primary); font-size: 0.95rem; }
+.comp-info-desc { font-size: 0.85rem; color: var(--text2); margin-top: 12px; line-height: 1.6; }
+/* ─── SVG DIAGRAMS ─── */
+.diagram-wrap {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px 24px;
+  margin-bottom: 22px;
+  text-align: center;
+}
+.diagram-title { font-weight: 800; color: var(--primary); margin-bottom: 14px; }
+svg.diag { max-width: 100%; height: auto; }
+/* ─── TABLE ─── */
+.rate-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.rate-table th {
+  background: var(--primary); color: #fff; padding: 9px 13px;
+  text-align: left; font-weight: 700;
+}
+.rate-table td { padding: 8px 13px; border-bottom: 1px solid var(--border); }
+.rate-table tr:last-child td { border-bottom: none; }
+.rate-table tr:nth-child(even) td { background: #f8fafc; }
+/* ─── CALCULATION BOX ─── */
+.calc-box {
+  background: #e0f2fe; border-radius: 9px; padding: 16px 18px;
+  margin: 14px 0; border-left: 4px solid #0284c7;
+}
+.calc-box code { font-family: monospace; background: #bae6fd; border-radius: 4px; padding: 1px 5px; }
+.formula { font-weight: 800; font-size: 1.05rem; color: #0369a1; margin-bottom: 6px; }
+/* ─── CATEGORY TABS ─── */
+.cat-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.cat-tab {
+  padding: 8px 18px; border-radius: 99px;
+  border: 2px solid var(--border); background: var(--card);
+  font-family: inherit; font-weight: 700; font-size: 0.85rem;
+  cursor: pointer; transition: all 0.18s;
+}
+.cat-tab.dom.active, .cat-tab.dom:hover { background: var(--domestic); border-color: var(--domestic); color: #fff; }
+.cat-tab.com.active, .cat-tab.com:hover { background: var(--commercial); border-color: var(--commercial); color: #fff; }
+.cat-tab.ind.active, .cat-tab.ind:hover { background: var(--industrial); border-color: var(--industrial); color: #fff; }
+.cat-content { display: none; }
+.cat-content.active { display: block; }
+/* ─── WIRING SYSTEMS ─── */
+.wiring-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px; margin-top: 12px;
+}
+.wiring-card {
+  background: var(--bg); border-radius: 10px; padding: 16px;
+  border: 2px solid var(--border); transition: border 0.18s, transform 0.18s;
+}
+.wiring-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+.wiring-card-title { font-weight: 800; color: var(--primary); margin-bottom: 6px; font-size: 0.96rem; }
+.wiring-card-use { font-size: 0.78rem; background: var(--primary); color: #fff; border-radius: 99px; padding: 1px 10px; display: inline-block; margin-bottom: 8px; }
+.wiring-card-desc { font-size: 0.84rem; color: var(--text2); line-height: 1.55; }
+/* ─── QUIZ ─── */
+.quiz-wrap { max-width: 720px; }
+.quiz-q {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 22px 24px; margin-bottom: 18px;
+  border-top: 4px solid var(--accent);
+}
+.quiz-qnum { font-size: 0.78rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.quiz-qtext { font-weight: 700; font-size: 1.02rem; margin-bottom: 14px; line-height: 1.5; }
+.quiz-opts { display: flex; flex-direction: column; gap: 9px; }
+.quiz-opt {
+  padding: 10px 16px; border-radius: 8px;
+  border: 2px solid var(--border); background: var(--bg);
+  cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.9rem;
+  text-align: left; transition: all 0.18s; color: var(--text);
+}
+.quiz-opt:hover:not(:disabled) { border-color: var(--primary); background: #eff6ff; }
+.quiz-opt.correct { border-color: var(--accent2); background: #d1fae5; color: #065f46; }
+.quiz-opt.wrong { border-color: var(--accent3); background: #fee2e2; color: #991b1b; }
+.quiz-opt:disabled { cursor: default; }
+.quiz-explain { margin-top: 11px; padding: 10px 14px; border-radius: 8px; font-size: 0.86rem; line-height: 1.6; }
+.quiz-explain.show-correct { background: #d1fae5; color: #065f46; }
+.quiz-explain.show-wrong { background: #fee2e2; color: #991b1b; }
+.quiz-score {
+  background: var(--primary); color: #fff; border-radius: var(--radius);
+  padding: 20px 24px; text-align: center; margin-top: 8px;
+  font-size: 1.1rem; font-weight: 800; display: none;
+}
+.quiz-reset {
+  background: var(--accent); color: #fff; border: none; border-radius: 9px;
+  padding: 11px 28px; font-family: inherit; font-weight: 800; font-size: 0.96rem;
+  cursor: pointer; margin-top: 14px; transition: background 0.18s;
+}
+.quiz-reset:hover { background: #d97706; }
+/* ─── FLASHCARDS ─── */
+.fc-wrap { max-width: 600px; margin: 0 auto; }
+.fc-counter { text-align: center; color: var(--text2); font-size: 0.88rem; margin-bottom: 14px; font-weight: 700; }
+.fc-card {
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(26,74,138,0.15);
+  min-height: 200px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 32px 28px;
+  cursor: pointer;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(.4,2,.6,1), box-shadow 0.2s;
+  border: 2px solid var(--border);
+  perspective: 800px;
+}
+.fc-card:hover { transform: scale(1.013); box-shadow: 0 12px 40px rgba(26,74,138,0.2); }
+.fc-card.flipped { background: linear-gradient(135deg, var(--primary) 0%, #0f3460 100%); color: #fff; border-color: var(--primary); }
+.fc-side { width: 100%; }
+.fc-front-label { font-size: 0.75rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 12px; }
+.fc-card.flipped .fc-front-label { color: rgba(255,255,255,0.6); }
+.fc-term { font-size: 1.25rem; font-weight: 900; color: var(--primary); margin-bottom: 6px; }
+.fc-card.flipped .fc-term { color: var(--accent); }
+.fc-tap-hint { font-size: 0.78rem; color: var(--text3); margin-top: 14px; }
+.fc-card.flipped .fc-tap-hint { color: rgba(255,255,255,0.5); }
+.fc-answer { font-size: 0.95rem; font-weight: 600; line-height: 1.65; }
+.fc-nav { display: flex; justify-content: center; gap: 14px; margin-top: 20px; }
+.fc-btn {
+  background: var(--primary); color: #fff; border: none;
+  border-radius: 9px; padding: 10px 24px;
+  font-family: inherit; font-weight: 700; font-size: 0.9rem;
+  cursor: pointer; transition: background 0.18s;
+}
+.fc-btn:hover { background: var(--primary-light); }
+.fc-btn:disabled { background: var(--text3); cursor: default; }
+.fc-shuffle {
+  background: var(--accent); margin-left: auto;
+}
+.fc-shuffle:hover { background: #d97706; }
+/* ─── INFO GRID ─── */
+.info-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px; margin: 16px 0;
+}
+.info-tile {
+  background: var(--bg); border-radius: 10px; padding: 15px;
+  border: 1.5px solid var(--border); transition: border 0.18s;
+}
+.info-tile:hover { border-color: var(--primary); }
+.info-tile-icon { font-size: 1.6rem; margin-bottom: 7px; }
+.info-tile-label { font-size: 0.75rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+.info-tile-val { font-weight: 800; color: var(--primary); font-size: 1.05rem; }
+.info-tile-sub { font-size: 0.8rem; color: var(--text2); margin-top: 3px; }
+/* ─── HIGHLIGHT BOX ─── */
+.highlight-box {
+  border-radius: 9px; padding: 14px 18px; margin: 12px 0;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.highlight-box.info { background: #eff6ff; border-left: 4px solid var(--primary); }
+.highlight-box.warn { background: #fffbeb; border-left: 4px solid var(--accent); }
+.highlight-box.success { background: #f0fdf4; border-left: 4px solid var(--accent2); }
+.highlight-box.danger { background: #fef2f2; border-left: 4px solid var(--accent3); }
+.highlight-box-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+.highlight-box-text { font-size: 0.88rem; line-height: 1.6; }
+.highlight-box-text b { color: var(--primary); }
+/* ─── RULE LIST ─── */
+.rule-list { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.rule-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 0.88rem; line-height: 1.55;
+  padding: 9px 13px; background: var(--bg); border-radius: 8px;
+}
+.rule-num { min-width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; flex-shrink: 0; margin-top: 0; }
+/* ─── RESPONSIVE ─── */
+@media (max-width: 600px) {
+  .topbar { padding: 10px 14px; }
+  .main { padding: 16px 8px 50px; }
+  .card { padding: 16px 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div>
+    <div class="topbar-title" id="hdr-title">⚡ Estimation & Costing – Module 17</div>
+    <div class="topbar-sub" id="hdr-sub">CITS Electrician | Lessons 104 & 105</div>
+  </div>
+  <select class="lang-select" id="langSelect" onchange="setLang(this.value)">
+    <option value="en">🇬🇧 English</option>
+    <option value="ml">🇮🇳 മലയാളം</option>
+    <option value="hi">🇮🇳 हिंदी</option>
+  </select>
+</div>
+
+<!-- NAV TABS -->
+<div class="nav-wrap">
+  <div class="nav-tabs" id="navTabs">
+    <button class="nav-tab active" onclick="showPage('intro',this)" data-key="tab_intro">📋 Introduction</button>
+    <button class="nav-tab" onclick="showPage('steps',this)" data-key="tab_steps">🔢 11 Steps</button>
+    <button class="nav-tab" onclick="showPage('components',this)" data-key="tab_comp">🔌 Components</button>
+    <button class="nav-tab" onclick="showPage('wiring',this)" data-key="tab_wiring">🧱 Wiring Systems</button>
+    <button class="nav-tab" onclick="showPage('types',this)" data-key="tab_types">🏘️ Dom / Com / Ind</button>
+    <button class="nav-tab" onclick="showPage('calc',this)" data-key="tab_calc">🧮 Calculation</button>
+    <button class="nav-tab" onclick="showPage('quiz',this)" data-key="tab_quiz">❓ Quiz</button>
+    <button class="nav-tab" onclick="showPage('flashcards',this)" data-key="tab_fc">🃏 Flashcards</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ════════════════════ PAGE: INTRO ════════════════════ -->
+<div class="page active" id="page-intro">
+  <div class="section-title"><span class="icon">📋</span> <span data-key="intro_title">Principles of Estimation & Costing</span></div>
+  <p class="section-sub" data-key="intro_sub">Module 17 – CITS Electrician | NIMI Lessons 104 & 105</p>
+
+  <div class="card">
+    <div class="card-title" data-key="what_is_estimate">What is an Estimate?</div>
+    <p style="font-size:0.93rem;line-height:1.65;color:var(--text2);" data-key="estimate_def">
+      An <strong>estimate</strong> is the method of calculating the cost of material and labour required for a wiring installation. It helps arrange funds, explore market availability of materials, and plan the job systematically before execution.
+    </p>
+    <div class="highlight-box info" style="margin-top:14px;">
+      <span class="highlight-box-icon">💡</span>
+      <div class="highlight-box-text" data-key="contingency_note">
+        <b>5% Contingency:</b> Always add 5% of the total cost as contingency for unexpected expenses during construction.
+      </div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-tile">
+      <div class="info-tile-icon">📐</div>
+      <div class="info-tile-label" data-key="tile1_label">Drawing</div>
+      <div class="info-tile-val" data-key="tile1_val">Building Plan</div>
+      <div class="info-tile-sub" data-key="tile1_sub">Wiring layout on separate drawing with point positions</div>
+    </div>
+    <div class="info-tile">
+      <div class="info-tile-icon">📄</div>
+      <div class="info-tile-label" data-key="tile2_label">Specification</div>
+      <div class="info-tile-val" data-key="tile2_val">Material Details</div>
+      <div class="info-tile-sub" data-key="tile2_sub">Brand, grade, rating, ISO/BIS certification</div>
+    </div>
+    <div class="info-tile">
+      <div class="info-tile-icon">💰</div>
+      <div class="info-tile-label" data-key="tile3_label">Schedule of Rates</div>
+      <div class="info-tile-val" data-key="tile3_val">Market Rates</div>
+      <div class="info-tile-sub" data-key="tile3_sub">Standard rates for materials and labour</div>
+    </div>
+    <div class="info-tile">
+      <div class="info-tile-icon">👷</div>
+      <div class="info-tile-label" data-key="tile4_label">Labour</div>
+      <div class="info-tile-val" data-key="tile4_val">Skilled + Helper</div>
+      <div class="info-tile-sub" data-key="tile4_sub">Electrician + helper charges included</div>
+    </div>
+  </div>
+
+  <!-- Schedule of Rates Table -->
+  <div class="card" style="border-left-color:var(--accent);">
+    <div class="card-title" data-key="sor_title">📊 Schedule of Rates (Electrical)</div>
+    <table class="rate-table">
+      <thead>
+        <tr>
+          <th data-key="th_slno">Sl No</th>
+          <th data-key="th_item">Item Specification</th>
+          <th data-key="th_unit">Unit</th>
+          <th data-key="th_rate">Rate (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td data-key="sor1">Ceiling rose – 2 plate, 6A, 250V</td><td data-key="sor_each">Each</td><td>7.00</td></tr>
+        <tr><td>2</td><td data-key="sor2">Ceiling rose – 3 plate, 6A, 250V</td><td data-key="sor_each">Each</td><td>10.00</td></tr>
+        <tr><td>3</td><td data-key="sor3">Tumbler switch – one way, surface, 6A 250V</td><td data-key="sor_each">Each</td><td>8.00</td></tr>
+        <tr><td>4</td><td data-key="sor4">Tumbler switch – two way, surface, 6A 250V</td><td data-key="sor_each">Each</td><td>12.00</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SVG Building Plan Diagram -->
+  <div class="diagram-wrap">
+    <div class="diagram-title" data-key="diag1_title">Fig 1 – Sample Building Plan for Estimation</div>
+    <svg class="diag" viewBox="0 0 620 340" xmlns="http://www.w3.org/2000/svg">
+      <rect width="620" height="340" fill="#f8fafc" rx="10"/>
+      <!-- Outer boundary -->
+      <rect x="30" y="20" width="560" height="300" fill="none" stroke="#1a4a8a" stroke-width="2.5" rx="4"/>
+      <!-- Rooms -->
+      <rect x="30" y="20" width="160" height="90" fill="#e0f0ff" stroke="#1a4a8a" stroke-width="1.5"/>
+      <text x="110" y="57" text-anchor="middle" font-size="11" font-weight="700" fill="#1a4a8a">TOILET</text>
+      <text x="110" y="72" text-anchor="middle" font-size="10" fill="#475569">200×250 cm</text>
+
+      <rect x="30" y="110" width="160" height="90" fill="#e0f0ff" stroke="#1a4a8a" stroke-width="1.5"/>
+      <text x="110" y="150" text-anchor="middle" font-size="11" font-weight="700" fill="#1a4a8a">BATHROOM</text>
+      <text x="110" y="165" text-anchor="middle" font-size="10" fill="#475569">200×250 cm</text>
+
+      <rect x="30" y="200" width="160" height="120" fill="#e0f0ff" stroke="#1a4a8a" stroke-width="1.5"/>
+      <text x="110" y="252" text-anchor="middle" font-size="11" font-weight="700" fill="#1a4a8a">KITCHEN</text>
+      <text x="110" y="267" text-anchor="middle" font-size="10" fill="#475569">200×250 cm</text>
+
+      <!-- Bedroom -->
+      <rect x="220" y="20" width="240" height="160" fill="#fff3e0" stroke="#1a4a8a" stroke-width="1.5"/>
+      <text x="340" y="97" text-anchor="middle" font-size="12" font-weight="700" fill="#1a4a8a">BEDROOM</text>
+      <text x="340" y="112" text-anchor="middle" font-size="10" fill="#475569">420×300 cm</text>
+      <!-- Fan symbol in bedroom -->
+      <circle cx="340" cy="70" r="14" fill="none" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="340" y="74" text-anchor="middle" font-size="14" fill="#f59e0b">⊗</text>
+
+      <!-- Toilet 2 -->
+      <rect x="220" y="20" width="100" height="60" fill="#e0f0ff" stroke="#1a4a8a" stroke-width="1" opacity="0.7"/>
+      <text x="270" y="45" text-anchor="middle" font-size="10" font-weight="600" fill="#1a4a8a">TOILET</text>
+      <text x="270" y="58" text-anchor="middle" font-size="9" fill="#475569">150×150</text>
+
+      <!-- Hall -->
+      <rect x="220" y="200" width="200" height="120" fill="#f0fdf4" stroke="#1a4a8a" stroke-width="1.5"/>
+      <text x="320" y="252" text-anchor="middle" font-size="12" font-weight="700" fill="#1a4a8a">HALL</text>
+      <text x="320" y="267" text-anchor="middle" font-size="10" fill="#475569">420×360 cm</text>
+      <!-- Fan symbol in hall -->
+      <circle cx="280" cy="230" r="11" fill="none" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="280" y="234" text-anchor="middle" font-size="12" fill="#f59e0b">⊗</text>
+
+      <!-- Sit out -->
+      <rect x="430" y="200" width="160" height="120" fill="#fef9ee" stroke="#1a4a8a" stroke-width="1.5"/>
+      <text x="510" y="252" text-anchor="middle" font-size="12" font-weight="700" fill="#1a4a8a">SIT OUT</text>
+      <text x="510" y="267" text-anchor="middle" font-size="10" fill="#475569">420×300 cm</text>
+
+      <!-- Main Switch & Meter Board -->
+      <rect x="460" y="130" width="130" height="65" fill="#fff" stroke="#dc2626" stroke-width="2" rx="5"/>
+      <text x="525" y="155" text-anchor="middle" font-size="10" font-weight="700" fill="#dc2626">MAIN SWITCH</text>
+      <text x="525" y="168" text-anchor="middle" font-size="10" font-weight="700" fill="#dc2626">&amp; METER BOARD</text>
+      <!-- Distribution Board symbol -->
+      <rect x="490" y="175" width="70" height="16" fill="#1a4a8a" rx="3"/>
+      <text x="525" y="186" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">D.B</text>
+      <!-- Service cable line -->
+      <line x1="590" y1="20" x2="590" y2="130" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,3"/>
+      <text x="600" y="75" font-size="9" fill="#dc2626" transform="rotate(90,600,75)">Service Cable</text>
+
+      <!-- Light points legend -->
+      <text x="35" y="325" font-size="11" font-weight="700" fill="#1a4a8a">Legend:</text>
+      <circle cx="100" cy="321" r="7" fill="none" stroke="#1a4a8a" stroke-width="1.5"/>
+      <text x="100" y="325" text-anchor="middle" font-size="9" fill="#1a4a8a">L</text>
+      <text x="112" y="325" font-size="10" fill="#475569">Light Point</text>
+      <text x="175" y="325" font-size="14" fill="#f59e0b">⊗</text>
+      <text x="190" y="325" font-size="10" fill="#475569">Fan Point</text>
+      <rect x="243" y="315" width="14" height="10" fill="none" stroke="#1a4a8a" stroke-width="1.5"/>
+      <text x="262" y="325" font-size="10" fill="#475569">Socket Point</text>
+      <line x1="330" y1="320" x2="350" y2="320" stroke="#dc2626" stroke-width="2" stroke-dasharray="5,2"/>
+      <text x="355" y="325" font-size="10" fill="#475569">Service Line</text>
+    </svg>
+  </div>
+</div>
+
+<!-- ════════════════════ PAGE: 11 STEPS ════════════════════ -->
+<div class="page" id="page-steps">
+  <div class="section-title"><span class="icon">🔢</span> <span data-key="steps_title">11 Steps of Estimation</span></div>
+  <p class="section-sub" data-key="steps_sub">Systematic approach to prepare a wiring estimate from plan to final cost.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title" data-key="s1_title">Position Electrical Points</div>
+        <div class="step-desc" data-key="s1_desc">Mark the position of all electrical points (lights, fans, sockets) in each area of the house based on consumer requirements. Prepare on the building plan.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title" data-key="s2_title">Prepare Wiring Layout</div>
+        <div class="step-desc" data-key="s2_desc">Prepare a detailed wiring layout on the building plan showing conduit runs, DB positions, switch board locations, and all circuit routes.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title" data-key="s3_title">Calculate Total Connected Load</div>
+        <div class="step-desc" data-key="s3_desc">Add up all wattages of connected equipment. Decide whether single-phase or 3-phase supply is needed. Current = Total Watts ÷ 240V.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title" data-key="s4_title">Prepare Circuit Diagram</div>
+        <div class="step-desc" data-key="s4_desc">Draw cubical wiring model showing connections, number of lighting and power circuits. Helps verify that each branch circuit does not exceed 800W (5A branch circuit).</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title" data-key="s5_title">List of Electrical Accessories</div>
+        <div class="step-desc" data-key="s5_desc">Prepare complete list of switches, sockets, ceiling roses, MCBs, DBs, fans, light fittings, conduit boxes and all electrical accessories to procure.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <div class="step-title" data-key="s6_title">Calculate Cable Lengths</div>
+        <div class="step-desc" data-key="s6_desc">Calculate length of different sizes of cable required based on load, voltage drop allowed, and number of cables in each circuit run. Include vertical runs (roof run) and horizontal runs.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-content">
+        <div class="step-title" data-key="s7_title">Calculate Conduit/Batten Lengths</div>
+        <div class="step-desc" data-key="s7_desc">Calculate length of batten / PVC casing &amp; capping / metal conduit / PVC conduit required based on load, voltage drop and number of cables in each run.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">8</div>
+      <div class="step-content">
+        <div class="step-title" data-key="s8_title">Hardware List</div>
+        <div class="step-desc" data-key="s8_desc">Prepare list of hardware items – screws, nails, GI wire (binding), saddle clamps, conduit clips, junction boxes, PVC bushes – needed to execute the job.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">9</div>
+      <div class="step-content">
+        <div class="step-title" data-key="s9_title">Labour Charges</div>
+        <div class="step-desc" data-key="s9_desc">Calculate labour charges for the entire wiring job. Example: Electrician = ₹150/day × 2 days = ₹300; Helper = ₹90/day × 2 days = ₹180. Total labour = ₹480.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">10</div>
+      <div class="step-content">
+        <div class="step-title" data-key="s10_title">Cost of Accessories &amp; Materials</div>
+        <div class="step-desc" data-key="s10_desc">Calculate cost of all accessories, base materials (PVC conduit, batten, cables, hardware) at schedule of rates. Sum = Total material cost.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num" style="background:var(--accent);">11</div>
+      <div class="step-content">
+        <div class="step-title" data-key="s11_title">Total Cost with 5% Contingency</div>
+        <div class="step-desc" data-key="s11_desc">Total Cost = Material Cost + Labour Cost + 5% Contingency. This final figure is submitted as the estimate for approval and fund arrangement.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cubical wiring model SVG -->
+  <div class="diagram-wrap" style="margin-top:24px;">
+    <div class="diagram-title" data-key="diag2_title">Fig 4 – Cubical Wiring Model (Circuit Diagram)</div>
+    <svg class="diag" viewBox="0 0 580 320" xmlns="http://www.w3.org/2000/svg">
+      <rect width="580" height="320" fill="#f8fafc" rx="10"/>
+      <!-- Cuboid room 3D -->
+      <!-- Back face -->
+      <polygon points="100,40 400,40 400,220 100,220" fill="#e0f2fe" stroke="#1a4a8a" stroke-width="1.5"/>
+      <!-- Top face -->
+      <polygon points="100,40 400,40 450,15 150,15" fill="#bae6fd" stroke="#1a4a8a" stroke-width="1.5"/>
+      <!-- Right face -->
+      <polygon points="400,40 450,15 450,195 400,220" fill="#93c5fd" stroke="#1a4a8a" stroke-width="1.5"/>
+      <!-- Labels -->
+      <text x="250" y="135" text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">ROOM</text>
+      <!-- Light points on ceiling -->
+      <circle cx="200" cy="130" r="9" fill="#fef9c3" stroke="#f59e0b" stroke-width="2"/>
+      <text x="200" y="134" text-anchor="middle" font-size="10" fill="#1a4a8a">L1</text>
+      <circle cx="300" cy="100" r="9" fill="#fef9c3" stroke="#f59e0b" stroke-width="2"/>
+      <text x="300" y="104" text-anchor="middle" font-size="10" fill="#1a4a8a">L2</text>
+      <!-- Fan points -->
+      <circle cx="170" cy="90" r="11" fill="none" stroke="#10b981" stroke-width="2"/>
+      <text x="170" y="94" text-anchor="middle" font-size="12" fill="#10b981">⊗</text>
+      <text x="170" y="108" text-anchor="middle" font-size="9" fill="#10b981">F1</text>
+      <!-- Socket point on wall -->
+      <rect x="115" y="170" width="18" height="12" fill="none" stroke="#dc2626" stroke-width="1.5" rx="2"/>
+      <text x="124" y="195" text-anchor="middle" font-size="9" fill="#dc2626">SP</text>
+      <!-- DB on wall right -->
+      <rect x="355" y="70" width="32" height="50" fill="#e0e7ff" stroke="#1a4a8a" stroke-width="2" rx="3"/>
+      <text x="371" y="90" text-anchor="middle" font-size="8" font-weight="700" fill="#1a4a8a">DB</text>
+      <line x1="371" y1="120" x2="371" y2="145" stroke="#1a4a8a" stroke-width="1.5"/>
+      <!-- Switch board -->
+      <rect x="120" y="155" width="22" height="30" fill="#f0fdf4" stroke="#10b981" stroke-width="1.5" rx="2"/>
+      <text x="131" y="172" text-anchor="middle" font-size="7" fill="#10b981">SW</text>
+      <!-- Cable routes -->
+      <polyline points="200,130 200,80 371,80 371,120" fill="none" stroke="#1a4a8a" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <polyline points="300,100 300,60 371,60" fill="none" stroke="#1a4a8a" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <!-- Dimensions -->
+      <line x1="100" y1="235" x2="400" y2="235" stroke="#94a3b8" stroke-width="1" marker-end="url(#arrow)"/>
+      <text x="250" y="250" text-anchor="middle" font-size="10" fill="#94a3b8">Width → Horizontal Run</text>
+      <line x1="60" y1="40" x2="60" y2="220" stroke="#94a3b8" stroke-width="1"/>
+      <text x="50" y="130" text-anchor="middle" font-size="10" fill="#94a3b8" transform="rotate(-90,50,130)">Height → Roof Run</text>
+      <!-- Legend -->
+      <rect x="30" y="270" width="520" height="38" fill="#eff6ff" rx="6"/>
+      <circle cx="60" cy="289" r="7" fill="#fef9c3" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="72" y="293" font-size="10" fill="#475569">Light (L)</text>
+      <circle cx="130" cy="289" r="8" fill="none" stroke="#10b981" stroke-width="1.5"/>
+      <text x="130" y="293" text-anchor="middle" font-size="11" fill="#10b981">⊗</text>
+      <text x="143" y="293" font-size="10" fill="#475569">Fan (F)</text>
+      <rect x="205" y="283" width="14" height="9" fill="none" stroke="#dc2626" stroke-width="1.5" rx="2"/>
+      <text x="225" y="293" font-size="10" fill="#475569">Socket (SP)</text>
+      <rect x="300" y="283" width="22" height="15" fill="#e0e7ff" stroke="#1a4a8a" stroke-width="1.5" rx="2"/>
+      <text x="311" y="293" text-anchor="middle" font-size="8" font-weight="700" fill="#1a4a8a">DB</text>
+      <text x="330" y="293" font-size="10" fill="#475569">Dist. Board</text>
+      <line x1="415" y1="289" x2="440" y2="289" stroke="#1a4a8a" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="445" y="293" font-size="10" fill="#475569">Cable Run</text>
+    </svg>
+  </div>
+</div>
+
+<!-- ════════════════════ PAGE: COMPONENTS ════════════════════ -->
+<div class="page" id="page-components">
+  <div class="section-title"><span class="icon">🔌</span> <span data-key="comp_title">Wiring Components Explorer</span></div>
+  <p class="section-sub" data-key="comp_sub">Select any component to see details, application, and estimation notes.</p>
+
+  <div class="comp-selector">
+    <div class="comp-select-row">
+      <select class="comp-dropdown" id="compDrop" onchange="showComp(this.value)">
+        <option value="" data-key="comp_placeholder">-- Select a Component --</option>
+        <optgroup label="Cable & Conduit" data-key="og1">
+          <option value="pvc_wire">PVC Insulated Wire / Cable</option>
+          <option value="conduit_pvc">PVC Conduit (Pipe)</option>
+          <option value="conduit_metal">Metal (GI) Conduit</option>
+          <option value="batten">Wooden / PVC Batten</option>
+          <option value="casing">PVC Casing & Capping</option>
+          <option value="flex_conduit">Flexible Conduit</option>
+        </optgroup>
+        <optgroup label="Switches & Sockets" data-key="og2">
+          <option value="switch_1way">1-Way Switch (Tumbler)</option>
+          <option value="switch_2way">2-Way Switch</option>
+          <option value="socket_3pin">3-Pin Socket (6A)</option>
+          <option value="socket_16a">16A Socket (Power)</option>
+          <option value="ceiling_rose">Ceiling Rose</option>
+        </optgroup>
+        <optgroup label="Protection Devices" data-key="og3">
+          <option value="mcb">MCB (Miniature Circuit Breaker)</option>
+          <option value="rccb">RCCB (Earth Leakage)</option>
+          <option value="fuse">Fuse</option>
+          <option value="db">Distribution Board (DB)</option>
+          <option value="meter">Energy Meter</option>
+        </optgroup>
+        <optgroup label="Points" data-key="og4">
+          <option value="light_point">Light Point</option>
+          <option value="fan_point">Fan Point</option>
+          <option value="tube_light">Tube Light Point (1200mm)</option>
+          <option value="roof_run">Roof Run</option>
+          <option value="hori_run">Horizontal Run</option>
+        </optgroup>
+        <optgroup label="Earthing" data-key="og5">
+          <option value="earth_wire">Earth Wire (GI 14 SWG)</option>
+          <option value="earth_plate">Earth Electrode / Plate</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="comp-info" id="compInfo">
+      <div class="comp-info-grid" id="compGrid"></div>
+      <p class="comp-info-desc" id="compDesc"></p>
+    </div>
+  </div>
+
+  <!-- SVG component diagram placeholder -->
+  <div class="diagram-wrap" id="compDiagWrap" style="display:none;">
+    <div class="diagram-title" id="compDiagTitle"></div>
+    <div id="compDiagContent"></div>
+  </div>
+
+  <!-- Roofrun & Horizontal run explanation -->
+  <div class="card" style="border-left-color:var(--accent2);">
+    <div class="card-title" data-key="run_title">🏠 Understanding "Runs" in Estimation</div>
+    <div class="steps" style="margin-top:12px;">
+      <div class="step">
+        <div class="step-num" style="background:var(--accent2);">H</div>
+        <div class="step-content">
+          <div class="step-title" data-key="hrun_title">Horizontal Run</div>
+          <div class="step-desc" data-key="hrun_desc">Cable/conduit running along the wall horizontally, usually at 2.5m height or on ceiling slab. Measured from switch board to the farthest point in each room. Example: Run J = (2.5+0.9+0.8) × 2 = 8.4m</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--accent3);">R</div>
+        <div class="step-content">
+          <div class="step-title" data-key="rrun_title">Roof Run (Ceiling Run)</div>
+          <div class="step-desc" data-key="rrun_desc">Cable/conduit running on or inside the ceiling/roof slab – the vertical portion from wall to the ceiling fixture (fan, light). For concealed wiring, roof runs must be planned before the roof slab is cast. Example: Horizontal run J = 150cm = 1.5m</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:#7c3aed;">V</div>
+        <div class="step-content">
+          <div class="step-title" data-key="vrun_title">Vertical Drop (Loop)</div>
+          <div class="step-desc" data-key="vrun_desc">Cable dropping vertically from ceiling conduit to switch board, socket, or distribution board. Measured as height of wall drop, typically 0.8–0.9m per end.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ PAGE: WIRING SYSTEMS ════════════════════ -->
+<div class="page" id="page-wiring">
+  <div class="section-title"><span class="icon">🧱</span> <span data-key="wiring_title">Wiring Systems</span></div>
+  <p class="section-sub" data-key="wiring_sub">Select based on location, consumer preference, and KSEB/DISCOM regulations.</p>
+
+  <div class="wiring-grid">
+    <div class="wiring-card">
+      <div class="wiring-card-title">1. Batten Wiring</div>
+      <span class="wiring-card-use" data-key="w1_use">Domestic (Old)</span>
+      <div class="wiring-card-desc" data-key="w1_desc">VIR/TRS cables clipped on wooden battens along walls and ceiling. Simple installation, easy maintenance. Least protection – not suitable for damp or industrial areas. Being replaced by conduit wiring.</div>
+    </div>
+    <div class="wiring-card">
+      <div class="wiring-card-title">2. PVC Casing &amp; Capping</div>
+      <span class="wiring-card-use" data-key="w2_use">Office / Computer</span>
+      <div class="wiring-card-desc" data-key="w2_desc">PVC channels (casing) with snap-on covers (capping) carrying cables along walls. Good appearance, easy access. Preferred for offices, computer labs, and commercial areas where surface finish matters.</div>
+    </div>
+    <div class="wiring-card">
+      <div class="wiring-card-title">3. PVC Conduit Wiring</div>
+      <span class="wiring-card-use" data-key="w3_use">Domestic / Commercial</span>
+      <div class="wiring-card-desc" data-key="w3_desc">Cables enclosed in PVC conduit pipes – either surface-mounted or concealed in walls/roof. Most popular in modern construction. Concealed wiring must be planned before roof slab is cast. Good protection, neat appearance.</div>
+    </div>
+    <div class="wiring-card">
+      <div class="wiring-card-title">4. Metal (GI) Conduit Wiring</div>
+      <span class="wiring-card-use" data-key="w4_use">Industrial / Hazardous</span>
+      <div class="wiring-card-desc" data-key="w4_desc">Cables in galvanized iron conduit. Maximum mechanical protection. Used in factories, workshops, oil refineries, chemical plants, and hazardous locations. Conduit itself acts as earth. More expensive than PVC conduit.</div>
+    </div>
+  </div>
+
+  <!-- SVG Conduit Cross Sections -->
+  <div class="diagram-wrap">
+    <div class="diagram-title" data-key="diag3_title">Wiring System Cross-Sections</div>
+    <svg class="diag" viewBox="0 0 580 200" xmlns="http://www.w3.org/2000/svg">
+      <rect width="580" height="200" fill="#f8fafc" rx="10"/>
+      <!-- Batten wiring -->
+      <rect x="30" y="80" width="100" height="14" fill="#8b5e3c" rx="3"/>
+      <text x="80" y="73" text-anchor="middle" font-size="10" font-weight="700" fill="#8b5e3c">Wooden Batten</text>
+      <circle cx="55" cy="75" r="6" fill="#e74c3c" stroke="#c0392b" stroke-width="1.5"/>
+      <circle cx="80" cy="75" r="6" fill="#3498db" stroke="#2980b9" stroke-width="1.5"/>
+      <circle cx="105" cy="75" r="6" fill="#2ecc71" stroke="#27ae60" stroke-width="1.5"/>
+      <text x="80" y="115" text-anchor="middle" font-size="10" fill="#475569">1. Batten Wiring</text>
+
+      <!-- PVC Casing & Capping -->
+      <rect x="165" y="75" width="80" height="22" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5" rx="2"/>
+      <rect x="165" y="65" width="80" height="10" fill="#93c5fd" stroke="#3b82f6" stroke-width="1" rx="2"/>
+      <circle cx="185" cy="84" r="5" fill="#e74c3c"/>
+      <circle cx="205" cy="84" r="5" fill="#3498db"/>
+      <circle cx="225" cy="84" r="5" fill="#2ecc71"/>
+      <text x="205" y="60" text-anchor="middle" font-size="9" fill="#1d4ed8">Capping</text>
+      <text x="205" y="115" text-anchor="middle" font-size="10" fill="#475569">2. PVC Casing & Capping</text>
+
+      <!-- PVC Conduit -->
+      <circle cx="350" cy="85" r="28" fill="#bfdbfe" stroke="#2563ab" stroke-width="2.5"/>
+      <circle cx="350" cy="85" r="22" fill="#eff6ff" stroke="#2563ab" stroke-width="1"/>
+      <circle cx="336" cy="85" r="5.5" fill="#e74c3c"/>
+      <circle cx="350" cy="78" r="5.5" fill="#3498db"/>
+      <circle cx="364" cy="85" r="5.5" fill="#2ecc71"/>
+      <text x="350" y="130" text-anchor="middle" font-size="10" fill="#475569">3. PVC Conduit</text>
+      <text x="350" y="143" text-anchor="middle" font-size="9" fill="#94a3b8">(Wall thickness 1.5–3mm)</text>
+
+      <!-- GI Conduit -->
+      <circle cx="490" cy="85" r="28" fill="#d4d4d8" stroke="#52525b" stroke-width="3"/>
+      <circle cx="490" cy="85" r="22" fill="#f4f4f5" stroke="#71717a" stroke-width="1"/>
+      <circle cx="476" cy="85" r="5.5" fill="#e74c3c"/>
+      <circle cx="490" cy="78" r="5.5" fill="#3498db"/>
+      <circle cx="504" cy="85" r="5.5" fill="#2ecc71"/>
+      <text x="490" y="130" text-anchor="middle" font-size="10" fill="#475569">4. GI/Metal Conduit</text>
+      <text x="490" y="143" text-anchor="middle" font-size="9" fill="#94a3b8">(Galvanized Steel)</text>
+
+      <!-- Wire color legend -->
+      <text x="30" y="175" font-size="10" font-weight="700" fill="#1a4a8a">Wire Colors:</text>
+      <circle cx="110" cy="172" r="5" fill="#e74c3c"/>
+      <text x="120" y="176" font-size="10" fill="#475569">Phase (L)</text>
+      <circle cx="185" cy="172" r="5" fill="#3498db"/>
+      <text x="195" y="176" font-size="10" fill="#475569">Neutral (N)</text>
+      <circle cx="265" cy="172" r="5" fill="#2ecc71"/>
+      <text x="275" y="176" font-size="10" fill="#475569">Earth (E)</text>
+    </svg>
+  </div>
+
+  <div class="highlight-box warn">
+    <span class="highlight-box-icon">⚠️</span>
+    <div class="highlight-box-text" data-key="concealed_warn">
+      <b>Important:</b> Concealed PVC conduit wiring must be started and completed BEFORE the roof slab is cast. The electrician should coordinate with the civil engineer well in advance.
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ PAGE: TYPES ════════════════════ -->
+<div class="page" id="page-types">
+  <div class="section-title"><span class="icon">🏘️</span> <span data-key="types_title">Domestic / Commercial / Industrial</span></div>
+  <p class="section-sub" data-key="types_sub">Estimation requirements and regulations differ by installation type.</p>
+
+  <div class="cat-tabs">
+    <button class="cat-tab dom active" onclick="showCat('domestic',this)" data-key="tab_dom">🏠 Domestic</button>
+    <button class="cat-tab com" onclick="showCat('commercial',this)" data-key="tab_com">🏢 Commercial</button>
+    <button class="cat-tab ind" onclick="showCat('industrial',this)" data-key="tab_ind">🏭 Industrial</button>
+  </div>
+
+  <!-- DOMESTIC -->
+  <div class="cat-content active" id="cat-domestic">
+    <div class="card domestic">
+      <div class="card-title"><span class="badge dom" data-key="dom_badge">Domestic</span> <span data-key="dom_card_title">Residential Wiring Estimation</span></div>
+      <p style="font-size:0.9rem;line-height:1.65;color:var(--text2);margin-bottom:12px;" data-key="dom_intro">
+        For a typical residential house. Load is single-phase (230V, 50Hz). Each branch circuit is limited to 800W (5A). Separate circuits for lighting, fans, and power sockets.
+      </p>
+      <div class="rule-list">
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="dom_r1">Branch circuit load ≤ 800W (5A). Lights + fans on lighting circuit; sockets on power circuit.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="dom_r2">Cable: 1mm² copper for lighting/fan circuits; 1.5mm² copper for socket circuits.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="dom_r3">Main switch, energy meter, and DB at point of entry. IC cutout on service main.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="dom_r4">All conductors at height ≥ 2.5m along walls or ceiling.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="dom_r5">Third pin of all wall sockets must be earthed; earth conductor min GI 14 SWG or 1.4mm² Al.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="dom_r6">Add 5% of total cost as contingency in the final estimate.</div></div>
+      </div>
+    </div>
+
+    <div class="calc-box">
+      <div class="formula" data-key="dom_calc_title">Sample Domestic Load Calculation</div>
+      <p style="font-size:0.87rem;line-height:1.7;" data-key="dom_calc_text">
+        Assuming: 2 Tube lights (50W each) + 3 Light points (60W each) + 3 Fans (60W each) + 3 Sockets (100W each)<br>
+        <code>Total = (2×50) + (3×60) + (3×60) + (3×100) = 100+180+180+300 = 760W</code><br>
+        760W &lt; 800W ✓ → Single branch circuit OK<br>
+        <code>Current = 760 / 240 = 3.17A</code> → Use 1mm² Cu cable
+      </p>
+    </div>
+  </div>
+
+  <!-- COMMERCIAL -->
+  <div class="cat-content" id="cat-commercial">
+    <div class="card commercial">
+      <div class="card-title"><span class="badge com" data-key="com_badge">Commercial</span> <span data-key="com_card_title">Commercial/Office Wiring Estimation</span></div>
+      <p style="font-size:0.9rem;line-height:1.65;color:var(--text2);margin-bottom:12px;" data-key="com_intro">
+        For shops, offices, malls, and commercial establishments. Higher load density, more circuits, 3-phase distribution, sub-main DB required. PVC casing &amp; capping or conduit wiring commonly used.
+      </p>
+      <div class="rule-list">
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="com_r1">Load up to 100kVA: 415V, 3-phase, 4-wire LT supply from DISCOM.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="com_r2">Load 100kVA to 1000kVA: 11kV HT supply. Customer installs own transformer.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="com_r3">Separate and distinct circuits for lighting, power, air conditioning, computer loads.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="com_r4">DB located at load center for minimum voltage drop; sub-DBs for each floor/section.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="com_r5">Power factor correction capacitors may be needed for air conditioning loads.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="com_r6">PVC casing &amp; capping preferred for computer rooms; metal conduit for server rooms.</div></div>
+      </div>
+    </div>
+    <div class="highlight-box success">
+      <span class="highlight-box-icon">💼</span>
+      <div class="highlight-box-text" data-key="com_note">
+        <b>Commercial Tip:</b> In commercial estimation, include cost of ELCB/RCCB for each circuit, surge protection devices, and cable trays for false ceiling areas. Always price per point for large projects.
+      </div>
+    </div>
+  </div>
+
+  <!-- INDUSTRIAL -->
+  <div class="cat-content" id="cat-industrial">
+    <div class="card industrial">
+      <div class="card-title"><span class="badge ind" data-key="ind_badge">Industrial</span> <span data-key="ind_card_title">Industrial Wiring Estimation</span></div>
+      <p style="font-size:0.9rem;line-height:1.65;color:var(--text2);margin-bottom:12px;" data-key="ind_intro">
+        For factories, workshops, manufacturing plants. 3-phase, 415V supply. Heavy power circuits, motor starters, distribution centres. GI conduit wiring mandatory for all power circuits. Load balancing across phases critical.
+      </p>
+      <div class="rule-list">
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="ind_r1">Power circuits for loads of 3000W (3kW) and above. All power equipment: Iron-clad switches + GI conduit.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="ind_r2">Induction motors ≥ 3HP must be 3-phase type.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="ind_r3">Motors up to 5HP: DOL (Direct-on-Line) starter. Motors above 5HP: Star-Delta or Auto-transformer starter.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="ind_r4">Load balanced across all 3 phases at main DB and branch DBs.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="ind_r5">Flexible conduit ≤ 1.25m. Minimum cable cross-section: 1.25mm² Cu or 1.5mm² Al for power wiring.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="ind_r6">Main switchboard: 1m clear space in front; passage way ≥ 2m height if rear space &gt; 75cm.</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="ind_r7">Fuse rated for starting current (normally 2× full-load current of motor).</div></div>
+        <div class="rule-item"><div class="rule-num">✔</div><div data-key="ind_r8">Load &gt; 1000kVA or motors &gt;150HP: HT supply at 3.3kV, 6.6kV or 11kV. Load &gt; 3000kVA: EHT supply.</div></div>
+      </div>
+    </div>
+
+    <!-- 3-Phase load distribution SVG -->
+    <div class="diagram-wrap">
+      <div class="diagram-title" data-key="diag4_title">Industrial 3-Phase Distribution System</div>
+      <svg class="diag" viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
+        <rect width="560" height="240" fill="#f8fafc" rx="10"/>
+        <!-- Supply -->
+        <rect x="220" y="10" width="120" height="36" fill="#1a4a8a" rx="6"/>
+        <text x="280" y="33" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">3-Phase Supply (415V)</text>
+        <!-- Lines down -->
+        <line x1="250" y1="46" x2="250" y2="70" stroke="#e74c3c" stroke-width="3"/>
+        <line x1="280" y1="46" x2="280" y2="70" stroke="#3498db" stroke-width="3"/>
+        <line x1="310" y1="46" x2="310" y2="70" stroke="#27ae60" stroke-width="3"/>
+        <line x1="280" y1="46" x2="280" y2="70" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <!-- Main DB -->
+        <rect x="195" y="70" width="170" height="40" fill="#e0e7ff" stroke="#1a4a8a" stroke-width="2" rx="5"/>
+        <text x="280" y="95" text-anchor="middle" font-size="11" font-weight="700" fill="#1a4a8a">MAIN D.B.</text>
+        <!-- Sub DBs -->
+        <line x1="220" y1="110" x2="110" y2="145" stroke="#475569" stroke-width="1.5"/>
+        <line x1="280" y1="110" x2="280" y2="145" stroke="#475569" stroke-width="1.5"/>
+        <line x1="340" y1="110" x2="450" y2="145" stroke="#475569" stroke-width="1.5"/>
+        <rect x="60" y="145" width="100" height="32" fill="#dbeafe" stroke="#2563ab" stroke-width="1.5" rx="4"/>
+        <text x="110" y="165" text-anchor="middle" font-size="10" font-weight="700" fill="#1a4a8a">Sub DB-1</text>
+        <rect x="230" y="145" width="100" height="32" fill="#d1fae5" stroke="#059669" stroke-width="1.5" rx="4"/>
+        <text x="280" y="165" text-anchor="middle" font-size="10" font-weight="700" fill="#065f46">Sub DB-2</text>
+        <rect x="400" y="145" width="100" height="32" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5" rx="4"/>
+        <text x="450" y="165" text-anchor="middle" font-size="10" font-weight="700" fill="#991b1b">Sub DB-3</text>
+        <!-- Motor loads -->
+        <circle cx="80" cy="210" r="16" fill="#dbeafe" stroke="#2563ab" stroke-width="2"/>
+        <text x="80" y="214" text-anchor="middle" font-size="9" font-weight="700" fill="#1a4a8a">M₁</text>
+        <circle cx="140" cy="210" r="16" fill="#dbeafe" stroke="#2563ab" stroke-width="2"/>
+        <text x="140" y="214" text-anchor="middle" font-size="9" font-weight="700" fill="#1a4a8a">M₂</text>
+        <circle cx="260" cy="210" r="16" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+        <text x="260" y="214" text-anchor="middle" font-size="9" font-weight="700" fill="#065f46">M₃</text>
+        <circle cx="300" cy="210" r="16" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+        <text x="300" y="214" text-anchor="middle" font-size="9" font-weight="700" fill="#065f46">L</text>
+        <circle cx="430" cy="210" r="16" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+        <text x="430" y="214" text-anchor="middle" font-size="9" font-weight="700" fill="#991b1b">M₄</text>
+        <circle cx="470" cy="210" r="16" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+        <text x="470" y="214" text-anchor="middle" font-size="9" font-weight="700" fill="#991b1b">H</text>
+        <!-- Lines to motors -->
+        <line x1="90" y1="177" x2="80" y2="194" stroke="#2563ab" stroke-width="1.5"/>
+        <line x1="120" y1="177" x2="140" y2="194" stroke="#2563ab" stroke-width="1.5"/>
+        <line x1="260" y1="177" x2="260" y2="194" stroke="#059669" stroke-width="1.5"/>
+        <line x1="300" y1="177" x2="300" y2="194" stroke="#059669" stroke-width="1.5"/>
+        <line x1="430" y1="177" x2="430" y2="194" stroke="#dc2626" stroke-width="1.5"/>
+        <line x1="465" y1="177" x2="470" y2="194" stroke="#dc2626" stroke-width="1.5"/>
+        <!-- Legend -->
+        <text x="30" y="232" font-size="9" fill="#94a3b8">M = Motor | L = Lighting | H = Heating | Phase R=Red, Y=Blue, B=Green</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ PAGE: CALCULATION ════════════════════ -->
+<div class="page" id="page-calc">
+  <div class="section-title"><span class="icon">🧮</span> <span data-key="calc_title">Worked Calculation Example</span></div>
+  <p class="section-sub" data-key="calc_sub">Complete domestic wiring estimate – 2 room house, 2 circuits</p>
+
+  <div class="card" style="border-left-color:var(--accent);">
+    <div class="card-title" data-key="prob_title">📌 Problem: 2-Room House Estimation</div>
+    <div class="steps" style="margin-top:10px;">
+      <div class="step">
+        <div class="step-num">C1</div>
+        <div class="step-content">
+          <div class="step-title" data-key="c1_title">Circuit 1 – Room No.1</div>
+          <div class="step-desc" data-key="c1_desc">1 Tube light (1200mm, 50W) + 2 Light points (60W each) + 2 Fan points (60W each) + 1 Socket (6A, 100W) = Total 390W</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">C2</div>
+        <div class="step-content">
+          <div class="step-title" data-key="c2_title">Circuit 2 – Room No.2</div>
+          <div class="step-desc" data-key="c2_desc">1 Tube light (50W) + 1 Light point (60W) + 1 Fan point (60W) + 2 Sockets (100W each) = Total 370W</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calc-box">
+    <div class="formula" data-key="total_load">Total Connected Load</div>
+    <p style="font-size:0.9rem;line-height:1.8;" data-key="load_calc">
+      <code>Circuit 1: 390W + Circuit 2: 370W = 760W</code><br>
+      760W &lt; 800W → Both rooms can share ONE branch circuit ✓<br>
+      <code>Current = 760 ÷ 240 = 3.17A</code><br>
+      → Cable selected: <b>1mm² copper</b> (or 1.5mm² aluminium)
+    </p>
+  </div>
+
+  <div class="calc-box" style="background:#f0fdf4;border-left-color:var(--accent2);">
+    <div class="formula" style="color:#065f46;" data-key="cable_calc_title">Cable Length Calculation</div>
+    <p style="font-size:0.88rem;line-height:1.8;" data-key="cable_calc">
+      <b>Horizontal run J</b> = 150cm = 1.5m (rough value for each end) → Total: 25m for runs 2–5<br>
+      <b>Conduit run J</b> = (2.5+0.9+0.8) × 2 = <code>8.4m</code><br>
+      <b>Conduit run A</b> = (1.5+0.9+0.8) × 7 = <code>22.4m</code><br>
+      <b>Run B</b> = 1.1 × 2 = <code>2.2m</code><br>
+      <b>Run C</b> = (1.05×4 + 1.85×2) = <code>7.9m</code><br>
+      <b>Run D</b> = (1.5+0.8+0.9) × 3 = <code>9.6m</code><br>
+      <b>Run F</b> = (1.8+0.9+0.8) × 5 = <code>17.5m</code><br>
+      <b>Run G</b> = 2.2 × 2 = <code>4.4m</code><br>
+      <b>Run H</b> = (2.2+0.8) × 2 = <code>6.0m</code><br>
+      <b>Run K</b> = (0.9+0.2) × 2 = <code>2.2m</code><br>
+      <b>Total cable required = 80.6m → say 90m</b> of 1mm² copper cable
+    </p>
+  </div>
+
+  <div class="calc-box" style="background:#fff7ed;border-left-color:#ea580c;">
+    <div class="formula" style="color:#9a3412;" data-key="earth_title">Earth Wire</div>
+    <p style="font-size:0.88rem;line-height:1.8;" data-key="earth_calc">
+      Copper 14 SWG for earthing runs K, H, F, E, D, A = 16.9m → say <b>20m or 600g</b>
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-key="labour_title">💼 Labour Cost Summary</div>
+    <table class="rate-table" style="margin-top:10px;">
+      <thead>
+        <tr>
+          <th data-key="lth_trade">Trade</th>
+          <th data-key="lth_rate">Daily Rate</th>
+          <th data-key="lth_days">Days</th>
+          <th data-key="lth_total">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td data-key="elec_label">Electrician</td><td>₹150</td><td>2</td><td>₹300</td></tr>
+        <tr><td data-key="helper_label">Helper</td><td>₹90</td><td>2</td><td>₹180</td></tr>
+        <tr style="font-weight:800;">
+          <td colspan="3" data-key="total_labour">Total Labour</td>
+          <td>₹480</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="highlight-box warn" style="margin-top:14px;">
+      <span class="highlight-box-icon">📊</span>
+      <div class="highlight-box-text" data-key="final_cost_note">
+        <b>Final Estimate Formula:</b> Total Cost = Material Cost + Labour Cost + 5% Contingency<br>
+        Example: If Material = ₹3000, Labour = ₹480 → Subtotal = ₹3480 → Contingency = ₹174 → <b>Grand Total = ₹3654</b>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ PAGE: QUIZ ════════════════════ -->
+<div class="page" id="page-quiz">
+  <div class="section-title"><span class="icon">❓</span> <span data-key="quiz_title">Knowledge Quiz</span></div>
+  <p class="section-sub" data-key="quiz_sub">Test your understanding of Estimation & Costing – 10 questions.</p>
+  <div class="quiz-wrap" id="quizWrap"></div>
+  <div class="quiz-score" id="quizScore"></div>
+  <button class="quiz-reset" onclick="resetQuiz()" data-key="quiz_reset">🔄 Restart Quiz</button>
+</div>
+
+<!-- ════════════════════ PAGE: FLASHCARDS ════════════════════ -->
+<div class="page" id="page-flashcards">
+  <div class="section-title"><span class="icon">🃏</span> <span data-key="fc_title">Flashcards</span></div>
+  <p class="section-sub" data-key="fc_sub">Tap the card to reveal the answer. Use arrows to navigate.</p>
+  <div class="fc-wrap">
+    <div class="fc-counter" id="fcCounter">Card 1 / 16</div>
+    <div class="fc-card" id="fcCard" onclick="flipCard()">
+      <div class="fc-side" id="fcFront">
+        <div class="fc-front-label" data-key="fc_question">QUESTION</div>
+        <div class="fc-term" id="fcTerm"></div>
+        <div class="fc-tap-hint" data-key="fc_tap">Tap to reveal answer →</div>
+      </div>
+    </div>
+    <div class="fc-nav">
+      <button class="fc-btn" id="fcPrev" onclick="fcNav(-1)" data-key="fc_prev">◀ Previous</button>
+      <button class="fc-btn fc-shuffle" onclick="fcShuffle()" data-key="fc_shuffle">🔀 Shuffle</button>
+      <button class="fc-btn" id="fcNext" onclick="fcNav(1)" data-key="fc_next">Next ▶</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+/* ═══════════════════════════════════════════════
+   LANGUAGE DATA
+═══════════════════════════════════════════════ */
+const L = {
+  en: {
+    hdr_title: "⚡ Estimation & Costing – Module 17",
+    hdr_sub: "CITS Electrician | Lessons 104 & 105",
+    tab_intro: "📋 Introduction",
+    tab_steps: "🔢 11 Steps",
+    tab_comp: "🔌 Components",
+    tab_wiring: "🧱 Wiring Systems",
+    tab_types: "🏘️ Dom / Com / Ind",
+    tab_calc: "🧮 Calculation",
+    tab_quiz: "❓ Quiz",
+    tab_fc: "🃏 Flashcards",
+    intro_title: "Principles of Estimation & Costing",
+    intro_sub: "Module 17 – CITS Electrician | NIMI Lessons 104 & 105",
+    what_is_estimate: "What is an Estimate?",
+    estimate_def: "An <strong>estimate</strong> is the method of calculating the cost of material and labour required for a wiring installation. It helps arrange funds, explore market availability of materials, and plan the job systematically before execution.",
+    contingency_note: "<b>5% Contingency:</b> Always add 5% of the total cost as contingency for unexpected expenses during construction.",
+    tile1_label:"Drawing", tile1_val:"Building Plan", tile1_sub:"Wiring layout on separate drawing with point positions",
+    tile2_label:"Specification", tile2_val:"Material Details", tile2_sub:"Brand, grade, rating, ISO/BIS certification",
+    tile3_label:"Schedule of Rates", tile3_val:"Market Rates", tile3_sub:"Standard rates for materials and labour",
+    tile4_label:"Labour", tile4_val:"Skilled + Helper", tile4_sub:"Electrician + helper charges included",
+    sor_title:"📊 Schedule of Rates (Electrical)",
+    th_slno:"Sl No", th_item:"Item Specification", th_unit:"Unit", th_rate:"Rate (₹)",
+    sor1:"Ceiling rose – 2 plate, 6A, 250V", sor2:"Ceiling rose – 3 plate, 6A, 250V",
+    sor3:"Tumbler switch – one way, surface, 6A 250V", sor4:"Tumbler switch – two way, surface, 6A 250V",
+    sor_each:"Each",
+    diag1_title:"Fig 1 – Sample Building Plan for Estimation",
+    steps_title:"11 Steps of Estimation",
+    steps_sub:"Systematic approach to prepare a wiring estimate from plan to final cost.",
+    s1_title:"Position Electrical Points", s1_desc:"Mark the position of all electrical points (lights, fans, sockets) in each area of the house based on consumer requirements. Prepare on the building plan.",
+    s2_title:"Prepare Wiring Layout", s2_desc:"Prepare a detailed wiring layout on the building plan showing conduit runs, DB positions, switch board locations, and all circuit routes.",
+    s3_title:"Calculate Total Connected Load", s3_desc:"Add up all wattages of connected equipment. Decide whether single-phase or 3-phase supply is needed. Current = Total Watts ÷ 240V.",
+    s4_title:"Prepare Circuit Diagram", s4_desc:"Draw cubical wiring model showing connections, number of lighting and power circuits. Helps verify that each branch circuit does not exceed 800W (5A branch circuit).",
+    s5_title:"List of Electrical Accessories", s5_desc:"Prepare complete list of switches, sockets, ceiling roses, MCBs, DBs, fans, light fittings, conduit boxes and all electrical accessories to procure.",
+    s6_title:"Calculate Cable Lengths", s6_desc:"Calculate length of different sizes of cable required based on load, voltage drop allowed, and number of cables in each circuit run. Include vertical runs (roof run) and horizontal runs.",
+    s7_title:"Calculate Conduit/Batten Lengths", s7_desc:"Calculate length of batten / PVC casing & capping / metal conduit / PVC conduit required based on load, voltage drop and number of cables in each run.",
+    s8_title:"Hardware List", s8_desc:"Prepare list of hardware items – screws, nails, GI wire (binding), saddle clamps, conduit clips, junction boxes, PVC bushes – needed to execute the job.",
+    s9_title:"Labour Charges", s9_desc:"Calculate labour charges for the entire wiring job. Example: Electrician = ₹150/day × 2 days = ₹300; Helper = ₹90/day × 2 days = ₹180. Total labour = ₹480.",
+    s10_title:"Cost of Accessories & Materials", s10_desc:"Calculate cost of all accessories, base materials (PVC conduit, batten, cables, hardware) at schedule of rates. Sum = Total material cost.",
+    s11_title:"Total Cost with 5% Contingency", s11_desc:"Total Cost = Material Cost + Labour Cost + 5% Contingency. This final figure is submitted as the estimate for approval and fund arrangement.",
+    diag2_title:"Fig 4 – Cubical Wiring Model (Circuit Diagram)",
+    comp_title:"Wiring Components Explorer", comp_sub:"Select any component to see details, application, and estimation notes.",
+    comp_placeholder:"-- Select a Component --",
+    run_title:"🏠 Understanding 'Runs' in Estimation",
+    hrun_title:"Horizontal Run", hrun_desc:"Cable/conduit running along the wall horizontally, usually at 2.5m height or on ceiling slab. Measured from switch board to the farthest point in each room. Example: Run J = (2.5+0.9+0.8) × 2 = 8.4m",
+    rrun_title:"Roof Run (Ceiling Run)", rrun_desc:"Cable/conduit running on or inside the ceiling/roof slab – the vertical portion from wall to the ceiling fixture (fan, light). For concealed wiring, roof runs must be planned before the roof slab is cast.",
+    vrun_title:"Vertical Drop (Loop)", vrun_desc:"Cable dropping vertically from ceiling conduit to switch board, socket, or distribution board. Measured as height of wall drop, typically 0.8–0.9m per end.",
+    wiring_title:"Wiring Systems", wiring_sub:"Select based on location, consumer preference, and KSEB/DISCOM regulations.",
+    w1_use:"Domestic (Old)", w1_desc:"VIR/TRS cables clipped on wooden battens along walls and ceiling. Simple installation, easy maintenance. Least protection – not suitable for damp or industrial areas.",
+    w2_use:"Office / Computer", w2_desc:"PVC channels (casing) with snap-on covers (capping) carrying cables along walls. Good appearance, easy access. Preferred for offices, computer labs, and commercial areas.",
+    w3_use:"Domestic / Commercial", w3_desc:"Cables enclosed in PVC conduit pipes – either surface-mounted or concealed in walls/roof. Most popular in modern construction. Concealed wiring must be planned before roof slab is cast.",
+    w4_use:"Industrial / Hazardous", w4_desc:"Cables in galvanized iron conduit. Maximum mechanical protection. Used in factories, workshops, oil refineries, chemical plants, and hazardous locations.",
+    diag3_title:"Wiring System Cross-Sections",
+    concealed_warn:"<b>Important:</b> Concealed PVC conduit wiring must be started and completed BEFORE the roof slab is cast. Coordinate with the civil engineer in advance.",
+    types_title:"Domestic / Commercial / Industrial", types_sub:"Estimation requirements and regulations differ by installation type.",
+    tab_dom:"🏠 Domestic", tab_com:"🏢 Commercial", tab_ind:"🏭 Industrial",
+    dom_badge:"Domestic", dom_card_title:"Residential Wiring Estimation",
+    dom_intro:"For a typical residential house. Load is single-phase (230V, 50Hz). Each branch circuit is limited to 800W (5A). Separate circuits for lighting, fans, and power sockets.",
+    dom_r1:"Branch circuit load ≤ 800W (5A). Lights + fans on lighting circuit; sockets on power circuit.",
+    dom_r2:"Cable: 1mm² copper for lighting/fan circuits; 1.5mm² copper for socket circuits.",
+    dom_r3:"Main switch, energy meter, and DB at point of entry. IC cutout on service main.",
+    dom_r4:"All conductors at height ≥ 2.5m along walls or ceiling.",
+    dom_r5:"Third pin of all wall sockets must be earthed; earth conductor min GI 14 SWG or 1.4mm² Al.",
+    dom_r6:"Add 5% of total cost as contingency in the final estimate.",
+    dom_calc_title:"Sample Domestic Load Calculation",
+    dom_calc_text:"Assuming: 2 Tube lights (50W each) + 3 Light points (60W each) + 3 Fans (60W each) + 3 Sockets (100W each)<br><code>Total = (2×50)+(3×60)+(3×60)+(3×100) = 760W</code><br>760W < 800W ✓ → Single branch circuit OK<br><code>Current = 760 / 240 = 3.17A</code> → Use 1mm² Cu cable",
+    com_badge:"Commercial", com_card_title:"Commercial/Office Wiring Estimation",
+    com_intro:"For shops, offices, malls, and commercial establishments. Higher load density, more circuits, 3-phase distribution.",
+    com_r1:"Load up to 100kVA: 415V, 3-phase, 4-wire LT supply from DISCOM.",
+    com_r2:"Load 100kVA to 1000kVA: 11kV HT supply. Customer installs own transformer.",
+    com_r3:"Separate and distinct circuits for lighting, power, air conditioning, computer loads.",
+    com_r4:"DB located at load center for minimum voltage drop; sub-DBs for each floor/section.",
+    com_r5:"Power factor correction capacitors may be needed for air conditioning loads.",
+    com_r6:"PVC casing & capping preferred for computer rooms; metal conduit for server rooms.",
+    com_note:"<b>Commercial Tip:</b> In commercial estimation, include cost of ELCB/RCCB for each circuit, surge protection devices, and cable trays for false ceiling areas.",
+    ind_badge:"Industrial", ind_card_title:"Industrial Wiring Estimation",
+    ind_intro:"For factories, workshops, manufacturing plants. 3-phase, 415V supply. Heavy power circuits, motor starters, distribution centres. GI conduit wiring mandatory.",
+    ind_r1:"Power circuits for loads ≥ 3000W. All power equipment: Iron-clad switches + GI conduit.",
+    ind_r2:"Induction motors ≥ 3HP must be 3-phase type.",
+    ind_r3:"Motors ≤ 5HP: DOL starter. Motors > 5HP: Star-Delta or Auto-transformer starter.",
+    ind_r4:"Load balanced across all 3 phases at main DB and branch DBs.",
+    ind_r5:"Flexible conduit ≤ 1.25m. Minimum cable: 1.25mm² Cu or 1.5mm² Al for power wiring.",
+    ind_r6:"Main switchboard: 1m clear space in front; passage ≥ 2m height if rear > 75cm.",
+    ind_r7:"Fuse rated for starting current (normally 2× full-load current of motor).",
+    ind_r8:"Load > 1000kVA or motors > 150HP: HT supply 3.3/6.6/11kV. Load > 3000kVA: EHT.",
+    diag4_title:"Industrial 3-Phase Distribution System",
+    calc_title:"Worked Calculation Example", calc_sub:"Complete domestic wiring estimate – 2 room house, 2 circuits",
+    prob_title:"📌 Problem: 2-Room House Estimation",
+    c1_title:"Circuit 1 – Room No.1", c1_desc:"1 Tube light (50W) + 2 Light points (60W each) + 2 Fan points (60W each) + 1 Socket (100W) = 390W",
+    c2_title:"Circuit 2 – Room No.2", c2_desc:"1 Tube light (50W) + 1 Light point (60W) + 1 Fan point (60W) + 2 Sockets (100W each) = 370W",
+    total_load:"Total Connected Load",
+    load_calc:"<code>Circuit 1: 390W + Circuit 2: 370W = 760W</code><br>760W < 800W → Both rooms in ONE branch circuit ✓<br><code>Current = 760 ÷ 240 = 3.17A</code><br>→ Cable: <b>1mm² copper</b> (or 1.5mm² Al)",
+    cable_calc_title:"Cable Length Calculation",
+    cable_calc:"<b>Horizontal run J</b> = 1.5m per end → Total 25m<br><b>Conduit run J</b> = (2.5+0.9+0.8)×2 = <code>8.4m</code><br><b>Run A</b> = (1.5+0.9+0.8)×7 = <code>22.4m</code><br><b>Run B</b> = 1.1×2 = <code>2.2m</code><br><b>Run C</b> = (1.05×4+1.85×2) = <code>7.9m</code><br><b>Run D</b> = (1.5+0.8+0.9)×3 = <code>9.6m</code><br><b>Run F</b> = (1.8+0.9+0.8)×5 = <code>17.5m</code><br><b>Runs G,H,K</b> = 4.4+6.0+2.2 = <code>12.6m</code><br><b>Total ≈ 90m of 1mm² Cu cable</b>",
+    earth_title:"Earth Wire",
+    earth_calc:"Copper 14 SWG for runs K,H,F,E,D,A = 16.9m → say <b>20m or 600g</b>",
+    labour_title:"💼 Labour Cost Summary",
+    lth_trade:"Trade", lth_rate:"Daily Rate", lth_days:"Days", lth_total:"Total",
+    elec_label:"Electrician", helper_label:"Helper", total_labour:"Total Labour",
+    final_cost_note:"<b>Final Estimate Formula:</b> Total = Material + Labour + 5% Contingency<br>Example: Material ₹3000 + Labour ₹480 = ₹3480 + 5% = <b>Grand Total ₹3654</b>",
+    quiz_title:"Knowledge Quiz", quiz_sub:"Test your understanding – 10 questions.",
+    quiz_reset:"🔄 Restart Quiz",
+    fc_title:"Flashcards", fc_sub:"Tap the card to reveal the answer. Use arrows to navigate.",
+    fc_question:"QUESTION", fc_tap:"Tap to reveal answer →", fc_prev:"◀ Previous", fc_shuffle:"🔀 Shuffle", fc_next:"Next ▶"
+  },
+  ml: {
+    hdr_title:"⚡ ആസ്തി ഭൂമി & ചെലവ് – Module 17",
+    hdr_sub:"CITS ഇലക്ട്രീഷ്യൻ | പാഠം 104 & 105",
+    tab_intro:"📋 ആമുഖം",
+    tab_steps:"🔢 11 ഘട്ടങ്ങൾ",
+    tab_comp:"🔌 ഘടകങ്ങൾ",
+    tab_wiring:"🧱 വയറിങ് സംവിധാനങ്ങൾ",
+    tab_types:"🏘️ ഗ്രഹ / വ്യാപാര / വ്യവസായ",
+    tab_calc:"🧮 കണക്കുകൂട്ടൽ",
+    tab_quiz:"❓ ക്വിസ്",
+    tab_fc:"🃏 ഫ്ലാഷ്കാർഡ്",
+    intro_title:"ആസ്തി ഭൂമി & ചെലവ് തത്ത്വങ്ങൾ",
+    intro_sub:"Module 17 – CITS ഇലക്ട്രീഷ്യൻ | NIMI പാഠം 104 & 105",
+    what_is_estimate:"ആസ്തി ഭൂമി (Estimate) എന്നാൽ?",
+    estimate_def:"<strong>ആസ്തി ഭൂമി</strong> എന്നത് വയറിങ് ജോലിക്ക് ആവശ്യമായ സാമഗ്രികളുടെയും തൊഴിലാളികളുടെയും ചെലവ് കണക്കാക്കുന്ന രീതിയാണ്. ഫണ്ട് ഒരുക്കുന്നതിനും സാമഗ്രികളുടെ ലഭ്യത പരിശോധിക്കാനും ഇത് സഹായിക്കുന്നു.",
+    contingency_note:"<b>5% ആകസ്മിക ചെലവ്:</b> നിർമ്മാണ സമയത്ത് അപ്രതീക്ഷിത ചെലവുകൾക്കായി ആകെ ചെലവിന്റെ 5% കൂടി ചേർക്കണം.",
+    tile1_label:"ഡ്രോയിങ്", tile1_val:"കെട്ടിടത്തിന്റെ പ്ലാൻ", tile1_sub:"പോയിന്റ് സ്ഥാനങ്ങൾ സഹിതം പ്രത്യേക ഡ്രോയിങ്",
+    tile2_label:"സ്പെസിഫിക്കേഷൻ", tile2_val:"സാമഗ്രി വിവരങ്ങൾ", tile2_sub:"ബ്രാൻഡ്, ഗ്രേഡ്, ISO/BIS സർട്ടിഫിക്കേഷൻ",
+    tile3_label:"നിരക്ക് ഷെഡ്യൂൾ", tile3_val:"വിപണി നിരക്ക്", tile3_sub:"സാമഗ്രി, തൊഴിൽ എന്നിവയ്ക്കുള്ള മാനദണ്ഡ നിരക്ക്",
+    tile4_label:"തൊഴിൽ", tile4_val:"വൈദഗ്ദ്ധ്യം + സഹായി", tile4_sub:"ഇലക്ട്രീഷ്യൻ + സഹായ ചെലവ്",
+    sor_title:"📊 നിരക്ക് ഷെഡ്യൂൾ (വൈദ്യുതി)",
+    th_slno:"ക്രമ നം", th_item:"ഇനം വിശദാംശം", th_unit:"യൂണിറ്റ്", th_rate:"നിരക്ക് (₹)",
+    sor1:"സീലിങ് റോസ് – 2 പ്ലേറ്റ്, 6A, 250V", sor2:"സീലിങ് റോസ് – 3 പ്ലേറ്റ്, 6A, 250V",
+    sor3:"ടംബ്ലർ സ്വിച്ച് – ഒരുവഴി, 6A 250V", sor4:"ടംബ്ലർ സ്വിച്ച് – രണ്ടുവഴി, 6A 250V",
+    sor_each:"ഓരോന്നും",
+    diag1_title:"Fig 1 – സാമ്പിൾ കെട്ടിട പ്ലാൻ",
+    steps_title:"ആസ്തി ഭൂമി – 11 ഘട്ടങ്ങൾ",
+    steps_sub:"പ്ലാൻ മുതൽ ആകെ ചെലവ് വരെ ക്രമബദ്ധമായ രീതി.",
+    s1_title:"വൈദ്യുത പോയിന്റ് സ്ഥാനം", s1_desc:"ഉപഭോക്താവിന്റെ ആവശ്യത്തിനനുസരിച്ച് ഓരോ മുറിയിലും ലൈറ്റ്, ഫാൻ, സോക്കറ്റ് പോയിന്റ് അടയാളപ്പെടുത്തുക. കെട്ടിടത്തിന്റെ പ്ലാനിൽ ഇത് കാണിക്കുക.",
+    s2_title:"വയറിങ് ലേഔട്ട് തയ്യാറാക്കൽ", s2_desc:"DB സ്ഥാനം, സ്വിച്ച്ബോർഡ്, കണ്ടൂട്ട് റൂട്ട് എന്നിവ ഉൾപ്പെടുത്തി കെട്ടിടത്തിന്റെ പ്ലാനിൽ വയറിങ് ലേഔട്ട് തയ്യാറാക്കുക.",
+    s3_title:"ആകെ ലോഡ് കണക്കാക്കൽ", s3_desc:"എല്ലാ ഉപകരണങ്ങളുടെയും വാട്ടേജ് കൂട്ടുക. ഒറ്റ ഫേസ് അല്ലെങ്കിൽ 3 ഫേസ് വേണോ എന്ന് തീരുമാനിക്കുക. Current = Total Watts ÷ 240V.",
+    s4_title:"സർക്യൂട്ട് ഡയഗ്രം", s4_desc:"ക്യൂബിക്കൽ വയറിങ് മോഡൽ തയ്യാറാക്കുക. ഓരോ ബ്രാഞ്ച് സർക്യൂട്ടും 800W (5A) കവിയുന്നില്ലെന്ന് ഉറപ്പ് വരുത്തുക.",
+    s5_title:"ഉപകരണ ലിസ്റ്റ്", s5_desc:"സ്വിച്ചുകൾ, സോക്കറ്റ്, MCB, DB, ഫാൻ, ലൈറ്റ് ഫിറ്റിങ്ങ്, കണ്ടൂട്ട് ബോക്സ് എന്നിവ ഉൾപ്പെടുന്ന മുഴുവൻ ലിസ്റ്റ് തയ്യാറാക്കുക.",
+    s6_title:"കേബിൾ ദൈർഘ്യം", s6_desc:"ഓരോ സർക്യൂട്ടിലും ആവശ്യമായ കേബിൾ ദൈർഘ്യം കണക്കാക്കുക. ലോഡ്, വോൾട്ടേജ് ഡ്രോപ്പ് എന്നിവ പരിഗണിക്കുക.",
+    s7_title:"കണ്ടൂട്ട്/ബ്ലോക്ക് ദൈർഘ്യം", s7_desc:"ബ്ലോക്ക് / PVC കേസിങ് & കാപ്പിങ് / GI കണ്ടൂട്ട് എന്നിവ ആവശ്യമായ ദൈർഘ്യം കണക്കാക്കുക.",
+    s8_title:"ഹാർഡ്‌വെയർ ലിസ്റ്റ്", s8_desc:"സ്ക്രൂ, ആണി, GI വയർ, ജംഗ്ഷൻ ബോക്സ്, PVC ബുഷ് ഉൾപ്പെടെ ആവശ്യമായ ഹാർഡ്‌വെയർ ലിസ്റ്റ് തയ്യാറാക്കുക.",
+    s9_title:"തൊഴിൽ ചെലവ്", s9_desc:"ഇലക്ട്രീഷ്യൻ: ₹150/ദിവസം × 2 = ₹300. സഹായി: ₹90/ദിവസം × 2 = ₹180. ആകെ തൊഴിൽ = ₹480.",
+    s10_title:"ഉപകരണ & സാമഗ്രി ചെലവ്", s10_desc:"നിരക്ക് ഷെഡ്യൂൾ പ്രകാരം ഉപകരണങ്ങളുടെ, കേബിൾ, കണ്ടൂട്ട്, ഹാർഡ്‌വെയർ ചെലവ് കണക്കാക്കുക.",
+    s11_title:"5% ആകസ്മിക ചെലവ് ഉൾപ്പെടെ ആകെ ചെലവ്", s11_desc:"ആകെ ചെലവ് = സാമഗ്രി ചെലവ് + തൊഴിൽ ചെലവ് + 5% ആകസ്മിക ചെലവ്.",
+    diag2_title:"Fig 4 – ക്യൂബിക്കൽ വയറിങ് മോഡൽ",
+    comp_title:"വയറിങ് ഘടകങ്ങൾ", comp_sub:"ഒരു ഘടകം തിരഞ്ഞെടുക്കുക.",
+    comp_placeholder:"-- ഒരു ഘടകം തിരഞ്ഞെടുക്കുക --",
+    run_title:"🏠 'റൺ' എന്നതിനെ മനസ്സിലാക്കൽ",
+    hrun_title:"ഹോറിസോണ്ടൽ റൺ", hrun_desc:"ഭിത്തിയിൽ അല്ലെങ്കിൽ സ്ലാബ് ഉപരിതലത്തിൽ 2.5m ഉയരത്തിൽ തിരശ്ചീനമായി ഓടുന്ന കേബിൾ/കണ്ടൂട്ട്. ഉദാ: Run J = (2.5+0.9+0.8)×2 = 8.4m",
+    rrun_title:"റൂഫ് റൺ (സ്ലാബ് റൺ)", rrun_desc:"സ്ലാബ് ഉള്ളിൽ ഓടുന്ന കേബിൾ/കണ്ടൂട്ട്. Concealed wiring-ൽ ഇത് സ്ലാബ് ഇടുന്നതിന് മുമ്പ് ചെയ്തിരിക്കണം.",
+    vrun_title:"വെർട്ടിക്കൽ ഡ്രോപ്പ്", vrun_desc:"DB/സ്വിച്ച്ബോർഡ്/സോക്കറ്റ് വരെ ലംബമായി ഇറക്കുന്ന കേബിൾ. ഉദ്ദേശം 0.8–0.9m.",
+    wiring_title:"വയറിങ് സംവിധാനങ്ങൾ", wiring_sub:"സ്ഥലം, ഉപഭോക്തൃ ഇഷ്ടം, KSEB നിയന്ത്രണം അനുസരിച്ച് തിരഞ്ഞെടുക്കുക.",
+    w1_use:"ഗ്രഹ (പഴയ)", w1_desc:"VIR/TRS കേബിൾ ബ്ലോക്കിൽ ക്ലിപ്പ് ചെയ്ത് ഭിത്തിയിൽ ഓടുന്നു. ലളിതം, പരിപാലനം എളുപ്പം. ഈർപ്പമുള്ള സ്ഥലത്ത് ഉചിതമല്ല.",
+    w2_use:"ഓഫീസ് / കമ്പ്യൂട്ടർ", w2_desc:"PVC ചാനൽ (casing) + snap-on cover (capping). നല്ല ഭംഗി, ഓഫീസ്, കമ്പ്യൂട്ടർ ലാബ്.",
+    w3_use:"ഗ്രഹ / വ്യാപാര", w3_desc:"PVC pipe-ൽ കേബിൾ ഉൾപ്പെടുത്തി. Surface/concealed. ആധുനിക ഗൃഹ നിർമ്മാണത്തിൽ ഏറ്റവും ജനപ്രിയം.",
+    w4_use:"ഫാക്ടറി / Hazardous", w4_desc:"GI conduit-ൽ കേബിൾ. ഏറ്റവും ശക്തമായ സംരക്ഷണം. ഫാക്ടറി, ഓയിൽ റിഫൈനറി, ഖനി.",
+    diag3_title:"വയറിങ് സംവിധാന ക്രോസ്-സെക്ഷൻ",
+    concealed_warn:"<b>പ്രധാനം:</b> Concealed PVC conduit wiring സ്ലാബ് ഇടുന്നതിന് മുമ്പ് പൂർത്തിയാക്കണം. Civil engineer-ൽ നേരത്തെ ചർച്ചചെയ്യണം.",
+    types_title:"ഗ്രഹ / വ്യാപാര / വ്യവസായ", types_sub:"ഇൻസ്റ്റലേഷൻ തരം അനുസരിച്ച് ആസ്തി ഭൂമി ആവശ്യകതകൾ വ്യത്യസ്തമാണ്.",
+    tab_dom:"🏠 ഗ്രഹ", tab_com:"🏢 വ്യാപാര", tab_ind:"🏭 വ്യവസായ",
+    dom_badge:"ഗ്രഹ", dom_card_title:"ഗ്രഹ വയറിങ് ആസ്തി ഭൂമി",
+    dom_intro:"ഒരു സാധാരണ ഗൃഹത്തിന്. Single-phase 230V. ഓരോ ബ്രാഞ്ച് സർക്യൂട്ടും 800W (5A) വരെ.",
+    dom_r1:"ബ്രാഞ്ച് സർക്യൂട്ട് ≤ 800W. ലൈറ്റ്+ഫാൻ ലൈറ്റിങ് സർക്യൂട്ടിൽ; സോക്കറ്റ് പവർ സർക്യൂട്ടിൽ.",
+    dom_r2:"1mm² Cu – ലൈറ്റ്/ഫാൻ; 1.5mm² Cu – സോക്കറ്റ്.",
+    dom_r3:"Main switch, meter, DB entrance-ൽ. IC cutout service main-ൽ.",
+    dom_r4:"2.5m ഉയരത്തിൽ ഭിത്തി/സ്ലാബ് ഉപരിതലത്തിൽ.",
+    dom_r5:"എല്ലാ socket-ലും earth pin ഉണ്ടാകണം; min GI 14SWG.",
+    dom_r6:"5% contingency ഉൾപ്പെടുത്തുക.",
+    dom_calc_title:"ഉദാഹരണ ഗൃഹ ലോഡ് കണക്ക്",
+    dom_calc_text:"2 Tube lights (50W) + 3 Light (60W) + 3 Fan (60W) + 3 Socket (100W)<br><code>Total = 100+180+180+300 = 760W</code><br>760W &lt; 800W ✓<br><code>Current = 760/240 = 3.17A</code> → 1mm² Cu cable",
+    com_badge:"വ്യാപാര", com_card_title:"വ്യാപാര/ഓഫീസ് ആസ്തി ഭൂമി",
+    com_intro:"കടകൾ, ഓഫീസ്, ഷോപ്പിങ് മോൾ. 3-phase distribution.",
+    com_r1:"≤100kVA: 415V, 3-phase LT. DISCOM-ൽ നിന്ന്.",
+    com_r2:"100–1000kVA: 11kV HT. ഉപഭോക്താവ് transformer ഇൻസ്റ്റാൾ ചെയ്യണം.",
+    com_r3:"ലൈറ്റ്, power, AC, computer – പ്രത്യേക സർക്യൂട്ടുകൾ.",
+    com_r4:"DB load center-ൽ; ഓരോ നിലയ്ക്കും sub-DB.",
+    com_r5:"AC ലോഡ്: power factor correction capacitor.",
+    com_r6:"Computer room: PVC casing; server room: Metal conduit.",
+    com_note:"<b>വ്യാപാര ടിപ്പ്:</b> ELCB/RCCB, surge protection, cable tray cost ഉൾപ്പെടുത്തണം.",
+    ind_badge:"വ്യവസായ", ind_card_title:"വ്യവസായ ആസ്തി ഭൂമി",
+    ind_intro:"ഫാക്ടറി, workshop. 3-phase 415V. Heavy power circuits. GI conduit wiring.",
+    ind_r1:"3000W+ ലോഡ്: power circuit. Iron-clad switch + GI conduit.",
+    ind_r2:"3HP+ induction motor: 3-phase type.",
+    ind_r3:"≤5HP: DOL starter. >5HP: Star-Delta/Auto-transformer.",
+    ind_r4:"Load balance across 3 phases.",
+    ind_r5:"Flexible conduit ≤ 1.25m. Cable: min 1.25mm² Cu.",
+    ind_r6:"Switchboard: front 1m clear; rear >75cm: passage 2m.",
+    ind_r7:"Fuse: starting current capacity (2× FL current).",
+    ind_r8:">1000kVA: 11kV HT. >3000kVA: EHT.",
+    diag4_title:"Industrial 3-Phase Distribution System",
+    calc_title:"കണക്ക് ഉദാഹരണം", calc_sub:"2-മുറി ഗൃഹം – 2 സർക്യൂട്ട് ആസ്തി ഭൂമി",
+    prob_title:"📌 ഉദ്ദേശം: 2-മുറി ഗൃഹ ആസ്തി ഭൂമി",
+    c1_title:"സർക്യൂട്ട് 1 – Room No.1", c1_desc:"1 Tube light (50W) + 2 Light (60W) + 2 Fan (60W) + 1 Socket (100W) = 390W",
+    c2_title:"സർക്യൂട്ട് 2 – Room No.2", c2_desc:"1 Tube light (50W) + 1 Light (60W) + 1 Fan (60W) + 2 Sockets (100W) = 370W",
+    total_load:"ആകെ ഭാരം (Connected Load)",
+    load_calc:"<code>390+370 = 760W</code><br>800W ൽ കുറവ് → ഒരു ബ്രാഞ്ച് സർക്യൂട്ട് ✓<br><code>Current = 760/240 = 3.17A</code><br>→ 1mm² Cu cable",
+    cable_calc_title:"കേബിൾ ദൈർഘ്യ കണക്ക്",
+    cable_calc:"Run J = (2.5+0.9+0.8)×2 = <code>8.4m</code><br>Run A = (1.5+0.9+0.8)×7 = <code>22.4m</code><br>... ആകെ <b>≈90m 1mm² Cu cable</b>",
+    earth_title:"Earth Wire",
+    earth_calc:"K,H,F,E,D,A runs: 16.9m → <b>20m / 600g Cu 14SWG</b>",
+    labour_title:"💼 തൊഴിൽ ചെലവ്",
+    lth_trade:"ജോലി", lth_rate:"ദൈനിക നിരക്ക്", lth_days:"ദിവസങ്ങൾ", lth_total:"ആകെ",
+    elec_label:"ഇലക്ട്രീഷ്യൻ", helper_label:"സഹായി", total_labour:"ആകെ തൊഴിൽ",
+    final_cost_note:"<b>ആകെ ചെലവ്:</b> സാമഗ്രി + തൊഴിൽ + 5%<br>ഉദാ: ₹3000+₹480 = ₹3480 + 5% = <b>₹3654</b>",
+    quiz_title:"ക്വിസ്", quiz_sub:"10 ചോദ്യങ്ങൾ – ആസ്തി ഭൂമി & ചെലവ്",
+    quiz_reset:"🔄 ക്വിസ് പുനരാരംഭിക്കുക",
+    fc_title:"ഫ്ലാഷ്കാർഡ്", fc_sub:"ഉത്തരം കാണാൻ കാർഡ് ടാപ്പ് ചെയ്യുക.",
+    fc_question:"ചോദ്യം", fc_tap:"ഉത്തരം കാണൽ →", fc_prev:"◀ മുൻ", fc_shuffle:"🔀 ഷഫിൾ", fc_next:"അടുത്ത ▶"
+  },
+  hi: {
+    hdr_title:"⚡ अनुमान एवं लागत – Module 17",
+    hdr_sub:"CITS इलेक्ट्रीशियन | पाठ 104 और 105",
+    tab_intro:"📋 परिचय",
+    tab_steps:"🔢 11 चरण",
+    tab_comp:"🔌 घटक",
+    tab_wiring:"🧱 वायरिंग प्रणाली",
+    tab_types:"🏘️ घरेलू/व्यापारिक/औद्योगिक",
+    tab_calc:"🧮 गणना",
+    tab_quiz:"❓ क्विज़",
+    tab_fc:"🃏 फ्लैशकार्ड",
+    intro_title:"अनुमान एवं लागत के सिद्धांत",
+    intro_sub:"Module 17 – CITS इलेक्ट्रीशियन | NIMI पाठ 104 और 105",
+    what_is_estimate:"अनुमान (Estimate) क्या है?",
+    estimate_def:"<strong>अनुमान</strong> वायरिंग कार्य के लिए आवश्यक सामग्री एवं श्रम की लागत की गणना करने की विधि है। इससे धन की व्यवस्था, सामग्री की उपलब्धता जांचना और कार्य की योजना बनाना संभव होता है।",
+    contingency_note:"<b>5% आकस्मिक व्यय:</b> अप्रत्याशित खर्चों के लिए कुल लागत का 5% अतिरिक्त जोड़ें।",
+    tile1_label:"ड्राइंग", tile1_val:"भवन का नक्शा", tile1_sub:"बिंदु स्थानों सहित अलग ड्राइंग",
+    tile2_label:"विशिष्टता", tile2_val:"सामग्री विवरण", tile2_sub:"ब्रांड, ग्रेड, ISO/BIS प्रमाणन",
+    tile3_label:"दर अनुसूची", tile3_val:"बाज़ार दर", tile3_sub:"सामग्री और श्रम की मानक दरें",
+    tile4_label:"श्रम", tile4_val:"कुशल + सहायक", tile4_sub:"इलेक्ट्रीशियन + सहायक शुल्क",
+    sor_title:"📊 दर अनुसूची (विद्युत)",
+    th_slno:"क्र.सं.", th_item:"आइटम विशिष्टता", th_unit:"इकाई", th_rate:"दर (₹)",
+    sor1:"सीलिंग रोज़ – 2 प्लेट, 6A, 250V", sor2:"सीलिंग रोज़ – 3 प्लेट, 6A, 250V",
+    sor3:"टम्बलर स्विच – एकतरफा, 6A 250V", sor4:"टम्बलर स्विच – दो तरफा, 6A 250V",
+    sor_each:"प्रति नग",
+    diag1_title:"Fig 1 – अनुमान के लिए नमूना भवन योजना",
+    steps_title:"अनुमान के 11 चरण",
+    steps_sub:"योजना से लेकर कुल लागत तक की व्यवस्थित प्रक्रिया।",
+    s1_title:"विद्युत बिंदुओं की स्थिति", s1_desc:"उपभोक्ता की जरूरत के अनुसार प्रत्येक कक्ष में लाइट, पंखा, सॉकेट के स्थान भवन नक्शे पर अंकित करें।",
+    s2_title:"वायरिंग लेआउट तैयार करें", s2_desc:"DB, स्विचबोर्ड और सर्किट रूट सहित विस्तृत वायरिंग लेआउट भवन नक्शे पर तैयार करें।",
+    s3_title:"कुल भार की गणना", s3_desc:"सभी उपकरणों का वाट जोड़ें। एकल या त्रि-फेज आपूर्ति तय करें। धारा = कुल वाट ÷ 240V।",
+    s4_title:"सर्किट आरेख", s4_desc:"क्यूबिकल वायरिंग मॉडल तैयार करें। प्रत्येक शाखा सर्किट 800W (5A) से अधिक नहीं होनी चाहिए।",
+    s5_title:"सामग्री सूची", s5_desc:"स्विच, सॉकेट, MCB, DB, पंखे, लाइट फिटिंग, कंड्यूट बॉक्स सहित पूरी सूची बनाएं।",
+    s6_title:"केबल लंबाई गणना", s6_desc:"भार, वोल्टेज ड्रॉप और सर्किट के अनुसार विभिन्न आकार की केबल की लंबाई गणना करें।",
+    s7_title:"कंड्यूट/बैटन लंबाई", s7_desc:"बैटन / PVC केसिंग & कैपिंग / GI कंड्यूट की आवश्यक लंबाई गणना करें।",
+    s8_title:"हार्डवेयर सूची", s8_desc:"स्क्रू, कील, GI तार, जंक्शन बॉक्स, PVC बुश की सूची तैयार करें।",
+    s9_title:"श्रम शुल्क", s9_desc:"इलेक्ट्रीशियन: ₹150/दिन × 2 = ₹300। सहायक: ₹90/दिन × 2 = ₹180। कुल = ₹480।",
+    s10_title:"सामग्री एवं उपकरण लागत", s10_desc:"दर अनुसूची के अनुसार सभी सामग्री की लागत जोड़ें।",
+    s11_title:"5% आकस्मिक सहित कुल लागत", s11_desc:"कुल लागत = सामग्री + श्रम + 5% आकस्मिक।",
+    diag2_title:"Fig 4 – क्यूबिकल वायरिंग मॉडल",
+    comp_title:"वायरिंग घटक", comp_sub:"विवरण देखने के लिए कोई घटक चुनें।",
+    comp_placeholder:"-- कोई घटक चुनें --",
+    run_title:"🏠 'रन' को समझना",
+    hrun_title:"क्षैतिज रन (Horizontal Run)", hrun_desc:"दीवार या छत पर 2.5m ऊंचाई पर क्षैतिज दिशा में चलने वाली केबल/कंड्यूट। उदा: Run J = (2.5+0.9+0.8)×2 = 8.4m",
+    rrun_title:"छत रन (Roof Run)", rrun_desc:"छत के स्लैब में चलने वाली केबल/कंड्यूट। Concealed wiring के लिए स्लैब ढलाई से पहले यह कार्य पूरा करना आवश्यक है।",
+    vrun_title:"ऊर्ध्वाधर ड्रॉप (Vertical Drop)", vrun_desc:"DB/स्विचबोर्ड तक ऊर्ध्वाधर केबल। सामान्यतः 0.8–0.9m प्रति छोर।",
+    wiring_title:"वायरिंग प्रणालियाँ", wiring_sub:"स्थान, उपभोक्ता पसंद और विद्युत बोर्ड नियमानुसार चुनें।",
+    w1_use:"घरेलू (पुरानी)", w1_desc:"VIR/TRS केबल लकड़ी के बैटन पर दीवार/छत पर। सरल, पुरानी पद्धति। नमी वाले स्थान के लिए अनुपयुक्त।",
+    w2_use:"ऑफिस / कंप्यूटर", w2_desc:"PVC चैनल (केसिंग) + snap-on कवर (कैपिंग)। अच्छी दिखावट, ऑफिस व कंप्यूटर रूम के लिए।",
+    w3_use:"घरेलू / व्यापारिक", w3_desc:"PVC पाइप में केबल। Surface या Concealed। आधुनिक भवनों में सर्वाधिक लोकप्रिय।",
+    w4_use:"औद्योगिक / खतरनाक", w4_desc:"GI कंड्यूट में केबल। सर्वाधिक यांत्रिक सुरक्षा। कारखाना, रिफाइनरी, खतरनाक क्षेत्र।",
+    diag3_title:"वायरिंग प्रणाली क्रॉस-सेक्शन",
+    concealed_warn:"<b>महत्वपूर्ण:</b> Concealed PVC conduit wiring स्लैब ढलाई से पहले पूरी होनी चाहिए। सिविल इंजीनियर से पहले चर्चा करें।",
+    types_title:"घरेलू / व्यापारिक / औद्योगिक", types_sub:"इंस्टालेशन के प्रकार के अनुसार अनुमान आवश्यकताएं अलग होती हैं।",
+    tab_dom:"🏠 घरेलू", tab_com:"🏢 व्यापारिक", tab_ind:"🏭 औद्योगिक",
+    dom_badge:"घरेलू", dom_card_title:"आवासीय वायरिंग अनुमान",
+    dom_intro:"सामान्य आवास के लिए। Single-phase 230V। प्रत्येक शाखा सर्किट ≤ 800W (5A)।",
+    dom_r1:"शाखा सर्किट ≤ 800W। प्रकाश+पंखा – lighting circuit; सॉकेट – power circuit।",
+    dom_r2:"1mm² Cu – light/fan; 1.5mm² Cu – socket।",
+    dom_r3:"Main switch, energy meter, DB प्रवेश पर।",
+    dom_r4:"2.5m ऊंचाई पर दीवार/छत के साथ।",
+    dom_r5:"सभी socket की earth pin अर्थ होनी चाहिए; min GI 14SWG।",
+    dom_r6:"5% आकस्मिक व्यय जोड़ें।",
+    dom_calc_title:"नमूना घरेलू भार गणना",
+    dom_calc_text:"2 Tube lights (50W) + 3 Light (60W) + 3 Fan (60W) + 3 Socket (100W)<br><code>कुल = 760W</code><br>800W से कम ✓<br><code>धारा = 760/240 = 3.17A</code> → 1mm² Cu cable",
+    com_badge:"व्यापारिक", com_card_title:"व्यापारिक वायरिंग अनुमान",
+    com_intro:"दुकान, ऑफिस, मॉल। उच्च भार, 3-phase distribution।",
+    com_r1:"≤100kVA: 415V, 3-phase LT।", com_r2:"100–1000kVA: 11kV HT।",
+    com_r3:"प्रकाश, power, AC के लिए अलग सर्किट।", com_r4:"DB भार केंद्र पर।",
+    com_r5:"AC लोड: PF correction capacitor।", com_r6:"कंप्यूटर रूम: PVC casing; server room: Metal conduit।",
+    com_note:"<b>व्यापारिक सुझाव:</b> ELCB/RCCB, surge protection, cable tray लागत शामिल करें।",
+    ind_badge:"औद्योगिक", ind_card_title:"औद्योगिक वायरिंग अनुमान",
+    ind_intro:"कारखाना, कार्यशाला। 3-phase 415V। GI conduit अनिवार्य।",
+    ind_r1:"3000W+ लोड: power circuit। Iron-clad switch + GI conduit।",
+    ind_r2:"3HP+ induction motor: 3-phase type।",
+    ind_r3:"≤5HP: DOL। >5HP: Star-Delta/Auto-transformer।",
+    ind_r4:"3 phases में load balance।",
+    ind_r5:"Flexible conduit ≤ 1.25m। Minimum 1.25mm² Cu।",
+    ind_r6:"Switchboard: सामने 1m, पीछे >75cm: 2m passage।",
+    ind_r7:"Fuse: starting current क्षमता (2× FL)।",
+    ind_r8:">1000kVA: 11kV। >3000kVA: EHT।",
+    diag4_title:"Industrial 3-Phase Distribution System",
+    calc_title:"हल उदाहरण", calc_sub:"2-कमरे का घर – 2 सर्किट अनुमान",
+    prob_title:"📌 समस्या: 2-कमरे का घर",
+    c1_title:"सर्किट 1 – कमरा 1", c1_desc:"1 Tube light (50W) + 2 Light (60W) + 2 Fan (60W) + 1 Socket (100W) = 390W",
+    c2_title:"सर्किट 2 – कमरा 2", c2_desc:"1 Tube light (50W) + 1 Light (60W) + 1 Fan (60W) + 2 Sockets (100W) = 370W",
+    total_load:"कुल जुड़ा भार",
+    load_calc:"<code>390+370 = 760W</code><br>800W से कम → एक branch circuit ✓<br><code>धारा = 760/240 = 3.17A</code><br>→ 1mm² Cu cable",
+    cable_calc_title:"केबल लंबाई गणना",
+    cable_calc:"Run J = 8.4m, Run A = 22.4m... <b>कुल ≈ 90m 1mm² Cu cable</b>",
+    earth_title:"Earth Wire",
+    earth_calc:"K,H,F,E,D,A: 16.9m → <b>20m / 600g Cu 14SWG</b>",
+    labour_title:"💼 श्रम लागत",
+    lth_trade:"कार्य", lth_rate:"दैनिक दर", lth_days:"दिन", lth_total:"कुल",
+    elec_label:"इलेक्ट्रीशियन", helper_label:"सहायक", total_labour:"कुल श्रम",
+    final_cost_note:"<b>कुल अनुमान:</b> सामग्री + श्रम + 5%<br>उदा: ₹3000+₹480 = ₹3480 + 5% = <b>₹3654</b>",
+    quiz_title:"क्विज़", quiz_sub:"10 प्रश्न – अनुमान एवं लागत",
+    quiz_reset:"🔄 क्विज़ पुनः शुरू करें",
+    fc_title:"फ्लैशकार्ड", fc_sub:"उत्तर देखने के लिए कार्ड पर टैप करें।",
+    fc_question:"प्रश्न", fc_tap:"उत्तर देखें →", fc_prev:"◀ पिछला", fc_shuffle:"🔀 शफल", fc_next:"अगला ▶"
+  }
+};
+
+let currentLang = 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  const data = L[lang];
+  document.querySelectorAll('[data-key]').forEach(el => {
+    const key = el.getAttribute('data-key');
+    if (data[key] !== undefined) el.innerHTML = data[key];
+  });
+  document.getElementById('hdr-title').textContent = data.hdr_title || L.en.hdr_title;
+  document.getElementById('hdr-sub').textContent = data.hdr_sub || L.en.hdr_sub;
+  // Rebuild quiz and flashcards in new language
+  buildQuiz();
+  buildFC();
+}
+
+/* ─── PAGE NAVIGATION ─── */
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ─── CATEGORY TABS ─── */
+function showCat(id, btn) {
+  document.querySelectorAll('.cat-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('cat-' + id).classList.add('active');
+  document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ─── COMPONENT DATA ─── */
+const compData = {
+  pvc_wire: { name:"PVC Insulated Wire / Cable", unit:"metre (m)", std:"IS 694", sizes:"1mm², 1.5mm², 2.5mm², 4mm², 6mm²", colors:"Red(L), Black(N), Green/Yellow(E)", desc:"Most common conductor for domestic and commercial wiring. Used inside PVC conduits or batten. Copper conductors preferred for lighting/fan (1mm²) and socket circuits (1.5mm²). For power circuits, 2.5mm² and above. Always run in conduit for protection.", svgId:"svg_wire" },
+  conduit_pvc: { name:"PVC Conduit (Rigid)", unit:"metre (m)", std:"IS 9537", sizes:"16mm, 20mm, 25mm, 32mm dia", colors:"Grey/White", desc:"Rigid PVC pipes protecting cables inside walls (concealed) or on wall surface. Most popular for modern domestic/commercial wiring. Must be completed before slab casting for concealed type. Smooth interior allows easy wire pulling. Max 3 cables per conduit.", svgId:"svg_conduit" },
+  conduit_metal: { name:"Metal (GI) Conduit", unit:"metre (m)", std:"IS 9537", sizes:"20mm, 25mm, 32mm, 40mm", colors:"Galvanized Silver/Grey", desc:"Galvanized Iron conduit. Mandatory for industrial, hazardous and outdoor wiring. Acts as earth conductor. Higher mechanical protection than PVC. Used in factories, chemical plants, oil refineries. Requires earthing continuity at every joint.", svgId:"svg_conduit" },
+  batten: { name:"Wooden / PVC Batten", unit:"metre (m)", std:"IS 694", sizes:"12mm×6mm, 16mm×6mm", colors:"Wood/White PVC", desc:"Flat wooden or PVC strip used to support cables directly on wall/ceiling. The simplest wiring method. Being phased out in modern installations. Not suitable for damp, chemical or outdoor environments. Easy to install and maintain.", svgId:"svg_batten" },
+  casing: { name:"PVC Casing & Capping", unit:"metre (m)", std:"IS 3480", sizes:"12mm, 16mm, 20mm, 25mm", colors:"White/Ivory", desc:"PVC channel (casing) that holds cables with a snap-on cover (capping). Neat appearance, suitable for offices and computer rooms. Cables can be accessed easily. Uses special fittings for bends, tees, and angles. Common in retrofit/commercial installations.", svgId:"svg_casing" },
+  flex_conduit: { name:"Flexible Conduit", unit:"metre (m)", std:"IS 9537", sizes:"16mm, 20mm, 25mm", colors:"Grey/Black", desc:"Corrugated flexible PVC or GI conduit. Used for final connection to motors, machines, and equipment that vibrate. Maximum length 1.25m (as per IE Rules). Absorbs vibration, allows motor alignment adjustment.", svgId:"svg_conduit" },
+  switch_1way: { name:"1-Way Tumbler Switch", unit:"each", std:"IS 3854", sizes:"6A 250V; 16A 250V", colors:"White/Ivory", desc:"Standard ON/OFF switch for controlling one light or fan from a single point. Most commonly used switch in domestic wiring. Rated 6A for lighting/fan, 16A for air conditioners. Surface or flush (concealed) mounting.", svgId:"svg_switch" },
+  switch_2way: { name:"2-Way Switch", unit:"each", std:"IS 3854", sizes:"6A 250V; 16A 250V", colors:"White/Ivory", desc:"Allows a light to be controlled from TWO different locations – e.g. staircase top and bottom, bedroom door and bed side. Requires a strappers wire connecting both switches. Uses two common terminals and one strapper terminal.", svgId:"svg_switch" },
+  socket_3pin: { name:"3-Pin Socket (6A)", unit:"each", std:"IS 1293", sizes:"6A, 250V", colors:"White/Ivory", desc:"Standard power socket for light loads (table lamps, chargers, fans, small appliances). Three pins: Phase (L), Neutral (N), Earth (E). Earth pin must be connected. Used in domestic, office, and commercial areas.", svgId:"svg_socket" },
+  socket_16a: { name:"16A Socket (Heavy)", unit:"each", std:"IS 1293", sizes:"16A, 250V; 32A for 3ph", colors:"White/Red", desc:"For heavy appliances: air conditioner, water heater, washing machine, microwave oven. Larger pin size than 6A socket. Must have separate circuit with 2.5mm² or 4mm² cable. Always includes earth pin.", svgId:"svg_socket" },
+  ceiling_rose: { name:"Ceiling Rose", unit:"each", std:"IS 371", sizes:"2-plate (6A 250V), 3-plate (6A 250V)", colors:"White", desc:"Junction point on ceiling for pendant lamp or fan connection. 2-plate: for simple loop-in systems (L+N). 3-plate: for loop-in with switch-return wire. Ceiling fans use ceiling roses or canopy boxes. Rate: 2-plate ₹7.00, 3-plate ₹10.00.", svgId:"svg_crose" },
+  mcb: { name:"MCB (Miniature Circuit Breaker)", unit:"each", std:"IS 8828", sizes:"6A, 10A, 16A, 20A, 32A, 40A, 63A", colors:"White/DIN rail", desc:"Automatic current protection device in the DB. Trips on overload or short circuit. B-curve: for resistive loads (lights, heaters). C-curve: for inductive loads (motors, transformers). D-curve: for high inrush loads. Replaces fuses in modern installations.", svgId:"svg_mcb" },
+  rccb: { name:"RCCB (Residual Current Circuit Breaker)", unit:"each", std:"IS 12640", sizes:"25A/30mA, 40A/30mA, 63A/100mA", colors:"White/DIN rail", desc:"Earth leakage protection device. Trips when leakage current exceeds 30mA (life protection). Mandatory in bathrooms, kitchens, outdoor circuits. Protects against electric shock and fire from earth faults. Also called ELCB.", svgId:"svg_mcb" },
+  fuse: { name:"Fuse / HRC Fuse", unit:"each", std:"IS 13703", sizes:"6A, 10A, 16A, 32A, 63A, 100A", colors:"Ceramic/cartridge", desc:"Overcurrent protection – melts on fault. HRC (High Rupturing Capacity) fuses for industrial use. Rated to carry 2× motor starting current without blowing. For motors, fuse rating = 2× full-load current.", svgId:"svg_mcb" },
+  db: { name:"Distribution Board (DB)", unit:"each", std:"IS 8623", sizes:"4-way, 6-way, 8-way, 12-way, 16-way", colors:"White/Grey metal", desc:"Panel board that distributes electrical supply to individual circuits via MCBs. Located at load centre for minimum voltage drop. In multi-floor buildings, sub-DBs on each floor. Includes main incoming MCB/RCCB and individual circuit MCBs.", svgId:"svg_db" },
+  meter: { name:"Energy Meter (kWh Meter)", unit:"each", std:"IS 15884", sizes:"Single-phase 5(30)A; 3-phase 10(60)A", colors:"Transparent/Grey", desc:"Measures electrical energy consumed in kilowatt-hours. Installed at service entry point by DISCOM. Single-phase for domestic; 3-phase for commercial/industrial. Smart meters allow remote reading and time-of-use tariff.", svgId:"svg_meter" },
+  light_point: { name:"Light Point (Bulb/Lamp)", unit:"each (point)", std:"IE Rules", sizes:"60W incandescent / 9–15W LED", colors:"Any", desc:"A complete wiring point consisting of a ceiling rose or lamp holder, wiring from DB to switch and back to fitting. Estimated as 'per point'. Wattage: 60W old bulb, or 9–15W LED equivalent. Include ceiling rose + holder + wiring in cost.", svgId:"svg_lamp" },
+  fan_point: { name:"Fan Point (Ceiling Fan)", unit:"each (point)", std:"IS 374", sizes:"600mm, 900mm, 1200mm sweep; 60W", colors:"Any", desc:"Ceiling fan point: wiring from DB through speed regulator switch to ceiling rose/canopy. Includes fan point box on ceiling. Wattage: 60W per fan. Requires sturdy ceiling hook. Use 1mm² Cu cable for fan circuits. Height regulator adds to cost.", svgId:"svg_fan" },
+  tube_light: { name:"Tube Light (Fluorescent 1200mm)", unit:"each (point)", std:"IS 2418", sizes:"1200mm (40W old) / 18–36W LED batten", colors:"White/Warm White", desc:"Complete fluorescent tube light fitting point: wiring from DB to switch to fitting. 1200mm = 4-foot tube. Old fluorescent: 40–50W; LED replacement: 18–20W. Include fitting, holder, ballast or electronic choke in estimate.", svgId:"svg_tube" },
+  roof_run: { name:"Roof Run (Ceiling Run)", unit:"metre (m)", std:"IE Rules", sizes:"Add ceiling height", colors:"Same as cable/conduit", desc:"Cable/conduit running inside or on the roof slab. Measured as the horizontal distance on the ceiling plane from wall to fan/light point. Must be planned before slab is cast in concealed wiring. Add vertical drops at both ends.", svgId:"svg_run" },
+  hori_run: { name:"Horizontal Run (Wall Run)", unit:"metre (m)", std:"IE Rules", sizes:"Room dimension", colors:"Same as cable/conduit", desc:"Cable/conduit running horizontally along the wall at 2.5m height. Measured from the main switch board or sub-DB to the ceiling point or switch. Example: Run A = (1.5 + 0.9 + 0.8) × 7 = 22.4m. Include vertical drops (0.8–0.9m) at each end for calculation.", svgId:"svg_run" },
+  earth_wire: { name:"Earth Wire (GI 14 SWG / Cu)", unit:"metre (m)", std:"IE Rules", sizes:"GI 14 SWG (2mm dia) or 1.4mm² Al or Cu ≥ half of largest conductor", colors:"Green/Yellow stripe", desc:"Protective earth conductor connecting all metal parts of equipment to earth. GI 14 SWG (galvanized iron wire) minimum for domestic. Copper earth wire area ≥ half the area of the largest current-carrying conductor. Run alongside wiring to all sockets, DB, main switch.", svgId:"svg_earth" },
+  earth_plate: { name:"Earth Electrode / GI Plate", unit:"set", std:"IS 3043", sizes:"600mm×600mm×6mm GI plate or 25mm×3m GI pipe", colors:"Galvanised", desc:"Buried earth electrode providing connection to earth. GI plate buried 3m depth in moist soil. Resistance ≤ 1 ohm (preferred), ≤ 5 ohm (acceptable). Pour water near earth pit in dry season. Required for every installation per IE Rules.", svgId:"svg_earth" }
+};
+
+function showComp(val) {
+  const info = document.getElementById('compInfo');
+  const grid = document.getElementById('compGrid');
+  const desc = document.getElementById('compDesc');
+  const diagWrap = document.getElementById('compDiagWrap');
+  if (!val || !compData[val]) {
+    info.classList.remove('visible');
+    diagWrap.style.display = 'none';
+    return;
+  }
+  const d = compData[val];
+  grid.innerHTML = `
+    <div class="comp-info-item"><div class="comp-info-label">Component</div><div class="comp-info-val">${d.name}</div></div>
+    <div class="comp-info-item"><div class="comp-info-label">Estimated Unit</div><div class="comp-info-val">${d.unit}</div></div>
+    <div class="comp-info-item"><div class="comp-info-label">Standard</div><div class="comp-info-val">${d.std}</div></div>
+    <div class="comp-info-item"><div class="comp-info-label">Common Sizes</div><div class="comp-info-val">${d.sizes}</div></div>
+  `;
+  desc.textContent = d.desc;
+  info.classList.add('visible');
+  // Show SVG diagram
+  diagWrap.style.display = 'block';
+  document.getElementById('compDiagTitle').textContent = d.name + ' – Diagram';
+  document.getElementById('compDiagContent').innerHTML = getCompSVG(val);
+}
+
+function getCompSVG(val) {
+  const svgMap = {
+    pvc_wire: `<svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg" style="max-width:400px;height:auto">
+      <rect width="400" height="120" fill="#f8fafc" rx="8"/>
+      <!-- Phase wire -->
+      <circle cx="60" cy="35" r="14" fill="#fecaca" stroke="#ef4444" stroke-width="2.5"/>
+      <circle cx="60" cy="35" r="8" fill="#ef4444"/>
+      <text x="60" y="39" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">L</text>
+      <line x1="74" y1="35" x2="340" y2="35" stroke="#ef4444" stroke-width="3"/>
+      <text x="60" y="60" text-anchor="middle" font-size="10" fill="#dc2626">Phase(Red)</text>
+      <!-- Neutral wire -->
+      <circle cx="60" cy="75" r="14" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2.5"/>
+      <circle cx="60" cy="75" r="8" fill="#3b82f6"/>
+      <text x="60" y="79" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">N</text>
+      <line x1="74" y1="75" x2="340" y2="75" stroke="#3b82f6" stroke-width="3"/>
+      <text x="60" y="100" text-anchor="middle" font-size="10" fill="#1d4ed8">Neutral(Black)</text>
+      <!-- Earth wire -->
+      <circle cx="200" cy="55" r="14" fill="#bbf7d0" stroke="#22c55e" stroke-width="2.5"/>
+      <circle cx="200" cy="55" r="8" fill="#22c55e"/>
+      <text x="200" y="59" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">E</text>
+      <text x="200" y="75" text-anchor="middle" font-size="10" fill="#166534">Earth(Grn/Yel)</text>
+      <text x="350" y="60" font-size="10" font-weight="700" fill="#1a4a8a">PVC insulation</text>
+    </svg>`,
+    conduit_pvc: `<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;height:auto">
+      <rect width="300" height="120" fill="#f8fafc" rx="8"/>
+      <ellipse cx="60" cy="60" rx="22" ry="38" fill="#bfdbfe" stroke="#2563ab" stroke-width="3"/>
+      <ellipse cx="60" cy="60" rx="15" ry="30" fill="#f0f9ff" stroke="#2563ab" stroke-width="1.5"/>
+      <circle cx="53" cy="55" r="5" fill="#ef4444"/>
+      <circle cx="65" cy="52" r="5" fill="#3b82f6"/>
+      <circle cx="58" cy="67" r="5" fill="#22c55e"/>
+      <text x="60" y="112" text-anchor="middle" font-size="11" font-weight="700" fill="#1a4a8a">PVC Conduit</text>
+      <text x="150" y="50" font-size="10" fill="#475569">• 3 cores max</text>
+      <text x="150" y="65" font-size="10" fill="#475569">• IS 9537</text>
+      <text x="150" y="80" font-size="10" fill="#475569">• 16-32mm dia</text>
+    </svg>`,
+    switch_1way: `<svg viewBox="0 0 280 120" xmlns="http://www.w3.org/2000/svg" style="max-width:280px;height:auto">
+      <rect width="280" height="120" fill="#f8fafc" rx="8"/>
+      <rect x="30" y="20" width="80" height="80" rx="8" fill="#fff" stroke="#1a4a8a" stroke-width="2.5"/>
+      <rect x="50" y="45" width="40" height="25" rx="4" fill="#1a4a8a" stroke="#0f2d5e" stroke-width="1.5"/>
+      <text x="70" y="63" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">ON</text>
+      <text x="70" y="115" text-anchor="middle" font-size="10" fill="#475569">1-Way Switch</text>
+      <text x="160" y="45" font-size="10" fill="#475569">• 6A / 16A, 250V</text>
+      <text x="160" y="60" font-size="10" fill="#475569">• IS 3854</text>
+      <text x="160" y="75" font-size="10" fill="#475569">• L in → L out (switched)</text>
+      <text x="160" y="90" font-size="10" fill="#475569">• Rate in schedule</text>
+    </svg>`,
+    socket_3pin: `<svg viewBox="0 0 280 120" xmlns="http://www.w3.org/2000/svg" style="max-width:280px;height:auto">
+      <rect width="280" height="120" fill="#f8fafc" rx="8"/>
+      <rect x="25" y="18" width="90" height="84" rx="8" fill="#fff" stroke="#1a4a8a" stroke-width="2.5"/>
+      <ellipse cx="70" cy="38" rx="8" ry="5" fill="#475569"/>
+      <ellipse cx="50" cy="68" rx="6" ry="8" fill="#475569"/>
+      <ellipse cx="90" cy="68" rx="6" ry="8" fill="#475569"/>
+      <text x="50" y="95" font-size="8" fill="#dc2626">L</text>
+      <text x="68" y="30" font-size="8" fill="#475569">E</text>
+      <text x="87" y="95" font-size="8" fill="#3b82f6">N</text>
+      <text x="70" y="115" text-anchor="middle" font-size="10" fill="#475569">3-Pin Socket</text>
+      <text x="165" y="45" font-size="10" fill="#475569">• 6A (light loads)</text>
+      <text x="165" y="60" font-size="10" fill="#475569">• 16A (heavy loads)</text>
+      <text x="165" y="75" font-size="10" fill="#475569">• IS 1293</text>
+      <text x="165" y="90" font-size="10" fill="#dc2626">• Earth MUST be wired</text>
+    </svg>`,
+    mcb: `<svg viewBox="0 0 280 130" xmlns="http://www.w3.org/2000/svg" style="max-width:280px;height:auto">
+      <rect width="280" height="130" fill="#f8fafc" rx="8"/>
+      <rect x="30" y="10" width="45" height="110" rx="4" fill="#e0e7ff" stroke="#1a4a8a" stroke-width="2.5"/>
+      <rect x="40" y="30" width="25" height="35" rx="3" fill="#1a4a8a"/>
+      <rect x="47" y="50" width="11" height="20" rx="2" fill="#f59e0b"/>
+      <circle cx="52" cy="95" r="7" fill="none" stroke="#22c55e" stroke-width="2.5"/>
+      <text x="52" y="99" text-anchor="middle" font-size="9" font-weight="700" fill="#22c55e">ON</text>
+      <text x="52" y="128" text-anchor="middle" font-size="10" fill="#475569">MCB</text>
+      <text x="100" y="40" font-size="10" fill="#475569">• B/C/D curve</text>
+      <text x="100" y="55" font-size="10" fill="#475569">• 6A–63A, IS 8828</text>
+      <text x="100" y="70" font-size="10" fill="#475569">• Overload + Short circuit</text>
+      <text x="100" y="85" font-size="10" fill="#475569">• Replaces fuses</text>
+      <text x="100" y="100" font-size="10" fill="#475569">• DIN rail mounted in DB</text>
+    </svg>`,
+    db: `<svg viewBox="0 0 320 140" xmlns="http://www.w3.org/2000/svg" style="max-width:320px;height:auto">
+      <rect width="320" height="140" fill="#f8fafc" rx="8"/>
+      <rect x="20" y="10" width="140" height="120" rx="6" fill="#e0e7ff" stroke="#1a4a8a" stroke-width="2.5"/>
+      <!-- Incoming MCB -->
+      <rect x="30" y="20" width="30" height="45" rx="3" fill="#1a4a8a"/>
+      <text x="45" y="47" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">MAIN</text>
+      <!-- Branch MCBs -->
+      <rect x="70" y="20" width="20" height="45" rx="3" fill="#2563ab"/>
+      <rect x="94" y="20" width="20" height="45" rx="3" fill="#2563ab"/>
+      <rect x="118" y="20" width="20" height="45" rx="3" fill="#2563ab"/>
+      <text x="80" y="47" text-anchor="middle" font-size="7" fill="#fff">C1</text>
+      <text x="104" y="47" text-anchor="middle" font-size="7" fill="#fff">C2</text>
+      <text x="128" y="47" text-anchor="middle" font-size="7" fill="#fff">C3</text>
+      <!-- Busbars -->
+      <line x1="30" y1="65" x2="138" y2="65" stroke="#f59e0b" stroke-width="4"/>
+      <text x="85" y="78" text-anchor="middle" font-size="9" fill="#b45309">Live Busbar</text>
+      <line x1="30" y1="85" x2="138" y2="85" stroke="#3b82f6" stroke-width="3"/>
+      <text x="85" y="98" text-anchor="middle" font-size="9" fill="#1d4ed8">Neutral Busbar</text>
+      <line x1="30" y1="105" x2="138" y2="105" stroke="#22c55e" stroke-width="3"/>
+      <text x="85" y="118" text-anchor="middle" font-size="9" fill="#166534">Earth Busbar</text>
+      <text x="180" y="40" font-size="10" fill="#475569">Distribution</text>
+      <text x="180" y="55" font-size="10" fill="#475569">Board (DB)</text>
+      <text x="180" y="75" font-size="10" fill="#475569">• 4–16 way</text>
+      <text x="180" y="90" font-size="10" fill="#475569">• IS 8623</text>
+      <text x="180" y="105" font-size="10" fill="#475569">• At load centre</text>
+    </svg>`,
+    svg_lamp: `<text>Light Point</text>`,
+    svg_fan: `<text>Fan Point</text>`,
+    svg_run: `<text>Run Diagram</text>`,
+  };
+  const key = val;
+  if (svgMap[key]) return svgMap[key];
+  return `<p style="color:var(--text2);font-size:0.9rem;padding:12px;">Visual diagram for ${compData[val]?.name || val}</p>`;
+}
+
+/* ─── QUIZ DATA ─── */
+const quizData = () => [
+  {
+    q: currentLang==='ml' ? "ആകസ്മിക ചെലവ് ആകെ ചെലവിന്റെ എത്ര %" : currentLang==='hi' ? "आकस्मिक व्यय कुल लागत का कितना प्रतिशत है?" : "Contingency is added as what percentage of total cost?",
+    opts: ["3%","5%","7%","10%"],
+    ans: 1,
+    explain: currentLang==='ml' ? "5% ആകസ്മിക ചെലവ് ഉൾക്കൊള്ളിക്കുന്നത് NIMI നിർദ്ദേശം." : currentLang==='hi' ? "NIMI के अनुसार 5% आकस्मिक व्यय जोड़ा जाता है।" : "5% contingency is added as per NIMI guidelines to account for unforeseen expenses."
+  },
+  {
+    q: currentLang==='ml' ? "ഒരു ബ്രാഞ്ച് സർക്യൂട്ടിന്റെ പരമാവധി ലോഡ്" : currentLang==='hi' ? "एक ब्रांच सर्किट की अधिकतम लोड क्षमता?" : "What is the maximum load of one branch circuit?",
+    opts: ["500W","800W","1000W","1200W"],
+    ans: 1,
+    explain: currentLang==='ml' ? "800W (5A) ഒരു ബ്രാഞ്ച് സർക്യൂട്ടിന്റെ പരമ്പര ഭാരം." : currentLang==='hi' ? "एक branch circuit की अधिकतम load 800W (5A) होती है।" : "A domestic branch circuit is limited to 800W (5A rating) as per IE Rules."
+  },
+  {
+    q: currentLang==='ml' ? "ഗ്രഹ വയറിങ്ങിൽ ലൈറ്റ്/ഫാൻ സർക്യൂട്ടിന് ഉപയോഗിക്കുന്ന Cu cable size" : currentLang==='hi' ? "घरेलू lighting/fan circuit के लिए Cu cable का आकार?" : "Cable size used for domestic lighting/fan circuits?",
+    opts: ["0.5mm²","1mm²","2.5mm²","4mm²"],
+    ans: 1,
+    explain: currentLang==='ml' ? "1mm² Cu cable ലൈറ്റ്/ഫാൻ ലോഡ് 3.17A ൽ കുറവ്." : currentLang==='hi' ? "1mm² Cu cable lighting/fan circuit (760W, 3.17A) के लिए पर्याप्त।" : "1mm² Cu cable is selected for circuits up to 760W (3.17A), safely below the 5A rating."
+  },
+  {
+    q: currentLang==='ml' ? "Concealed PVC conduit wiring ആരംഭിക്കേണ്ടത് എപ്പോൾ?" : currentLang==='hi' ? "Concealed PVC conduit wiring कब शुरू होनी चाहिए?" : "When must concealed PVC conduit wiring be completed?",
+    opts: ["After painting","After plastering","Before roof slab casting","After flooring"],
+    ans: 2,
+    explain: currentLang==='ml' ? "Concealed wiring സ്ലാബ് ഇടുന്നതിന് മുമ്പ് ചെയ്തിരിക്കണം." : currentLang==='hi' ? "Concealed wiring छत की ढलाई से पहले पूरी होनी चाहिए।" : "Concealed PVC conduit must be completed before the roof slab is cast, so civil engineer coordination is essential."
+  },
+  {
+    q: currentLang==='ml' ? "Industrial wiring-ൽ 5HP-ൽ കൂടുതൽ motor-ന് ഉപയോഗിക്കുന്ന starter?" : currentLang==='hi' ? "5HP से अधिक motor के लिए कौन सा starter उपयोग किया जाता है?" : "Which starter is used for motors above 5HP?",
+    opts: ["DOL Starter","Star-Delta Starter","Rotor resistance","All of these"],
+    ans: 1,
+    explain: currentLang==='ml' ? "5HP-ൽ കൂടുതൽ: Star-Delta അല്ലെങ്കിൽ Autotransformer starter." : currentLang==='hi' ? "5HP से अधिक: Star-Delta या Auto-transformer starter।" : "Motors above 5HP require Star-Delta or Auto-transformer starters to reduce starting current surge."
+  },
+  {
+    q: currentLang==='ml' ? "ഏത് wiring system ഫാക്ടറി/Hazardous സ്ഥലത്ത് ഉപയോഗിക്കുന്നു?" : currentLang==='hi' ? "कारखाने और खतरनाक क्षेत्र में कौन सी wiring प्रणाली प्रयोग होती है?" : "Which wiring system is used in factories and hazardous locations?",
+    opts: ["Batten wiring","PVC casing & capping","PVC conduit","Metal (GI) conduit"],
+    ans: 3,
+    explain: currentLang==='ml' ? "GI conduit industrial/hazardous ലൊക്കേഷനുകൾക്ക് mandatory." : currentLang==='hi' ? "GI conduit industrial और hazardous locations के लिए अनिवार्य।" : "Metal (GI) conduit provides maximum mechanical protection and is mandatory for industrial/hazardous areas."
+  },
+  {
+    q: currentLang==='ml' ? "Load 100kVA-ൽ കൂടിയാൽ, 1000kVA-ൽ കുറഞ്ഞാൽ – supply voltage?" : currentLang==='hi' ? "Load 100kVA से अधिक, 1000kVA से कम – supply voltage?" : "Supply voltage for load between 100kVA and 1000kVA?",
+    opts: ["415V LT","11kV HT","33kV EHT","220kV"],
+    ans: 1,
+    explain: currentLang==='ml' ? "100–1000kVA: 11kV HT supply. ഉപഭോക്താവ് transformer ഇൻസ്റ്റാൾ ചെയ്യണം." : currentLang==='hi' ? "100–1000kVA: 11kV HT supply दी जाती है।" : "Load between 100kVA and 1000kVA requires 11kV HT supply; consumer installs own transformer."
+  },
+  {
+    q: currentLang==='ml' ? "Flexible conduit-ന്റെ പരമ്പര ദൈർഘ്യം?" : currentLang==='hi' ? "Flexible conduit की अधिकतम लंबाई?" : "Maximum length of flexible conduit allowed?",
+    opts: ["0.5m","1.0m","1.25m","2.0m"],
+    ans: 2,
+    explain: currentLang==='ml' ? "IE Rules: Flexible conduit ≤ 1.25m." : currentLang==='hi' ? "IE Rules के अनुसार flexible conduit ≤ 1.25m।" : "IE Rules specify that flexible conduit length should not exceed 1.25m."
+  },
+  {
+    q: currentLang==='ml' ? "2-room house: Circuit 1=390W, Circuit 2=370W – ആകെ?" : currentLang==='hi' ? "2-room: Circuit 1=390W, Circuit 2=370W – कुल?" : "2-room house Circuit 1=390W, Circuit 2=370W – total load?",
+    opts: ["560W","660W","760W","860W"],
+    ans: 2,
+    explain: currentLang==='ml' ? "390+370 = 760W. 800W ൽ കുറവ് – ഒരു ബ്രാഞ്ച് OK." : currentLang==='hi' ? "390+370 = 760W। 800W से कम – एक branch circuit ठीक।" : "390W + 370W = 760W, which is within the 800W branch circuit limit, so one branch circuit suffices."
+  },
+  {
+    q: currentLang==='ml' ? "ഭൂമി (Earth) wire-ന്റെ cross-section കറണ്ട് carrying conductor-ന്റെ?" : currentLang==='hi' ? "Earth wire का cross-section मुख्य conductor के कितने भाग से कम नहीं होना चाहिए?" : "Earth wire cross-section should not be less than what fraction of the largest conductor?",
+    opts: ["One-fourth","One-third","One-half","Equal"],
+    ans: 2,
+    explain: currentLang==='ml' ? "Earth Cu wire ≥ ഏറ്റവും വലിയ current-carrying conductor-ന്റെ half." : currentLang==='hi' ? "Earth wire ≥ सबसे बड़े conductor के आधे से कम नहीं।" : "IE Rules: Copper earth wire cross-section ≥ half the area of the largest rated current-carrying conductor."
+  }
+];
+
+let quizState = [];
+
+function buildQuiz() {
+  const wrap = document.getElementById('quizWrap');
+  const questions = quizData();
+  quizState = questions.map(() => ({ answered: false, correct: false }));
+  wrap.innerHTML = questions.map((q, i) => `
+    <div class="quiz-q" id="qblock${i}">
+      <div class="quiz-qnum">${currentLang==='ml'?'ചോദ്യം':currentLang==='hi'?'प्रश्न':'Question'} ${i+1} / ${questions.length}</div>
+      <div class="quiz-qtext">${q.q}</div>
+      <div class="quiz-opts">
+        ${q.opts.map((o,j)=>`<button class="quiz-opt" id="opt${i}_${j}" onclick="answerQ(${i},${j})">${o}</button>`).join('')}
+      </div>
+      <div class="quiz-explain" id="qexp${i}"></div>
+    </div>
+  `).join('');
+  document.getElementById('quizScore').style.display = 'none';
+}
+
+function answerQ(qi, optIdx) {
+  if (quizState[qi].answered) return;
+  const questions = quizData();
+  const q = questions[qi];
+  quizState[qi].answered = true;
+  quizState[qi].correct = (optIdx === q.ans);
+  for (let j = 0; j < q.opts.length; j++) {
+    const btn = document.getElementById(`opt${qi}_${j}`);
+    btn.disabled = true;
+    if (j === q.ans) btn.classList.add('correct');
+    else if (j === optIdx && optIdx !== q.ans) btn.classList.add('wrong');
+  }
+  const exp = document.getElementById(`qexp${qi}`);
+  exp.textContent = q.explain;
+  exp.className = 'quiz-explain ' + (quizState[qi].correct ? 'show-correct' : 'show-wrong');
+  if (quizState.every(s => s.answered)) {
+    const score = quizState.filter(s => s.correct).length;
+    const scoreEl = document.getElementById('quizScore');
+    scoreEl.style.display = 'block';
+    const pct = Math.round(score/questions.length*100);
+    scoreEl.textContent = `${currentLang==='ml'?'ഫലം':currentLang==='hi'?'परिणाम':'Score'}: ${score}/${questions.length} (${pct}%) – ${pct>=80?'🎉 Excellent!':pct>=60?'👍 Good':pct>=40?'📚 Keep Practicing':'💪 Review Again'}`;
+  }
+}
+
+function resetQuiz() { buildQuiz(); }
+
+/* ─── FLASHCARD DATA ─── */
+const fcData = () => [
+  { q: currentLang==='ml'?'Estimate/ആസ്തി ഭൂമി':currentLang==='hi'?'Estimate/अनुमान':'Estimate', a: currentLang==='ml'?'സാമഗ്രികളുടെയും തൊഴിലാളിയുടെയും ചെലവ് കണക്കാക്കുന്ന രീതി':currentLang==='hi'?'सामग्री एवं श्रम की लागत की गणना करने की विधि':'Method of calculating cost of material and labour for wiring installation' },
+  { q: currentLang==='ml'?'ആകസ്മിക ചെലവ് %':currentLang==='hi'?'आकस्मिक व्यय %':'Contingency %', a: '5% of total cost' },
+  { q: currentLang==='ml'?'ഒരു ബ്രാഞ്ച് സർക്യൂട്ടിന്റെ max load':currentLang==='hi'?'एक branch circuit की max load':'Max branch circuit load', a: '800W (5A)' },
+  { q: currentLang==='ml'?'Domestic: lighting/fan cable size':currentLang==='hi'?'Domestic lighting/fan cable':'Domestic lighting/fan cable', a: '1mm² copper (or 1.5mm² aluminium)' },
+  { q: currentLang==='ml'?'Domestic: socket cable size':currentLang==='hi'?'Socket cable size':'Socket cable size', a: '1.5mm² copper' },
+  { q: currentLang==='ml'?'ഏറ്റവും ജനപ്രിയ wiring system':currentLang==='hi'?'सबसे लोकप्रिय wiring system':'Most popular modern wiring system', a: 'PVC conduit wiring (surface or concealed)' },
+  { q: currentLang==='ml'?'GI conduit ഉപയോഗം':currentLang==='hi'?'GI conduit का उपयोग':'Use of GI conduit', a: 'Industrial & hazardous locations. Maximum mechanical protection.' },
+  { q: currentLang==='ml'?'Concealed wiring – Civil coordination':currentLang==='hi'?'Concealed wiring – Civil coordination':'Concealed wiring key rule', a: 'Must be completed BEFORE roof slab is cast. Coordinate with civil engineer.' },
+  { q: currentLang==='ml'?'5HP-ൽ കൂടുതൽ motor – starter':currentLang==='hi'?'5HP से अधिक motor starter':'Starter for motors > 5HP', a: 'Star-Delta or Auto-transformer starter (to reduce starting current)' },
+  { q: currentLang==='ml'?'100–1000kVA load – supply':currentLang==='hi'?'100–1000kVA load supply':'Supply for 100kVA–1000kVA load', a: '11kV HT supply. Consumer installs own transformer.' },
+  { q: currentLang==='ml'?'Flexible conduit max length':currentLang==='hi'?'Flexible conduit max लंबाई':'Flexible conduit max length', a: '1.25 metres (per IE Rules)' },
+  { q: currentLang==='ml'?'Earth wire min size (domestic)':currentLang==='hi'?'Earth wire min size':'Earth wire min size (domestic)', a: 'GI 14 SWG (2mm dia) or 1.4mm² aluminium' },
+  { q: currentLang==='ml'?'Main switchboard – front clearance':currentLang==='hi'?'Main switchboard front clearance':'Main switchboard front clearance', a: 'Not less than 1 metre width in front' },
+  { q: currentLang==='ml'?'Branch circuit 760W – current & cable':currentLang==='hi'?'760W branch circuit – current & cable':'Branch circuit 760W – current & cable', a: 'Current = 760÷240 = 3.17A → 1mm² Cu cable' },
+  { q: currentLang==='ml'?'PVC casing & capping – ഉപയോഗം':currentLang==='hi'?'PVC casing & capping – use':'PVC casing & capping – use', a: 'Offices, computer rooms. Neat appearance, easy cable access.' },
+  { q: currentLang==='ml'?'3-phase wiring – DB location':currentLang==='hi'?'3-phase wiring – DB स्थान':'3-phase wiring – DB location', a: 'At the load centre. Load balanced across all 3 phases.' }
+];
+
+let fcIndex = 0;
+let fcFlipped = false;
+let fcOrder = [];
+
+function buildFC() {
+  const data = fcData();
+  if (fcOrder.length !== data.length) {
+    fcOrder = data.map((_,i) => i);
+  }
+  fcIndex = 0;
+  fcFlipped = false;
+  renderFC();
+}
+
+function renderFC() {
+  const data = fcData();
+  const card = document.getElementById('fcCard');
+  const term = document.getElementById('fcTerm');
+  const counter = document.getElementById('fcCounter');
+  fcFlipped = false;
+  card.classList.remove('flipped');
+  const d = data[fcOrder[fcIndex]];
+  term.innerHTML = d.q;
+  counter.textContent = `${currentLang==='ml'?'കാർഡ്':currentLang==='hi'?'कार्ड':'Card'} ${fcIndex+1} / ${data.length}`;
+  document.getElementById('fcPrev').disabled = fcIndex === 0;
+  document.getElementById('fcNext').disabled = fcIndex === data.length - 1;
+}
+
+function flipCard() {
+  const data = fcData();
+  const card = document.getElementById('fcCard');
+  const term = document.getElementById('fcTerm');
+  fcFlipped = !fcFlipped;
+  if (fcFlipped) {
+    card.classList.add('flipped');
+    const d = data[fcOrder[fcIndex]];
+    term.innerHTML = `<div class="fc-answer">${d.a}</div>`;
+  } else {
+    card.classList.remove('flipped');
+    term.innerHTML = data[fcOrder[fcIndex]].q;
+  }
+}
+
+function fcNav(dir) {
+  const data = fcData();
+  fcIndex = Math.max(0, Math.min(data.length-1, fcIndex + dir));
+  renderFC();
+}
+
+function fcShuffle() {
+  const data = fcData();
+  for (let i = fcOrder.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [fcOrder[i], fcOrder[j]] = [fcOrder[j], fcOrder[i]];
+  }
+  fcIndex = 0;
+  renderFC();
+}
+
+// INIT
+window.onload = () => {
+  buildQuiz();
+  buildFC();
+  setLang('en');
+};
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

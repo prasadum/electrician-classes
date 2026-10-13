@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UJT Relaxation Oscillator</title>
+<meta name="section" content="Electronics">
+<meta name="section-order" content="3">
+<meta name="order" content="7">
+<meta name="description" content="Timing, waveforms and frequency">
+
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Raleway:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f1eb;
+    --panel: #ffffff;
+    --border: #c8bfae;
+    --accent: #2563a8;
+    --accent2: #e05c1a;
+    --accent3: #16a34a;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --grid: #e8e2d8;
+    --shadow: 0 2px 16px rgba(0,0,0,0.10);
+    --wire: #2563a8;
+    --component: #e05c1a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Raleway', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    background: var(--panel);
+    border-bottom: 2px solid var(--border);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    box-shadow: var(--shadow);
+  }
+  .title-block h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  .title-block p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: 'Share Tech Mono', monospace;
+    margin-top: 2px;
+  }
+  .lang-select {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .lang-select label { font-size: 0.82rem; color: var(--muted); font-weight: 500; }
+  select {
+    padding: 6px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .tabs {
+    display: flex;
+    gap: 0;
+    background: var(--panel);
+    border-bottom: 2px solid var(--border);
+    padding: 0 20px;
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 12px 22px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab:hover:not(.active) { color: var(--text); background: var(--grid); }
+  .content { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; }
+  .content.active { display: block; }
+
+  /* ===== CIRCUIT TAB ===== */
+  .circuit-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 18px;
+    align-items: start;
+  }
+  .circuit-canvas-wrap {
+    background: var(--panel);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+  canvas { display: block; width: 100%; border-radius: 6px; }
+  .info-panel {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .comp-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 5px 0; border-bottom: 1px solid var(--grid); font-size: 0.82rem;
+  }
+  .comp-row:last-child { border-bottom: none; }
+  .comp-label { color: var(--muted); font-family: 'Share Tech Mono', monospace; }
+  .comp-val { font-weight: 600; color: var(--text); }
+  .formula-box {
+    background: var(--grid);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--accent);
+    margin-top: 6px;
+  }
+  .formula-box .fline { margin: 3px 0; }
+  .highlight-box {
+    background: #fff7ed;
+    border-left: 3px solid var(--accent2);
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.55;
+  }
+  .controls-row {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px;
+  }
+  .ctrl-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 120px; }
+  .ctrl-group label { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  .ctrl-val { font-family: 'Share Tech Mono', monospace; font-size: 0.82rem; color: var(--accent); }
+  .btn {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 600;
+    font-size: 0.83rem;
+    transition: all 0.18s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #1a4f8a; }
+  .btn-danger { background: var(--accent2); color: #fff; }
+  .btn-danger:hover { background: #b84510; }
+  .btn-success { background: var(--accent3); color: #fff; }
+  .btn-success:hover { background: #0f7a35; }
+
+  /* ===== WAVEFORM TAB ===== */
+  .wave-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .wave-card {
+    background: var(--panel);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+  }
+  .wave-card h3 {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .wave-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .wave-controls {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; align-items: center;
+  }
+  .speed-group { display: flex; align-items: center; gap: 8px; }
+  .speed-group label { font-size: 0.78rem; color: var(--muted); }
+  canvas.wave { background: #f8f9fc; border-radius: 6px; border: 1px solid var(--grid); }
+
+  /* ===== TESTING TAB ===== */
+  .test-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .test-card {
+    background: var(--panel);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+  .test-card h3 { font-size: 0.9rem; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
+  .test-step {
+    display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px;
+    padding: 8px 10px; border-radius: 6px; background: var(--bg); font-size: 0.82rem;
+  }
+  .step-num {
+    width: 22px; height: 22px; border-radius: 50%; background: var(--accent);
+    color: #fff; font-size: 0.72rem; font-weight: 700; display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+  }
+  .result-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 0.72rem; font-weight: 700; margin-left: 6px;
+  }
+  .badge-ok { background: #d1fae5; color: #065f46; }
+  .badge-fail { background: #fee2e2; color: #991b1b; }
+  .badge-warn { background: #fef3c7; color: #92400e; }
+  .dmm-display {
+    background: #0a1628; color: #00ff88; font-family: 'Share Tech Mono', monospace;
+    border-radius: 8px; padding: 14px; margin: 10px 0; font-size: 1.1rem;
+    text-align: center; letter-spacing: 0.1em; border: 2px solid #1a3050;
+  }
+  .test-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+
+  /* ===== THEORY TAB ===== */
+  .theory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .theory-card { background: var(--panel); border: 1.5px solid var(--border); border-radius: 10px; padding: 18px; box-shadow: var(--shadow); }
+  .theory-card h3 { font-size: 0.9rem; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+  .theory-card p { font-size: 0.83rem; line-height: 1.65; color: var(--text); margin-bottom: 8px; }
+  .eta-diagram { text-align: center; margin: 10px 0; }
+  .eta-svg { width: 100%; max-width: 300px; }
+
+  /* UJT SVG diagram in testing */
+  .ujt-pin-diagram { text-align: center; margin: 10px 0; }
+
+  .status-indicator {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 10px; font-size: 0.78rem; font-weight: 600;
+  }
+  .status-running { background: #d1fae5; color: #065f46; }
+  .status-stopped { background: #fee2e2; color: #991b1b; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .status-running .status-dot { background: #16a34a; animation: pulse 1s infinite; }
+  .status-stopped .status-dot { background: #dc2626; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  @media (max-width: 700px) {
+    .circuit-layout { grid-template-columns: 1fr; }
+    .theory-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-block">
+    <h1 id="hdr-title">UJT Relaxation Oscillator</h1>
+    <p id="hdr-sub">VBB = 12V | R1=2kΩ | R2=100Ω | R3=100Ω | R4=150Ω | C=0.01µF</p>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <div id="osc-status" class="status-indicator status-stopped">
+      <span class="status-dot"></span>
+      <span id="status-text">Stopped</span>
+    </div>
+    <div class="lang-select">
+      <label>🌐</label>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+        <option value="ml">മലയാളം</option>
+      </select>
+    </div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('content-circuit', this)" id="btn-circuit" data-key="tab_circuit">Circuit</div>
+  <div class="tab" onclick="showTab('content-waveform', this)" id="btn-waveform" data-key="tab_wave">Waveforms</div>
+  <div class="tab" onclick="showTab('content-testing', this)" id="btn-testing" data-key="tab_test">Component Testing</div>
+  <div class="tab" onclick="showTab('content-theory', this)" id="btn-theory" data-key="tab_theory">Theory</div>
+</div>
+
+<!-- ===== CIRCUIT TAB ===== -->
+<div class="content active" id="content-circuit">
+  <div class="circuit-layout">
+    <div class="circuit-canvas-wrap">
+      <canvas id="circuitCanvas" width="600" height="420"></canvas>
+      <div class="controls-row" style="margin-top:14px;">
+        <div class="ctrl-group">
+          <label data-key="lbl_r1">R1 (kΩ)</label>
+          <input type="range" id="r1Slider" min="0.5" max="10" step="0.1" value="2" oninput="updateSliders()">
+          <span class="ctrl-val" id="r1Val">2.0 kΩ</span>
+        </div>
+        <div class="ctrl-group">
+          <label data-key="lbl_cap">C (µF)</label>
+          <input type="range" id="capSlider" min="0.001" max="0.1" step="0.001" value="0.01" oninput="updateSliders()">
+          <span class="ctrl-val" id="capVal">0.01 µF</span>
+        </div>
+        <div class="ctrl-group">
+          <label data-key="lbl_eta">η (0.5–0.8)</label>
+          <input type="range" id="etaSlider" min="0.5" max="0.8" step="0.01" value="0.63" oninput="updateSliders()">
+          <span class="ctrl-val" id="etaVal">η = 0.63</span>
+        </div>
+        <button class="btn btn-primary" onclick="toggleOsc()" id="oscBtn" data-key="btn_start">▶ Start</button>
+      </div>
+    </div>
+    <div class="info-panel">
+      <div class="card">
+        <h3 data-key="card_comp">Components</h3>
+        <div class="comp-row"><span class="comp-label">VBB</span><span class="comp-val">12 V</span></div>
+        <div class="comp-row"><span class="comp-label">R1</span><span class="comp-val" id="r1Display">2.0 kΩ</span></div>
+        <div class="comp-row"><span class="comp-label">R2</span><span class="comp-val">100 Ω</span></div>
+        <div class="comp-row"><span class="comp-label">R3</span><span class="comp-val">100 Ω</span></div>
+        <div class="comp-row"><span class="comp-label">R4</span><span class="comp-val">150 Ω</span></div>
+        <div class="comp-row"><span class="comp-label">C</span><span class="comp-val" id="capDisplay">0.01 µF</span></div>
+        <div class="comp-row"><span class="comp-label">UJT η</span><span class="comp-val" id="etaDisplay">0.63</span></div>
+      </div>
+      <div class="card">
+        <h3 data-key="card_calc">Calculated Values</h3>
+        <div class="formula-box">
+          <div class="fline">VP = η·VBB + VD</div>
+          <div class="fline" id="vpLine">VP = 0.63×12+0.7 = <b>8.26V</b></div>
+          <div class="fline">VV ≈ 2–3 V</div>
+          <div class="fline">f = 1/(R1·C·ln(1/(1−η)))</div>
+          <div class="fline" id="fLine">f ≈ <b>11.2 kHz</b></div>
+          <div class="fline" id="tLine">T ≈ <b>89 µs</b></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 data-key="card_op">Operation</h3>
+        <div class="highlight-box" id="opText">
+          C charges through R1 until Vc reaches VP (peak voltage). UJT fires → low resistance between E–B1 → C discharges rapidly through R4. Spike appears at B2 via R2. Process repeats → oscillation.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== WAVEFORM TAB ===== -->
+<div class="content" id="content-waveform">
+  <div class="wave-controls">
+    <div class="speed-group">
+      <label data-key="lbl_speed">Speed:</label>
+      <input type="range" id="waveSpeed" min="0.2" max="3" step="0.1" value="1" style="width:120px;">
+      <span class="ctrl-val" id="speedVal">1.0x</span>
+    </div>
+    <button class="btn btn-primary" onclick="toggleWave()" id="waveBtn" data-key="btn_start">▶ Start</button>
+    <button class="btn btn-danger" onclick="resetWave()" data-key="btn_reset">↺ Reset</button>
+  </div>
+  <div class="wave-grid">
+    <div class="wave-card">
+      <h3><span class="wave-dot" style="background:#e05c1a;"></span> <span data-key="wave_cap">Capacitor Voltage Vc (Emitter)</span></h3>
+      <canvas id="waveVc" class="wave" width="900" height="130"></canvas>
+    </div>
+    <div class="wave-card">
+      <h3><span class="wave-dot" style="background:#2563a8;"></span> <span data-key="wave_b1">Output at B1 / R4 (Sawtooth Pulses)</span></h3>
+      <canvas id="waveB1" class="wave" width="900" height="130"></canvas>
+    </div>
+    <div class="wave-card">
+      <h3><span class="wave-dot" style="background:#16a34a;"></span> <span data-key="wave_b2">Output at B2 / R2 (Trigger Spikes)</span></h3>
+      <canvas id="waveB2" class="wave" width="900" height="130"></canvas>
+    </div>
+  </div>
+  <div style="margin-top:14px;">
+    <div class="card" style="padding:12px 16px;">
+      <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:0.82rem;">
+        <span>⚡ <b data-key="lbl_freq">Frequency:</b> <span id="freqDisplay" style="color:var(--accent);font-family:monospace;">11.2 kHz</span></span>
+        <span>⏱ <b data-key="lbl_period">Period:</b> <span id="periodDisplay" style="color:var(--accent2);font-family:monospace;">89 µs</span></span>
+        <span>🔺 <b>VP:</b> <span id="vpDisplay" style="color:var(--accent3);font-family:monospace;">8.26 V</span></span>
+        <span>🔻 <b>VV:</b> <span id="vvDisplay" style="color:var(--muted);font-family:monospace;">2.0 V</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TESTING TAB ===== -->
+<div class="content" id="content-testing">
+  <div class="test-grid">
+    <!-- UJT ID -->
+    <div class="test-card">
+      <h3>🔍 <span data-key="test_id">UJT Terminal Identification</span></h3>
+      <div style="text-align:center;margin:10px 0;">
+        <svg viewBox="0 0 180 140" width="180" height="140" style="border:1px solid var(--grid);border-radius:8px;background:#f8f9fc;">
+          <ellipse cx="90" cy="70" rx="38" ry="50" fill="#fff7ed" stroke="#e05c1a" stroke-width="2"/>
+          <text x="90" y="74" text-anchor="middle" font-size="11" font-weight="bold" fill="#e05c1a">UJT</text>
+          <line x1="90" y1="20" x2="90" y2="5" stroke="#333" stroke-width="2"/>
+          <text x="90" y="3" text-anchor="middle" font-size="9" fill="#2563a8">B2</text>
+          <line x1="52" y1="70" x2="30" y2="70" stroke="#333" stroke-width="2"/>
+          <polygon points="40,65 30,70 40,75" fill="#e05c1a"/>
+          <text x="18" y="74" text-anchor="middle" font-size="9" fill="#e05c1a">E</text>
+          <line x1="90" y1="120" x2="90" y2="135" stroke="#333" stroke-width="2"/>
+          <text x="90" y="142" text-anchor="middle" font-size="9" fill="#16a34a">B1</text>
+          <!-- flat side mark -->
+          <text x="135" y="74" font-size="9" fill="#999">flat→</text>
+          <line x1="128" y1="40" x2="128" y2="100" stroke="#ccc" stroke-width="1.5" stroke-dasharray="3,2"/>
+        </svg>
+      </div>
+      <div class="test-step">
+        <div class="step-num">1</div>
+        <div><b data-key="ts1_h">Flat side faces you.</b> <span id="ts1_t">B1 is bottom lead, B2 is top lead, Emitter is the middle lead (left side).</span></div>
+      </div>
+      <div class="test-step">
+        <div class="step-num">2</div>
+        <div><span id="ts2_t">Set DMM to Resistance (Ω). Measure B1–B2. Expect 4–10 kΩ (interbase resistance RBB).</span></div>
+      </div>
+      <div class="dmm-display" id="rbb_display">RBB ≈ 6.8 kΩ ✓</div>
+    </div>
+
+    <!-- Diode test -->
+    <div class="test-card">
+      <h3>🧪 <span data-key="test_diode">UJT Diode Junction Test</span></h3>
+      <div class="test-step">
+        <div class="step-num">1</div>
+        <div><span id="td1_t">Set DMM to Diode mode (🔊). Red probe → Emitter, Black probe → B1.</span></div>
+      </div>
+      <div class="dmm-display" id="diode1_display">0.55 – 0.70 V ✓ (Forward)</div>
+      <div class="test-step">
+        <div class="step-num">2</div>
+        <div><span id="td2_t">Reverse: Red → B1, Black → Emitter. Should show OL (open/no conduction).</span></div>
+      </div>
+      <div class="dmm-display" id="diode2_display">OL (Reverse Blocking) ✓</div>
+      <div class="test-step">
+        <div class="step-num">3</div>
+        <div><span id="td3_t">Red → Emitter, Black → B2. Forward drop slightly higher due to RB2.</span></div>
+      </div>
+      <div class="dmm-display" id="diode3_display">0.7 – 1.5 V ✓ (Higher due to RB2)</div>
+      <div class="highlight-box" style="margin-top:10px;font-size:0.8rem;" id="td_note">
+        ⚠️ B1–B2 should NOT show diode forward drop in either direction (it is resistive only).
+      </div>
+    </div>
+
+    <!-- Resistor testing -->
+    <div class="test-card">
+      <h3>📏 <span data-key="test_res">Resistor Verification</span></h3>
+      <div class="test-step">
+        <div class="step-num">1</div>
+        <div><span id="tr1_t">Power OFF. Discharge capacitor. Set DMM to Resistance (Ω).</span></div>
+      </div>
+      <div class="test-step">
+        <div class="step-num">2</div>
+        <div><span id="tr2_t">Measure each resistor out-of-circuit (desolder one leg) for accuracy.</span></div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:0.8rem;margin-top:8px;">
+        <tr style="background:var(--grid);">
+          <th style="padding:5px 8px;text-align:left;">Part</th>
+          <th style="padding:5px 8px;text-align:center;">Nominal</th>
+          <th style="padding:5px 8px;text-align:center;"><span data-key="th_accept">Accept Range</span></th>
+          <th style="padding:5px 8px;text-align:center;"><span data-key="th_color">Color Code</span></th>
+        </tr>
+        <tr><td style="padding:4px 8px;">R1</td><td style="text-align:center;">2 kΩ</td><td style="text-align:center;">1.9–2.1 kΩ</td><td style="text-align:center;font-size:0.72rem;">Red-Blk-Red</td></tr>
+        <tr style="background:var(--bg);"><td style="padding:4px 8px;">R2</td><td style="text-align:center;">100 Ω</td><td style="text-align:center;">95–105 Ω</td><td style="text-align:center;font-size:0.72rem;">Brn-Blk-Brn</td></tr>
+        <tr><td style="padding:4px 8px;">R3</td><td style="text-align:center;">100 Ω</td><td style="text-align:center;">95–105 Ω</td><td style="text-align:center;font-size:0.72rem;">Brn-Blk-Brn</td></tr>
+        <tr style="background:var(--bg);"><td style="padding:4px 8px;">R4</td><td style="text-align:center;">150 Ω</td><td style="text-align:center;">142–158 Ω</td><td style="text-align:center;font-size:0.72rem;">Brn-Grn-Brn</td></tr>
+      </table>
+    </div>
+
+    <!-- Capacitor testing -->
+    <div class="test-card">
+      <h3>⚡ <span data-key="test_cap">Capacitor Testing</span></h3>
+      <div class="test-step">
+        <div class="step-num">1</div>
+        <div><span id="tc1_t">Discharge cap: short its leads with a 1kΩ resistor for 5 seconds before touching.</span></div>
+      </div>
+      <div class="test-step">
+        <div class="step-num">2</div>
+        <div><span id="tc2_t">Use DMM capacitance mode (Cx). Measure across capacitor leads.</span></div>
+      </div>
+      <div class="dmm-display">8–12 nF ✓ (10 nF ±20%)</div>
+      <div class="test-step">
+        <div class="step-num">3</div>
+        <div><span id="tc3_t">Leakage test: DMM in DC Voltage mode. Charge briefly from 9V and monitor — should hold charge for seconds.</span></div>
+      </div>
+      <div class="highlight-box" style="margin-top:8px;font-size:0.8rem;" id="tc_note">
+        💡 A faulty capacitor (leaky/open) will cause oscillation to stop or frequency to drift significantly.
+      </div>
+    </div>
+
+    <!-- Oscillation verification -->
+    <div class="test-card">
+      <h3>🔬 <span data-key="test_live">Live Circuit Verification</span></h3>
+      <div class="test-step">
+        <div class="step-num">1</div>
+        <div><span id="tl1_t">Apply 12V DC. Set oscilloscope: 2V/div vertical, 20µs/div horizontal at Emitter node.</span></div>
+      </div>
+      <div class="test-step">
+        <div class="step-num">2</div>
+        <div><span id="tl2_t">Expect sawtooth wave at Emitter: slow rise to ~8.3V, rapid fall to ~2V.</span></div>
+      </div>
+      <div class="test-step">
+        <div class="step-num">3</div>
+        <div><span id="tl3_t">At B2 (R2 junction): narrow positive spikes at each firing instant.</span></div>
+      </div>
+      <div class="test-step">
+        <div class="step-num">4</div>
+        <div><span id="tl4_t">At B1 (R4 junction): narrow negative-going spikes (can trigger SCR/Thyristor).</span></div>
+      </div>
+      <div class="highlight-box" style="margin-top:8px;font-size:0.8rem;" id="tl_note">
+        🛠️ No oscillation? Check: UJT orientation, C discharged, R1 value in range (R1 must satisfy VP/VBB &lt; R1 &lt; VV/IP conditions).
+      </div>
+    </div>
+
+    <!-- Fault diagnosis -->
+    <div class="test-card">
+      <h3>⚠️ <span data-key="test_fault">Fault Diagnosis</span></h3>
+      <table style="width:100%;border-collapse:collapse;font-size:0.79rem;">
+        <tr style="background:var(--grid);">
+          <th style="padding:5px 8px;text-align:left;" data-key="th_symptom">Symptom</th>
+          <th style="padding:5px 8px;text-align:left;" data-key="th_cause">Likely Cause</th>
+        </tr>
+        <tr><td style="padding:4px 8px;" id="f1s">No output at all</td><td style="padding:4px 8px;" id="f1c">Open UJT, wrong VBB, open R1</td></tr>
+        <tr style="background:var(--bg);"><td style="padding:4px 8px;" id="f2s">Very low frequency</td><td style="padding:4px 8px;" id="f2c">C value too large, R1 too high</td></tr>
+        <tr><td style="padding:4px 8px;" id="f3s">Very high frequency</td><td style="padding:4px 8px;" id="f3c">C leaky, R1 too small</td></tr>
+        <tr style="background:var(--bg);"><td style="padding:4px 8px;" id="f4s">Unstable/intermittent</td><td style="padding:4px 8px;" id="f4c">UJT threshold region, poor solder joint</td></tr>
+        <tr><td style="padding:4px 8px;" id="f5s">No spike at B2</td><td style="padding:4px 8px;" id="f5c">Open R2 or UJT not firing</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== THEORY TAB ===== -->
+<div class="content" id="content-theory">
+  <div class="theory-grid">
+    <div class="theory-card">
+      <h3 data-key="th_what">What is a UJT?</h3>
+      <p id="th_what_p1">A Unijunction Transistor (UJT) is a three-terminal semiconductor device with one emitter (E) and two bases (B1, B2). It has a unique negative resistance characteristic that makes it ideal for relaxation oscillators.</p>
+      <p id="th_what_p2">The intrinsic standoff ratio η (eta) is the key parameter: η = RB1 / (RB1 + RB2), typically 0.5 to 0.8 for common UJTs like 2N2646.</p>
+      <div style="text-align:center;margin:10px 0;">
+        <svg viewBox="0 0 220 180" width="100%" class="eta-svg" style="max-width:240px;">
+          <!-- I-V curve -->
+          <rect x="10" y="10" width="200" height="160" fill="#f8f9fc" rx="4" stroke="#ddd"/>
+          <text x="115" y="175" text-anchor="middle" font-size="9" fill="#666">Emitter Voltage (VE)</text>
+          <text x="18" y="95" font-size="9" fill="#666" transform="rotate(-90,18,95)">IE →</text>
+          <!-- axes -->
+          <line x1="30" y1="150" x2="200" y2="150" stroke="#999" stroke-width="1.5"/>
+          <line x1="30" y1="20" x2="30" y2="150" stroke="#999" stroke-width="1.5"/>
+          <!-- NDR curve -->
+          <path d="M30,145 Q60,143 90,120 Q110,108 125,80 Q128,55 130,40 Q140,80 160,130 Q175,145 200,147"
+                fill="none" stroke="#e05c1a" stroke-width="2.5"/>
+          <!-- labels -->
+          <text x="128" y="38" font-size="9" fill="#2563a8" font-weight="bold">VP, IP (Peak)</text>
+          <line x1="128" y1="41" x2="128" y2="150" stroke="#2563a8" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="160" y="125" font-size="9" fill="#16a34a">VV, IV (Valley)</text>
+          <text x="32" y="38" font-size="8" fill="#555">Negative Resistance Region →</text>
+          <text x="90" y="168" font-size="8" fill="#e05c1a">VV</text>
+          <text x="124" y="168" font-size="8" fill="#2563a8">VP</text>
+        </svg>
+      </div>
+    </div>
+    <div class="theory-card">
+      <h3 data-key="th_how">How the Oscillator Works</h3>
+      <p id="th_how_p1">Phase 1 – Charging: Capacitor C charges exponentially through R1 toward VBB. When VC reaches VP (= η·VBB + VD ≈ 8.26V), the UJT emitter-B1 junction switches into low resistance (NDR region fires).</p>
+      <p id="th_how_p2">Phase 2 – Discharge: C discharges rapidly through the low-resistance E–B1 path and R4, creating a current spike. Voltage at R4 (B1 output) goes positive, voltage at R2 (B2 output) spikes positive.</p>
+      <p id="th_how_p3">Phase 3 – Reset: When VC falls to VV (~2V), the UJT reverts to high resistance. C starts charging again. The cycle repeats continuously.</p>
+    </div>
+    <div class="theory-card">
+      <h3 data-key="th_formula">Key Formulas</h3>
+      <div class="formula-box" style="font-size:0.85rem;line-height:2;">
+        <div>VP = η · VBB + VD</div>
+        <div>η = RB1 / (RB1 + RB2)</div>
+        <div>f ≈ 1 / (R1·C·ln(1/(1−η)))</div>
+        <div>T = R1 · C · ln(1/(1−η))</div>
+        <div>RBB = RB1 + RB2 (4–10 kΩ)</div>
+        <div>VD ≈ 0.7 V (junction drop)</div>
+      </div>
+      <div id="calc_note" style="margin-top:10px;font-size:0.82rem;color:var(--muted);">
+        For our circuit: η=0.63, VBB=12V → VP=8.26V, f≈11.2 kHz
+      </div>
+    </div>
+    <div class="theory-card">
+      <h3 data-key="th_apps">Applications</h3>
+      <p id="th_apps_p">UJT relaxation oscillators are used as: SCR/Thyristor trigger circuits, timing circuits, sawtooth wave generators, pulse generators for industrial control, voltage-to-frequency converters, and sweep circuits in older oscilloscopes.</p>
+      <div class="highlight-box" style="margin-top:10px;" id="th_app_note">
+        💡 The output spikes at B1 and B2 are ideal for triggering SCRs (Silicon Controlled Rectifiers) in power control applications — a very common use in motor speed controllers and lamp dimmers.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== TRANSLATIONS =====
+const T = {
+  en: {
+    tab_circuit:"Circuit", tab_wave:"Waveforms", tab_test:"Component Testing", tab_theory:"Theory",
+    hdr_title:"UJT Relaxation Oscillator",
+    lbl_r1:"R1 (kΩ)", lbl_cap:"C (µF)", lbl_eta:"η (0.5–0.8)",
+    btn_start:"▶ Start", btn_stop:"⏹ Stop", btn_reset:"↺ Reset",
+    card_comp:"Components", card_calc:"Calculated Values", card_op:"Operation",
+    lbl_speed:"Speed:", lbl_freq:"Frequency:", lbl_period:"Period:",
+    wave_cap:"Capacitor Voltage Vc (Emitter)", wave_b1:"Output at B1 / R4 (Sawtooth Pulses)", wave_b2:"Output at B2 / R2 (Trigger Spikes)",
+    test_id:"UJT Terminal Identification", test_diode:"UJT Diode Junction Test",
+    test_res:"Resistor Verification", test_cap:"Capacitor Testing",
+    test_live:"Live Circuit Verification", test_fault:"Fault Diagnosis",
+    th_accept:"Accept Range", th_color:"Color Code", th_symptom:"Symptom", th_cause:"Likely Cause",
+    th_what:"What is a UJT?", th_how:"How the Oscillator Works",
+    th_formula:"Key Formulas", th_apps:"Applications",
+    status_run:"Running", status_stop:"Stopped",
+    opText:"C charges through R1 until Vc reaches VP (peak voltage). UJT fires → low resistance between E–B1 → C discharges rapidly through R4. Spike appears at B2 via R2. Process repeats → oscillation.",
+    ts1_t:"B1 is bottom lead, B2 is top lead, Emitter is the middle lead (left side).",
+    ts2_t:"Set DMM to Resistance (Ω). Measure B1–B2. Expect 4–10 kΩ (interbase resistance RBB).",
+    td1_t:"Set DMM to Diode mode. Red probe → Emitter, Black probe → B1.",
+    td2_t:"Reverse: Red → B1, Black → Emitter. Should show OL (open/no conduction).",
+    td3_t:"Red → Emitter, Black → B2. Forward drop slightly higher due to RB2.",
+    td_note:"⚠️ B1–B2 should NOT show diode forward drop in either direction (it is resistive only).",
+    tr1_t:"Power OFF. Discharge capacitor. Set DMM to Resistance (Ω).",
+    tr2_t:"Measure each resistor out-of-circuit (desolder one leg) for accuracy.",
+    tc1_t:"Discharge cap: short its leads with a 1kΩ resistor for 5 seconds before touching.",
+    tc2_t:"Use DMM capacitance mode (Cx). Measure across capacitor leads.",
+    tc3_t:"Leakage test: DMM in DC Voltage mode. Charge briefly from 9V and monitor — should hold charge for seconds.",
+    tc_note:"💡 A faulty capacitor (leaky/open) will cause oscillation to stop or frequency to drift significantly.",
+    tl1_t:"Apply 12V DC. Set oscilloscope: 2V/div vertical, 20µs/div horizontal at Emitter node.",
+    tl2_t:"Expect sawtooth wave at Emitter: slow rise to ~8.3V, rapid fall to ~2V.",
+    tl3_t:"At B2 (R2 junction): narrow positive spikes at each firing instant.",
+    tl4_t:"At B1 (R4 junction): narrow negative-going spikes (can trigger SCR/Thyristor).",
+    tl_note:"🛠️ No oscillation? Check: UJT orientation, C discharged, R1 value in range.",
+    f1s:"No output at all", f1c:"Open UJT, wrong VBB, open R1",
+    f2s:"Very low frequency", f2c:"C value too large, R1 too high",
+    f3s:"Very high frequency", f3c:"C leaky, R1 too small",
+    f4s:"Unstable/intermittent", f4c:"UJT threshold region, poor solder joint",
+    f5s:"No spike at B2", f5c:"Open R2 or UJT not firing",
+    th_what_p1:"A Unijunction Transistor (UJT) is a three-terminal semiconductor device with one emitter (E) and two bases (B1, B2). It has a unique negative resistance characteristic that makes it ideal for relaxation oscillators.",
+    th_what_p2:"The intrinsic standoff ratio η (eta) is the key parameter: η = RB1 / (RB1 + RB2), typically 0.5 to 0.8 for common UJTs like 2N2646.",
+    th_how_p1:"Phase 1 – Charging: Capacitor C charges exponentially through R1 toward VBB. When VC reaches VP (= η·VBB + VD ≈ 8.26V), the UJT emitter-B1 junction fires.",
+    th_how_p2:"Phase 2 – Discharge: C discharges rapidly through the low-resistance E–B1 path and R4, creating a current spike at B1 and B2 outputs.",
+    th_how_p3:"Phase 3 – Reset: When VC falls to VV (~2V), the UJT reverts to high resistance. C starts charging again. Cycle repeats.",
+    calc_note:"For our circuit: η=0.63, VBB=12V → VP=8.26V, f≈11.2 kHz",
+    th_apps_p:"UJT relaxation oscillators are used as SCR/Thyristor trigger circuits, timing circuits, sawtooth wave generators, pulse generators for industrial control, and sweep circuits.",
+    th_app_note:"💡 The output spikes at B1 and B2 are ideal for triggering SCRs in power control applications — motor speed controllers and lamp dimmers.",
+  },
+  hi: {
+    tab_circuit:"परिपथ", tab_wave:"तरंग रूप", tab_test:"घटक परीक्षण", tab_theory:"सिद्धांत",
+    hdr_title:"UJT रिलैक्सेशन ऑसिलेटर",
+    lbl_r1:"R1 (kΩ)", lbl_cap:"C (µF)", lbl_eta:"η (0.5–0.8)",
+    btn_start:"▶ शुरू करें", btn_stop:"⏹ रोकें", btn_reset:"↺ रीसेट",
+    card_comp:"घटक", card_calc:"गणना मान", card_op:"संचालन",
+    lbl_speed:"गति:", lbl_freq:"आवृत्ति:", lbl_period:"काल:",
+    wave_cap:"संधारित्र वोल्टेज Vc (एमिटर)", wave_b1:"B1/R4 पर आउटपुट (आरा तरंग)", wave_b2:"B2/R2 पर आउटपुट (ट्रिगर स्पाइक)",
+    test_id:"UJT टर्मिनल पहचान", test_diode:"UJT डायोड जंक्शन परीक्षण",
+    test_res:"प्रतिरोधक सत्यापन", test_cap:"संधारित्र परीक्षण",
+    test_live:"लाइव परिपथ सत्यापन", test_fault:"खराबी निदान",
+    th_accept:"स्वीकृत सीमा", th_color:"रंग कोड", th_symptom:"लक्षण", th_cause:"संभावित कारण",
+    th_what:"UJT क्या है?", th_how:"ऑसिलेटर कैसे काम करता है",
+    th_formula:"मुख्य सूत्र", th_apps:"अनुप्रयोग",
+    status_run:"चल रहा है", status_stop:"रुका हुआ",
+    opText:"C, R1 के माध्यम से चार्ज होता है जब तक Vc, VP (पीक वोल्टेज) तक नहीं पहुंचता। UJT फायर करता है → E–B1 के बीच कम प्रतिरोध → C, R4 के माध्यम से तेजी से डिस्चार्ज होता है। R2 के माध्यम से B2 पर स्पाइक आता है। प्रक्रिया दोहराती है → दोलन।",
+    ts1_t:"B1 नीचे का टर्मिनल है, B2 ऊपर का, एमिटर मध्य (बाईं ओर) है।",
+    ts2_t:"DMM को प्रतिरोध (Ω) पर सेट करें। B1–B2 मापें। 4–10 kΩ अपेक्षित (अंतरआधार प्रतिरोध RBB)।",
+    td1_t:"DMM को डायोड मोड पर सेट करें। लाल जांच → एमिटर, काली जांच → B1।",
+    td2_t:"उल्टा: लाल → B1, काली → एमिटर। OL दिखना चाहिए।",
+    td3_t:"लाल → एमिटर, काली → B2। RB2 के कारण थोड़ा अधिक फॉरवर्ड ड्रॉप।",
+    td_note:"⚠️ B1–B2 किसी भी दिशा में डायोड ड्रॉप नहीं दिखाना चाहिए (केवल प्रतिरोधक)।",
+    tr1_t:"बिजली बंद करें। संधारित्र डिस्चार्ज करें। DMM को प्रतिरोध (Ω) पर सेट करें।",
+    tr2_t:"सटीकता के लिए प्रत्येक प्रतिरोधक को परिपथ से बाहर निकालकर मापें।",
+    tc1_t:"कैप डिस्चार्ज करें: छूने से पहले 5 सेकंड के लिए 1kΩ से शॉर्ट करें।",
+    tc2_t:"DMM कैपेसिटेंस मोड (Cx) का उपयोग करें। संधारित्र के पैरों के आर-पार मापें।",
+    tc3_t:"रिसाव परीक्षण: 9V से संक्षेप में चार्ज करें और मॉनिटर करें — चार्ज सेकंडों तक बनाए रखना चाहिए।",
+    tc_note:"💡 खराब संधारित्र (रिसाव/खुला) दोलन रुकने या आवृत्ति बदलने का कारण बनेगा।",
+    tl1_t:"12V DC लगाएं। ऑसिलोस्कोप: 2V/div ऊर्ध्वाधर, 20µs/div क्षैतिज, एमिटर नोड पर।",
+    tl2_t:"एमिटर पर आरा तरंग: धीमी वृद्धि ~8.3V तक, तेजी से गिरावट ~2V तक।",
+    tl3_t:"B2 (R2 जंक्शन) पर: प्रत्येक फायरिंग पर संकरे धनात्मक स्पाइक।",
+    tl4_t:"B1 (R4 जंक्शन) पर: संकरे ऋणात्मक स्पाइक (SCR/थायरिस्टर ट्रिगर के लिए उपयुक्त)।",
+    tl_note:"🛠️ दोलन नहीं? जांचें: UJT अभिविन्यास, C डिस्चार्ज, R1 मान उचित सीमा में।",
+    f1s:"कोई आउटपुट नहीं", f1c:"खुला UJT, गलत VBB, खुला R1",
+    f2s:"बहुत कम आवृत्ति", f2c:"C बहुत बड़ा, R1 बहुत अधिक",
+    f3s:"बहुत अधिक आवृत्ति", f3c:"C में रिसाव, R1 बहुत कम",
+    f4s:"अस्थिर/अनियमित", f4c:"UJT थ्रेशोल्ड क्षेत्र, खराब सोल्डर जोड़",
+    f5s:"B2 पर स्पाइक नहीं", f5c:"खुला R2 या UJT फायर नहीं कर रहा",
+    th_what_p1:"यूनिजंक्शन ट्रांजिस्टर (UJT) एक तीन-टर्मिनल अर्धचालक उपकरण है जिसमें एक एमिटर (E) और दो बेस (B1, B2) होते हैं। इसकी अनूठी ऋणात्मक प्रतिरोध विशेषता इसे रिलैक्सेशन ऑसिलेटर के लिए आदर्श बनाती है।",
+    th_what_p2:"आंतरिक स्टैंडऑफ अनुपात η (एटा) मुख्य पैरामीटर है: η = RB1 / (RB1 + RB2), सामान्यतः 0.5 से 0.8 (जैसे 2N2646)।",
+    th_how_p1:"चरण 1 – चार्जिंग: C, R1 के माध्यम से VBB की ओर चार्ज होता है। जब VC = VP = η·VBB + VD ≈ 8.26V, UJT फायर करता है।",
+    th_how_p2:"चरण 2 – डिस्चार्ज: C, E–B1 के कम प्रतिरोध पथ और R4 के माध्यम से तेजी से डिस्चार्ज होता है।",
+    th_how_p3:"चरण 3 – रीसेट: जब VC = VV (~2V) तक गिरता है, UJT उच्च प्रतिरोध में लौटता है। C फिर चार्ज होना शुरू करता है।",
+    calc_note:"हमारे परिपथ के लिए: η=0.63, VBB=12V → VP=8.26V, f≈11.2 kHz",
+    th_apps_p:"UJT रिलैक्सेशन ऑसिलेटर उपयोग: SCR/थायरिस्टर ट्रिगर, टाइमिंग सर्किट, आरा तरंग जनरेटर, औद्योगिक नियंत्रण के लिए पल्स जनरेटर।",
+    th_app_note:"💡 B1 और B2 पर स्पाइक पावर कंट्रोल में SCR ट्रिगरिंग के लिए आदर्श हैं — मोटर स्पीड कंट्रोलर और लैम्प डिमर।",
+  },
+  ml: {
+    tab_circuit:"സർക്യൂട്ട്", tab_wave:"തരംഗരൂപം", tab_test:"ഘടക പരിശോധന", tab_theory:"സിദ്ധാന്തം",
+    hdr_title:"UJT റിലാക്സേഷൻ ഓസിലേറ്റർ",
+    lbl_r1:"R1 (kΩ)", lbl_cap:"C (µF)", lbl_eta:"η (0.5–0.8)",
+    btn_start:"▶ ആരംഭിക്കുക", btn_stop:"⏹ നിർത്തുക", btn_reset:"↺ റീസെറ്റ്",
+    card_comp:"ഘടകങ്ങൾ", card_calc:"കണക്കാക്കിയ മൂല്യങ്ങൾ", card_op:"പ്രവർത്തനം",
+    lbl_speed:"വേഗത:", lbl_freq:"ആവൃത്തി:", lbl_period:"കാലം:",
+    wave_cap:"കപ്പാസിറ്റർ വോൾട്ടേജ് Vc (എമ്മിറ്റർ)", wave_b1:"B1/R4-ൽ ഔട്ട്പുട്ട് (അ톱 ദന്ത തരംഗം)", wave_b2:"B2/R2-ൽ ഔട്ട്പുട്ട് (ട്രിഗർ സ്പൈക്കുകൾ)",
+    test_id:"UJT ടെർമിനൽ തിരിച്ചറിയൽ", test_diode:"UJT ഡയോഡ് ജംഗ്ഷൻ പരിശോധന",
+    test_res:"റെസിസ്റ്റർ സ്ഥിരീകരണം", test_cap:"കപ്പാസിറ്റർ പരിശോധന",
+    test_live:"ലൈവ് സർക്യൂട്ട് പരിശോധന", test_fault:"തകരാർ നിർണ്ണയം",
+    th_accept:"സ്വീകാര്യ പരിധി", th_color:"വർണ്ണ കോഡ്", th_symptom:"ലക്ഷണം", th_cause:"സാധ്യമായ കാരണം",
+    th_what:"UJT എന്താണ്?", th_how:"ഓസിലേറ്റർ എങ്ങനെ പ്രവർത്തിക്കുന്നു",
+    th_formula:"പ്രധാന സൂത്രവാക്യങ്ങൾ", th_apps:"പ്രയോഗങ്ങൾ",
+    status_run:"പ്രവർത്തിക്കുന്നു", status_stop:"നിർത്തി",
+    opText:"VP (പീക്ക് വോൾട്ടേജ്) എത്തുന്നത് വരെ C, R1 വഴി ചാർജ് ആകുന്നു. UJT ഫയർ ചെയ്യുന്നു → E–B1 ഇടയിൽ കുറഞ്ഞ പ്രതിരോധം → C, R4 വഴി വേഗത്തിൽ ഡിസ്ചാർജ് ആകുന്നു. R2 വഴി B2-ൽ സ്പൈക്ക് ദൃശ്യമാകുന്നു. പ്രക്രിയ ആവർത്തിക്കുന്നു → ആന്ദോളനം.",
+    ts1_t:"B1 താഴത്തെ ലെഡ്, B2 മുകളിലത്തെ ലെഡ്, എമ്മിറ്റർ മധ്യ ലെഡ് (ഇടതുവശം).",
+    ts2_t:"DMM റെസിസ്റ്റൻസ് (Ω) മോഡിൽ സജ്ജീകരിക്കുക. B1–B2 അളക്കുക. 4–10 kΩ പ്രതീക്ഷിക്കുക (RBB).",
+    td1_t:"DMM ഡയോഡ് മോഡിൽ സജ്ജീകരിക്കുക. ചുവന്ന പ്രോബ് → എമ്മിറ്റർ, കറുത്ത → B1.",
+    td2_t:"വിപരീതം: ചുവന്ന → B1, കറുത്ത → എമ്മിറ്റർ. OL കാണണം.",
+    td3_t:"ചുവന്ന → എമ്മിറ്റർ, കറുത്ത → B2. RB2 കാരണം ഫോർവേഡ് ഡ്രോപ്പ് അൽപ്പം കൂടുതൽ.",
+    td_note:"⚠️ B1–B2 ഏത് ദിശയിലും ഡയോഡ് ഡ്രോപ്പ് കാണിക്കരുത് (ഇത് പ്രതിരോധക മാത്രം).",
+    tr1_t:"വൈദ്യുതി ഓഫ് ചെയ്യുക. കപ്പാസിറ്റർ ഡിസ്ചാർജ് ചെയ്യുക. DMM, Ω മോഡിൽ.",
+    tr2_t:"കൃത്യതയ്ക്ക് ഓരോ റെസിസ്റ്ററും സർക്യൂട്ടിൽ നിന്ന് പ്രത്യേകം അളക്കുക.",
+    tc1_t:"ടച്ച് ചെയ്യുന്നതിന് മുൻപ് 5 സെക്കൻഡ് 1kΩ ഉപയോഗിച്ച് ഷോർട്ട് ചെയ്ത് ഡിസ്ചാർജ് ചെയ്യുക.",
+    tc2_t:"DMM കപ്പാസിറ്റൻസ് മോഡ് (Cx) ഉപയോഗിക്കുക. കപ്പാസിറ്ററിന്റെ ലെഡ്ഡുകളിൽ അളക്കുക.",
+    tc3_t:"ലീക്കേജ് ടെസ്റ്റ്: 9V-ൽ നിന്ന് ചാർജ് ചെയ്ത് നിരീക്ഷിക്കുക — ചാർജ് ഏതാനും സെക്കൻഡ് നിലനിർത്തണം.",
+    tc_note:"💡 തകരാറുള്ള കപ്പാസിറ്റർ (ലീക്കി/ഓപ്പൺ) ആന്ദോളനം നിർത്തും അല്ലെങ്കിൽ ആവൃത്തി മാറ്റും.",
+    tl1_t:"12V DC ഇടുക. ഓസിലോസ്കോപ്: 2V/div ലംബം, 20µs/div തിരശ്ചീനം, എമ്മിറ്റർ നോഡിൽ.",
+    tl2_t:"എമ്മിറ്ററിൽ톱ദന്ത തരംഗം: ക്രമേണ ~8.3V-ലേക്ക് ഉയർന്ന് ~2V-ലേക്ക് വേഗത്തിൽ താഴും.",
+    tl3_t:"B2-ൽ (R2 ജംഗ്ഷൻ): ഓരോ ഫയറിംഗ് നിമിഷത്തിലും നേർത്ത ധനാത്മക സ്പൈക്കുകൾ.",
+    tl4_t:"B1-ൽ (R4 ജംഗ്ഷൻ): നേർത്ത ഋണാത്മക സ്പൈക്കുകൾ (SCR/തൈറിസ്റ്റർ ട്രിഗറിന് അനുകൂലം).",
+    tl_note:"🛠️ ആന്ദോളനം ഇല്ലേ? പരിശോധിക്കുക: UJT ദിശ, C ഡിസ്ചാർജ്ഡ്, R1 ശരിയായ മൂല്യം.",
+    f1s:"ഔട്ട്പുട്ട് ഇല്ല", f1c:"ഓപ്പൺ UJT, തെറ്റായ VBB, ഓപ്പൺ R1",
+    f2s:"വളരെ കുറഞ്ഞ ആവൃത്തി", f2c:"C മൂല്യം കൂടുതൽ, R1 കൂടുതൽ",
+    f3s:"വളരെ ഉയർന്ന ആവൃത്തി", f3c:"C ലീക്കി, R1 കുറഞ്ഞ",
+    f4s:"അസ്ഥിരം/ഇടയ്ക്കിടെ", f4c:"UJT ത്രെഷോൾഡ് മേഖല, മോശം സോൾഡർ",
+    f5s:"B2-ൽ സ്പൈക്ക് ഇല്ല", f5c:"ഓപ്പൺ R2 അല്ലെങ്കിൽ UJT ഫയർ ചെയ്യുന്നില്ല",
+    th_what_p1:"യൂണിജംഗ്ഷൻ ട്രാൻസിസ്റ്റർ (UJT) ഒരു മൂന്ന്-ടെർമിനൽ അർദ്ധചാലക ഉപകരണമാണ്, ഒരു എമ്മിറ്ററും (E) രണ്ട് ബേസുകളും (B1, B2). ഇതിന്റെ ഋണ പ്രതിരോധ സ്വഭാവം ഇതിനെ റിലാക്സേഷൻ ഓസിലേറ്ററുകൾക്ക് അനുയോജ്യമാക്കുന്നു.",
+    th_what_p2:"ആന്തരിക സ്റ്റാൻഡ്ഓഫ് അനുപാതം η (ഇറ്റ): η = RB1 / (RB1 + RB2), സാധാരണ 0.5 മുതൽ 0.8 (2N2646 പോലുള്ള UJT-കൾ).",
+    th_how_p1:"ഘട്ടം 1 – ചാർജിംഗ്: C, R1 വഴി VBB-ലേക്ക് ചാർജ് ആകുന്നു. VC = VP = η·VBB + VD ≈ 8.26V ആകുമ്പോൾ UJT ഫയർ ചെയ്യുന്നു.",
+    th_how_p2:"ഘട്ടം 2 – ഡിസ്ചാർജ്: C, E–B1 കുറഞ്ഞ പ്രതിരോധ പാതയിലൂടെയും R4 വഴിയും വേഗത്തിൽ ഡിസ്ചാർജ് ആകുന്നു.",
+    th_how_p3:"ഘട്ടം 3 – റീസെറ്റ്: VC = VV (~2V)-ൽ എത്തുമ്പോൾ UJT ഉയർന്ന പ്രതിരോധത്തിലേക്ക് മടങ്ങുന്നു. C വീണ്ടും ചാർജ് ആകാൻ തുടങ്ങുന്നു.",
+    calc_note:"നമ്മുടെ സർക്യൂട്ടിന്: η=0.63, VBB=12V → VP=8.26V, f≈11.2 kHz",
+    th_apps_p:"UJT ഓസിലേറ്ററുകൾ ഉപയോഗിക്കുന്നത്: SCR/തൈറിസ്റ്റർ ട്രിഗർ, ടൈമിംഗ് സർക്യൂട്ടുകൾ,톱ദന്ത തരംഗ ജനറേറ്ററുകൾ, വ്യാവസായിക നിയന്ത്രണ പൾസ് ജനറേറ്ററുകൾ.",
+    th_app_note:"💡 B1, B2-ൽ ഉള്ള സ്പൈക്കുകൾ SCR ട്രിഗറിംഗിന് അനുയോജ്യം — മോട്ടോർ സ്പീഡ് കൺട്രോളറുകൾ, ലാംപ് ഡിമ്മറുകൾ.",
+  }
+};
+
+let lang = 'en';
+let oscRunning = false;
+let waveRunning = false;
+let animId = null;
+let waveAnimId = null;
+
+function setLang(l) {
+  lang = l;
+  const t = T[l];
+  // tabs
+  document.querySelectorAll('.tab').forEach(el => {
+    const k = el.getAttribute('data-key');
+    if (k && t[k]) el.textContent = t[k];
+  });
+  // data-key elements
+  document.querySelectorAll('[data-key]').forEach(el => {
+    const k = el.getAttribute('data-key');
+    if (k && t[k] && !el.classList.contains('tab')) el.textContent = t[k];
+  });
+  // id-mapped texts
+  const ids = ['opText','ts1_t','ts2_t','td1_t','td2_t','td3_t','td_note',
+    'tr1_t','tr2_t','tc1_t','tc2_t','tc3_t','tc_note',
+    'tl1_t','tl2_t','tl3_t','tl4_t','tl_note',
+    'f1s','f1c','f2s','f2c','f3s','f3c','f4s','f4c','f5s','f5c',
+    'th_what_p1','th_what_p2','th_how_p1','th_how_p2','th_how_p3',
+    'calc_note','th_apps_p','th_app_note'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && t[id]) el.textContent = t[id];
+  });
+  document.getElementById('hdr-title').textContent = t.hdr_title;
+  document.getElementById('status-text').textContent = oscRunning ? t.status_run : t.status_stop;
+  document.getElementById('oscBtn').textContent = oscRunning ? t.btn_stop : t.btn_start;
+  document.getElementById('waveBtn').textContent = waveRunning ? t.btn_stop : t.btn_start;
+}
+
+function showTab(name, el) {
+  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  if (el) el.classList.add('active');
+  if (name === 'content-waveform' && waveRunning) startWaveAnim();
+}
+
+// ===== CIRCUIT PARAMETERS =====
+let R1 = 2000, Cap = 0.00000001, eta = 0.63;
+const VBB = 12, VD = 0.7, VV = 2.0;
+
+function calcVP() { return eta * VBB + VD; }
+function calcFreq() {
+  const tau = R1 * Cap;
+  return 1 / (tau * Math.log(1 / (1 - eta)));
+}
+function calcPeriod() { return 1 / calcFreq(); }
+
+function updateSliders() {
+  R1 = parseFloat(document.getElementById('r1Slider').value) * 1000;
+  Cap = parseFloat(document.getElementById('capSlider').value) * 1e-6;
+  eta = parseFloat(document.getElementById('etaSlider').value);
+  document.getElementById('r1Val').textContent = (R1/1000).toFixed(1) + ' kΩ';
+  document.getElementById('capVal').textContent = (Cap*1e6).toFixed(3) + ' µF';
+  document.getElementById('etaVal').textContent = 'η = ' + eta.toFixed(2);
+  document.getElementById('r1Display').textContent = (R1/1000).toFixed(1) + ' kΩ';
+  document.getElementById('capDisplay').textContent = (Cap*1e6).toFixed(3) + ' µF';
+  document.getElementById('etaDisplay').textContent = eta.toFixed(2);
+  const vp = calcVP().toFixed(2);
+  const f = calcFreq();
+  const fStr = f >= 1000 ? (f/1000).toFixed(1)+' kHz' : f.toFixed(0)+' Hz';
+  const T_us = (calcPeriod()*1e6).toFixed(1);
+  document.getElementById('vpLine').innerHTML = `VP = ${eta}×12+0.7 = <b>${vp}V</b>`;
+  document.getElementById('fLine').innerHTML = `f ≈ <b>${fStr}</b>`;
+  document.getElementById('tLine').innerHTML = `T ≈ <b>${T_us} µs</b>`;
+  document.getElementById('freqDisplay').textContent = fStr;
+  document.getElementById('periodDisplay').textContent = T_us + ' µs';
+  document.getElementById('vpDisplay').textContent = vp + ' V';
+  drawCircuit();
+}
+
+// ===== CIRCUIT DRAWING =====
+let phase = 0, vcAnim = VV;
+let charging = true;
+
+function toggleOsc() {
+  oscRunning = !oscRunning;
+  const t = T[lang];
+  document.getElementById('oscBtn').textContent = oscRunning ? t.btn_stop : t.btn_start;
+  const si = document.getElementById('osc-status');
+  document.getElementById('status-text').textContent = oscRunning ? t.status_run : t.status_stop;
+  si.className = 'status-indicator ' + (oscRunning ? 'status-running' : 'status-stopped');
+  if (oscRunning) animateCircuit();
+  else { cancelAnimationFrame(animId); drawCircuit(); }
+}
+
+function animateCircuit() {
+  const VP = calcVP();
+  const tau = R1 * Cap;
+  const dt = 0.000001;
+  if (charging) {
+    vcAnim += (VBB - vcAnim) * (1 - Math.exp(-dt / tau)) * 80;
+    if (vcAnim >= VP) { charging = false; }
+  } else {
+    vcAnim -= (vcAnim - VV) * 0.35;
+    if (vcAnim <= VV + 0.05) { vcAnim = VV; charging = true; }
+  }
+  drawCircuit(vcAnim, charging);
+  if (oscRunning) animId = requestAnimationFrame(animateCircuit);
+}
+
+function drawCircuit(vc = null, isCharging = true) {
+  const canvas = document.getElementById('circuitCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  // Background grid
+  ctx.strokeStyle = '#e8e2d8'; ctx.lineWidth = 0.5;
+  for (let x = 0; x < w; x += 20) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+  for (let y = 0; y < h; y += 20) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+
+  const VP = calcVP();
+  const vcFrac = vc != null ? (vc - VV) / (VP - VV) : 0;
+
+  // Wire color based on charge state
+  const wireCol = oscRunning ? (isCharging ? '#2563a8' : '#e05c1a') : '#2563a8';
+
+  // Layout coordinates
+  const lx = 120, rx = 420, ty = 50, by = 370, my = 210;
+  const ujt_x = 270, ujt_y = 210;
+
+  // === POWER SUPPLY WIRES ===
+  ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 2;
+  // Top rail
+  ctx.beginPath(); ctx.moveTo(lx, ty); ctx.lineTo(rx, ty); ctx.stroke();
+  // Bottom rail (GND)
+  ctx.beginPath(); ctx.moveTo(lx, by); ctx.lineTo(rx, by); ctx.stroke();
+  // Left rail
+  ctx.beginPath(); ctx.moveTo(lx, ty); ctx.lineTo(lx, by); ctx.stroke();
+
+  // VBB label + battery
+  ctx.fillStyle = '#1a1a2e'; ctx.font = 'bold 12px Raleway'; ctx.textAlign = 'center';
+  ctx.fillText('VBB = 12V', lx, ty - 10);
+  // Battery symbol
+  ctx.strokeStyle = '#2563a8'; ctx.lineWidth = 2;
+  const bx = lx, bty = ty + 20;
+  ctx.beginPath(); ctx.moveTo(bx-10, bty); ctx.lineTo(bx+10, bty); ctx.stroke(); // long line
+  ctx.beginPath(); ctx.moveTo(bx-6, bty+6); ctx.lineTo(bx+6, bty+6); ctx.stroke(); // short line
+  ctx.fillStyle = '#2563a8'; ctx.font = '10px monospace';
+  ctx.fillText('+', bx+14, bty+2);
+  ctx.fillText('−', bx+14, bty+10);
+
+  // GND symbol
+  ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 2;
+  const gx = (lx+rx)/2, gy = by;
+  ctx.beginPath(); ctx.moveTo(gx, gy); ctx.lineTo(gx, gy+15); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(gx-12, gy+15); ctx.lineTo(gx+12, gy+15); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(gx-8, gy+20); ctx.lineTo(gx+8, gy+20); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(gx-4, gy+25); ctx.lineTo(gx+4, gy+25); ctx.stroke();
+
+  // === RESISTOR R1 (left side, top) ===
+  drawResistor(ctx, lx, ty+40, lx, ty+120, 'R1\n'+(R1/1000).toFixed(1)+'kΩ', wireCol);
+
+  // === RESISTOR R3 (100Ω, series with R1) ===
+  drawResistor(ctx, lx, ty+140, lx, ty+190, 'R3\n100Ω', '#666');
+
+  // Wire from R3 bottom to UJT emitter
+  ctx.strokeStyle = wireCol; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(lx, ty+190); ctx.lineTo(lx, ujt_y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(lx, ujt_y); ctx.lineTo(ujt_x-40, ujt_y); ctx.stroke();
+
+  // === CAPACITOR (left side, below junction) ===
+  const cap_y = ujt_y + 50;
+  drawCapacitor(ctx, lx, cap_y, lx, cap_y+60, 'C\n'+(Cap*1e6).toFixed(3)+'µF', vcFrac, isCharging);
+  // Wire cap to GND
+  ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(lx, cap_y+60); ctx.lineTo(lx, by); ctx.stroke();
+
+  // === UJT SYMBOL ===
+  drawUJT(ctx, ujt_x, ujt_y, vcFrac, isCharging);
+
+  // === RIGHT SIDE ===
+  // Wire right top
+  ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(rx, ty); ctx.lineTo(rx, ty+40); ctx.stroke();
+
+  // Resistor R2 (100Ω) top right
+  drawResistor(ctx, rx, ty+40, rx, ty+120, 'R2\n100Ω', '#16a34a');
+
+  // B2 node label
+  ctx.fillStyle = '#16a34a'; ctx.font = 'bold 11px monospace'; ctx.textAlign = 'center';
+  ctx.fillText('B2', rx+22, ty+130);
+  // Wire B2 to UJT B2
+  ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 1.5; ctx.setLineDash([4,2]);
+  ctx.beginPath(); ctx.moveTo(rx, ty+130); ctx.lineTo(ujt_x+40, ujt_y-20); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // B1 node (below UJT)
+  const b1y = ujt_y + 40;
+  ctx.strokeStyle = '#e05c1a'; ctx.lineWidth = 1.5; ctx.setLineDash([4,2]);
+  ctx.beginPath(); ctx.moveTo(ujt_x+30, ujt_y+20); ctx.lineTo(rx, b1y); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#e05c1a'; ctx.font = 'bold 11px monospace'; ctx.textAlign = 'center';
+  ctx.fillText('B1', rx+22, b1y+5);
+
+  // R4 (150Ω)
+  drawResistor(ctx, rx, b1y+10, rx, b1y+100, 'R4\n150Ω', '#e05c1a');
+  // Wire R4 to GND
+  ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(rx, b1y+100); ctx.lineTo(rx, by); ctx.stroke();
+
+  // Voltage indicator on capacitor
+  if (vc != null) {
+    ctx.fillStyle = '#2563a8'; ctx.font = 'bold 12px Share Tech Mono'; ctx.textAlign = 'left';
+    ctx.fillText('Vc = ' + vc.toFixed(2) + 'V', lx+15, cap_y+30);
+  }
+
+  // Node dots
+  [[lx, ujt_y],[rx, ty+130],[rx, b1y]].forEach(([x,y]) => {
+    ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2);
+    ctx.fillStyle = '#2563a8'; ctx.fill();
+  });
+
+  // Probe labels
+  ctx.font = '10px Raleway'; ctx.fillStyle = '#999';
+  ctx.textAlign = 'right';
+  ctx.fillText('⊙TP1 (Emitter)', lx-5, ujt_y+4);
+  ctx.textAlign = 'left';
+  ctx.fillText('⊙TP2 (B2)', rx+28, ty+120);
+  ctx.fillText('⊙TP3 (B1)', rx+28, b1y+5);
+}
+
+function drawResistor(ctx, x1, y1, x2, y2, label, color) {
+  const cy = (y1+y2)/2, h = Math.abs(y2-y1)*0.5, w = 14;
+  ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x1, cy-h/2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x1, cy+h/2); ctx.lineTo(x1, y2); ctx.stroke();
+  ctx.strokeStyle = color || '#e05c1a';
+  ctx.strokeRect(x1-w, cy-h/2, w*2, h);
+  // Zigzag inside
+  ctx.beginPath();
+  const steps = 6, sh = h/steps;
+  ctx.moveTo(x1, cy-h/2);
+  for (let i=0;i<steps;i++) {
+    const nx = (i%2===0)?x1+w/2:x1-w/2;
+    ctx.lineTo(nx, cy-h/2+(i+0.5)*sh);
+  }
+  ctx.lineTo(x1, cy+h/2);
+  ctx.strokeStyle = color || '#e05c1a'; ctx.lineWidth = 1.5; ctx.stroke();
+  // Label
+  ctx.fillStyle = color || '#e05c1a'; ctx.font = 'bold 10px Share Tech Mono';
+  ctx.textAlign = 'left';
+  const lines = label.split('\n');
+  lines.forEach((l,i)=> ctx.fillText(l, x1+16, cy-4+i*13));
+}
+
+function drawCapacitor(ctx, x1, y1, x2, y2, label, vcFrac, isCharging) {
+  const cy = (y1+y2)/2, w = 20, gap = 8;
+  ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x1, cy-gap/2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x1, cy+gap/2); ctx.lineTo(x1, y2); ctx.stroke();
+  // Plates
+  const fillColor = isCharging ? `rgba(37,99,168,${0.15+vcFrac*0.5})` : `rgba(224,92,26,${0.3})`;
+  ctx.fillStyle = fillColor;
+  ctx.fillRect(x1-w, cy-gap/2-6, w*2, 6);
+  ctx.fillRect(x1-w, cy+gap/2, w*2, 6);
+  ctx.strokeStyle = '#2563a8'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(x1-w, cy-gap/2); ctx.lineTo(x1+w, cy-gap/2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x1-w, cy+gap/2); ctx.lineTo(x1+w, cy+gap/2); ctx.stroke();
+  // Label
+  ctx.fillStyle = '#2563a8'; ctx.font = 'bold 10px Share Tech Mono'; ctx.textAlign = 'left';
+  const lines = label.split('\n');
+  lines.forEach((l,i)=> ctx.fillText(l, x1+22, cy-4+i*13));
+  // Charge indicator
+  if (vcFrac > 0) {
+    ctx.fillStyle = `rgba(37,99,168,${0.2+vcFrac*0.6})`;
+    ctx.fillRect(x1-w+2, cy+gap/2-30*vcFrac, w*2-4, 30*vcFrac);
+  }
+}
+
+function drawUJT(ctx, cx, cy, vcFrac, isCharging) {
+  const r = 30;
+  // Body circle
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+  const active = vcFrac > 0.9 && !isCharging;
+  ctx.fillStyle = active ? '#fff7ed' : '#f8f9fc';
+  ctx.fill();
+  ctx.strokeStyle = active ? '#e05c1a' : '#333'; ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // Label
+  ctx.fillStyle = '#1a1a2e'; ctx.font = 'bold 11px Raleway'; ctx.textAlign = 'center';
+  ctx.fillText('UJT', cx, cy-8);
+  ctx.font = '9px monospace'; ctx.fillStyle = '#666';
+  ctx.fillText('2N2646', cx, cy+4);
+
+  // Emitter arrow (left side)
+  const ex = cx-r, ey = cy;
+  ctx.strokeStyle = isCharging ? '#2563a8' : '#e05c1a'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(ex-40, ey); ctx.lineTo(ex, ey); ctx.stroke();
+  // Arrow
+  ctx.beginPath(); ctx.moveTo(ex-10, ey-5); ctx.lineTo(ex, ey); ctx.lineTo(ex-10, ey+5);
+  ctx.fillStyle = isCharging ? '#2563a8' : '#e05c1a'; ctx.fill();
+  ctx.fillStyle = '#e05c1a'; ctx.font = 'bold 10px monospace'; ctx.textAlign = 'right';
+  ctx.fillText('E', cx-r-42, cy+4);
+
+  // B1 (bottom)
+  ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(cx, cy+r); ctx.lineTo(cx, cy+r+15); ctx.stroke();
+  ctx.fillStyle = '#e05c1a'; ctx.font = 'bold 10px monospace'; ctx.textAlign = 'center';
+  ctx.fillText('B1', cx, cy+r+28);
+
+  // B2 (top-right)
+  ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(cx+r*0.7, cy-r*0.7); ctx.lineTo(cx+r*0.7+20, cy-r*0.7-20); ctx.stroke();
+  ctx.fillStyle = '#16a34a'; ctx.textAlign = 'left';
+  ctx.fillText('B2', cx+r*0.7+22, cy-r*0.7-18);
+
+  // NDB bar inside
+  ctx.strokeStyle = '#666'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx-10, cy-18); ctx.lineTo(cx+18, cy-18); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx-10, cy+18); ctx.lineTo(cx+18, cy+18); ctx.stroke();
+
+  // Firing flash
+  if (active) {
+    ctx.fillStyle = 'rgba(224,92,26,0.3)';
+    ctx.beginPath(); ctx.arc(cx, cy, r*0.6, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#e05c1a'; ctx.font = 'bold 14px Raleway'; ctx.textAlign = 'center';
+    ctx.fillText('⚡', cx, cy+20);
+  }
+}
+
+// ===== WAVEFORM ANIMATION =====
+let waveOffset = 0;
+const waveSpeedEl = () => parseFloat(document.getElementById('waveSpeed').value);
+
+function toggleWave() {
+  waveRunning = !waveRunning;
+  const t = T[lang];
+  document.getElementById('waveBtn').textContent = waveRunning ? t.btn_stop : t.btn_start;
+  document.getElementById('waveSpeed').oninput = () => {
+    document.getElementById('speedVal').textContent = waveSpeedEl().toFixed(1) + 'x';
+  };
+  if (waveRunning) startWaveAnim();
+  else cancelAnimationFrame(waveAnimId);
+}
+
+function resetWave() {
+  waveOffset = 0;
+  waveRunning = false;
+  const t = T[lang];
+  document.getElementById('waveBtn').textContent = t.btn_start;
+  cancelAnimationFrame(waveAnimId);
+  ['waveVc','waveB1','waveB2'].forEach(id => {
+    const c = document.getElementById(id);
+    c.getContext('2d').clearRect(0,0,c.width,c.height);
+    drawWaveGrid(c.getContext('2d'), c.width, c.height);
+  });
+}
+
+function startWaveAnim() {
+  cancelAnimationFrame(waveAnimId);
+  function frame() {
+    waveOffset += waveSpeedEl() * 1.2;
+    drawAllWaves();
+    if (waveRunning) waveAnimId = requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+function drawWaveGrid(ctx, w, h) {
+  ctx.fillStyle = '#f8f9fc'; ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle = '#e0ddd5'; ctx.lineWidth = 0.5;
+  for (let x=0;x<w;x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+  for (let y=0;y<h;y+=20) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+}
+
+function drawAllWaves() {
+  const VP = calcVP(), period = 900;
+  const margin = 12;
+  // Vc
+  drawWave('waveVc', (x) => {
+    const t = (x + waveOffset) % period;
+    const chargeTime = period * 0.82;
+    if (t < chargeTime) {
+      return VBB - (VBB - VV) * Math.exp(-t / (chargeTime * 0.5));
+    } else {
+      const dt = t - chargeTime; const disch = period*0.18;
+      return VP - (VP - VV) * (dt / disch);
+    }
+  }, VV, VP+0.5, '#e05c1a', margin);
+
+  // B1 output (narrow spikes at discharge start)
+  drawWave('waveB1', (x) => {
+    const t = (x + waveOffset) % period;
+    const fireT = period * 0.82;
+    const dist = Math.abs(t - fireT);
+    if (dist < 18) return 3.5 * Math.exp(-dist * dist / 40);
+    return 0;
+  }, -0.5, 4, '#2563a8', margin);
+
+  // B2 (negative spike at B2 for trigger)
+  drawWave('waveB2', (x) => {
+    const t = (x + waveOffset) % period;
+    const fireT = period * 0.82;
+    const dist = Math.abs(t - fireT);
+    if (dist < 14) return 2.5 * Math.exp(-dist * dist / 25);
+    return 0;
+  }, -0.5, 3.5, '#16a34a', margin);
+}
+
+function drawWave(canvasId, fn, yMin, yMax, color, margin) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  drawWaveGrid(ctx, w, h);
+  // Axis labels
+  ctx.fillStyle = '#999'; ctx.font = '9px Share Tech Mono'; ctx.textAlign = 'right';
+  ctx.fillText(yMax.toFixed(1)+'V', margin+22, margin+8);
+  ctx.fillText(yMin.toFixed(1)+'V', margin+22, h-margin-2);
+  // Zero line
+  const z = h - margin - (0 - yMin) / (yMax - yMin) * (h - 2*margin);
+  if (z > margin && z < h-margin) {
+    ctx.strokeStyle = '#ccc'; ctx.lineWidth = 0.8; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(margin+26, z); ctx.lineTo(w-margin, z); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  // Wave
+  ctx.beginPath();
+  ctx.strokeStyle = color; ctx.lineWidth = 2.2;
+  const startX = margin + 26;
+  for (let px = startX; px < w - margin; px++) {
+    const val = fn(px - startX);
+    const py = h - margin - (val - yMin) / (yMax - yMin) * (h - 2*margin);
+    px === startX ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  // Moving cursor
+  const cx2 = ((waveOffset * 1.2) % (w - startX - margin)) + startX;
+  const cv = fn(cx2 - startX);
+  const cy2 = h - margin - (cv - yMin) / (yMax - yMin) * (h - 2*margin);
+  ctx.beginPath(); ctx.arc(cx2, cy2, 5, 0, Math.PI*2);
+  ctx.fillStyle = color; ctx.fill();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+}
+
+// Init
+window.onload = () => {
+  updateSliders();
+  drawCircuit();
+  ['waveVc','waveB1','waveB2'].forEach(id => {
+    const c = document.getElementById(id); if (!c) return;
+    drawWaveGrid(c.getContext('2d'), c.width, c.height);
+  });
+  document.getElementById('waveSpeed').oninput = () => {
+    document.getElementById('speedVal').textContent = waveSpeedEl().toFixed(1) + 'x';
+  };
+};
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>

@@ -1,0 +1,2728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operational Amplifier</title>
+<meta name="section" content="Electronics">
+<meta name="section-order" content="3">
+<meta name="order" content="8">
+<meta name="description" content="LM741 op-amp trainer">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fira+Code:wght@500;700&display=swap');
+
+:root {
+  --bg: #f5f0e8;
+  --white: #ffffff;
+  --panel: #fffdf7;
+  --border: #d4c9b0;
+  --accent: #c0392b;
+  --accent2: #1a6b9a;
+  --accent3: #1e8449;
+  --warn: #d35400;
+  --text: #1a1a1a;
+  --muted: #5d5d5d;
+  --soft: #7f8c8d;
+  --highlight: #fff3cd;
+  --blue-bg: #eaf4fb;
+  --green-bg: #eafaf1;
+  --red-bg: #fdf3f0;
+  --orange-bg: #fef9f0;
+  --purple: #6c3483;
+  --purple-bg: #f5eef8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 20px;
+  line-height: 1.7;
+}
+
+/* ── TOP HEADER ── */
+#top-header {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 14px 36px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+}
+
+.header-title {
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: #f5a623;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.header-sub {
+  font-size: 0.8rem;
+  color: #aaa;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.progress-bar-wrap {
+  flex: 1;
+  background: #333;
+  height: 8px;
+  border-radius: 4px;
+  margin: 0 20px;
+}
+
+.progress-bar-fill {
+  background: linear-gradient(90deg, #f5a623, #e74c3c);
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  width: 12.5%;
+}
+
+.page-indicator {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.85rem;
+  color: #f5a623;
+  min-width: 70px;
+  text-align: right;
+}
+
+/* ── PAGE NAV ── */
+#page-nav {
+  background: #fff;
+  border-bottom: 3px solid #e0d5c0;
+  padding: 0 24px;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+
+#page-nav button {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 11px 18px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 4px solid transparent;
+  margin-bottom: -3px;
+  white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+#page-nav button:hover { color: var(--accent2); background: #f0f7ff; }
+#page-nav button.active { color: var(--accent); border-bottom-color: var(--accent); background: #fff8f0; }
+
+/* ── MAIN CONTENT ── */
+.page { display: none; padding: 36px 48px 80px; max-width: 1100px; margin: 0 auto; }
+.page.active { display: block; animation: fadeIn 0.4s ease; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── TYPOGRAPHY ── */
+h1 {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+h2 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--accent2);
+  margin: 32px 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 3px solid var(--border);
+}
+
+h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--purple);
+  margin: 24px 0 8px;
+}
+
+.page-tag {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 3px;
+  margin-bottom: 12px;
+}
+
+p { margin-bottom: 16px; font-size: 1.05rem; }
+
+strong { color: var(--accent); }
+em { color: var(--accent2); font-style: normal; font-weight: 700; }
+
+/* ── BOXES ── */
+.analogy {
+  background: #fff8e1;
+  border-left: 6px solid #f5a623;
+  border-radius: 0 8px 8px 0;
+  padding: 18px 22px;
+  margin: 20px 0;
+  position: relative;
+}
+
+.analogy::before {
+  content: "💡 ANALOGY";
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #d68910;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.analogy p { margin: 0; font-size: 1rem; color: #4a4a00; }
+
+.tip {
+  background: var(--green-bg);
+  border-left: 6px solid var(--accent3);
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  margin: 16px 0;
+}
+
+.tip::before {
+  content: "✅ KEY POINT";
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--accent3);
+  letter-spacing: 2px;
+  margin-bottom: 5px;
+}
+
+.tip p { margin: 0; font-size: 1rem; }
+
+.warn {
+  background: var(--red-bg);
+  border-left: 6px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  margin: 16px 0;
+}
+
+.warn::before {
+  content: "⚠ CAUTION";
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 2px;
+  margin-bottom: 5px;
+}
+
+.warn p { margin: 0; font-size: 1rem; }
+
+.realworld {
+  background: var(--blue-bg);
+  border-left: 6px solid var(--accent2);
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  margin: 16px 0;
+}
+
+.realworld::before {
+  content: "🔧 REAL WORLD";
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--accent2);
+  letter-spacing: 2px;
+  margin-bottom: 5px;
+}
+
+.realworld p { margin: 0; font-size: 1rem; }
+
+/* ── FORMULA BOX ── */
+.formula {
+  background: #1a1a2e;
+  color: #f5a623;
+  font-family: 'Fira Code', monospace;
+  font-size: 1.35rem;
+  font-weight: 700;
+  padding: 20px 28px;
+  border-radius: 10px;
+  text-align: center;
+  margin: 20px 0;
+  letter-spacing: 1px;
+  line-height: 1.8;
+}
+
+.formula .formula-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.75rem;
+  color: #aaa;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ── CALC WORKED ── */
+.calc-box {
+  background: #fff;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 24px 28px;
+  margin: 20px 0;
+}
+
+.calc-box .calc-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--accent2);
+  margin-bottom: 16px;
+  border-bottom: 2px dashed var(--border);
+  padding-bottom: 8px;
+}
+
+.calc-step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin: 12px 0;
+  padding: 12px 16px;
+  border-radius: 6px;
+  background: #fafafa;
+  border: 1px solid #eee;
+}
+
+.calc-step-num {
+  background: var(--accent2);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.calc-step-body { flex: 1; }
+.calc-step-body .clabel { font-size: 0.75rem; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.calc-step-body .cval { font-family: 'Fira Code', monospace; font-size: 1.05rem; color: var(--text); margin-top: 3px; }
+.calc-step-body .cexpl { font-size: 0.9rem; color: var(--muted); margin-top: 4px; }
+
+/* ── CIRCUIT SVG PANEL ── */
+.circuit-panel {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 22px 0;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.circuit-panel .ctitle {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+/* ── INTERACTIVE CALC ── */
+.interactive-calc {
+  background: white;
+  border: 2px solid var(--accent2);
+  border-radius: 12px;
+  padding: 26px;
+  margin: 22px 0;
+  box-shadow: 0 4px 16px rgba(26,107,154,0.1);
+}
+
+.interactive-calc h3 { margin-top: 0; }
+
+.slider-group { margin: 14px 0; }
+
+.slider-group label {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.slider-group label span {
+  font-family: 'Fira Code', monospace;
+  color: var(--accent2);
+  font-size: 1rem;
+}
+
+input[type=range] {
+  width: 100%;
+  accent-color: var(--accent2);
+  height: 6px;
+  cursor: pointer;
+}
+
+.result-display {
+  background: var(--blue-bg);
+  border: 2px solid var(--accent2);
+  border-radius: 8px;
+  padding: 16px 22px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.result-display .res-label { font-size: 0.8rem; font-weight: 800; color: var(--accent2); letter-spacing: 1px; text-transform: uppercase; }
+.result-display .res-val { font-family: 'Fira Code', monospace; font-size: 2.2rem; font-weight: 700; color: var(--accent); line-height: 1; }
+.result-display .res-unit { font-size: 0.85rem; color: var(--muted); }
+
+/* ── QUIZ ── */
+.quiz-container {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  margin: 24px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.quiz-q-num {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.quiz-question {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 700px) { .quiz-options { grid-template-columns: 1fr; } }
+
+.quiz-options button {
+  background: #f8f8f8;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+  line-height: 1.4;
+}
+
+.quiz-options button:hover:not(:disabled) { border-color: var(--accent2); background: var(--blue-bg); }
+.quiz-options button.correct { background: #d5f5e3; border-color: var(--accent3); color: #1a5c36; }
+.quiz-options button.wrong { background: #fde8e8; border-color: var(--accent); color: #7b0000; }
+
+.quiz-feedback {
+  margin-top: 14px;
+  padding: 14px 18px;
+  background: var(--highlight);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  display: none;
+  border: 1px solid #f0d060;
+}
+
+/* ── WAVEFORM ANIMATION ── */
+.wave-canvas {
+  background: #0a1628;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;
+}
+
+/* ── TWO COLUMN GRID ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+@media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ── STEP LIST ── */
+.steps { list-style: none; padding: 0; margin: 16px 0; }
+.steps li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.steps li .sn {
+  background: var(--accent);
+  color: white;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.steps li .st { flex: 1; font-size: 0.97rem; }
+.steps li .st strong { color: var(--accent2); }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 50px;
+  padding-top: 24px;
+  border-top: 2px solid var(--border);
+}
+
+.bottom-nav button {
+  background: var(--accent2);
+  color: white;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 13px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.bottom-nav button:hover { background: #124e72; transform: translateY(-2px); }
+.bottom-nav button.secondary { background: #888; }
+.bottom-nav button.secondary:hover { background: #555; }
+.bottom-nav .page-label { font-size: 0.85rem; color: var(--muted); font-weight: 700; }
+
+/* ── CHIP DIAGRAM STYLES ── */
+.lm741-pin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 0.95rem;
+}
+
+.lm741-pin-table th {
+  background: #1a1a2e;
+  color: #f5a623;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.lm741-pin-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.lm741-pin-table tr:nth-child(even) td { background: #fafaf5; }
+.lm741-pin-table tr:hover td { background: var(--blue-bg); }
+
+/* ── ANIMATION CLASSES ── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes slideRight {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.pulse { animation: pulse 2s infinite; }
+
+/* ── LANGUAGE SWITCHER ── */
+.lang-switcher {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+.lang-btn {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 6px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.lang-btn:hover { background: rgba(245,166,35,0.3); border-color: #f5a623; }
+.lang-btn.active { background: #f5a623; color: #000; border-color: #f5a623; }
+
+/* ── WAVE ANIMATION CANVAS ── */
+.wave-anim-panel {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 22px 0;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.wave-anim-panel .ctitle {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* ── MULTILINGUAL TEXT ── */
+[data-ml], [data-hi] { display: none; }
+body.lang-ml [data-en] { display: none; }
+body.lang-ml [data-ml] { display: block; }
+body.lang-hi [data-en] { display: none; }
+body.lang-hi [data-hi] { display: block; }
+/* Inline spans */
+span[data-en], span[data-ml], span[data-hi] { display: inline; }
+body.lang-ml span[data-en] { display: none; }
+body.lang-ml span[data-ml] { display: inline; }
+body.lang-hi span[data-en] { display: none; }
+body.lang-hi span[data-hi] { display: inline; }
+</style>
+</head>
+<body>
+
+<div id="top-header">
+  <div>
+    <div class="header-title">LM741 Op-Amp Trainer</div>
+    <div class="header-sub">For Electrician Trainees · Class CITS Elec</div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+  <div class="page-indicator" id="pageInd">1 / 8</div>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+    <button class="lang-btn" onclick="setLang('ml',this)">മലയാളം</button>
+    <button class="lang-btn" onclick="setLang('hi',this)">हिंदी</button>
+  </div>
+</div>
+
+<div id="page-nav">
+  <button class="active" onclick="goPage(0,this)">0 · Start Here</button>
+  <button onclick="goPage(1,this)">1 · What is Op-Amp</button>
+  <button onclick="goPage(2,this)">2 · Comparator</button>
+  <button onclick="goPage(3,this)">3 · Zero Crossing</button>
+  <button onclick="goPage(4,this)">4 · Voltage Follower</button>
+  <button onclick="goPage(5,this)">5 · Inverting Amp</button>
+  <button onclick="goPage(6,this)">6 · Non-Inverting</button>
+  <button onclick="goPage(7,this)">7 · Integrator</button>
+  <button onclick="goPage(8,this)">8 · Differentiator</button>
+  <button onclick="goPage(9,this)">9 · LM741 Pinout</button>
+  <button onclick="goPage(10,this)">10 · Final Quiz</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 0 — START HERE
+════════════════════════════════════════════════════════ -->
+<div class="page active" id="page0">
+  <div class="page-tag" data-en>Welcome</div><div class="page-tag" data-ml>സ്വാഗതം</div><div class="page-tag" data-hi>स्वागत</div>
+  <h1 data-en>Welcome, Trainee Electrician! 👋</h1><h1 data-ml>സ്വാഗതം, ഇലക്ട്രീഷ്യൻ പരിശീലാർത്ഥി! 👋</h1><h1 data-hi>स्वागत है, इलेक्ट्रीशियन ट्रेनी! 👋</h1>
+  <p data-en>This course teaches you <strong>Op-Amps (Operational Amplifiers)</strong> using the famous <em>LM741</em> chip. You will learn <strong>7 important circuits</strong> that every electrician encounters on the job.</p><p data-ml>ഈ കോഴ്‌സ് നിങ്ങൾക്ക് പ്രശസ്തമായ <em>LM741</em> chip ഉപയോഗിച്ച് <strong>Op-Amp (Operational Amplifier)</strong> പഠിപ്പിക്കും. എല്ലാ ഇലക്ട്രീഷ്യനും ജോലിയിൽ കണ്ടുമുട്ടുന്ന <strong>7 പ്രധാന circuit</strong> നിങ്ങൾ പഠിക്കും.</p><p data-hi>इस कोर्स में हम प्रसिद्ध <em>LM741</em> chip से <strong>Op-Amp (Operational Amplifier)</strong> सीखेंगे। हर electrician जो 7 ज़रूरी circuits काम में देखता है, वो सब यहाँ मिलेंगे।</p>
+
+  <div class="analogy">
+    <p data-en>Before we start — you already know about <strong>transistors (BJT)</strong>. An Op-Amp is like a <em>super-powered transistor</em>. A BJT amplifies current. An Op-Amp amplifies the <em>difference between two voltages</em>. It is like having 20 transistors working together as a team, already connected inside one small chip.</p><p data-ml>തുടങ്ങുന്നതിന് മുമ്പ് — നിങ്ങൾക്ക് <strong>transistor (BJT)</strong> അറിയാം അല്ലേ? Op-Amp അതിന്റെ super version ആണ്. BJT current കൂട്ടും. Op-Amp രണ്ട് voltage-ന്റെ <em>വ്യത്യാസം</em> കൂട്ടും. ഒരു ചെറിയ chip-ൽ 20 transistor ഒന്നിച്ച് ജോലി ചെയ്യുന്ന പോലെ ആണ്.</p><p data-hi>शुरू करने से पहले — आपको <strong>transistor (BJT)</strong> तो पता है ना? Op-Amp उसी का super version है। BJT current बढ़ाता है। Op-Amp दो voltages का <em>फ़र्क़</em> बढ़ाता है। जैसे एक छोटी chip में 20 transistors मिलकर काम कर रहे हों।</p>
+  </div>
+
+  <h2 data-en>What You Will Learn</h2><h2 data-ml>നിങ്ങൾ എന്ത് പഠിക്കും</h2><h2 data-hi>आप क्या सीखेंगे</h2>
+  <div class="two-col">
+    <div style="background:white;border:2px solid var(--border);border-radius:10px;padding:18px;">
+      <h3 style="margin-top:0;font-size:1.1rem;" data-en>7 Circuits Covered</h3><h3 style="margin-top:0;font-size:1.1rem;" data-ml>7 Circuit ഉൾപ്പെടുത്തിയിട്ടുണ്ട്</h3><h3 style="margin-top:0;font-size:1.1rem;" data-hi>7 Circuit शामिल हैं</h3>
+      <ul style="list-style:none;padding:0;">
+        <li style="padding:6px 0;border-bottom:1px solid #eee;">🔵 <strong>Comparator</strong> — which voltage is bigger?</li>
+        <li style="padding:6px 0;border-bottom:1px solid #eee;">🔴 <strong>Zero Crossing Detector</strong> — when AC crosses zero</li>
+        <li style="padding:6px 0;border-bottom:1px solid #eee;">🟢 <strong>Voltage Follower</strong> — copy voltage, add power</li>
+        <li style="padding:6px 0;border-bottom:1px solid #eee;">🟠 <strong>Inverting Amplifier</strong> — amplify and flip</li>
+        <li style="padding:6px 0;border-bottom:1px solid #eee;">🟣 <strong>Non-Inverting Amplifier</strong> — amplify, keep same</li>
+        <li style="padding:6px 0;border-bottom:1px solid #eee;">🟡 <strong>Integrator</strong> — add up over time</li>
+        <li style="padding:6px 0;">⚪ <strong>Differentiator</strong> — detect sudden changes</li>
+      </ul>
+    </div>
+    <div style="background:white;border:2px solid var(--border);border-radius:10px;padding:18px;">
+      <h3 style="margin-top:0;font-size:1.1rem;" data-en>What You Already Know ✅</h3><h3 style="margin-top:0;font-size:1.1rem;" data-ml>നിങ്ങൾക്ക് ഇതിനകം അറിയാവുന്നത് ✅</h3><h3 style="margin-top:0;font-size:1.1rem;" data-hi>जो आप पहले से जानते हैं ✅</h3>
+      <ul style="list-style:none;padding:0;">
+        <li style="padding:6px 0;border-bottom:1px solid #eee;">⚡ Ohm's Law (V = I × R)</li>
+        <li style="padding:6px 0;border-bottom:1px solid #eee;">⚡ Voltage divider circuits</li>
+        <li style="padding:6px 0;border-bottom:1px solid #eee;">⚡ How a BJT transistor works</li>
+        <li style="padding:6px 0;border-bottom:1px solid #eee;">⚡ AC and DC signals</li>
+        <li style="padding:6px 0;">⚡ Basic capacitor function</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="realworld">
+    <p data-en>Op-Amps are everywhere! In <strong>battery chargers, UPS inverters, AC motor drives, temperature controllers, solar charge controllers, audio amplifiers, digital multimeters, CCTV cameras</strong> — you will find an Op-Amp inside every one of them.</p><p data-ml>Op-Amp എങ്ങും ഉണ്ട്! <strong>battery charger, UPS inverter, AC motor drive, temperature controller, solar charge controller, audio amplifier, digital multimeter, CCTV camera</strong> — ഇതിൽ ഓരോന്നിന്റെ ഉള്ളിലും ഒരു Op-Amp ഉണ്ട്.</p><p data-hi>Op-Amp हर जगह है! <strong>battery charger, UPS inverter, AC motor drive, temperature controller, solar charge controller, audio amplifier, digital multimeter, CCTV camera</strong> — इन सबके अंदर Op-Amp मिलेगा।</p>
+  </div>
+
+  <div class="tip">
+    <p data-en>Use the <strong>navigation bar</strong> at the top to jump to any topic. Or click the buttons at the bottom of each page to move forward and backward. Take it page by page — each one builds on the previous.</p><p data-ml>മുകളിലെ <strong>navigation bar</strong> ഉപയോഗിച്ച് ഏത് topic-ലേക്കും പോകാം. അല്ലെങ്കിൽ ഓരോ page-ന്റെ അടിയിലെ button click ചെയ്‌ത് മുന്നോട്ടും പിറകോട്ടും പോകാം. ഒരു page ഒരു time — ഓരോ page-ഉം മുൻ page-ന്റെ മുകളിൽ ആണ് build ആകുന്നത്.</p><p data-hi>ऊपर के <strong>navigation bar</strong> से किसी भी topic पर jump करें। या हर page के नीचे buttons से आगे-पीछे जाएं। एक-एक page करें — हर page पिछले पर बनता है।</p>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="secondary" disabled>← Previous</button>
+    <span class="page-label">Page 0 of 10</span>
+    <button onclick="goPage(1, document.querySelectorAll('#page-nav button')[1])">Next: What is Op-Amp →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 1 — WHAT IS AN OP-AMP
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page1">
+  <div class="page-tag" data-en>Chapter 1</div><div class="page-tag" data-ml>അദ്ധ്യായം 1</div><div class="page-tag" data-hi>अध्याय 1</div>
+  <h1 data-en>What is an Op-Amp?</h1><h1 data-ml>Op-Amp എന്താണ്?</h1><h1 data-hi>Op-Amp क्या है?</h1>
+  <p data-en>An <strong>Operational Amplifier (Op-Amp)</strong> is an electronic device that takes <em>two voltage inputs</em>, finds the <strong>difference</strong> between them, and gives an <em>amplified output</em> based on that difference.</p><p data-ml><strong>Operational Amplifier (Op-Amp)</strong> എന്നത് ഒരു electronic device ആണ്. ഇതിന് <em>രണ്ട് voltage input</em> കൊടുക്കാം. ആ രണ്ടിന്റെ <strong>വ്യത്യാസം</strong> കണ്ടെത്തി, അത് <em>കൂട്ടി (amplify ചെയ്ത്)</em> output ആക്കും.</p><p data-hi><strong>Operational Amplifier (Op-Amp)</strong> एक electronic device है। इसे <em>दो voltage inputs</em> देते हैं। यह उन दोनों का <strong>फ़र्क़</strong> निकालता है और उसे <em>बढ़ाकर (amplify करके)</em> output देता है।</p>
+
+  <div class="circuit-panel">
+    <div class="ctitle">Op-Amp Symbol — Learn This Shape</div>
+    <svg width="420" height="200" viewBox="0 0 420 200">
+      <!-- Triangle body -->
+      <polygon points="120,30 120,170 290,100" fill="#eaf4fb" stroke="#1a6b9a" stroke-width="3"/>
+      <!-- + input line -->
+      <line x1="30" y1="75" x2="120" y2="75" stroke="#1e8449" stroke-width="3"/>
+      <text x="38" y="68" fill="#1e8449" font-family="Fira Code" font-size="20" font-weight="bold">+</text>
+      <text x="40" y="92" fill="#1e8449" font-family="Nunito" font-size="13" font-weight="700">Non-Inv</text>
+      <!-- - input line -->
+      <line x1="30" y1="125" x2="120" y2="125" stroke="#c0392b" stroke-width="3"/>
+      <text x="38" y="122" fill="#c0392b" font-family="Fira Code" font-size="20" font-weight="bold">−</text>
+      <text x="40" y="140" fill="#c0392b" font-family="Nunito" font-size="13" font-weight="700">Inv</text>
+      <!-- output line -->
+      <line x1="290" y1="100" x2="390" y2="100" stroke="#d35400" stroke-width="3"/>
+      <text x="295" y="93" fill="#d35400" font-family="Nunito" font-size="13" font-weight="700">OUTPUT</text>
+      <!-- Internal label -->
+      <text x="168" y="106" fill="#1a6b9a" font-family="Nunito" font-size="15" font-weight="800">OP-AMP</text>
+      <!-- Supply labels -->
+      <line x1="205" y1="30" x2="205" y2="55" stroke="#888" stroke-width="2" stroke-dasharray="4,3"/>
+      <text x="213" y="48" fill="#888" font-family="Nunito" font-size="12">+Vcc</text>
+      <line x1="205" y1="145" x2="205" y2="170" stroke="#888" stroke-width="2" stroke-dasharray="4,3"/>
+      <text x="213" y="168" fill="#888" font-family="Nunito" font-size="12">−Vee</text>
+    </svg>
+  </div>
+
+  <h2 data-en>The Three Most Important Pins</h2><h2 data-ml>ഏറ്റവും പ്രധാനപ്പെട്ട മൂന്ന് Pins</h2><h2 data-hi>तीन सबसे ज़रूरी Pins</h2>
+  <p data-en>You only need to understand <strong>three things</strong> about the Op-Amp symbol to start. Think of these three pins as the heart of everything:</p><p data-ml>തുടങ്ങാൻ Op-Amp symbol-ൽ <strong>മൂന്ന് കാര്യം</strong> മനസ്സിലായാൽ മതി. ഈ മൂന്ന് pin-ഉം എല്ലാറ്റിന്റെയും ഹൃദയം ആണ്:</p><p data-hi>शुरुआत के लिए Op-Amp symbol में सिर्फ <strong>तीन चीज़ें</strong> समझनी हैं। ये तीन pins ही सब कुछ का दिल हैं:</p>
+
+  <table class="lm741-pin-table">
+    <thead><tr><th data-en>Pin Symbol</th><th data-en>Name</th><th data-en>What It Does — In Simple Words</th><th data-ml>Pin Symbol</th><th data-ml>പേര്</th><th data-ml>ലളിതമായി — ഇത് എന്ത് ചെയ്യും</th><th data-hi>Pin Symbol</th><th data-hi>नाम</th><th data-hi>सरल भाषा में — यह क्या करता है</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style="font-size:1.5rem;color:#1e8449;font-weight:900;text-align:center;">+</td>
+        <td><strong>Non-Inverting Input</strong></td>
+        <td data-en>The <em>"what I want"</em> input. If you raise this, output also rises. They go in the same direction.</td><td data-ml>ഇത് <em>"ഞാൻ ആഗ്രഹിക്കുന്ന"</em> input ആണ്. ഇത് കൂടിയാൽ output-ഉം കൂടും. ഒരേ direction.</td><td data-hi>यह <em>"मुझे चाहिए"</em> वाला input है। इसे बढ़ाओ तो output भी बढ़ेगा। दोनों एक ही direction में।</td>
+      </tr>
+      <tr>
+        <td style="font-size:1.5rem;color:#c0392b;font-weight:900;text-align:center;">−</td>
+        <td><strong>Inverting Input</strong></td>
+        <td data-en>The <em>"feedback / control"</em> input. If you raise this, output goes down. They go in opposite directions.</td><td data-ml><em>"feedback / control"</em> input ആണ്. ഇത് കൂടിയാൽ output കുറയും. Opposite direction.</td><td data-hi><em>"feedback / control"</em> input है। इसे बढ़ाओ तो output घटेगा। दोनों उलटी दिशा में।</td>
+      </tr>
+      <tr>
+        <td style="font-size:1.5rem;color:#d35400;font-weight:900;text-align:center;">▶</td>
+        <td><strong>Output</strong></td>
+        <td data-en>The result. It is always trying to make (+) and (−) equal. Whatever it needs to do to achieve that — it does.</td><td data-ml>Result ആണ്. (+) ഉം (−) ഉം equal ആക്കാൻ ഇത് എപ്പോഴും ശ്രമിക്കും. അതിനുവേണ്ടി എന്ത് വേണമെങ്കിലും ചെയ്യും.</td><td data-hi>Result है। यह हमेशा (+) और (−) को बराबर करने की कोशिश करता है। जो भी करना पड़े — करता है।</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 data-en>The Golden Rule of Op-Amps</h2><h2 data-ml>Op-Amp-ന്റെ Golden Rule</h2><h2 data-hi>Op-Amp का Golden Rule</h2>
+  <div class="formula">
+    <span class="formula-label" data-en>The ONE Rule You Must Remember</span><span class="formula-label" data-ml>ഒരേ ഒരു Rule — ഇത് ഓർത്തിരിക്കൂ</span><span class="formula-label" data-hi>बस एक Rule — यही याद रखें</span>
+    Vout = A × (V+ − V−)<br>
+    <span style="font-size:0.9rem;color:#aaa;" data-en>Where A = very very large number (up to 200,000)</span><span style="font-size:0.9rem;color:#aaa;" data-ml>A = വളരെ വലിയ സംഖ്യ (200,000 വരെ)</span><span style="font-size:0.9rem;color:#aaa;" data-hi>A = बहुत बड़ी संख्या (200,000 तक)</span>
+  </div>
+
+  <div class="analogy">
+    <p data-en>Think of a <strong>cricket umpire</strong>. His job is to judge: <em>"Is the batsman in or out?"</em> He compares the ball's path (V+) against the stumps (V−) and gives a verdict (output). If the ball hits the stumps — <strong>OUT!</strong> (output goes high). If not — <strong>NOT OUT</strong> (output goes low). The Op-Amp does the exact same job — but with voltages, millions of times per second.</p><p data-ml>ഒരു <strong>cricket umpire</strong>-നെ ഓർക്കൂ. അയാളുടെ ജോലി judge ചെയ്യുക ആണ്: <em>"Out ആണോ, Not Out ആണോ?"</em> Ball-ന്റെ direction (V+) stump-നോട് (V−) compare ചെയ്ത് verdict (output) പറയും. Ball stump hit ചെയ്‌താൽ — <strong>OUT!</strong> (output HIGH). ഇല്ലെങ്കിൽ — <strong>NOT OUT</strong> (output LOW). Op-Amp കൃത്യം ഇതേ ജോലി ആണ് ചെയ്യുന്നത് — voltage-ഉമായി, ഒരു second-ൽ millions of times.</p><p data-hi>एक <strong>cricket umpire</strong> सोचो। उसका काम judge करना है: <em>"Out है या Not Out?"</em> वो ball की दिशा (V+) को stump (V−) से compare करके verdict (output) देता है। Ball stump hit करे — <strong>OUT!</strong> (output HIGH)। नहीं तो — <strong>NOT OUT</strong> (output LOW)। Op-Amp भी यही काम करता है — voltages के साथ, एक second में लाखों बार।</p>
+  </div>
+
+  <h2 data-en>Open Loop Gain — Why It's Huge</h2><h2 data-ml>Open Loop Gain — ഇത് ഇത്ര വലുതാകുന്നത് എന്തുകൊണ്ട്?</h2><h2 data-hi>Open Loop Gain — यह इतना बड़ा क्यों है?</h2>
+  <p data-en>The LM741's internal gain (called <strong>Open Loop Gain</strong>) is about <em>200,000</em>. This means: even a <em>tiny</em> difference of 0.1mV between the two inputs will push the output all the way to maximum voltage!</p><p data-ml>LM741-ന്റെ ഉള്ളിലെ gain (<strong>Open Loop Gain</strong> എന്ന് പറയും) ഏകദേശം <em>200,000</em> ആണ്. അർത്ഥം: input-ൽ 0.1mV-ന്റെ <em>ചെറിയ</em> വ്യത്യാസം ഉണ്ടായാൽ output maximum voltage-ലേക്ക് പോകും!</p><p data-hi>LM741 का अंदरूनी gain (<strong>Open Loop Gain</strong>) करीब <em>200,000</em> है। मतलब: input में सिर्फ 0.1mV का <em>छोटा सा</em> फ़र्क़ भी output को maximum voltage तक धकेल देगा!</p>
+
+  <div class="calc-box">
+    <div class="calc-title">Example: What happens with a tiny input difference?</div>
+    <div class="calc-step">
+      <div class="calc-step-num">1</div>
+      <div class="calc-step-body">
+        <div class="clabel">Given</div>
+        <div class="cval">Supply = ±15V, A = 200,000, V+ = 0.001V (1mV), V− = 0V</div>
+        <div class="cexpl">The (+) input is just 1 millivolt higher than the (−) input</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">2</div>
+      <div class="calc-step-body">
+        <div class="clabel">Calculate</div>
+        <div class="cval">Vout = 200,000 × (0.001 − 0) = 200 Volts</div>
+        <div class="cexpl">But our supply is only ±15V! So the output cannot go higher than +15V</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">3</div>
+      <div class="calc-step-body">
+        <div class="clabel">Actual Result</div>
+        <div class="cval">Vout = +13V to +14V (clips at supply − 1 to 2V)</div>
+        <div class="cexpl">This is called "saturation" — the output hits the ceiling. Like filling a cup — no matter how much water you pour, it can't go above the top.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <p data-en>In circuits WITHOUT feedback (like Comparator, Zero Crossing Detector), this huge gain is exactly what we want — it acts like a fast switch. In circuits WITH feedback (like Amplifiers), we use resistors to reduce the gain to a useful level.</p><p data-ml>Feedback ഇല്ലാത്ത circuits-ൽ (Comparator, Zero Crossing Detector), ഈ വലിയ gain ആണ് നമുക്ക് വേണ്ടത് — fast switch പോലെ work ചെയ്യും. Feedback ഉള്ള circuits-ൽ (Amplifiers), resistor ഉപയോഗിച്ച് gain കുറയ്ക്കും.</p><p data-hi>Feedback के बिना (Comparator, Zero Crossing Detector जैसे circuits में), यह बड़ा gain ही हमें चाहिए — fast switch की तरह काम करता है। Feedback वाले circuits में (Amplifiers), resistors से gain को useful level पर लाते हैं।</p>
+  </div>
+
+  <div class="realworld">
+    <p data-en><strong>This huge gain is used in two ways in real life:</strong> (1) Without feedback — used in <em>comparators, detectors, switches</em>. (2) With feedback resistors — used in <em>amplifiers, regulators, active filters</em>. The LM741 does both, just by changing the external components.</p><p data-ml><strong>ഈ വലിയ gain രണ്ട് രീതിയിൽ ഉപയോഗിക്കും:</strong> (1) Feedback ഇല്ലാതെ — <em>comparator, detector, switch</em> ആക്കും. (2) Feedback resistor ഉപയോഗിച്ച് — <em>amplifier, regulator, active filter</em> ആക്കും. External components മാറ്റുന്നതിലൂടെ LM741 രണ്ടും ചെയ്യും.</p><p data-hi><strong>यह बड़ा gain दो तरीके से काम आता है:</strong> (1) Feedback के बिना — <em>comparator, detector, switch</em> बनाते हैं। (2) Feedback resistors के साथ — <em>amplifier, regulator, active filter</em> बनाते हैं। बस बाहरी components बदलो — LM741 दोनों करता है।</p>
+  </div>
+
+  <!-- QUIZ -->
+  <h2>Quick Check — Page 1</h2>
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 1 of 1</div>
+    <div class="quiz-question" data-en>If V+ = 2V and V− = 3V, which direction does the output go?</div><div class="quiz-question" data-ml>V+ = 2V, V− = 3V ആണെങ്കിൽ output ഏത് direction-ൽ പോകും?</div><div class="quiz-question" data-hi>अगर V+ = 2V और V− = 3V है, तो output किस direction में जाएगा?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p1q1',false,'Q1')">Output goes HIGH (+)</button>
+      <button onclick="qAnswer(this,'p1q1',true,'Q1')">Output goes LOW (−)</button>
+      <button onclick="qAnswer(this,'p1q1',false,'Q1')">Output stays at zero</button>
+      <button onclick="qAnswer(this,'p1q1',false,'Q1')">Output oscillates</button>
+    </div>
+    <div class="quiz-feedback" id="p1q1">
+      ✅ <strong>Correct!</strong> Since V− (3V) is HIGHER than V+ (2V), the difference (V+ − V−) = −1V. Negative difference means the output is pushed DOWN (negative). Remember: if minus-pin wins, output goes negative!
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button onclick="goPage(0, document.querySelectorAll('#page-nav button')[0])">← Previous</button>
+    <span class="page-label">Page 1 of 10</span>
+    <button onclick="goPage(2, document.querySelectorAll('#page-nav button')[2])">Next: Comparator →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 2 — COMPARATOR
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page2">
+  <div class="page-tag" data-en>Chapter 2</div><div class="page-tag" data-ml>അദ്ധ്യായം 2</div><div class="page-tag" data-hi>अध्याय 2</div>
+  <h1 data-en>Comparator Circuit</h1><h1 data-ml>Comparator Circuit</h1><h1 data-hi>Comparator Circuit</h1>
+  <p data-en>A <strong>Comparator</strong> uses the Op-Amp's huge gain in <em>open loop</em> (no feedback). Its job is simple: <em>compare two voltages and tell you which one is bigger</em> by giving HIGH or LOW output.</p><p data-ml><strong>Comparator</strong> Op-Amp-ന്റെ വലിയ gain <em>open loop</em>-ൽ (feedback ഇല്ലാതെ) ഉപയോഗിക്കും. ജോലി ലളിതം: <em>രണ്ട് voltage compare ചെയ്ത് ഏത് കൂടുതൽ ആണ് എന്ന് പറയും</em> — HIGH അല്ലെങ്കിൽ LOW output ആയി.</p><p data-hi><strong>Comparator</strong> Op-Amp के बड़े gain को <em>open loop</em> में (feedback के बिना) use करता है। काम सीधा: <em>दो voltages compare करो और बताओ कौन बड़ा है</em> — HIGH या LOW output से।</p>
+
+  <div class="analogy">
+    <p data-en>Imagine a <strong>weighing balance</strong> in a vegetable market. You put customer's vegetables on one side and the standard weight on the other. The balance tilts <em>completely</em> to whichever side is heavier — it doesn't give a middle answer. The Comparator does the same with voltages — output is either fully HIGH or fully LOW, never in between.</p><p data-ml>കൂരയിൽ ഒരു <strong>തൂക്കു ത്രാസ്</strong> സങ്കൽപ്പിക്കൂ. ഒരു ഭാഗത്ത് customer-ന്റെ പച്ചക്കറി, മറ്റേ ഭാഗത്ത് standard weight. ഭാരം കൂടിയ ഭാഗത്തേക്ക് ത്രാസ് <em>പൂർണ്ണമായും</em> ചരിയും — ഇടയ്ക്കുള്ള ഉത്തരം ഇല്ല. Comparator voltage-ഉം ഇതുപോലെ ആണ് — output പൂർണ്ണ HIGH അല്ലെങ്കിൽ പൂർണ്ണ LOW, ഒരിക്കലും ഇടയ്ക്ക് ഇല്ല.</p><p data-hi>सब्ज़ी बाज़ार की एक <strong>तराज़ू</strong> सोचो। एक तरफ customer की सब्ज़ी, दूसरी तरफ standard बाट। जो भारी होगा उसी तरफ तराज़ू <em>पूरी तरह</em> झुक जाएगी — बीच में नहीं रुकेगी। Comparator voltages के साथ यही करता है — output पूरा HIGH या पूरा LOW, कभी बीच में नहीं।</p>
+  </div>
+
+  <div class="circuit-panel">
+    <div class="ctitle">Comparator Circuit — LM741</div>
+    <svg width="560" height="220" viewBox="0 0 560 220">
+      <!-- Op-Amp body -->
+      <polygon points="220,40 220,180 380,110" fill="#eaf4fb" stroke="#1a6b9a" stroke-width="2.5"/>
+      <text x="265" y="116" fill="#1a6b9a" font-family="Nunito" font-size="13" font-weight="800">LM741</text>
+      <!-- V_in (signal) to + -->
+      <line x1="60" y1="80" x2="220" y2="80" stroke="#1e8449" stroke-width="2.5"/>
+      <rect x="10" y="60" width="50" height="40" rx="5" fill="#e8f8e8" stroke="#1e8449" stroke-width="2"/>
+      <text x="14" y="84" fill="#1e8449" font-family="Nunito" font-size="12" font-weight="700">Vin</text>
+      <text x="75" y="72" fill="#1e8449" font-family="Nunito" font-size="12" font-weight="700">+</text>
+      <!-- V_ref to − -->
+      <line x1="60" y1="140" x2="220" y2="140" stroke="#c0392b" stroke-width="2.5"/>
+      <rect x="10" y="120" width="50" height="40" rx="5" fill="#fde8e8" stroke="#c0392b" stroke-width="2"/>
+      <text x="12" y="144" fill="#c0392b" font-family="Nunito" font-size="11" font-weight="700">Vref</text>
+      <text x="75" y="136" fill="#c0392b" font-family="Nunito" font-size="12" font-weight="700">−</text>
+      <!-- Output -->
+      <line x1="380" y1="110" x2="480" y2="110" stroke="#d35400" stroke-width="2.5"/>
+      <rect x="480" y="92" width="65" height="36" rx="5" fill="#fff3cd" stroke="#d35400" stroke-width="2"/>
+      <text x="487" y="115" fill="#d35400" font-family="Nunito" font-size="13" font-weight="700">Vout</text>
+      <!-- Supply lines -->
+      <line x1="300" y1="40" x2="300" y2="20" stroke="#888" stroke-width="1.5" stroke-dasharray="4"/>
+      <text x="308" y="18" fill="#888" font-family="Nunito" font-size="11">+15V</text>
+      <line x1="300" y1="180" x2="300" y2="200" stroke="#888" stroke-width="1.5" stroke-dasharray="4"/>
+      <text x="308" y="210" fill="#888" font-family="Nunito" font-size="11">−15V</text>
+      <!-- Labels -->
+      <text x="14" y="58" fill="#1e8449" font-family="Nunito" font-size="10">(Signal)</text>
+      <text x="8" y="118" fill="#c0392b" font-family="Nunito" font-size="10">(Reference)</text>
+    </svg>
+  </div>
+
+  <h2 data-en>How It Works — Step by Step</h2><h2 data-ml>ഇത് എങ്ങനെ ജോലി ചെയ്യുന്നു — Step by Step</h2><h2 data-hi>यह कैसे काम करता है — Step by Step</h2>
+  <ul class="steps">
+    <li>
+      <div class="sn">1</div>
+      <div class="st">You apply <strong>input signal (Vin)</strong> to the <strong>+ pin</strong> and a fixed <strong>reference voltage (Vref)</strong> to the <strong>− pin</strong>. Vref is often made using a voltage divider (two resistors).</div>
+    </li>
+    <li>
+      <div class="sn">2</div>
+      <div class="st" data-en>The op-amp compares them. If <strong>Vin &gt; Vref</strong> → output swings to <strong>+Vsat</strong> (about +13V for ±15V supply). If <strong>Vin &lt; Vref</strong> → output swings to <strong>−Vsat</strong> (about −13V).</div><div class="st" data-ml>Op-amp ഇവ compare ചെയ്യും. <strong>Vin &gt; Vref</strong> ആണെങ്കിൽ → output <strong>+Vsat</strong>-ലേക്ക് (±15V supply-ൽ ഏകദേശം +13V). <strong>Vin &lt; Vref</strong> ആണെങ്കിൽ → output <strong>−Vsat</strong>-ലേക്ക് (ഏകദേശം −13V).</div><div class="st" data-hi>Op-amp इन्हें compare करता है। <strong>Vin &gt; Vref</strong> हो → output <strong>+Vsat</strong> तक जाता है (±15V supply में करीब +13V)। <strong>Vin &lt; Vref</strong> हो → output <strong>−Vsat</strong> तक (करीब −13V)।</div>
+    </li>
+    <li>
+      <div class="sn">3</div>
+      <div class="st" data-en>There is <strong>no feedback</strong> (no connection from output back to input). This is called <em>open loop</em> operation. The output is always fully HIGH or fully LOW — like a light switch.</div><div class="st" data-ml><strong>Feedback ഇല്ല</strong> (output-ൽ നിന്ന് input-ലേക്ക് connection ഇല്ല). ഇതിനെ <em>open loop</em> operation എന്ന് പറയും. Output എപ്പോഴും fully HIGH അല്ലെങ്കിൽ fully LOW — light switch പോലെ.</div><div class="st" data-hi><strong>कोई feedback नहीं</strong> (output से input तक कोई connection नहीं)। इसे <em>open loop</em> operation कहते हैं। Output हमेशा पूरा HIGH या पूरा LOW — light switch की तरह।</div>
+    </li>
+  </ul>
+
+  <h2 data-en>Interactive Demonstration</h2><h2 data-ml>Interactive Demonstration — try ചെയ്‌തു നോക്കൂ</h2><h2 data-hi>Interactive Demo — खुद try करें</h2>
+  <div class="interactive-calc">
+    <h3 style="margin-top:0;color:var(--accent2);">⚙ Try It — Move the Sliders</h3>
+    <div class="slider-group">
+      <label>Input Voltage (Vin — applied to + pin) <span id="vinDisp">+5.0V</span></label>
+      <input type="range" min="-14" max="14" step="0.5" value="5" id="vinSlider" oninput="updateComp()">
+    </div>
+    <div class="slider-group">
+      <label>Reference Voltage (Vref — applied to − pin) <span id="vrefDisp">+3.0V</span></label>
+      <input type="range" min="-14" max="14" step="0.5" value="3" id="vrefSlider" oninput="updateComp()">
+    </div>
+    <div class="result-display" id="compResult">
+      <div>
+        <div class="res-label">Output (Vout)</div>
+        <div class="res-val" id="compVout">+13V</div>
+        <div class="res-unit">HIGH — Vin is bigger</div>
+      </div>
+      <div style="font-size:3rem;" id="compEmoji">📈</div>
+      <div style="font-size:0.9rem;color:var(--muted);max-width:200px;" id="compExpl">Vin (5V) > Vref (3V), so output goes to positive saturation (+13V)</div>
+    </div>
+  </div>
+
+  <h2 data-en>Real World Uses</h2><h2 data-ml>Real World-ൽ ഉപയോഗം</h2><h2 data-hi>असली दुनिया में उपयोग</h2>
+  <div class="two-col">
+    <div class="realworld" style="margin:0;">
+      <p data-en><strong>Battery Low Warning Circuit:</strong> Vref = 11V (battery low threshold). Vin = actual battery voltage. When battery drops below 11V, Vin &lt; Vref → output goes LOW → LED turns ON as warning.</p><p data-ml><strong>Battery Low Warning Circuit:</strong> Vref = 11V (battery low limit). Vin = battery-ന്റെ actual voltage. Battery 11V-ൽ താഴ്‌ന്നാൽ, Vin &lt; Vref → output LOW → LED warning ആയി켜.</p><p data-hi><strong>Battery Low Warning Circuit:</strong> Vref = 11V (battery low limit)। Vin = battery की actual voltage। Battery 11V से नीचे गिरे, Vin &lt; Vref → output LOW → LED warning में जले।</p>
+    </div>
+    <div class="realworld" style="margin:0;">
+      <p data-en><strong>Thermostat / Temperature Controller:</strong> Vref = voltage from temperature setpoint. Vin = voltage from temperature sensor. When too hot, Vin &gt; Vref → output HIGH → relay switches on cooling fan.</p><p data-ml><strong>Thermostat / Temperature Controller:</strong> Vref = temperature setpoint-ന്റെ voltage. Vin = temperature sensor-ന്റെ voltage. വളരെ ചൂടാകുമ്പോൾ, Vin &gt; Vref → output HIGH → relay cooling fan ഓൺ ചെയ്യും.</p><p data-hi><strong>Thermostat / Temperature Controller:</strong> Vref = temperature setpoint की voltage। Vin = temperature sensor की voltage। बहुत गर्म हो जाए, Vin &gt; Vref → output HIGH → relay cooling fan on करेगा।</p>
+    </div>
+  </div>
+
+  <div class="warn">
+    <p data-en>The LM741 is a <strong>general-purpose op-amp</strong>, not a dedicated comparator. For high-speed switching applications (like in UPS or motor drives), use dedicated comparator ICs like <em>LM393</em> or <em>LM339</em>. But for learning, LM741 is perfect.</p><p data-ml>LM741 ഒരു <strong>general-purpose op-amp</strong> ആണ്, dedicated comparator അല്ല. High-speed switching (UPS, motor drive) ആണെങ്കിൽ <em>LM393</em> അല്ലെങ്കിൽ <em>LM339</em> use ചെയ്യൂ. പക്ഷേ പഠിക്കാൻ LM741 perfect ആണ്.</p><p data-hi>LM741 एक <strong>general-purpose op-amp</strong> है, dedicated comparator नहीं। High-speed switching (UPS, motor drive) के लिए <em>LM393</em> या <em>LM339</em> use करें। लेकिन सीखने के लिए LM741 एकदम सही है।</p>
+  </div>
+
+  <h2>Quiz — Comparator</h2>
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 1</div>
+    <div class="quiz-question" data-en>In a comparator circuit, Vref = 6V is connected to the (−) pin. The input signal is 4V. What is the output?</div><div class="quiz-question" data-ml>ഒരു comparator circuit-ൽ (−) pin-ൽ Vref = 6V കൊടുത്തു. Input signal 4V ആണ്. Output എന്ത് ആകും?</div><div class="quiz-question" data-hi>एक comparator circuit में (−) pin पर Vref = 6V है। Input signal 4V है। Output क्या होगा?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p2q1',false,'')">Output = HIGH (+13V)</button>
+      <button onclick="qAnswer(this,'p2q1',true,'')">Output = LOW (−13V)</button>
+      <button onclick="qAnswer(this,'p2q1',false,'')">Output = 4V</button>
+      <button onclick="qAnswer(this,'p2q1',false,'')">Output = 6V</button>
+    </div>
+    <div class="quiz-feedback" id="p2q1">✅ Correct! Vin (4V) &lt; Vref (6V), meaning (−) pin wins. When the minus pin is bigger, output goes NEGATIVE (LOW). The output slams to about −13V.</div>
+  </div>
+
+  <div class="quiz-container" style="margin-top:16px;">
+    <div class="quiz-q-num">Question 2</div>
+    <div class="quiz-question" data-en>A comparator circuit is described as "open loop". What does this mean?</div><div class="quiz-question" data-ml>Comparator circuit "open loop" ആണ് എന്ന് പറയും. ഇതിന്റെ അർത്ഥം എന്ത്?</div><div class="quiz-question" data-hi>Comparator circuit को "open loop" कहते हैं। इसका मतलब क्या है?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p2q2',false,'')">The power supply is disconnected</button>
+      <button onclick="qAnswer(this,'p2q2',false,'')">The input is not connected</button>
+      <button onclick="qAnswer(this,'p2q2',true,'')">There is no feedback — output is not connected back to input</button>
+      <button onclick="qAnswer(this,'p2q2',false,'')">The output is short-circuited</button>
+    </div>
+    <div class="quiz-feedback" id="p2q2">✅ Correct! "Open loop" simply means there is no wire or component connecting the output back to the input. In this condition, the full gain of 200,000 is active, making the output snap fully HIGH or LOW.</div>
+  </div>
+
+  <div class="bottom-nav">
+    <button onclick="goPage(1, document.querySelectorAll('#page-nav button')[1])">← Previous</button>
+    <span class="page-label">Page 2 of 10</span>
+    <button onclick="goPage(3, document.querySelectorAll('#page-nav button')[3])">Next: Zero Crossing →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 3 — ZERO CROSSING DETECTOR
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page3">
+  <div class="page-tag" data-en>Chapter 3</div><div class="page-tag" data-ml>അദ്ധ്യായം 3</div><div class="page-tag" data-hi>अध्याय 3</div>
+  <h1 data-en>Zero Crossing Detector</h1><h1 data-ml>Zero Crossing Detector</h1><h1 data-hi>Zero Crossing Detector</h1>
+  <p data-en>This is a <strong>special comparator</strong> where the reference voltage is set to <em>zero volts</em>. Every time the AC input signal crosses 0V (going up or going down), the output <em>flips</em> between HIGH and LOW.</p><p data-ml>ഇത് ഒരു <strong>special comparator</strong> ആണ്, reference voltage <em>zero volt</em> ആണ്. AC input 0V cross ചെയ്യുന്ന ഓരോ തവണയും (കയറുമ്പോഴോ ഇറങ്ങുമ്പോഴോ), output HIGH-ഉം LOW-ഉം ആയി <em>flip</em> ആകും.</p><p data-hi>यह एक <strong>special comparator</strong> है जहाँ reference voltage <em>zero volt</em> है। AC input जब भी 0V cross करे (ऊपर या नीचे जाते समय), output HIGH और LOW के बीच <em>flip</em> करता है।</p>
+
+  <div class="analogy">
+    <p data-en>Imagine a <strong>road divider</strong> on a highway. Cars going from the left side to the right side must cross the divider line (zero). The Zero Crossing Detector is like a <em>camera at the divider</em> — every time a car (the AC signal) crosses it, the camera snaps a photo (output changes state). It doesn't matter how fast or slow the car is — just the crossing moment is detected.</p><p data-ml>Highway-ലെ ഒരു <strong>road divider</strong> സങ്കൽപ്പിക്കൂ. ഒരു ഭാഗത്ത് നിന്ന് മറ്റേ ഭാഗത്തേക്ക് car-കൾ divider (zero) cross ചെയ്‌തേ പോകൂ. Zero Crossing Detector ആ divider-ൽ ഉള്ള <em>camera</em> പോലെ ആണ് — car (AC signal) cross ചെയ്യുന്ന ഓരോ തവണയും camera snap ചെയ്യും (output state മാറും). Car-ന്റെ വേഗത ഒന്നും പ്രശ്‌നം ഇല്ല — crossing moment മാത്രം detect ചെയ്യും.</p><p data-hi>Highway पर एक <strong>road divider</strong> सोचो। एक तरफ से दूसरी तरफ जाने के लिए गाड़ियों को divider (zero) cross करनी पड़ती है। Zero Crossing Detector उस divider पर लगे <em>camera</em> जैसा है — जब भी गाड़ी (AC signal) cross करे, camera snap लेता है (output state बदलता है)। गाड़ी की speed मायने नहीं — सिर्फ crossing moment पकड़ता है।</p>
+  </div>
+
+  <div class="circuit-panel">
+    <div class="ctitle">Zero Crossing Detector — (−) pin is tied to Ground = 0V</div>
+    <svg width="560" height="220" viewBox="0 0 560 220">
+      <polygon points="220,40 220,180 380,110" fill="#eaf4fb" stroke="#1a6b9a" stroke-width="2.5"/>
+      <text x="265" y="116" fill="#1a6b9a" font-family="Nunito" font-size="13" font-weight="800">LM741</text>
+      <!-- AC input to + -->
+      <line x1="70" y1="80" x2="220" y2="80" stroke="#1e8449" stroke-width="2.5"/>
+      <ellipse cx="40" cy="80" rx="30" ry="22" fill="#e8f8e8" stroke="#1e8449" stroke-width="2"/>
+      <text x="22" y="75" fill="#1e8449" font-family="Nunito" font-size="11" font-weight="700">AC in</text>
+      <text x="24" y="88" fill="#1e8449" font-family="Nunito" font-size="10">~50Hz</text>
+      <text x="75" y="72" fill="#1e8449" font-family="Nunito" font-size="12" font-weight="700">+</text>
+      <!-- GND to − -->
+      <line x1="120" y1="140" x2="220" y2="140" stroke="#c0392b" stroke-width="2.5"/>
+      <line x1="120" y1="140" x2="120" y2="200" stroke="#c0392b" stroke-width="2.5"/>
+      <!-- GND symbol -->
+      <line x1="105" y1="200" x2="135" y2="200" stroke="#c0392b" stroke-width="3"/>
+      <line x1="110" y1="206" x2="130" y2="206" stroke="#c0392b" stroke-width="2"/>
+      <line x1="115" y1="212" x2="125" y2="212" stroke="#c0392b" stroke-width="1.5"/>
+      <text x="75" y="136" fill="#c0392b" font-family="Nunito" font-size="12" font-weight="700">−</text>
+      <text x="126" y="168" fill="#c0392b" font-family="Nunito" font-size="12" font-weight="700">GND (0V)</text>
+      <!-- Output -->
+      <line x1="380" y1="110" x2="480" y2="110" stroke="#d35400" stroke-width="2.5"/>
+      <rect x="480" y="92" width="65" height="36" rx="5" fill="#fff3cd" stroke="#d35400" stroke-width="2"/>
+      <text x="487" y="115" fill="#d35400" font-family="Nunito" font-size="13" font-weight="700">Vout</text>
+    </svg>
+  </div>
+
+  <h2 data-en>The Input and Output Waveforms</h2><h2 data-ml>Input-ഉം Output-ഉം Waveform</h2><h2 data-hi>Input और Output Waveforms</h2>
+  <p data-en>Watch what happens when a sine wave passes through a Zero Crossing Detector. The smooth sine wave input becomes a <strong>square wave output</strong>:</p><p data-ml>Sine wave, Zero Crossing Detector-ലൂടെ കടന്നു പോകുമ്പോൾ എന്ത് സംഭവിക്കുന്നു എന്ന് നോക്കൂ. Smooth sine wave input ഒരു <strong>square wave output</strong> ആകും:</p><p data-hi>देखो जब sine wave, Zero Crossing Detector से गुज़रती है तो क्या होता है। Smooth sine wave input एक <strong>square wave output</strong> बन जाती है:</p>
+
+  <div class="circuit-panel">
+    <div class="ctitle">Live Animation — Input Sine Wave → Output Square Wave</div>
+    <canvas class="wave-canvas" id="zcdCanvas" width="700" height="200"></canvas>
+  </div>
+
+  <h2 data-en>Step-by-Step Explanation</h2><h2 data-ml>Step-by-Step Explanation</h2><h2 data-hi>Step-by-Step समझाते हैं</h2>
+  <ul class="steps">
+    <li>
+      <div class="sn">1</div>
+      <div class="st" data-en>The AC signal (sine wave from transformer secondary) is connected to the <strong>(+) pin</strong>. The <strong>(−) pin is grounded</strong> (connected to 0V). So Vref = 0V always.</div><div class="st" data-ml>AC signal (transformer secondary-ൽ നിന്ന് sine wave) <strong>(+) pin</strong>-ൽ connect ചെയ്യും. <strong>(−) pin ground</strong> ചെയ്യും (0V-ൽ). അതിനാൽ Vref = 0V എപ്പോഴും.</div><div class="st" data-hi>AC signal (transformer secondary की sine wave) <strong>(+) pin</strong> से connect होती है। <strong>(−) pin को ground</strong> (0V से) connect करते हैं। इसलिए Vref = 0V हमेशा।</div>
+    </li>
+    <li>
+      <div class="sn">2</div>
+      <div class="st" data-en>During the <strong>positive half</strong> of AC: Vin &gt; 0 → (+) &gt; (−) → Output = <strong>HIGH (+13V)</strong>. The whole positive half cycle gives a steady HIGH output.</div><div class="st" data-ml>AC-ന്റെ <strong>positive half</strong>-ൽ: Vin &gt; 0 → (+) &gt; (−) → Output = <strong>HIGH (+13V)</strong>. Positive half cycle മുഴുവൻ output steady HIGH ആണ്.</div><div class="st" data-hi>AC के <strong>positive half</strong> में: Vin &gt; 0 → (+) &gt; (−) → Output = <strong>HIGH (+13V)</strong>। पूरे positive half cycle में output steady HIGH रहता है।</div>
+    </li>
+    <li>
+      <div class="sn">3</div>
+      <div class="st" data-en>During the <strong>negative half</strong> of AC: Vin &lt; 0 → (+) &lt; (−) → Output = <strong>LOW (−13V)</strong>. The whole negative half cycle gives a steady LOW output.</div><div class="st" data-ml>AC-ന്റെ <strong>negative half</strong>-ൽ: Vin &lt; 0 → (+) &lt; (−) → Output = <strong>LOW (−13V)</strong>. Negative half cycle മുഴുവൻ output steady LOW ആണ്.</div><div class="st" data-hi>AC के <strong>negative half</strong> में: Vin &lt; 0 → (+) &lt; (−) → Output = <strong>LOW (−13V)</strong>। पूरे negative half cycle में output steady LOW रहता है।</div>
+    </li>
+    <li>
+      <div class="sn">4</div>
+      <div class="st" data-en>The <strong>exact moment</strong> the AC signal crosses zero (changes from + to − or − to +), the output <strong>flips</strong>. This transition point is the "zero crossing" that is detected.</div><div class="st" data-ml>AC signal zero cross ചെയ്യുന്ന <strong>exact moment-ൽ</strong> (+ നിന്ന് − ആകുമ്പോഴോ, − നിന്ന് + ആകുമ്പോഴോ), output <strong>flip</strong> ആകും. ഈ transition point ആണ് "zero crossing" ആയി detect ചെയ്യുന്നത്.</div><div class="st" data-hi>AC signal जिस <strong>exact moment</strong> zero cross करती है (+ से − या − से + होते वक्त), output <strong>flip</strong> करता है। यही transition point "zero crossing" detect होती है।</div>
+    </li>
+  </ul>
+
+  <div class="realworld">
+    <p data-en><strong>Real Uses of Zero Crossing Detector:</strong> (1) <em>UPS and Inverters</em> — use zero crossing to synchronise the inverter output with mains AC before switching over. (2) <em>Dimmer switches (TRIAC firing)</em> — fire the TRIAC at the exact zero crossing point to avoid voltage spikes and RFI noise. (3) <em>Frequency meters</em> — count zero crossings per second to measure frequency. 50 crossings going UP per second = 50 Hz mains supply.</p><p data-ml><strong>Zero Crossing Detector-ന്റെ ഉപയോഗം:</strong> (1) <em>UPS, Inverter</em> — switch over-ന് മുമ്പ് inverter output-നെ mains AC-നോട് synchronise ചെയ്യാൻ zero crossing use ചെയ്യും. (2) <em>Dimmer switch (TRIAC firing)</em> — voltage spike ഒഴിവാക്കാൻ exact zero crossing-ൽ TRIAC fire ചെയ്യും. (3) <em>Frequency meter</em> — ഒരു second-ൽ zero crossing എത്ര തവണ ഉണ്ടാകും എന്ന് count ചെയ്ത് frequency measure ചെയ്യും. 50 times UP crossing = 50 Hz.</p><p data-hi><strong>Zero Crossing Detector का उपयोग:</strong> (1) <em>UPS, Inverter</em> — switch over से पहले inverter output को mains AC से synchronise करने के लिए zero crossing use होती है। (2) <em>Dimmer switch (TRIAC firing)</em> — voltage spike से बचने के लिए exact zero crossing पर TRIAC fire करते हैं। (3) <em>Frequency meter</em> — एक second में zero crossings गिनकर frequency measure करते हैं। 50 बार UP crossing = 50 Hz।</p>
+  </div>
+
+  <div class="tip">
+    <p data-en>The output of a Zero Crossing Detector is always a <strong>perfect square wave</strong>, regardless of the input amplitude. Whether the AC input is 5V or 230V (after proper conditioning), the output square wave is always ±13V. Only the <em>timing</em> of transitions carries information.</p><p data-ml>Zero Crossing Detector-ന്റെ output എപ്പോഴും ഒരു <strong>perfect square wave</strong> ആണ്, input amplitude എത്ര ആണെന്ന് പ്രശ്‌നം ഇല്ല. AC input 5V ആണോ 230V ആണോ, output square wave എപ്പോഴും ±13V. Transition-ന്റെ <em>timing</em> മാത്രം ആണ് information carry ചെയ്യുന്നത്.</p><p data-hi>Zero Crossing Detector का output हमेशा <strong>perfect square wave</strong> होता है, input amplitude कितनी भी हो। AC input 5V हो या 230V, output square wave हमेशा ±13V। सिर्फ transitions की <em>timing</em> ही information है।</p>
+  </div>
+
+  <h2>Quiz — Zero Crossing Detector</h2>
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 1</div>
+    <div class="quiz-question" data-en>In a Zero Crossing Detector, what is connected to the (−) pin of the Op-Amp?</div><div class="quiz-question" data-ml>Zero Crossing Detector-ൽ Op-Amp-ന്റെ (−) pin-ൽ എന്ത് connect ചെയ്യും?</div><div class="quiz-question" data-hi>Zero Crossing Detector में Op-Amp के (−) pin से क्या connect होता है?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p3q1',false,'')">The AC input signal</button>
+      <button onclick="qAnswer(this,'p3q1',true,'')">Ground (0V)</button>
+      <button onclick="qAnswer(this,'p3q1',false,'')">A 5V reference voltage</button>
+      <button onclick="qAnswer(this,'p3q1',false,'')">The output signal (feedback)</button>
+    </div>
+    <div class="quiz-feedback" id="p3q1">✅ Correct! The (−) pin is connected to GND = 0V. This means we are always comparing the AC input against zero. Every time the AC signal crosses 0V, the output changes.</div>
+  </div>
+
+  <div class="quiz-container" style="margin-top:16px;">
+    <div class="quiz-q-num">Question 2</div>
+    <div class="quiz-question" data-en>The output of a Zero Crossing Detector when given a 50Hz AC sine wave input will be:</div><div class="quiz-question" data-ml>50Hz AC sine wave input കൊടുത്താൽ Zero Crossing Detector-ന്റെ output എന്ത് ആകും?</div><div class="quiz-question" data-hi>50Hz AC sine wave input देने पर Zero Crossing Detector का output क्या होगा?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p3q2',false,'')">A 50Hz sine wave</button>
+      <button onclick="qAnswer(this,'p3q2',true,'')">A 50Hz square wave</button>
+      <button onclick="qAnswer(this,'p3q2',false,'')">DC constant voltage</button>
+      <button onclick="qAnswer(this,'p3q2',false,'')">A triangular wave</button>
+    </div>
+    <div class="quiz-feedback" id="p3q2">✅ Correct! The sine wave input is "squared up" by the comparator action. The output switches between +13V and −13V at the same frequency (50Hz) as the input, giving a perfect square wave.</div>
+  </div>
+
+  <div class="bottom-nav">
+    <button onclick="goPage(2, document.querySelectorAll('#page-nav button')[2])">← Previous</button>
+    <span class="page-label">Page 3 of 10</span>
+    <button onclick="goPage(4, document.querySelectorAll('#page-nav button')[4])">Next: Voltage Follower →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 4 — VOLTAGE FOLLOWER
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page4">
+  <div class="page-tag" data-en>Chapter 4</div><div class="page-tag" data-ml>അദ്ധ്യായം 4</div><div class="page-tag" data-hi>अध्याय 4</div>
+  <h1 data-en>Voltage Follower (Buffer)</h1><h1 data-ml>Voltage Follower (Buffer)</h1><h1 data-hi>Voltage Follower (Buffer)</h1>
+  <p data-en>A <strong>Voltage Follower</strong> is the simplest op-amp circuit with feedback. The output is <em>directly connected back to the (−) pin</em>. The output voltage is <strong>exactly equal</strong> to the input voltage — but with much more current driving ability.</p><p data-ml><strong>Voltage Follower</strong> feedback ഉള്ള ഏറ്റവും simple op-amp circuit ആണ്. Output-നെ <em>directly (−) pin-ലേക്ക്</em> connect ചെയ്യും. Output voltage, input voltage-ന് <strong>exactly equal</strong> ആകും — പക്ഷേ current drive ചെയ്യാൻ ഉള്ള ശക്തി വളരെ കൂടുതൽ ആണ്.</p><p data-hi><strong>Voltage Follower</strong> feedback वाला सबसे simple op-amp circuit है। Output को सीधे <em>(−) pin से</em> connect करते हैं। Output voltage, input voltage के <strong>बिल्कुल बराबर</strong> होती है — लेकिन current drive करने की ताकत बहुत ज़्यादा।</p>
+
+  <div class="analogy">
+    <p data-en>Imagine a <strong>generator and a weak battery</strong>. You measure 12V from a small battery, but when you connect a motor to it, the voltage drops to 8V because the battery is weak (high internal resistance). A Voltage Follower is like putting a <em>powerful generator</em> in between — it reads the 12V and reproduces exactly 12V but with full power to drive the motor. The voltage <em>follows</em> the input, but the current comes from the power supply.</p><p data-ml>ഒരു <strong>ദുർബലമായ battery</strong>-യും generator-ഉം ആലോചിക്കൂ. ചെറിയ battery-ൽ 12V നോക്കിക്കാണും, പക്ഷേ motor connect ചെയ്‌താൽ voltage 8V-ലേക്ക് ഇറങ്ങും (battery ദുർബലം ആണ്). Voltage Follower ഇടയ്ക്ക് ഒരു <em>powerful generator</em> വെക്കുന്ന പോലെ ആണ് — 12V read ചെയ്ത് exact 12V reproduce ചെയ്യും, motor drive ചെയ്യാൻ full power-ഉം ഉണ്ടാകും. Voltage input-നെ <em>follow</em> ചെയ്യും, current power supply-ൽ നിന്ന് വരും.</p><p data-hi>एक <strong>कमज़ोर battery</strong> और generator सोचो। छोटी battery में 12V measure होगी, लेकिन motor लगाओ तो voltage 8V हो जाती है (battery कमज़ोर है)। Voltage Follower बीच में एक <em>powerful generator</em> लगाने जैसा है — 12V पढ़ता है और exact 12V reproduce करता है, motor drive करने की पूरी power के साथ। Voltage input को <em>follow</em> करती है, current power supply से आती है।</p>
+  </div>
+
+  <div class="circuit-panel">
+    <div class="ctitle">Voltage Follower — Output feeds directly back to (−) input</div>
+    <svg width="560" height="220" viewBox="0 0 560 220">
+      <polygon points="200,40 200,180 360,110" fill="#eaf4fb" stroke="#1a6b9a" stroke-width="2.5"/>
+      <text x="245" y="116" fill="#1a6b9a" font-family="Nunito" font-size="13" font-weight="800">LM741</text>
+      <!-- Input to + -->
+      <line x1="60" y1="80" x2="200" y2="80" stroke="#1e8449" stroke-width="2.5"/>
+      <rect x="10" y="62" width="50" height="36" rx="5" fill="#e8f8e8" stroke="#1e8449" stroke-width="2"/>
+      <text x="18" y="83" fill="#1e8449" font-family="Nunito" font-size="12" font-weight="700">Vin</text>
+      <text x="65" y="72" fill="#1e8449" font-family="Nunito" font-size="12" font-weight="700">+</text>
+      <!-- Output -->
+      <line x1="360" y1="110" x2="460" y2="110" stroke="#d35400" stroke-width="2.5"/>
+      <rect x="460" y="92" width="65" height="36" rx="5" fill="#fff3cd" stroke="#d35400" stroke-width="2"/>
+      <text x="468" y="115" fill="#d35400" font-family="Nunito" font-size="13" font-weight="700">Vout</text>
+      <!-- Feedback: output back to − input -->
+      <line x1="420" y1="110" x2="420" y2="170" stroke="#c0392b" stroke-width="2.5" stroke-dasharray="7,4"/>
+      <line x1="120" y1="170" x2="420" y2="170" stroke="#c0392b" stroke-width="2.5" stroke-dasharray="7,4"/>
+      <line x1="120" y1="140" x2="120" y2="170" stroke="#c0392b" stroke-width="2.5" stroke-dasharray="7,4"/>
+      <line x1="120" y1="140" x2="200" y2="140" stroke="#c0392b" stroke-width="2.5"/>
+      <text x="65" y="136" fill="#c0392b" font-family="Nunito" font-size="12" font-weight="700">−</text>
+      <!-- Feedback label -->
+      <text x="220" y="188" fill="#c0392b" font-family="Nunito" font-size="12" font-weight="700">100% Feedback (Vout = Vin)</text>
+      <!-- Arrow on feedback -->
+      <polygon points="120,140 127,133 127,147" fill="#c0392b"/>
+    </svg>
+  </div>
+
+  <h2 data-en>Why Does the Output Follow the Input?</h2><h2 data-ml>Output input-നെ എന്തുകൊണ്ട് follow ചെയ്യുന്നു?</h2><h2 data-hi>Output, Input को क्यों follow करता है?</h2>
+  <p>Here is the logic, step by step. Read this carefully — it reveals how feedback works in ALL op-amp circuits:</p>
+
+  <div class="calc-box">
+    <div class="calc-title">How the Voltage Follower reaches balance — The feedback story</div>
+    <div class="calc-step">
+      <div class="calc-step-num">1</div>
+      <div class="calc-step-body">
+        <div class="clabel">Situation: Vin = 5V, Output starts at 0V</div>
+        <div class="cval">V+ = 5V, V− = 0V (because output is 0V and output feeds back to − pin)</div>
+        <div class="cexpl">The (+) pin is bigger. Op-amp drives output UPWARD.</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">2</div>
+      <div class="calc-step-body">
+        <div class="clabel">Output rises... reaches 3V</div>
+        <div class="cval">V+ = 5V, V− = 3V (output is 3V, fed back to − pin)</div>
+        <div class="cexpl">Still (+) is bigger. Output keeps rising.</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">3</div>
+      <div class="calc-step-body">
+        <div class="clabel">Output reaches 5V — BALANCE!</div>
+        <div class="cval">V+ = 5V, V− = 5V → Difference = 0V</div>
+        <div class="cexpl">Zero difference → Output stops changing. It is now stable at 5V. Vout = Vin! This is the "settled" state.</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 data-en>Key Properties</h2><h2 data-ml>പ്രധാന Properties</h2><h2 data-hi>मुख्य Properties</h2>
+  <div class="two-col">
+    <div style="background:var(--green-bg);border:2px solid var(--accent3);border-radius:10px;padding:18px;">
+      <h3 style="color:var(--accent3);margin-top:0;font-size:1.1rem;" data-en>What It Does</h3><h3 style="color:var(--accent3);margin-top:0;font-size:1.1rem;" data-ml>ഇത് എന്ത് ചെയ്യും</h3><h3 style="color:var(--accent3);margin-top:0;font-size:1.1rem;" data-hi>यह क्या करता है</h3>
+      <p style="margin:0;font-size:0.95rem;" data-en>Voltage gain = <strong>exactly 1</strong> (Vout = Vin). No amplification of voltage. But current gain is <em>very high</em> — can drive heavy loads.</p><p style="margin:0;font-size:0.95rem;" data-ml>Voltage gain = <strong>exactly 1</strong> (Vout = Vin). Voltage amplify ഇല്ല. പക്ഷേ current gain <em>വളരെ കൂടുതൽ</em> — heavy load drive ചെയ്യാം.</p><p style="margin:0;font-size:0.95rem;" data-hi>Voltage gain = <strong>exactly 1</strong> (Vout = Vin)। Voltage amplify नहीं होती। लेकिन current gain <em>बहुत ज़्यादा</em> — heavy load drive कर सकता है।</p>
+    </div>
+    <div style="background:var(--blue-bg);border:2px solid var(--accent2);border-radius:10px;padding:18px;">
+      <h3 style="color:var(--accent2);margin-top:0;font-size:1.1rem;" data-en>Why Use It?</h3><h3 style="color:var(--accent2);margin-top:0;font-size:1.1rem;" data-ml>ഇത് എന്തിന് ഉപയോഗിക്കും?</h3><h3 style="color:var(--accent2);margin-top:0;font-size:1.1rem;" data-hi>इसे क्यों use करते हैं?</h3>
+      <p style="margin:0;font-size:0.95rem;" data-en><strong>Impedance isolation:</strong> Protects a weak signal source from being loaded. The input draws almost zero current, but output can supply plenty.</p><p style="margin:0;font-size:0.95rem;" data-ml><strong>Impedance isolation:</strong> ദുർബലമായ signal source-നെ load-ൽ നിന്ന് സംരക്ഷിക്കും. Input-ൽ current ഏതാണ്ട് zero, output-ൽ ധാരാളം current കൊടുക്കാം.</p><p style="margin:0;font-size:0.95rem;" data-hi><strong>Impedance isolation:</strong> कमज़ोर signal source को load से बचाता है। Input लगभग zero current लेता है, लेकिन output भरपूर current दे सकता है।</p>
+    </div>
+  </div>
+
+  <div class="formula">
+    <span class="formula-label">Voltage Follower Formula</span>
+    Vout = Vin<br>
+    <span style="font-size:0.85rem;color:#aaa;" data-en>Gain = 1 | No resistors needed | Output connects directly to (−) pin</span><span style="font-size:0.85rem;color:#aaa;" data-ml>Gain = 1 | Resistor ഇല്ല | Output directly (−) pin-ൽ connect</span><span style="font-size:0.85rem;color:#aaa;" data-hi>Gain = 1 | Resistor नहीं | Output directly (−) pin से connect</span>
+  </div>
+
+  <div class="wave-anim-panel">
+    <div class="ctitle">Live Animation — Voltage Follower: Output Copies Input</div>
+    <canvas class="wave-canvas" id="vfCanvas" width="700" height="200"></canvas>
+  </div>
+
+  <div class="realworld">
+    <p data-en><strong>Used in:</strong> (1) <em>Sensor signal conditioning</em> — the output of a thermocouple or pH sensor is very weak (high impedance). A voltage follower reads it without disturbing it, then drives the ADC or meter with full strength. (2) <em>Audio preamplifiers</em> — buffering between stages so one stage does not load the previous stage. (3) <em>DAC output buffering</em> in digital systems.</p><p data-ml><strong>ഉപയോഗം:</strong> (1) <em>Sensor signal conditioning</em> — thermocouple, pH sensor-ന്റെ output വളരെ weak (high impedance) ആണ്. Voltage follower disturb ചെയ്യാതെ read ചെയ്ത്, full strength-ൽ ADC-ൽ കൊടുക്കും. (2) <em>Audio preamplifier</em> — stages-ന്റെ ഇടയ്ക്ക് buffering, ഒരു stage മറ്റേ stage-നെ load ചെയ്യാതിരിക്കാൻ. (3) Digital systems-ൽ <em>DAC output buffering</em>.</p><p data-hi><strong>उपयोग:</strong> (1) <em>Sensor signal conditioning</em> — thermocouple, pH sensor का output बहुत weak (high impedance) होता है। Voltage follower उसे disturb किए बिना read करके full strength में ADC को देता है। (2) <em>Audio preamplifier</em> — stages के बीच buffering, एक stage दूसरे को load न करे। (3) Digital systems में <em>DAC output buffering</em>।</p>
+  </div>
+
+  <h2>Quiz — Voltage Follower</h2>
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 1</div>
+    <div class="quiz-question" data-en>In a Voltage Follower, if Vin = 7.3V, what is Vout?</div><div class="quiz-question" data-ml>Voltage Follower-ൽ Vin = 7.3V ആണെങ്കിൽ Vout എന്ത്?</div><div class="quiz-question" data-hi>Voltage Follower में Vin = 7.3V है तो Vout क्या होगा?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p4q1',false,'')">0V</button>
+      <button onclick="qAnswer(this,'p4q1',true,'')">7.3V</button>
+      <button onclick="qAnswer(this,'p4q1',false,'')">14.6V</button>
+      <button onclick="qAnswer(this,'p4q1',false,'')">−7.3V</button>
+    </div>
+    <div class="quiz-feedback" id="p4q1">✅ Correct! Gain = 1, so Vout = Vin = 7.3V. The voltage is copied exactly but with much more current driving capability.</div>
+  </div>
+
+  <div class="quiz-container" style="margin-top:16px;">
+    <div class="quiz-q-num">Question 2</div>
+    <div class="quiz-question" data-en>What is the main benefit of using a Voltage Follower even though it has a gain of only 1?</div><div class="quiz-question" data-ml>Voltage Follower-ന്റെ gain 1 മാത്രം ആണെങ്കിലും ഇത് ഉപയോഗിക്കുന്നതിന്റെ പ്രധാന benefit എന്ത്?</div><div class="quiz-question" data-hi>Voltage Follower का gain सिर्फ 1 है फिर भी इसे use करने का मुख्य फ़ायदा क्या है?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p4q2',false,'')">It amplifies the voltage by 10 times</button>
+      <button onclick="qAnswer(this,'p4q2',false,'')">It converts AC to DC</button>
+      <button onclick="qAnswer(this,'p4q2',true,'')">It provides current drive ability and isolates the source from load</button>
+      <button onclick="qAnswer(this,'p4q2',false,'')">It changes the frequency of the signal</button>
+    </div>
+    <div class="quiz-feedback" id="p4q2">✅ Correct! The voltage follower's main job is impedance buffering. A weak source (like a sensor) cannot drive a heavy load — but the voltage follower reads the source without loading it, and uses power supply current to drive the load.</div>
+  </div>
+
+  <div class="bottom-nav">
+    <button onclick="goPage(3, document.querySelectorAll('#page-nav button')[3])">← Previous</button>
+    <span class="page-label">Page 4 of 10</span>
+    <button onclick="goPage(5, document.querySelectorAll('#page-nav button')[5])">Next: Inverting Amplifier →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 5 — INVERTING AMPLIFIER
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page5">
+  <div class="page-tag" data-en>Chapter 5</div><div class="page-tag" data-ml>അദ്ധ്യായം 5</div><div class="page-tag" data-hi>अध्याय 5</div>
+  <h1 data-en>Inverting Amplifier</h1><h1 data-ml>Inverting Amplifier</h1><h1 data-hi>Inverting Amplifier</h1>
+  <p data-en>An <strong>Inverting Amplifier</strong> uses two resistors and feedback to amplify a signal. The output is <em>amplified AND flipped</em> (inverted). If input goes UP, output goes DOWN — and by an exact amount set by the resistors.</p><p data-ml><strong>Inverting Amplifier</strong> രണ്ട് resistor-ഉം feedback-ഉം ഉപയോഗിച്ച് signal amplify ചെയ്യും. Output <em>amplify ആകുകയും flip (invert) ആകുകയും</em> ചെയ്യും. Input കൂടിയാൽ output കുറയും — resistors set ചെയ്ത exact amount-ൽ.</p><p data-hi><strong>Inverting Amplifier</strong> दो resistors और feedback से signal amplify करता है। Output <em>amplify होता है और उलट (invert) भी जाता है</em>। Input ऊपर गया तो output नीचे जाएगा — resistors से तय exact amount में।</p>
+
+  <div class="analogy">
+    <p data-en>Think of a <strong>seesaw (see-saw balance)</strong>. When one side goes up, the other side goes down. The Inverting Amplifier is like a seesaw where one side is longer than the other — so a small push on one side creates a bigger movement on the other. The <em>ratio of arm lengths</em> = ratio of resistors = gain. And the direction is always opposite — that's the <em>inverting</em> part.</p><p data-ml>ഒരു <strong>seesaw</strong> ഓർക്കൂ. ഒരു ഭാഗം കയറിയാൽ മറ്റേ ഭാഗം ഇറങ്ങും. Inverting Amplifier ഒരു ഭാഗം നീളം കൂടിയ seesaw ആണ് — ഒരു ഭാഗത്ത് ചെറിയ push ആണ്, മറ്റേ ഭാഗം വലിയ movement ആണ്. <em>Arm-ന്റെ ratio</em> = resistor-ന്റെ ratio = gain. Direction എപ്പോഴും opposite — അതാണ് <em>inverting</em>.</p><p data-hi>एक <strong>seesaw</strong> सोचो। एक तरफ ऊपर जाए तो दूसरी नीचे। Inverting Amplifier एक ऐसा seesaw है जिसमें एक arm लंबी है — छोटा push एक तरफ, बड़ा movement दूसरी तरफ। <em>Arms का ratio</em> = resistors का ratio = gain। Direction हमेशा उल्टा — यही <em>inverting</em> है।</p>
+  </div>
+
+  <div class="circuit-panel">
+    <div class="ctitle">Inverting Amplifier — Rin and Rf set the gain</div>
+    <svg width="580" height="240" viewBox="0 0 580 240">
+      <polygon points="230,50 230,190 390,120" fill="#eaf4fb" stroke="#1a6b9a" stroke-width="2.5"/>
+      <text x="275" y="126" fill="#1a6b9a" font-family="Nunito" font-size="13" font-weight="800">LM741</text>
+      <!-- Rin -->
+      <line x1="20" y1="90" x2="70" y2="90" stroke="#6c3483" stroke-width="2.5"/>
+      <rect x="70" y="78" width="60" height="24" rx="4" fill="#f5eef8" stroke="#6c3483" stroke-width="2"/>
+      <text x="82" y="94" fill="#6c3483" font-family="Fira Code" font-size="13" font-weight="700">Rin</text>
+      <line x1="130" y1="90" x2="230" y2="90" stroke="#6c3483" stroke-width="2.5"/>
+      <text x="10" y="85" fill="#6c3483" font-family="Nunito" font-size="12" font-weight="700">Vin</text>
+      <!-- − pin label -->
+      <text x="193" y="83" fill="#c0392b" font-family="Nunito" font-size="14" font-weight="700">−</text>
+      <!-- + pin to GND -->
+      <line x1="160" y1="150" x2="230" y2="150" stroke="#1e8449" stroke-width="2.5"/>
+      <line x1="160" y1="150" x2="160" y2="220" stroke="#1e8449" stroke-width="2.5"/>
+      <line x1="145" y1="220" x2="175" y2="220" stroke="#1e8449" stroke-width="3"/>
+      <line x1="149" y1="226" x2="171" y2="226" stroke="#1e8449" stroke-width="2"/>
+      <line x1="154" y1="232" x2="166" y2="232" stroke="#1e8449" stroke-width="1.5"/>
+      <text x="163" y="210" fill="#1e8449" font-family="Nunito" font-size="12">GND</text>
+      <text x="193" y="145" fill="#1e8449" font-family="Nunito" font-size="14" font-weight="700">+</text>
+      <!-- Rf — feedback resistor -->
+      <line x1="390" y1="120" x2="430" y2="120" stroke="#d35400" stroke-width="2.5"/>
+      <line x1="430" y1="120" x2="430" y2="55" stroke="#d35400" stroke-width="2.5"/>
+      <line x1="160" y1="55" x2="430" y2="55" stroke="#d35400" stroke-width="2.5"/>
+      <rect x="220" y="43" width="60" height="24" rx="4" fill="#fff3cd" stroke="#d35400" stroke-width="2"/>
+      <text x="235" y="59" fill="#d35400" font-family="Fira Code" font-size="13" font-weight="700">Rf</text>
+      <line x1="160" y1="55" x2="160" y2="90" stroke="#d35400" stroke-width="2.5"/>
+      <!-- junction dot at − input -->
+      <circle cx="160" cy="90" r="5" fill="#c0392b"/>
+      <!-- Output -->
+      <line x1="430" y1="120" x2="530" y2="120" stroke="#d35400" stroke-width="2.5"/>
+      <rect x="495" y="104" width="55" height="32" rx="5" fill="#fff3cd" stroke="#d35400" stroke-width="2"/>
+      <text x="502" y="123" fill="#d35400" font-family="Nunito" font-size="12" font-weight="700">Vout</text>
+      <!-- Rf label over the top wire -->
+      <text x="240" y="40" fill="#d35400" font-family="Nunito" font-size="11">Feedback Resistor (Rf)</text>
+    </svg>
+  </div>
+
+  <h2 data-en>The Gain Formula</h2><h2 data-ml>Gain Formula</h2><h2 data-hi>Gain Formula</h2>
+  <div class="formula">
+    <span class="formula-label" data-en>Inverting Amplifier Gain</span><span class="formula-label" data-ml>Inverting Amplifier Gain</span><span class="formula-label" data-hi>Inverting Amplifier Gain</span>
+    Vout = −(Rf / Rin) × Vin<br>
+    <span style="font-size:0.85rem;color:#aaa;" data-en>The minus (−) sign means the output is INVERTED (opposite polarity)</span><span style="font-size:0.85rem;color:#aaa;" data-ml>Minus (−) sign = output INVERTED ആണ് (opposite polarity)</span><span style="font-size:0.85rem;color:#aaa;" data-hi>Minus (−) sign = output INVERTED है (opposite polarity)</span>
+  </div>
+
+  <h2 data-en>Worked Example — Step by Step</h2><h2 data-ml>Worked Example — Step by Step</h2><h2 data-hi>Worked Example — Step by Step</h2>
+  <div class="calc-box">
+    <div class="calc-title" data-en>Find Vout — Given: Rin = 10kΩ, Rf = 47kΩ, Vin = +2V</div><div class="calc-title" data-ml>Vout കണ്ടെത്തൂ — Rin = 10kΩ, Rf = 47kΩ, Vin = +2V</div><div class="calc-title" data-hi>Vout निकालो — Rin = 10kΩ, Rf = 47kΩ, Vin = +2V</div>
+    <div class="calc-step">
+      <div class="calc-step-num">1</div>
+      <div class="calc-step-body">
+        <div class="clabel">Write the formula</div>
+        <div class="cval">Vout = −(Rf / Rin) × Vin</div>
+        <div class="cexpl">This formula always works for inverting amplifier. The minus sign is fixed — it is part of the circuit design.</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">2</div>
+      <div class="calc-step-body">
+        <div class="clabel">Put in the values</div>
+        <div class="cval">Vout = −(47,000 / 10,000) × 2</div>
+        <div class="cexpl">Rf = 47kΩ = 47,000 Ω. Rin = 10kΩ = 10,000 Ω. Vin = 2V. Now just divide and multiply.</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">3</div>
+      <div class="calc-step-body">
+        <div class="clabel">Calculate the ratio</div>
+        <div class="cval">47,000 ÷ 10,000 = 4.7 → This is the gain</div>
+        <div class="cexpl">The gain is 4.7. This means output will be 4.7 times bigger than input — and inverted.</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">4</div>
+      <div class="calc-step-body">
+        <div class="clabel">Final Answer</div>
+        <div class="cval">Vout = −4.7 × 2 = −9.4V</div>
+        <div class="cexpl">Input was +2V. Output is −9.4V. It is amplified by 4.7 AND flipped to negative. ✅</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Interactive Calculator — Try Different Values</h2>
+  <div class="interactive-calc">
+    <h3 style="margin-top:0;color:var(--accent2);">⚙ Inverting Amplifier Calculator</h3>
+    <div class="slider-group">
+      <label>Input Resistor Rin (kΩ) <span id="rinDisp">10 kΩ</span></label>
+      <input type="range" min="1" max="100" step="1" value="10" id="rinSlider" oninput="updateInv()">
+    </div>
+    <div class="slider-group">
+      <label>Feedback Resistor Rf (kΩ) <span id="rfDisp">47 kΩ</span></label>
+      <input type="range" min="1" max="200" step="1" value="47" id="rfSlider" oninput="updateInv()">
+    </div>
+    <div class="slider-group">
+      <label>Input Voltage Vin (V) <span id="vinInvDisp">+2.0 V</span></label>
+      <input type="range" min="-10" max="10" step="0.5" value="2" id="vinInvSlider" oninput="updateInv()">
+    </div>
+    <div class="result-display">
+      <div>
+        <div class="res-label">Gain</div>
+        <div class="res-val" id="invGain" style="font-size:1.6rem;">−4.7×</div>
+      </div>
+      <div style="font-size:1.6rem;color:var(--muted);">→</div>
+      <div>
+        <div class="res-label">Output Voltage (Vout)</div>
+        <div class="res-val" id="invVout">−9.4V</div>
+        <div class="res-unit" id="invNote">Supply limit: ±13V max</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn">
+    <p>The output can never go beyond the supply voltage! If your calculation gives −20V but the supply is ±15V, the output will <strong>clip</strong> at about −13V. Always check: does |Vout| stay within supply voltage range?</p>
+  </div>
+
+  <div class="wave-anim-panel">
+    <div class="ctitle">Live Animation — Inverting Amplifier: Output is Amplified &amp; Flipped</div>
+    <canvas class="wave-canvas" id="invCanvas" width="700" height="200"></canvas>
+  </div>
+
+  <div class="realworld">
+    <p data-en><strong>Used in:</strong> (1) <em>Audio amplifiers</em> — microphone signal is millivolts. Inverting amp brings it up to speaker level. (2) <em>Inverter/UPS circuits</em> — signal inversion and gain in feedback control loops. (3) <em>Signal conditioning</em> — scaling sensor outputs to match ADC input range.</p><p data-ml><strong>ഉപയോഗം:</strong> (1) <em>Audio amplifier</em> — microphone signal millivolt ആണ്. Inverting amp അതിനെ speaker level-ലേക്ക് കൊണ്ടുവരും. (2) <em>Inverter/UPS circuit</em> — feedback control loop-ൽ signal inversion, gain. (3) <em>Signal conditioning</em> — sensor output-നെ ADC range-ലേക്ക് scale ചെയ്യും.</p><p data-hi><strong>उपयोग:</strong> (1) <em>Audio amplifier</em> — microphone signal millivolts में होती है। Inverting amp उसे speaker level तक लाता है। (2) <em>Inverter/UPS circuit</em> — feedback control loop में signal inversion और gain। (3) <em>Signal conditioning</em> — sensor output को ADC range के हिसाब से scale करना।</p>
+  </div>
+
+  <h2>Quiz — Inverting Amplifier</h2>
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 1</div>
+    <div class="quiz-question" data-en>Rin = 5kΩ, Rf = 20kΩ, Vin = +3V. What is Vout?</div><div class="quiz-question" data-ml>Rin = 5kΩ, Rf = 20kΩ, Vin = +3V. Vout എന്ത്?</div><div class="quiz-question" data-hi>Rin = 5kΩ, Rf = 20kΩ, Vin = +3V. Vout क्या है?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p5q1',false,'')">+12V</button>
+      <button onclick="qAnswer(this,'p5q1',true,'')">−12V</button>
+      <button onclick="qAnswer(this,'p5q1',false,'')">+4V</button>
+      <button onclick="qAnswer(this,'p5q1',false,'')">−4V</button>
+    </div>
+    <div class="quiz-feedback" id="p5q1">✅ Gain = −(Rf/Rin) = −(20k/5k) = −4. Vout = −4 × 3V = −12V. Input is +3V, output is −12V (amplified by 4 and inverted).</div>
+  </div>
+
+  <div class="quiz-container" style="margin-top:16px;">
+    <div class="quiz-q-num">Question 2</div>
+    <div class="quiz-question" data-en>You want a gain of −10 using an inverting amplifier. You choose Rin = 10kΩ. What should Rf be?</div><div class="quiz-question" data-ml>Inverting amplifier-ൽ gain −10 വേണം. Rin = 10kΩ choose ചെയ്‌തു. Rf എന്ത് ആകണം?</div><div class="quiz-question" data-hi>Inverting amplifier में gain −10 चाहिए। Rin = 10kΩ चुना। Rf क्या होनी चाहिए?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p5q2',false,'')">1kΩ</button>
+      <button onclick="qAnswer(this,'p5q2',false,'')">10kΩ</button>
+      <button onclick="qAnswer(this,'p5q2',true,'')">100kΩ</button>
+      <button onclick="qAnswer(this,'p5q2',false,'')">1MΩ</button>
+    </div>
+    <div class="quiz-feedback" id="p5q2">✅ Gain = Rf/Rin → 10 = Rf/10kΩ → Rf = 10 × 10kΩ = 100kΩ. The gain magnitude equals Rf divided by Rin.</div>
+  </div>
+
+  <div class="bottom-nav">
+    <button onclick="goPage(4, document.querySelectorAll('#page-nav button')[4])">← Previous</button>
+    <span class="page-label">Page 5 of 10</span>
+    <button onclick="goPage(6, document.querySelectorAll('#page-nav button')[6])">Next: Non-Inverting →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 6 — NON-INVERTING AMPLIFIER
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page6">
+  <div class="page-tag" data-en>Chapter 6</div><div class="page-tag" data-ml>അദ്ധ്യായം 6</div><div class="page-tag" data-hi>अध्याय 6</div>
+  <h1 data-en>Non-Inverting Amplifier</h1><h1 data-ml>Non-Inverting Amplifier</h1><h1 data-hi>Non-Inverting Amplifier</h1>
+  <p data-en>A <strong>Non-Inverting Amplifier</strong> amplifies a signal <em>without flipping it</em>. The input goes to the <strong>(+) pin</strong>. The output is always <em>in the same direction</em> as the input — positive in, bigger positive out.</p><p data-ml><strong>Non-Inverting Amplifier</strong> signal-നെ <em>flip ചെയ്യാതെ</em> amplify ചെയ്യും. Input <strong>(+) pin</strong>-ൽ കൊടുക്കും. Output എപ്പോഴും input-ന്റെ <em>ഒരേ direction-ൽ</em> — positive input ആണെങ്കിൽ, output-ഉം positive, പക്ഷേ കൂടുതൽ.</p><p data-hi><strong>Non-Inverting Amplifier</strong> signal को <em>flip किए बिना</em> amplify करता है। Input <strong>(+) pin</strong> पर जाता है। Output हमेशा input के <em>same direction में</em> — positive input, तो bigger positive output।</p>
+
+  <div class="analogy">
+    <p data-en>Think of a <strong>CCTV zoom lens</strong>. When you zoom into an image, it gets bigger — but it is still the right way up, not flipped. The Non-Inverting Amplifier is the zoom lens of electronics. It makes the signal bigger, same direction, no flip. The amount of zoom is set by the two resistors R1 and R2.</p><p data-ml><strong>CCTV zoom lens</strong> ഓർക്കൂ. Image zoom ചെയ്‌താൽ വലുതാകും — പക്ഷേ flip ആകില്ല, same way up. Non-Inverting Amplifier electronics-ന്റെ zoom lens ആണ്. Signal-നെ വലുതാക്കും, same direction, flip ഇല്ല. Zoom amount R1, R2 resistors set ചെയ്യും.</p><p data-hi><strong>CCTV zoom lens</strong> सोचो। Image zoom करो — बड़ी होगी, लेकिन flip नहीं होगी, same way up। Non-Inverting Amplifier electronics का zoom lens है। Signal बड़ा होगा, same direction, flip नहीं। Zoom amount R1, R2 resistors तय करते हैं।</p>
+  </div>
+
+  <div class="circuit-panel">
+    <div class="ctitle">Non-Inverting Amplifier — Input to (+), Feedback divider to (−)</div>
+    <svg width="580" height="240" viewBox="0 0 580 240">
+      <polygon points="220,50 220,190 380,120" fill="#eaf4fb" stroke="#1a6b9a" stroke-width="2.5"/>
+      <text x="265" y="126" fill="#1a6b9a" font-family="Nunito" font-size="13" font-weight="800">LM741</text>
+      <!-- Input direct to + -->
+      <line x1="30" y1="90" x2="220" y2="90" stroke="#1e8449" stroke-width="2.5"/>
+      <text x="10" y="86" fill="#1e8449" font-family="Nunito" font-size="12" font-weight="700">Vin</text>
+      <text x="185" y="83" fill="#1e8449" font-family="Nunito" font-size="14" font-weight="700">+</text>
+      <!-- − pin -->
+      <text x="185" y="148" fill="#c0392b" font-family="Nunito" font-size="14" font-weight="700">−</text>
+      <!-- Output line -->
+      <line x1="380" y1="120" x2="530" y2="120" stroke="#d35400" stroke-width="2.5"/>
+      <rect x="490" y="104" width="55" height="32" rx="5" fill="#fff3cd" stroke="#d35400" stroke-width="2"/>
+      <text x="496" y="123" fill="#d35400" font-family="Nunito" font-size="12" font-weight="700">Vout</text>
+      <!-- Feedback from output down to R2 junction -->
+      <line x1="450" y1="120" x2="450" y2="60" stroke="#d35400" stroke-width="2"/>
+      <line x1="340" y1="60" x2="450" y2="60" stroke="#d35400" stroke-width="2.5" stroke-dasharray="6,3"/>
+      <!-- Rf (=R2) -->
+      <rect x="280" y="48" width="60" height="24" rx="4" fill="#fff3cd" stroke="#d35400" stroke-width="2"/>
+      <text x="294" y="63" fill="#d35400" font-family="Fira Code" font-size="13" font-weight="700">R2</text>
+      <line x1="220" y1="60" x2="280" y2="60" stroke="#d35400" stroke-width="2.5"/>
+      <line x1="220" y1="60" x2="220" y2="140" stroke="#d35400" stroke-width="2.5"/>
+      <line x1="220" y1="140" x2="220" y2="140" stroke="#d35400" stroke-width="2.5"/>
+      <!-- Junction dot -->
+      <circle cx="220" cy="140" r="5" fill="#c0392b"/>
+      <line x1="220" y1="140" x2="220" y2="140" stroke="#c0392b" stroke-width="2.5"/>
+      <!-- R1 going to GND -->
+      <rect x="195" y="148" width="50" height="24" rx="4" fill="#f5eef8" stroke="#6c3483" stroke-width="2"/>
+      <text x="207" y="163" fill="#6c3483" font-family="Fira Code" font-size="13" font-weight="700">R1</text>
+      <line x1="220" y1="172" x2="220" y2="230" stroke="#6c3483" stroke-width="2.5"/>
+      <line x1="205" y1="230" x2="235" y2="230" stroke="#6c3483" stroke-width="3"/>
+      <line x1="209" y1="236" x2="231" y2="236" stroke="#6c3483" stroke-width="2"/>
+      <line x1="213" y1="242" x2="227" y2="242" stroke="#6c3483" stroke-width="1.5"/>
+      <text x="140" y="165" fill="#6c3483" font-family="Nunito" font-size="11">(to GND)</text>
+      <text x="300" y="44" fill="#d35400" font-family="Nunito" font-size="11">Feedback (R2)</text>
+    </svg>
+  </div>
+
+  <h2 data-en>The Gain Formula</h2><h2 data-ml>Gain Formula</h2><h2 data-hi>Gain Formula</h2>
+  <div class="formula">
+    <span class="formula-label" data-en>Non-Inverting Amplifier Gain</span><span class="formula-label" data-ml>Non-Inverting Amplifier Gain</span><span class="formula-label" data-hi>Non-Inverting Amplifier Gain</span>
+    Vout = (1 + R2/R1) × Vin<br>
+    <span style="font-size:0.85rem;color:#aaa;" data-en>No minus sign! Output is always same polarity as input. Gain is always ≥ 1</span><span style="font-size:0.85rem;color:#aaa;" data-ml>Minus sign ഇല്ല! Output input-ന്റെ same polarity. Gain എപ്പോഴും ≥ 1</span><span style="font-size:0.85rem;color:#aaa;" data-hi>Minus sign नहीं! Output हमेशा input जैसी polarity। Gain हमेशा ≥ 1</span>
+  </div>
+
+  <h2 data-en>Worked Example — Step by Step</h2><h2 data-ml>Worked Example — Step by Step</h2><h2 data-hi>Worked Example — Step by Step</h2>
+  <div class="calc-box">
+    <div class="calc-title" data-en>Find Vout — Given: R1 = 10kΩ, R2 = 40kΩ, Vin = +2V</div><div class="calc-title" data-ml>Vout കണ്ടെത്തൂ — R1 = 10kΩ, R2 = 40kΩ, Vin = +2V</div><div class="calc-title" data-hi>Vout निकालो — R1 = 10kΩ, R2 = 40kΩ, Vin = +2V</div>
+    <div class="calc-step">
+      <div class="calc-step-num">1</div>
+      <div class="calc-step-body">
+        <div class="clabel">Write the formula</div>
+        <div class="cval">Vout = (1 + R2/R1) × Vin</div>
+        <div class="cexpl">Always start by writing the formula. The "1 +" is always there — that is why minimum gain is 1 (voltage follower is special case where R2=0 and R1=∞).</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">2</div>
+      <div class="calc-step-body">
+        <div class="clabel">Calculate the ratio R2/R1</div>
+        <div class="cval">R2/R1 = 40,000 / 10,000 = 4</div>
+        <div class="cexpl">R2 = 40kΩ, R1 = 10kΩ. Divide: 40÷10 = 4.</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">3</div>
+      <div class="calc-step-body">
+        <div class="clabel">Add the 1</div>
+        <div class="cval">1 + 4 = 5 → Gain = 5</div>
+        <div class="cexpl">The gain of this circuit is 5. Output will be 5 times the input.</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">4</div>
+      <div class="calc-step-body">
+        <div class="clabel">Multiply by Vin</div>
+        <div class="cval">Vout = 5 × 2V = +10V</div>
+        <div class="cexpl">Input is +2V, output is +10V — same positive direction, 5 times bigger. ✅</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 data-en>Interactive Calculator</h2><h2 data-ml>Interactive Calculator</h2><h2 data-hi>Interactive Calculator</h2>
+  <div class="interactive-calc">
+    <h3 style="margin-top:0;color:var(--accent2);">⚙ Non-Inverting Amplifier Calculator</h3>
+    <div class="slider-group">
+      <label>R1 — Bottom resistor (to GND) in kΩ <span id="r1NiDisp">10 kΩ</span></label>
+      <input type="range" min="1" max="100" step="1" value="10" id="r1NiSlider" oninput="updateNonInv()">
+    </div>
+    <div class="slider-group">
+      <label>R2 — Feedback resistor in kΩ <span id="r2NiDisp">40 kΩ</span></label>
+      <input type="range" min="0" max="200" step="1" value="40" id="r2NiSlider" oninput="updateNonInv()">
+    </div>
+    <div class="slider-group">
+      <label>Input Voltage Vin (V) <span id="vinNiDisp">+2.0 V</span></label>
+      <input type="range" min="-10" max="10" step="0.5" value="2" id="vinNiSlider" oninput="updateNonInv()">
+    </div>
+    <div class="result-display">
+      <div>
+        <div class="res-label">Gain</div>
+        <div class="res-val" id="niGain" style="font-size:1.6rem;">+5×</div>
+      </div>
+      <div style="font-size:1.6rem;color:var(--muted);">→</div>
+      <div>
+        <div class="res-label">Output Voltage (Vout)</div>
+        <div class="res-val" id="niVout">+10V</div>
+        <div class="res-unit" id="niNote">Same polarity as input</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 data-en>Comparing Inverting vs Non-Inverting</h2><h2 data-ml>Inverting vs Non-Inverting — താരതമ്യം</h2><h2 data-hi>Inverting vs Non-Inverting — तुलना</h2>
+  <div class="two-col">
+    <div style="background:var(--red-bg);border:2px solid var(--accent);border-radius:10px;padding:18px;">
+      <h3 style="color:var(--accent);margin-top:0;font-size:1.1rem;">Inverting Amplifier</h3>
+      <p style="margin:0;font-size:0.92rem;">Formula: Vout = <strong>−(Rf/Rin)</strong> × Vin<br>Input at <strong>(−) pin</strong><br>Output is <em>flipped</em><br>Gain can be &lt;1 (attenuation)<br>Input impedance = Rin</p>
+    </div>
+    <div style="background:var(--green-bg);border:2px solid var(--accent3);border-radius:10px;padding:18px;">
+      <h3 style="color:var(--accent3);margin-top:0;font-size:1.1rem;">Non-Inverting Amplifier</h3>
+      <p style="margin:0;font-size:0.92rem;">Formula: Vout = <strong>(1 + R2/R1)</strong> × Vin<br>Input at <strong>(+) pin</strong><br>Output is <em>same direction</em><br>Gain always ≥ 1<br>Input impedance = very high</p>
+    </div>
+  </div>
+
+  <div class="realworld">
+    <p data-en><strong>Non-Inverting used in:</strong> (1) <em>Microphone pre-amplifier</em> — mic gives 1–10mV, needs 100× amplification to 1V for speaker. Non-inverting keeps audio in correct phase. (2) <em>Instrument amplifiers</em> — amplifying signals from sensors, strain gauges, bridges. (3) <em>Signal boosting</em> between circuit stages where phase must be preserved.</p><p data-ml><strong>Non-Inverting ഉപയോഗം:</strong> (1) <em>Microphone pre-amplifier</em> — mic 1–10mV കൊടുക്കും, speaker-ന് 1V വേണം (100× amplification). Non-inverting audio phase ശരിയായി സൂക്ഷിക്കും. (2) <em>Instrument amplifier</em> — sensor, strain gauge, bridge-ൽ നിന്ന് signal amplify. (3) Phase maintain ചെയ്‌തേ പറ്റൂ എന്ന് ഉള്ളിടത്ത് <em>signal boosting</em>.</p><p data-hi><strong>Non-Inverting उपयोग:</strong> (1) <em>Microphone pre-amplifier</em> — mic 1–10mV देता है, speaker के लिए 1V चाहिए (100× amplification)। Non-inverting audio phase सही रखता है। (2) <em>Instrument amplifier</em> — sensors, strain gauges, bridges के signals amplify करना। (3) जहाँ phase बचाना ज़रूरी हो वहाँ <em>signal boosting</em>।</p>
+  </div>
+
+  <div class="wave-anim-panel">
+    <div class="ctitle">Live Animation — Non-Inverting Amplifier: Output Same Direction, Bigger Amplitude</div>
+    <canvas class="wave-canvas" id="niCanvas" width="700" height="200"></canvas>
+  </div>
+
+  <h2>Quiz — Non-Inverting Amplifier</h2>
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 1</div>
+    <div class="quiz-question" data-en>R1 = 2kΩ, R2 = 18kΩ, Vin = +1V. What is Vout?</div><div class="quiz-question" data-ml>R1 = 2kΩ, R2 = 18kΩ, Vin = +1V. Vout എന്ത്?</div><div class="quiz-question" data-hi>R1 = 2kΩ, R2 = 18kΩ, Vin = +1V. Vout क्या है?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p6q1',false,'')">+9V</button>
+      <button onclick="qAnswer(this,'p6q1',true,'')">+10V</button>
+      <button onclick="qAnswer(this,'p6q1',false,'')">−10V</button>
+      <button onclick="qAnswer(this,'p6q1',false,'')">+1V</button>
+    </div>
+    <div class="quiz-feedback" id="p6q1">✅ Gain = 1 + R2/R1 = 1 + 18k/2k = 1 + 9 = 10. Vout = 10 × 1V = +10V. Not 9V — remember the "+1" is always added to the ratio!</div>
+  </div>
+
+  <div class="quiz-container" style="margin-top:16px;">
+    <div class="quiz-q-num">Question 2</div>
+    <div class="quiz-question" data-en>In a Non-Inverting Amplifier, if R2 = 0 (short circuit) and R1 = open circuit, what happens?</div><div class="quiz-question" data-ml>Non-Inverting Amplifier-ൽ R2 = 0 (short circuit), R1 = open circuit ആണെങ്കിൽ എന്ത് സംഭവിക്കും?</div><div class="quiz-question" data-hi>Non-Inverting Amplifier में R2 = 0 (short circuit) और R1 = open circuit हो तो क्या होगा?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p6q2',false,'')">Gain becomes infinite</button>
+      <button onclick="qAnswer(this,'p6q2',false,'')">Gain becomes zero</button>
+      <button onclick="qAnswer(this,'p6q2',true,'')">It becomes a Voltage Follower with gain = 1</button>
+      <button onclick="qAnswer(this,'p6q2',false,'')">Circuit oscillates</button>
+    </div>
+    <div class="quiz-feedback" id="p6q2">✅ Correct! When R2=0 (wire), Gain = 1 + 0/R1 = 1. The output directly connects to the (−) pin, making it a Voltage Follower. This is why the Voltage Follower is just a special case of the non-inverting amplifier!</div>
+  </div>
+
+  <div class="bottom-nav">
+    <button onclick="goPage(5, document.querySelectorAll('#page-nav button')[5])">← Previous</button>
+    <span class="page-label">Page 6 of 10</span>
+    <button onclick="goPage(7, document.querySelectorAll('#page-nav button')[7])">Next: Integrator →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 7 — INTEGRATOR
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page7">
+  <div class="page-tag" data-en>Chapter 7</div><div class="page-tag" data-ml>അദ്ധ്യായം 7</div><div class="page-tag" data-hi>अध्याय 7</div>
+  <h1 data-en>Integrator Circuit</h1><h1 data-ml>Integrator Circuit</h1><h1 data-hi>Integrator Circuit</h1>
+  <p data-en>The <strong>Integrator</strong> replaces the feedback resistor (Rf) with a <em>capacitor (C)</em>. Instead of amplifying instantly, it <em>adds up (accumulates) the input voltage over time</em>. The output is a ramp — it slopes up or down depending on input.</p><p data-ml><strong>Integrator</strong>-ൽ feedback resistor (Rf)-ന്റെ സ്ഥാനത്ത് ഒരു <em>capacitor (C)</em> ഇടും. Instantly amplify ചെയ്യുന്നതിന് പകരം, <em>input voltage-നെ time-ൽ ഉടനീളം add up (accumulate) ചെയ്യും</em>. Output ഒരു ramp ആണ് — input-ന് അനുസരിച്ച് ഉയരുകയോ താഴുകയോ ചെയ്യും.</p><p data-hi><strong>Integrator</strong> में feedback resistor (Rf) की जगह एक <em>capacitor (C)</em> लगाते हैं। तुरंत amplify करने के बजाय, यह <em>input voltage को समय के साथ add up (accumulate) करता है</em>। Output एक ramp है — input के हिसाब से ऊपर या नीचे ढलान करता है।</p>
+
+  <div class="analogy">
+    <p data-en>Think of a <strong>bucket being filled with water</strong>. A constant stream of water (constant input voltage) fills the bucket steadily — the water level (output voltage) <em>rises smoothly over time</em>. Turn the tap off (input = 0) and the bucket level stays where it is. Reverse the water direction (negative input) and the level drops. The integrator does this with voltage — it <em>fills up</em> based on input.</p><p data-ml>ഒരു <strong>bucket-ൽ വെള്ളം നിറക്കുന്ന</strong> കാര്യം ആലോചിക്കൂ. Constant stream (constant input voltage) bucket-നെ steady ആയി നിറക്കും — water level (output voltage) <em>time-ൽ smooth ആയി ഉയരും</em>. Tap അടച്ചാൽ (input = 0) level stay ആകും. Water direction reverse ചെയ്‌താൽ (negative input) level ഇറങ്ങും. Integrator voltage-ഉമായി ഇതേ ചെയ്യും — input-ന് അനുസരിച്ച് <em>fill up</em> ആകും.</p><p data-hi>एक <strong>bucket में पानी भरने</strong> की सोचो। लगातार पानी की धारा (constant input voltage) bucket को steady भरती है — पानी का level (output voltage) <em>समय के साथ smoothly ऊपर जाता है</em>। नल बंद करो (input = 0) तो level वहीं रुकता है। पानी की दिशा उलट दो (negative input) तो level गिरता है। Integrator voltage से यही करता है — input के हिसाब से <em>fill up</em> होता है।</p>
+  </div>
+
+  <div class="circuit-panel">
+    <div class="ctitle">Integrator — Capacitor C replaces Rf feedback resistor</div>
+    <svg width="580" height="240" viewBox="0 0 580 240">
+      <polygon points="230,50 230,190 390,120" fill="#eaf4fb" stroke="#1a6b9a" stroke-width="2.5"/>
+      <text x="275" y="126" fill="#1a6b9a" font-family="Nunito" font-size="13" font-weight="800">LM741</text>
+      <!-- Rin -->
+      <line x1="20" y1="90" x2="70" y2="90" stroke="#6c3483" stroke-width="2.5"/>
+      <rect x="70" y="78" width="60" height="24" rx="4" fill="#f5eef8" stroke="#6c3483" stroke-width="2"/>
+      <text x="82" y="94" fill="#6c3483" font-family="Fira Code" font-size="13" font-weight="700">Rin</text>
+      <line x1="130" y1="90" x2="230" y2="90" stroke="#6c3483" stroke-width="2.5"/>
+      <text x="8" y="86" fill="#6c3483" font-family="Nunito" font-size="12" font-weight="700">Vin</text>
+      <text x="193" y="83" fill="#c0392b" font-family="Nunito" font-size="14" font-weight="700">−</text>
+      <!-- + to GND -->
+      <line x1="160" y1="150" x2="230" y2="150" stroke="#1e8449" stroke-width="2.5"/>
+      <line x1="160" y1="150" x2="160" y2="220" stroke="#1e8449" stroke-width="2.5"/>
+      <line x1="145" y1="220" x2="175" y2="220" stroke="#1e8449" stroke-width="3"/>
+      <line x1="149" y1="226" x2="171" y2="226" stroke="#1e8449" stroke-width="2"/>
+      <line x1="153" y1="232" x2="167" y2="232" stroke="#1e8449" stroke-width="1.5"/>
+      <text x="193" y="148" fill="#1e8449" font-family="Nunito" font-size="14" font-weight="700">+</text>
+      <!-- CAPACITOR feedback (instead of Rf) -->
+      <line x1="390" y1="120" x2="430" y2="120" stroke="#d35400" stroke-width="2.5"/>
+      <line x1="430" y1="120" x2="430" y2="55" stroke="#d35400" stroke-width="2.5"/>
+      <!-- Capacitor symbol in feedback path -->
+      <line x1="160" y1="55" x2="300" y2="55" stroke="#d35400" stroke-width="2.5"/>
+      <line x1="300" y1="42" x2="300" y2="68" stroke="#f5a623" stroke-width="4"/>
+      <line x1="316" y1="42" x2="316" y2="68" stroke="#f5a623" stroke-width="4"/>
+      <line x1="316" y1="55" x2="430" y2="55" stroke="#d35400" stroke-width="2.5"/>
+      <text x="295" y="40" fill="#f5a623" font-family="Nunito" font-size="13" font-weight="800">C</text>
+      <!-- junction dot -->
+      <circle cx="160" cy="90" r="5" fill="#c0392b"/>
+      <line x1="160" y1="55" x2="160" y2="90" stroke="#d35400" stroke-width="2.5"/>
+      <!-- Output -->
+      <line x1="430" y1="120" x2="530" y2="120" stroke="#d35400" stroke-width="2.5"/>
+      <rect x="490" y="104" width="55" height="32" rx="5" fill="#fff3cd" stroke="#d35400" stroke-width="2"/>
+      <text x="496" y="123" fill="#d35400" font-family="Nunito" font-size="12" font-weight="700">Vout</text>
+      <text x="282" y="36" fill="#f5a623" font-family="Nunito" font-size="11">(Capacitor — not a resistor!)</text>
+    </svg>
+  </div>
+
+  <h2>The Output Formula</h2>
+  <div class="formula">
+    <span class="formula-label" data-en>Integrator Output</span><span class="formula-label" data-ml>Integrator Output</span><span class="formula-label" data-hi>Integrator Output</span>
+    Vout = −(1/RC) × Vin × t<br>
+    <span style="font-size:0.85rem;color:#aaa;" data-en>R = input resistor (Ω) | C = feedback capacitor (F) | t = time (seconds)</span><span style="font-size:0.85rem;color:#aaa;" data-ml>R = input resistor (Ω) | C = feedback capacitor (F) | t = time (seconds)</span><span style="font-size:0.85rem;color:#aaa;" data-hi>R = input resistor (Ω) | C = feedback capacitor (F) | t = time (seconds)</span>
+  </div>
+
+  <h2 data-en>Input/Output Waveform Relationship</h2><h2 data-ml>Input/Output Waveform — ബന്ധം</h2><h2 data-hi>Input/Output Waveform — संबंध</h2>
+  <div class="two-col">
+    <div style="background:white;border:2px solid var(--border);border-radius:10px;padding:18px;text-align:center;">
+      <p style="font-weight:800;color:var(--muted);font-size:0.8rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">INPUT → OUTPUT</p>
+      <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+        <tr style="background:#f0f0f0;">
+          <th style="padding:8px;text-align:left;border:1px solid var(--border);">Input Shape</th>
+          <th style="padding:8px;text-align:left;border:1px solid var(--border);">Output Shape</th>
+        </tr>
+        <tr><td style="padding:8px;border:1px solid var(--border);">Square wave</td><td style="padding:8px;border:1px solid var(--border);">Triangle wave</td></tr>
+        <tr><td style="padding:8px;border:1px solid var(--border);">Constant DC (+)</td><td style="padding:8px;border:1px solid var(--border);">Rising ramp (−slope)</td></tr>
+        <tr><td style="padding:8px;border:1px solid var(--border);">Constant DC (−)</td><td style="padding:8px;border:1px solid var(--border);">Falling ramp (+slope)</td></tr>
+        <tr><td style="padding:8px;border:1px solid var(--border);">Sine wave</td><td style="padding:8px;border:1px solid var(--border);">Cosine wave (shifted)</td></tr>
+      </table>
+    </div>
+    <div style="background:var(--orange-bg);border:2px solid var(--warn);border-radius:10px;padding:18px;">
+      <h3 style="color:var(--warn);margin-top:0;font-size:1.05rem;" data-en>Why Does This Happen?</h3><h3 style="color:var(--warn);margin-top:0;font-size:1.05rem;" data-ml>ഇത് എന്തുകൊണ്ട് ഇങ്ങനെ?</h3><h3 style="color:var(--warn);margin-top:0;font-size:1.05rem;" data-hi>ऐसा क्यों होता है?</h3>
+      <p style="font-size:0.92rem;margin:0;" data-en>A capacitor <strong>charges up</strong> when current flows into it. A constant input voltage pushes constant current through Rin, and that current charges the capacitor — so its voltage <em>rises linearly</em>. The capacitor voltage is the output! This is the same as <em>adding up</em> (integrating) the input over time.</p><p style="font-size:0.92rem;margin:0;" data-ml>Current capacitor-ൽ കടക്കുമ്പോൾ അത് <strong>charge up</strong> ആകും. Constant input voltage, Rin-ലൂടെ constant current push ചെയ്യും, ആ current capacitor charge ചെയ്യും — voltage <em>linearly ഉയരും</em>. Capacitor voltage ആണ് output! ഇത് time-ൽ input-നെ <em>add up</em> (integrate) ചെയ്യുന്നതിന് തുല്യം.</p><p style="font-size:0.92rem;margin:0;" data-hi>Current flow होने पर capacitor <strong>charge up</strong> होता है। Constant input voltage, Rin से constant current push करती है, वो current capacitor charge करता है — voltage <em>linearly बढ़ता है</em>। Capacitor voltage ही output है! यह time के साथ input को <em>add up</em> (integrate) करने जैसा है।</p>
+    </div>
+  </div>
+
+  <div class="calc-box">
+    <div class="calc-title">Worked Example — How much does output change?</div>
+    <div class="calc-step">
+      <div class="calc-step-num">1</div>
+      <div class="calc-step-body">
+        <div class="clabel">Given</div>
+        <div class="cval">Rin = 10kΩ, C = 1µF, Vin = +1V (DC), time = 10ms</div>
+        <div class="cexpl">10ms = 0.01 seconds. µF = microfarad = 10⁻⁶ F.</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">2</div>
+      <div class="calc-step-body">
+        <div class="clabel">Calculate RC time constant</div>
+        <div class="cval">RC = 10,000 × 0.000001 = 0.01 seconds = 10ms</div>
+        <div class="cexpl">This is the time constant. It tells you how fast the output ramps up.</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">3</div>
+      <div class="calc-step-body">
+        <div class="clabel">Calculate output change</div>
+        <div class="cval">ΔVout = −(1/RC) × Vin × t = −(1/0.01) × 1 × 0.01 = −1V</div>
+        <div class="cexpl">After 10ms, the output has ramped down by 1V. (Negative because input to − pin causes inverted ramp.)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn">
+    <p data-en>In a practical integrator, a large resistor (100kΩ–1MΩ) is often placed <em>in parallel with the capacitor</em> to prevent the output from drifting to saturation due to tiny offset voltages. The LM741 has a small internal offset that will slowly charge the capacitor even with zero input. This parallel resistor "drains" this drift current.</p><p data-ml>Practical integrator-ൽ, tiny offset voltages കാരണം output saturation-ൽ പോകാതിരിക്കാൻ capacitor-ന് <em>parallel ആയി</em> ഒരു വലിയ resistor (100kΩ–1MΩ) ഇടും. LM741-ന്റെ ഉള്ളിൽ ചെറിയ offset ഉണ്ട്, zero input ആണെങ്കിലും capacitor slowly charge ആകും. ഈ parallel resistor ആ drift current "drain" ചെയ്യും.</p><p data-hi>Practical integrator में, tiny offset voltages से output saturation में जाने से बचाने के लिए capacitor के <em>parallel में</em> एक बड़ा resistor (100kΩ–1MΩ) लगाते हैं। LM741 में थोड़ा internal offset होता है, zero input पर भी capacitor slowly charge होगा। यह parallel resistor उस drift current को "drain" करता है।</p>
+  </div>
+
+  <div class="wave-anim-panel">
+    <div class="ctitle">Live Animation — Integrator: Square Wave In → Triangle Wave Out</div>
+    <canvas class="wave-canvas" id="intCanvas" width="700" height="200"></canvas>
+  </div>
+
+  <div class="realworld">
+    <p data-en><strong>Used in:</strong> (1) <em>Waveform generators</em> — converting square waves to triangular waves for function generators. (2) <em>PID controllers</em> in motor drives and temperature controllers — the "I" (Integral) term is literally this circuit. (3) <em>ADC (Analog to Digital Converter) — dual slope type</em> used in digital multimeters. (4) <em>Radar and sonar</em> signal processing.</p><p data-ml><strong>ഉപയോഗം:</strong> (1) <em>Waveform generator</em> — square wave-നെ triangular wave ആക്കാൻ. (2) Motor drive, temperature controller-ൽ <em>PID controller</em> — "I" (Integral) term ഇതേ circuit ആണ്. (3) Digital multimeter-ൽ <em>ADC (dual slope type)</em>. (4) <em>Radar, sonar</em> signal processing.</p><p data-hi><strong>उपयोग:</strong> (1) <em>Waveform generator</em> — square wave को triangular wave बनाना। (2) Motor drive, temperature controller में <em>PID controller</em> — "I" (Integral) term यही circuit है। (3) Digital multimeter में <em>ADC (dual slope type)</em>। (4) <em>Radar, sonar</em> signal processing।</p>
+  </div>
+
+  <h2>Quiz — Integrator</h2>
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 1</div>
+    <div class="quiz-question" data-en>In an Integrator, what component replaces the feedback resistor Rf compared to an Inverting Amplifier?</div><div class="quiz-question" data-ml>Integrator-ൽ Inverting Amplifier-ലെ feedback resistor Rf-ന്റെ സ്ഥാനത്ത് ഏത് component ആണ്?</div><div class="quiz-question" data-hi>Integrator में Inverting Amplifier के feedback resistor Rf की जगह कौन सा component लगता है?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p7q1',false,'')">An inductor (L)</button>
+      <button onclick="qAnswer(this,'p7q1',true,'')">A capacitor (C)</button>
+      <button onclick="qAnswer(this,'p7q1',false,'')">A diode</button>
+      <button onclick="qAnswer(this,'p7q1',false,'')">A Zener diode</button>
+    </div>
+    <div class="quiz-feedback" id="p7q1">✅ Correct! The capacitor C replaces Rf. Because a capacitor's voltage-current relationship involves time (it integrates current), the whole circuit becomes a mathematical integrator — output adds up the input over time.</div>
+  </div>
+
+  <div class="quiz-container" style="margin-top:16px;">
+    <div class="quiz-q-num">Question 2</div>
+    <div class="quiz-question" data-en>If a square wave is given as input to an integrator, what is the output?</div><div class="quiz-question" data-ml>Integrator-ന് square wave input കൊടുത്താൽ output എന്ത്?</div><div class="quiz-question" data-hi>Integrator को square wave input दें तो output क्या होगा?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p7q2',false,'')">Square wave (same)</button>
+      <button onclick="qAnswer(this,'p7q2',false,'')">Sine wave</button>
+      <button onclick="qAnswer(this,'p7q2',true,'')">Triangular wave</button>
+      <button onclick="qAnswer(this,'p7q2',false,'')">Spikes at transitions</button>
+    </div>
+    <div class="quiz-feedback" id="p7q2">✅ Correct! During each constant half of the square wave, the output ramps linearly (like filling a bucket at constant rate). When the square wave switches, the ramp reverses. The result is a triangular wave.</div>
+  </div>
+
+  <div class="bottom-nav">
+    <button onclick="goPage(6, document.querySelectorAll('#page-nav button')[6])">← Previous</button>
+    <span class="page-label">Page 7 of 10</span>
+    <button onclick="goPage(8, document.querySelectorAll('#page-nav button')[8])">Next: Differentiator →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 8 — DIFFERENTIATOR
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page8">
+  <div class="page-tag" data-en>Chapter 8</div><div class="page-tag" data-ml>അദ്ധ്യായം 8</div><div class="page-tag" data-hi>अध्याय 8</div>
+  <h1 data-en>Differentiator Circuit</h1><h1 data-ml>Differentiator Circuit</h1><h1 data-hi>Differentiator Circuit</h1>
+  <p data-en>The <strong>Differentiator</strong> is the <em>opposite of the Integrator</em>. The capacitor moves to the <em>input side</em> (replacing Rin). It detects <em>how fast a signal is changing</em>. A slowly changing signal gives small output. A quickly changing signal gives large output.</p><p data-ml><strong>Differentiator</strong>, Integrator-ന്റെ <em>opposite</em> ആണ്. Capacitor <em>input side-ൽ</em> (Rin-ന്റെ സ്ഥാനത്ത്) വരും. Signal <em>എത്ര വേഗം മാറുന്നു</em> എന്ന് detect ചെയ്യും. Slowly changing signal → small output. Quickly changing signal → large output.</p><p data-hi><strong>Differentiator</strong>, Integrator का <em>उल्टा</em> है। Capacitor <em>input side पर</em> (Rin की जगह) आता है। Signal <em>कितनी तेज़ी से बदल रहा है</em> यह detect करता है। Slowly changing signal → small output। Quickly changing signal → large output।</p>
+
+  <div class="analogy">
+    <p data-en>Think of a <strong>speedometer</strong>. When you drive at constant speed, the speedometer shows a steady reading — and a <em>jerk meter</em> (rate of change of speed = acceleration) would show zero. When you suddenly brake hard, the jerk meter shoots up because speed is <em>changing rapidly</em>. The Differentiator is that jerk meter — it shows zero for steady signals and gives a big output for sudden changes.</p><p data-ml>ഒരു <strong>speedometer</strong> ഓർക്കൂ. Constant speed-ൽ ഓടിക്കുമ്പോൾ steady reading — ഒരു <em>acceleration meter</em> zero കാണിക്കും. Suddenly brake ചെയ്‌താൽ acceleration meter shoot up ചെയ്യും, speed <em>rapidly changing</em> ആണ്. Differentiator ആ acceleration meter ആണ് — steady signal-ന് zero, sudden change-ന് big output.</p><p data-hi>एक <strong>speedometer</strong> सोचो। Constant speed पर steady reading — एक <em>acceleration meter</em> zero दिखाएगा। अचानक brake मारो — acceleration meter shoot up करेगा क्योंकि speed <em>rapidly changing</em> है। Differentiator वही acceleration meter है — steady signal पर zero, sudden change पर big output।</p>
+  </div>
+
+  <div class="circuit-panel">
+    <div class="ctitle">Differentiator — Capacitor C at INPUT, Rf as feedback</div>
+    <svg width="580" height="240" viewBox="0 0 580 240">
+      <polygon points="260,50 260,190 420,120" fill="#eaf4fb" stroke="#1a6b9a" stroke-width="2.5"/>
+      <text x="305" y="126" fill="#1a6b9a" font-family="Nunito" font-size="13" font-weight="800">LM741</text>
+      <!-- CAPACITOR at input (instead of Rin) -->
+      <line x1="20" y1="90" x2="80" y2="90" stroke="#f5a623" stroke-width="2.5"/>
+      <line x1="80" y1="76" x2="80" y2="104" stroke="#f5a623" stroke-width="4"/>
+      <line x1="96" y1="76" x2="96" y2="104" stroke="#f5a623" stroke-width="4"/>
+      <line x1="96" y1="90" x2="160" y2="90" stroke="#f5a623" stroke-width="2.5"/>
+      <text x="22" y="82" fill="#f5a623" font-family="Nunito" font-size="12" font-weight="700">Vin</text>
+      <text x="64" y="73" fill="#f5a623" font-family="Nunito" font-size="13" font-weight="800">C</text>
+      <text x="60" y="118" fill="#f5a623" font-family="Nunito" font-size="11">(input cap)</text>
+      <!-- − pin label -->
+      <line x1="160" y1="90" x2="260" y2="90" stroke="#6c3483" stroke-width="2.5"/>
+      <text x="220" y="83" fill="#c0392b" font-family="Nunito" font-size="14" font-weight="700">−</text>
+      <!-- + to GND -->
+      <line x1="190" y1="150" x2="260" y2="150" stroke="#1e8449" stroke-width="2.5"/>
+      <line x1="190" y1="150" x2="190" y2="220" stroke="#1e8449" stroke-width="2.5"/>
+      <line x1="175" y1="220" x2="205" y2="220" stroke="#1e8449" stroke-width="3"/>
+      <line x1="179" y1="226" x2="201" y2="226" stroke="#1e8449" stroke-width="2"/>
+      <line x1="183" y1="232" x2="197" y2="232" stroke="#1e8449" stroke-width="1.5"/>
+      <text x="223" y="148" fill="#1e8449" font-family="Nunito" font-size="14" font-weight="700">+</text>
+      <!-- Rf feedback resistor -->
+      <line x1="420" y1="120" x2="460" y2="120" stroke="#d35400" stroke-width="2.5"/>
+      <line x1="460" y1="120" x2="460" y2="55" stroke="#d35400" stroke-width="2.5"/>
+      <rect x="270" y="43" width="60" height="24" rx="4" fill="#fff3cd" stroke="#d35400" stroke-width="2"/>
+      <text x="283" y="59" fill="#d35400" font-family="Fira Code" font-size="13" font-weight="700">Rf</text>
+      <line x1="160" y1="55" x2="270" y2="55" stroke="#d35400" stroke-width="2.5"/>
+      <line x1="330" y1="55" x2="460" y2="55" stroke="#d35400" stroke-width="2.5"/>
+      <line x1="160" y1="55" x2="160" y2="90" stroke="#d35400" stroke-width="2.5"/>
+      <circle cx="160" cy="90" r="5" fill="#c0392b"/>
+      <!-- Output -->
+      <line x1="460" y1="120" x2="540" y2="120" stroke="#d35400" stroke-width="2.5"/>
+      <rect x="500" y="104" width="55" height="32" rx="5" fill="#fff3cd" stroke="#d35400" stroke-width="2"/>
+      <text x="506" y="123" fill="#d35400" font-family="Nunito" font-size="12" font-weight="700">Vout</text>
+      <text x="283" y="40" fill="#d35400" font-family="Nunito" font-size="11">Feedback Rf (resistor)</text>
+    </svg>
+  </div>
+
+  <h2>The Output Formula</h2>
+  <div class="formula">
+    <span class="formula-label" data-en>Differentiator Output</span><span class="formula-label" data-ml>Differentiator Output</span><span class="formula-label" data-hi>Differentiator Output</span>
+    Vout = −Rf × C × (dVin/dt)<br>
+    <span style="font-size:0.85rem;color:#aaa;" data-en>dVin/dt = rate of change of input = how fast Vin is changing (V per second)</span><span style="font-size:0.85rem;color:#aaa;" data-ml>dVin/dt = input-ന്റെ rate of change = Vin എത്ര വേഗം മാറുന്നു (V per second)</span><span style="font-size:0.85rem;color:#aaa;" data-hi>dVin/dt = input का rate of change = Vin कितनी तेज़ी से बदल रहा है (V per second)</span>
+  </div>
+
+  <h2 data-en>Input/Output Waveform Relationship</h2><h2 data-ml>Input/Output Waveform — ബന്ധം</h2><h2 data-hi>Input/Output Waveform — संबंध</h2>
+  <div class="two-col">
+    <div style="background:white;border:2px solid var(--border);border-radius:10px;padding:18px;">
+      <table style="width:100%;border-collapse:collapse;font-size:0.92rem;">
+        <tr style="background:#f0f0f0;">
+          <th style="padding:8px;text-align:left;border:1px solid var(--border);">Input Shape</th>
+          <th style="padding:8px;text-align:left;border:1px solid var(--border);">Output Shape</th>
+        </tr>
+        <tr><td style="padding:8px;border:1px solid var(--border);">Square wave</td><td style="padding:8px;border:1px solid var(--border);"><strong>Sharp spikes</strong> at each edge</td></tr>
+        <tr><td style="padding:8px;border:1px solid var(--border);">Triangular wave</td><td style="padding:8px;border:1px solid var(--border);">Square wave</td></tr>
+        <tr><td style="padding:8px;border:1px solid var(--border);">Constant DC</td><td style="padding:8px;border:1px solid var(--border);">Zero (0V)</td></tr>
+        <tr><td style="padding:8px;border:1px solid var(--border);">Sine wave</td><td style="padding:8px;border:1px solid var(--border);">Cosine wave (with gain)</td></tr>
+        <tr><td style="padding:8px;border:1px solid var(--border);">Slow ramp</td><td style="padding:8px;border:1px solid var(--border);">Small DC level</td></tr>
+      </table>
+    </div>
+    <div style="background:var(--orange-bg);border:2px solid var(--warn);border-radius:10px;padding:18px;">
+      <h3 style="color:var(--warn);margin-top:0;font-size:1.05rem;" data-en>Key Insight</h3><h3 style="color:var(--warn);margin-top:0;font-size:1.05rem;" data-ml>Key Insight</h3><h3 style="color:var(--warn);margin-top:0;font-size:1.05rem;" data-hi>ज़रूरी बात</h3>
+      <p style="font-size:0.92rem;margin:0;margin-bottom:10px;" data-en>A <strong>capacitor lets current through ONLY when voltage changes</strong>. When input is steady (DC), no current flows through C → no current through Rf → output = 0V.</p><p style="font-size:0.92rem;margin:0;margin-bottom:10px;" data-ml><strong>Voltage മാറുന്നത് ഉണ്ടെങ്കിൽ മാത്രം capacitor current കടത്തി വിടും</strong>. Input steady (DC) ആണെങ്കിൽ, C-ലൂടെ current ഇല്ല → Rf-ലൂടെ current ഇല്ല → output = 0V.</p><p style="font-size:0.92rem;margin:0;margin-bottom:10px;" data-hi><strong>Capacitor तभी current गुज़ारता है जब voltage बदले</strong>। Input steady (DC) हो तो C से current नहीं → Rf से current नहीं → output = 0V।</p>
+      <p style="font-size:0.92rem;margin:0;" data-en>When input changes rapidly, large current flows → large voltage across Rf → large output spike. The <em>faster</em> the change, the <em>bigger</em> the output.</p><p style="font-size:0.92rem;margin:0;" data-ml>Input rapidly change ചെയ്‌താൽ, large current → Rf-ൽ large voltage → large output spike. Change <em>വേഗം</em> ആകുന്തോറും output <em>കൂടുതൽ</em>.</p><p style="font-size:0.92rem;margin:0;" data-hi>Input rapidly बदले तो large current → Rf में large voltage → large output spike। Change जितना <em>तेज़</em>, output उतना <em>बड़ा</em>।</p>
+    </div>
+  </div>
+
+  <div class="calc-box">
+    <div class="calc-title">Worked Example — Square wave input</div>
+    <div class="calc-step">
+      <div class="calc-step-num">1</div>
+      <div class="calc-step-body">
+        <div class="clabel">Given</div>
+        <div class="cval">Rf = 10kΩ, C = 0.1µF, Input = square wave 0V to 5V, rising in 1µs</div>
+        <div class="cexpl">The square wave rises 5V in 1 microsecond = 1×10⁻⁶ s</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">2</div>
+      <div class="calc-step-body">
+        <div class="clabel">Calculate rate of change</div>
+        <div class="cval">dVin/dt = 5V / 0.000001s = 5,000,000 V/s</div>
+        <div class="cexpl">This is how fast the voltage is changing. Very fast change = very large output.</div>
+      </div>
+    </div>
+    <div class="calc-step">
+      <div class="calc-step-num">3</div>
+      <div class="calc-step-body">
+        <div class="clabel">Calculate Vout</div>
+        <div class="cval">Vout = −Rf × C × (dVin/dt) = −10,000 × 0.0000001 × 5,000,000 = −5V</div>
+        <div class="cexpl">A negative spike of −5V appears at each rising edge. At falling edge, a +5V spike appears.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn">
+    <p data-en>The Differentiator is <strong>noisy in practice</strong>. High-frequency noise also changes rapidly, so the circuit amplifies noise strongly. A small resistor (Rs, typically 1kΩ) in series with the input capacitor limits high-frequency gain and prevents oscillation. Without Rs, the LM741 differentiator may oscillate due to its internal phase response.</p><p data-ml>Differentiator practical-ൽ <strong>noisy</strong> ആണ്. High-frequency noise-ഉം rapidly change ആകും, അതിനാൽ circuit noise-നെ strongly amplify ചെയ്യും. Input capacitor-ന്റെ series-ൽ ഒരു small resistor (Rs, typically 1kΩ) high-frequency gain limit ചെയ്ത് oscillation തടയും. Rs ഇല്ലെങ്കിൽ LM741 differentiator oscillate ആകാം.</p><p data-hi>Differentiator practice में <strong>noisy</strong> होता है। High-frequency noise भी rapidly बदलती है, इसलिए circuit noise को strongly amplify करता है। Input capacitor के series में एक small resistor (Rs, typically 1kΩ) high-frequency gain limit करता है और oscillation रोकता है। Rs के बिना LM741 differentiator oscillate कर सकता है।</p>
+  </div>
+
+  <div class="realworld">
+    <p data-en><strong>Used in:</strong> (1) <em>Edge detection circuits</em> — finding exact moments of signal transitions in digital systems. (2) <em>Tachometers</em> — generating a pulse whose amplitude is proportional to how fast something is moving. (3) <em>Rate-of-change alarms</em> — detecting if voltage is rising or falling too quickly (e.g., mains voltage surge detection). (4) <em>PID controllers</em> — the "D" (Derivative) term uses a differentiator concept.</p><p data-ml><strong>ഉപയോഗം:</strong> (1) <em>Edge detection circuit</em> — digital system-ൽ signal transition-ന്റെ exact moment കണ്ടെത്താൻ. (2) <em>Tachometer</em> — എന്തെങ്കിലും എത്ര വേഗം move ആകുന്നു എന്ന് pulse-ന്റെ amplitude ആക്കും. (3) <em>Rate-of-change alarm</em> — voltage വേഗം കൂടുന്നോ കുറയുന്നോ detect ചെയ്യാൻ (mains surge detection). (4) <em>PID controller</em> — "D" (Derivative) term differentiator ആണ്.</p><p data-hi><strong>उपयोग:</strong> (1) <em>Edge detection circuit</em> — digital system में signal transitions का exact moment पकड़ना। (2) <em>Tachometer</em> — कुछ कितनी तेज़ी से move हो रहा है उसका pulse बनाना। (3) <em>Rate-of-change alarm</em> — voltage बहुत तेज़ ऊपर/नीचे जा रही है detect करना (mains surge)। (4) <em>PID controller</em> — "D" (Derivative) term differentiator है।</p>
+  </div>
+
+  <div class="wave-anim-panel">
+    <div class="ctitle">Live Animation — Differentiator: Triangle Wave In → Square Wave Out</div>
+    <canvas class="wave-canvas" id="diffCanvas" width="700" height="200"></canvas>
+  </div>
+
+  <h2>Quiz — Differentiator</h2>
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 1</div>
+    <div class="quiz-question" data-en>In a Differentiator, where is the capacitor placed compared to an Inverting Amplifier?</div><div class="quiz-question" data-ml>Differentiator-ൽ, Inverting Amplifier-മായി compare ചെയ്‌താൽ capacitor എവിടെ ആണ്?</div><div class="quiz-question" data-hi>Differentiator में, Inverting Amplifier की तुलना में capacitor कहाँ लगता है?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p8q1',true,'')">The capacitor is at the INPUT (replacing Rin)</button>
+      <button onclick="qAnswer(this,'p8q1',false,'')">The capacitor is at the OUTPUT</button>
+      <button onclick="qAnswer(this,'p8q1',false,'')">The capacitor is in the feedback (replacing Rf)</button>
+      <button onclick="qAnswer(this,'p8q1',false,'')">No capacitor is used</button>
+    </div>
+    <div class="quiz-feedback" id="p8q1">✅ Correct! In the Differentiator, C is at the INPUT (series with input signal). In the Integrator, C is in the FEEDBACK path. Just remember: Input C = Differentiator. Feedback C = Integrator.</div>
+  </div>
+
+  <div class="quiz-container" style="margin-top:16px;">
+    <div class="quiz-q-num">Question 2</div>
+    <div class="quiz-question">A steady DC voltage is applied to a Differentiator. What is the output?</div>
+    <div class="quiz-options">
+      <button onclick="qAnswer(this,'p8q2',false,'')">A large voltage spike</button>
+      <button onclick="qAnswer(this,'p8q2',false,'')">Same DC voltage</button>
+      <button onclick="qAnswer(this,'p8q2',true,'')">Zero volts (0V)</button>
+      <button onclick="qAnswer(this,'p8q2',false,'')">The supply voltage</button>
+    </div>
+    <div class="quiz-feedback" id="p8q2">✅ Correct! DC is constant — it does not change. Rate of change = 0. So output = 0V. A capacitor BLOCKS DC, so no current flows through it, no current through Rf, no output voltage. Only changing signals produce output.</div>
+  </div>
+
+  <div class="bottom-nav">
+    <button onclick="goPage(7, document.querySelectorAll('#page-nav button')[7])">← Previous</button>
+    <span class="page-label">Page 8 of 10</span>
+    <button onclick="goPage(9, document.querySelectorAll('#page-nav button')[9])">Next: LM741 Pinout →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 9 — LM741 PINOUT
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page9">
+  <div class="page-tag">Reference</div>
+  <h1>LM741 IC — Pinout & Practical Notes</h1>
+  <p>Now let's look at the <strong>actual LM741 chip</strong> you will use in the lab. It comes in an 8-pin DIP (Dual In-line Package). Knowing which pin does what is essential before building any circuit.</p>
+
+  <div class="circuit-panel">
+    <div class="ctitle">LM741 — 8-Pin DIP Package (Top View)</div>
+    <svg width="460" height="280" viewBox="0 0 460 280">
+      <!-- IC body -->
+      <rect x="140" y="60" width="180" height="160" rx="10" fill="#2c3e50" stroke="#1a6b9a" stroke-width="3"/>
+      <!-- Notch -->
+      <path d="M 210 60 Q 230 80 250 60" fill="#1a6b9a"/>
+      <!-- IC Label -->
+      <text x="193" y="145" fill="#f5a623" font-family="Fira Code" font-size="18" font-weight="700">LM741</text>
+      <text x="188" y="165" fill="#aaa" font-family="Nunito" font-size="12">Op-Amp</text>
+      <!-- LEFT PINS (1,2,3,4) -->
+      <!-- Pin 1 - Offset Null -->
+      <line x1="80" y1="90" x2="140" y2="90" stroke="#888" stroke-width="3"/>
+      <rect x="30" y="78" width="50" height="24" rx="4" fill="#eee" stroke="#888" stroke-width="1.5"/>
+      <text x="35" y="94" fill="#555" font-family="Nunito" font-size="11" font-weight="700">Pin 1</text>
+      <text x="150" y="87" fill="#f5a623" font-family="Nunito" font-size="11">Offset Null</text>
+      <!-- Pin 2 - Inv input -->
+      <line x1="80" y1="130" x2="140" y2="130" stroke="#c0392b" stroke-width="3"/>
+      <rect x="30" y="118" width="50" height="24" rx="4" fill="#fde8e8" stroke="#c0392b" stroke-width="2"/>
+      <text x="35" y="134" fill="#c0392b" font-family="Nunito" font-size="11" font-weight="700">Pin 2</text>
+      <text x="150" y="127" fill="#c0392b" font-family="Nunito" font-size="11" font-weight="800">— (Inv Input)</text>
+      <!-- Pin 3 - Non inv input -->
+      <line x1="80" y1="170" x2="140" y2="170" stroke="#1e8449" stroke-width="3"/>
+      <rect x="30" y="158" width="50" height="24" rx="4" fill="#e8f8e8" stroke="#1e8449" stroke-width="2"/>
+      <text x="35" y="174" fill="#1e8449" font-family="Nunito" font-size="11" font-weight="700">Pin 3</text>
+      <text x="150" y="167" fill="#1e8449" font-family="Nunito" font-size="11" font-weight="800">+ (Non-Inv Input)</text>
+      <!-- Pin 4 - Vee -->
+      <line x1="80" y1="210" x2="140" y2="210" stroke="#555" stroke-width="3"/>
+      <rect x="30" y="198" width="50" height="24" rx="4" fill="#f0f0f0" stroke="#555" stroke-width="1.5"/>
+      <text x="35" y="214" fill="#555" font-family="Nunito" font-size="11" font-weight="700">Pin 4</text>
+      <text x="150" y="207" fill="#555" font-family="Nunito" font-size="11">−Vee (Neg Supply)</text>
+      <!-- RIGHT PINS (5,6,7,8) -->
+      <!-- Pin 8 - N/C -->
+      <line x1="320" y1="90" x2="380" y2="90" stroke="#888" stroke-width="3"/>
+      <rect x="380" y="78" width="50" height="24" rx="4" fill="#eee" stroke="#888" stroke-width="1.5"/>
+      <text x="385" y="94" fill="#555" font-family="Nunito" font-size="11" font-weight="700">Pin 8</text>
+      <text x="240" y="87" fill="#888" font-family="Nunito" font-size="11">Not Used (N/C)</text>
+      <!-- Pin 7 - Vcc -->
+      <line x1="320" y1="130" x2="380" y2="130" stroke="#d35400" stroke-width="3"/>
+      <rect x="380" y="118" width="50" height="24" rx="4" fill="#fff3cd" stroke="#d35400" stroke-width="2"/>
+      <text x="385" y="134" fill="#d35400" font-family="Nunito" font-size="11" font-weight="700">Pin 7</text>
+      <text x="236" y="127" fill="#d35400" font-family="Nunito" font-size="11" font-weight="800">+Vcc (Pos Supply)</text>
+      <!-- Pin 6 - Output -->
+      <line x1="320" y1="170" x2="380" y2="170" stroke="#6c3483" stroke-width="3"/>
+      <rect x="380" y="158" width="50" height="24" rx="4" fill="#f5eef8" stroke="#6c3483" stroke-width="2"/>
+      <text x="385" y="174" fill="#6c3483" font-family="Nunito" font-size="11" font-weight="700">Pin 6</text>
+      <text x="245" y="167" fill="#6c3483" font-family="Nunito" font-size="11" font-weight="800">OUTPUT</text>
+      <!-- Pin 5 - Offset Null -->
+      <line x1="320" y1="210" x2="380" y2="210" stroke="#888" stroke-width="3"/>
+      <rect x="380" y="198" width="50" height="24" rx="4" fill="#eee" stroke="#888" stroke-width="1.5"/>
+      <text x="385" y="214" fill="#555" font-family="Nunito" font-size="11" font-weight="700">Pin 5</text>
+      <text x="245" y="207" fill="#888" font-family="Nunito" font-size="11">Offset Null</text>
+      <!-- Pin numbers inside -->
+      <text x="148" y="97" fill="#f5a623" font-family="Fira Code" font-size="13" font-weight="700">1</text>
+      <text x="148" y="137" fill="#f5a623" font-family="Fira Code" font-size="13" font-weight="700">2</text>
+      <text x="148" y="177" fill="#f5a623" font-family="Fira Code" font-size="13" font-weight="700">3</text>
+      <text x="148" y="217" fill="#f5a623" font-family="Fira Code" font-size="13" font-weight="700">4</text>
+      <text x="302" y="97" fill="#f5a623" font-family="Fira Code" font-size="13" font-weight="700">8</text>
+      <text x="302" y="137" fill="#f5a623" font-family="Fira Code" font-size="13" font-weight="700">7</text>
+      <text x="302" y="177" fill="#f5a623" font-family="Fira Code" font-size="13" font-weight="700">6</text>
+      <text x="302" y="217" fill="#f5a623" font-family="Fira Code" font-size="13" font-weight="700">5</text>
+      <!-- Notch label -->
+      <text x="195" y="55" fill="#aaa" font-family="Nunito" font-size="11">◀ Notch (Pin 1 side)</text>
+    </svg>
+  </div>
+
+  <h2 data-en>Pin Function Summary</h2><h2 data-ml>Pin Function Summary</h2><h2 data-hi>Pin Function Summary</h2>
+  <table class="lm741-pin-table">
+    <thead><tr><th>Pin #</th><th>Name</th><th>Function</th><th>Typical Connection</th></tr></thead>
+    <tbody>
+      <tr><td style="font-weight:800;">1</td><td>Offset Null A</td><td>Used to correct tiny internal offset voltage</td><td>Connect 10kΩ pot between pins 1 and 5, wiper to −Vee. Leave unconnected if offset adjustment not needed.</td></tr>
+      <tr><td style="font-weight:800;color:#c0392b;">2</td><td style="color:#c0392b;font-weight:800;">Inverting Input (−)</td><td>Feedback and inverting input</td><td>Connect feedback resistor Rf here. Also Rin in inverting configuration.</td></tr>
+      <tr><td style="font-weight:800;color:#1e8449;">3</td><td style="color:#1e8449;font-weight:800;">Non-Inv Input (+)</td><td>Signal input for non-inverting configurations</td><td>Input signal directly here (voltage follower, non-inverting amp). Connect to GND via resistor for bias.</td></tr>
+      <tr><td style="font-weight:800;">4</td><td>−Vee (Negative supply)</td><td>Negative supply rail</td><td>Usually −15V (or −12V). Connect to negative power supply. Must always be connected.</td></tr>
+      <tr><td style="font-weight:800;">5</td><td>Offset Null B</td><td>Second offset null terminal</td><td>See Pin 1 description above.</td></tr>
+      <tr><td style="font-weight:800;color:#6c3483;">6</td><td style="color:#6c3483;font-weight:800;">Output</td><td>Amplified output signal</td><td>Connect load here. Also connect feedback resistor Rf from here back to Pin 2.</td></tr>
+      <tr><td style="font-weight:800;color:#d35400;">7</td><td style="color:#d35400;font-weight:800;">+Vcc (Positive supply)</td><td>Positive supply rail</td><td>Usually +15V (or +12V). Must always be connected.</td></tr>
+      <tr><td style="font-weight:800;">8</td><td>No Connection (N/C)</td><td>Not used internally</td><td>Leave open. Do not connect anything.</td></tr>
+    </tbody>
+  </table>
+
+  <h2 data-en>Practical Supply Connections</h2><h2 data-ml>Practical Supply Connections</h2><h2 data-hi>Practical Supply Connections</h2>
+  <div class="two-col">
+    <div class="tip" style="margin:0;">
+      <p data-en><strong>Dual Supply (Preferred):</strong> Pin 7 = +15V, Pin 4 = −15V, GND = 0V. This allows output to swing between approximately +13V and −13V. Most textbook circuits use this. You need two equal supplies (or a centre-tapped transformer + bridge rectifier).</p><p data-ml><strong>Dual Supply (ഇഷ്ടപ്പെട്ടത്):</strong> Pin 7 = +15V, Pin 4 = −15V, GND = 0V. Output ഏകദേശം +13V നും −13V-നും ഇടയ്ക്ക് swing ചെയ്യും. Textbook circuits-ൽ ഇതാണ് ഉപയോഗിക്കുക. രണ്ട് equal supply (അല്ലെങ്കിൽ centre-tapped transformer + bridge rectifier) വേണം.</p><p data-hi><strong>Dual Supply (पसंदीदा):</strong> Pin 7 = +15V, Pin 4 = −15V, GND = 0V। Output लगभग +13V से −13V के बीच swing करता है। ज़्यादातर textbook circuits यही use करते हैं। दो equal supplies चाहिए (या centre-tapped transformer + bridge rectifier)।</p>
+    </div>
+    <div class="analogy" style="margin:0;">
+      <p data-en><strong>Single Supply (for beginners):</strong> Pin 7 = +15V, Pin 4 = GND. Output swings between roughly 1.5V and 13.5V. The mid-point voltage (7.5V) acts as the virtual ground. Requires biasing resistors on input pins.</p><p data-ml><strong>Single Supply (beginners-ന്):</strong> Pin 7 = +15V, Pin 4 = GND. Output ഏകദേശം 1.5V നും 13.5V-നും ഇടയ്ക്ക് swing ചെയ്യും. Mid-point (7.5V) virtual ground ആയി act ചെയ്യും. Input pins-ൽ biasing resistor വേണം.</p><p data-hi><strong>Single Supply (beginners के लिए):</strong> Pin 7 = +15V, Pin 4 = GND। Output लगभग 1.5V से 13.5V के बीच swing करता है। Mid-point voltage (7.5V) virtual ground की तरह काम करता है। Input pins पर biasing resistors चाहिए।</p>
+    </div>
+  </div>
+
+  <h2 data-en>Absolute Maximum Ratings — DO NOT EXCEED</h2><h2 data-ml>Absolute Maximum Ratings — ഇത് exceed ചെയ്യരുത്</h2><h2 data-hi>Absolute Maximum Ratings — इससे ज़्यादा मत करो</h2>
+  <table class="lm741-pin-table">
+    <thead><tr><th>Parameter</th><th>Limit</th><th>What Happens If Exceeded</th></tr></thead>
+    <tbody>
+      <tr><td>Supply Voltage (±Vcc)</td><td><strong>±22V maximum</strong></td><td>Chip permanently damaged</td></tr>
+      <tr><td>Input Voltage</td><td><strong>±15V (equal to supply)</strong></td><td>Input stages damaged</td></tr>
+      <tr><td>Output Short Circuit</td><td><strong>Indefinite (protected)</strong></td><td>LM741 has built-in short circuit protection — but output still saturates</td></tr>
+      <tr><td>Operating Temperature</td><td><strong>0°C to +70°C</strong></td><td>Performance degrades, may malfunction</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip">
+    <p data-en><strong>Good practice for beginners:</strong> Always use ±12V or ±15V supplies. Always include 100nF bypass capacitors between each supply pin and ground (as close to the IC pins as possible). This prevents oscillation caused by supply line noise.</p><p data-ml><strong>Beginners-ന്റെ good practice:</strong> ±12V അല്ലെങ്കിൽ ±15V supply use ചെയ്യൂ. ഓരോ supply pin-ഉം ground-ഉം ഇടയ്ക്ക് 100nF bypass capacitor ഇടൂ (IC pin-ന് possible ആയ ഏറ്റവും അടുത്ത്). Supply line noise കാരണം oscillation ഉണ്ടാകാതിരിക്കാൻ ഇത് സഹായിക്കും.</p><p data-hi><strong>Beginners के लिए अच्छी practice:</strong> हमेशा ±12V या ±15V supply use करें। हर supply pin और ground के बीच 100nF bypass capacitor लगाएं (IC pins के जितना पास हो सके)। यह supply line noise से oscillation रोकता है।</p>
+  </div>
+
+  <div class="bottom-nav">
+    <button onclick="goPage(8, document.querySelectorAll('#page-nav button')[8])">← Previous</button>
+    <span class="page-label">Page 9 of 10</span>
+    <button onclick="goPage(10, document.querySelectorAll('#page-nav button')[10])">Next: Final Quiz →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 10 — FINAL QUIZ
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page10">
+  <div class="page-tag" data-en>Assessment</div><div class="page-tag" data-ml>വിലയിരുത്തൽ</div><div class="page-tag" data-hi>मूल्यांकन</div>
+  <h1>Final Quiz — All Topics</h1>
+  <p>This quiz covers all 7 circuits. Answer all questions. Each correct answer scores 1 point. Your score will be shown at the end.</p>
+
+  <!-- Q1 -->
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 1 / 10</div>
+    <div class="quiz-question">Which op-amp circuit uses NO feedback at all?</div>
+    <div class="quiz-options">
+      <button onclick="fqAnswer(this,'fq1',true,1)">Comparator</button>
+      <button onclick="fqAnswer(this,'fq1',false,1)">Integrator</button>
+      <button onclick="fqAnswer(this,'fq1',false,1)">Non-Inverting Amplifier</button>
+      <button onclick="fqAnswer(this,'fq1',false,1)">Voltage Follower</button>
+    </div>
+    <div class="quiz-feedback" id="fq1">✅ The Comparator operates open-loop — no feedback. This gives it the maximum gain (200,000) and causes the output to slam fully high or low.</div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 2 / 10</div>
+    <div class="quiz-question">The (−) pin of the LM741 is connected to Ground. The (+) pin receives a 50Hz AC signal. What circuit is this?</div>
+    <div class="quiz-options">
+      <button onclick="fqAnswer(this,'fq2',false,2)">Integrator</button>
+      <button onclick="fqAnswer(this,'fq2',false,2)">Voltage Follower</button>
+      <button onclick="fqAnswer(this,'fq2',true,2)">Zero Crossing Detector</button>
+      <button onclick="fqAnswer(this,'fq2',false,2)">Differentiator</button>
+    </div>
+    <div class="quiz-feedback" id="fq2">✅ Zero Crossing Detector: AC input at (+) pin, reference = 0V (GND) at (−) pin. Output is a square wave that flips every time the AC crosses zero.</div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 3 / 10</div>
+    <div class="quiz-question">Inverting Amplifier: Rin = 5kΩ, Rf = 100kΩ, Vin = −2V. What is Vout?</div>
+    <div class="quiz-options">
+      <button onclick="fqAnswer(this,'fq3',false,3)">−40V</button>
+      <button onclick="fqAnswer(this,'fq3',false,3)">−20V</button>
+      <button onclick="fqAnswer(this,'fq3',true,3)">+40V (clips to +13V)</button>
+      <button onclick="fqAnswer(this,'fq3',false,3)">+2V</button>
+    </div>
+    <div class="quiz-feedback" id="fq3">✅ Gain = −(100k/5k) = −20. Vout = −20 × (−2) = +40V. But supply is ±15V, so output clips to about +13V (positive saturation). The answer is +40V calculated, but actual output is +13V.</div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 4 / 10</div>
+    <div class="quiz-question">Non-Inverting Amplifier: R1 = 1kΩ, R2 = 9kΩ. What is the voltage gain?</div>
+    <div class="quiz-options">
+      <button onclick="fqAnswer(this,'fq4',false,4)">9</button>
+      <button onclick="fqAnswer(this,'fq4',true,4)">10</button>
+      <button onclick="fqAnswer(this,'fq4',false,4)">−9</button>
+      <button onclick="fqAnswer(this,'fq4',false,4)">−10</button>
+    </div>
+    <div class="quiz-feedback" id="fq4">✅ Gain = 1 + R2/R1 = 1 + 9k/1k = 1 + 9 = 10. Remember the "+1" is always there! And it is positive (no flip).</div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 5 / 10</div>
+    <div class="quiz-question">What is the output voltage of a Voltage Follower if Vin = −4.7V?</div>
+    <div class="quiz-options">
+      <button onclick="fqAnswer(this,'fq5',false,5)">0V</button>
+      <button onclick="fqAnswer(this,'fq5',false,5)">+4.7V</button>
+      <button onclick="fqAnswer(this,'fq5',true,5)">−4.7V</button>
+      <button onclick="fqAnswer(this,'fq5',false,5)">−9.4V</button>
+    </div>
+    <div class="quiz-feedback" id="fq5">✅ Voltage Follower: Vout = Vin = −4.7V. Gain is exactly 1, no inversion. Output copies input perfectly.</div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 6 / 10</div>
+    <div class="quiz-question">In an Integrator, the feedback component connecting output to (−) pin is:</div>
+    <div class="quiz-options">
+      <button onclick="fqAnswer(this,'fq6',false,6)">A resistor Rf</button>
+      <button onclick="fqAnswer(this,'fq6',true,6)">A capacitor C</button>
+      <button onclick="fqAnswer(this,'fq6',false,6)">An inductor L</button>
+      <button onclick="fqAnswer(this,'fq6',false,6)">A diode</button>
+    </div>
+    <div class="quiz-feedback" id="fq6">✅ Integrator uses a Capacitor (C) as the feedback element. The capacitor accumulates charge over time, making the output ramp up or down rather than instantly amplifying.</div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 7 / 10</div>
+    <div class="quiz-question">A Differentiator is given a constant DC input. The output is:</div>
+    <div class="quiz-options">
+      <button onclick="fqAnswer(this,'fq7',false,7)">Equal to the DC input voltage</button>
+      <button onclick="fqAnswer(this,'fq7',false,7)">Amplified DC voltage</button>
+      <button onclick="fqAnswer(this,'fq7',true,7)">Zero volts</button>
+      <button onclick="fqAnswer(this,'fq7',false,7)">Supply voltage</button>
+    </div>
+    <div class="quiz-feedback" id="fq7">✅ DC is not changing (rate of change = 0). Differentiator output = Rf × C × (rate of change) = 0. The input capacitor blocks DC completely.</div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 8 / 10</div>
+    <div class="quiz-question">Which pin of the LM741 is the OUTPUT pin?</div>
+    <div class="quiz-options">
+      <button onclick="fqAnswer(this,'fq8',false,8)">Pin 2</button>
+      <button onclick="fqAnswer(this,'fq8',false,8)">Pin 3</button>
+      <button onclick="fqAnswer(this,'fq8',true,8)">Pin 6</button>
+      <button onclick="fqAnswer(this,'fq8',false,8)">Pin 7</button>
+    </div>
+    <div class="quiz-feedback" id="fq8">✅ Pin 6 = Output. Pin 2 = Inverting (−) input. Pin 3 = Non-Inverting (+) input. Pin 7 = +Vcc supply.</div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 9 / 10</div>
+    <div class="quiz-question">A Voltage Follower is used between a sensor and a meter. What is the main reason?</div>
+    <div class="quiz-options">
+      <button onclick="fqAnswer(this,'fq9',false,9)">To increase the voltage 10×</button>
+      <button onclick="fqAnswer(this,'fq9',false,9)">To invert the signal</button>
+      <button onclick="fqAnswer(this,'fq9',true,9)">To prevent the meter from loading (draining) the sensor</button>
+      <button onclick="fqAnswer(this,'fq9',false,9)">To convert AC to DC</button>
+    </div>
+    <div class="quiz-feedback" id="fq9">✅ The Voltage Follower's very high input impedance means it draws almost no current from the sensor. The sensor's voltage is not disturbed. The follower then drives the low-impedance meter from its own power supply.</div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="quiz-container">
+    <div class="quiz-q-num">Question 10 / 10</div>
+    <div class="quiz-question">If a square wave is fed to a Differentiator, the output will be:</div>
+    <div class="quiz-options">
+      <button onclick="fqAnswer(this,'fq10',false,10)">A triangular wave</button>
+      <button onclick="fqAnswer(this,'fq10',true,10)">Sharp voltage spikes at each edge transition</button>
+      <button onclick="fqAnswer(this,'fq10',false,10)">A sine wave</button>
+      <button onclick="fqAnswer(this,'fq10',false,10)">The same square wave</button>
+    </div>
+    <div class="quiz-feedback" id="fq10">✅ Square waves have very fast transitions (near-vertical edges). Differentiator detects these rapid changes and produces sharp positive/negative spikes at each edge. The flat top/bottom parts of the square wave give zero output.</div>
+  </div>
+
+  <!-- Score -->
+  <div id="finalScoreBox" style="display:none;background:linear-gradient(135deg,#1a1a2e,#16213e);color:white;padding:32px;border-radius:16px;text-align:center;margin-top:32px;">
+    <div style="font-size:3.5rem;font-weight:900;color:#f5a623;" id="scoreNum">0/10</div>
+    <div style="font-size:1.2rem;margin-top:8px;" id="scoreMsg">Score message</div>
+    <div style="margin-top:20px;font-size:0.9rem;color:#aaa;" id="scoreDetail"></div>
+    <button onclick="resetFinalQuiz()" style="margin-top:20px;background:#f5a623;color:#000;border:none;padding:12px 28px;border-radius:8px;font-family:Nunito,sans-serif;font-size:1rem;font-weight:800;cursor:pointer;">Try Again</button>
+  </div>
+
+  <div class="bottom-nav">
+    <button onclick="goPage(9, document.querySelectorAll('#page-nav button')[9])">← Previous</button>
+    <span class="page-label">Page 10 of 10</span>
+    <button onclick="goPage(0, document.querySelectorAll('#page-nav button')[0])" style="background:var(--accent3);">🏠 Back to Start</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ JAVASCRIPT ═══════════════════════ -->
+<script>
+// ──────────────────────────────────────────────────────────
+// LANGUAGE SYSTEM
+// ──────────────────────────────────────────────────────────
+const LANG = {
+  en: {
+    headerTitle: 'LM741 Op-Amp Trainer',
+    headerSub: 'For Electrician Trainees · Class 10 Level',
+    nav: ['0 · Start Here','1 · What is Op-Amp','2 · Comparator','3 · Zero Crossing','4 · Voltage Follower','5 · Inverting Amp','6 · Non-Inverting','7 · Integrator','8 · Differentiator','9 · LM741 Pinout','10 · Final Quiz'],
+    zcdInput: 'INPUT (Sine)', zcdOutput: 'OUTPUT (Square)',
+    vfIn: 'INPUT', vfOut: 'OUTPUT (follows exactly)',
+    invIn: 'INPUT', invOut: 'OUTPUT (inverted & amplified)',
+    niIn: 'INPUT', niOut: 'OUTPUT (amplified, same direction)',
+    intIn: 'INPUT (Square)', intOut: 'OUTPUT (Triangle)',
+    diffIn: 'INPUT (Triangle)', diffOut: 'OUTPUT (Square)',
+  },
+  ml: {
+    headerTitle: 'LM741 ഓപ്-ആംപ് ട്രെയ്‌നർ',
+    headerSub: 'ഇലക്ട്രീഷ്യൻ പരിശീലകർക്ക് · ക്ലാസ് ഇലക്ട്രീഷ്യൻ',
+    nav: ['0 · ആരംഭം','1 · ഓപ്-ആംപ് എന്ത്','2 · കമ്പാരേറ്റർ','3 · സീറോ ക്രോസിംഗ്','4 · വോൾട്ടേജ് ഫോളോവർ','5 · ഇൻവേർട്ടിംഗ് ആംപ്','6 · നോൺ-ഇൻവേർട്ടിംഗ്','7 · ഇന്റഗ്രേറ്റർ','8 · ഡിഫറൻഷ്യേറ്റർ','9 · LM741 പിൻഔട്ട്','10 · അന്തിമ ക്വിസ്'],
+    zcdInput: 'ഇൻപുട്ട് (സൈൻ)', zcdOutput: 'ഔട്ട്പുട്ട് (ചതുര)',
+    vfIn: 'ഇൻപുട്ട്', vfOut: 'ഔട്ട്പുട്ട് (കൃത്യം)',
+    invIn: 'ഇൻപുട്ട്', invOut: 'ഔട്ട്പുട്ട് (മറിഞ്ഞ്+ഗെയിൻ)',
+    niIn: 'ഇൻപുട്ട്', niOut: 'ഔട്ട്പുട്ട് (ഒരേ ദിശ, ഗെയിൻ)',
+    intIn: 'ഇൻപുട്ട് (ചതുരം)', intOut: 'ഔട്ട്പുട്ട് (ത്രികോണം)',
+    diffIn: 'ഇൻപുട്ട് (ത്രികോണം)', diffOut: 'ഔട്ട്പുട്ട് (ചതുരം)',
+  },
+  hi: {
+    headerTitle: 'LM741 ऑप-एम्प ट्रेनर',
+    headerSub: 'इलेक्ट्रीशियन प्रशिक्षुओं के लिए · कक्षा इलेक्ट्रीशियन',
+    nav: ['0 · यहाँ शुरू करें','1 · ऑप-एम्प क्या है','2 · तुलनित्र','3 · शून्य क्रॉसिंग','4 · वोल्टेज फॉलोअर','5 · इनवर्टिंग एम्प','6 · नॉन-इनवर्टिंग','7 · इंटीग्रेटर','8 · डिफरेंशिएटर','9 · LM741 पिनआउट','10 · अंतिम प्रश्नोत्तरी'],
+    zcdInput: 'इनपुट (साइन)', zcdOutput: 'आउटपुट (वर्गाकार)',
+    vfIn: 'इनपुट', vfOut: 'आउटपुट (बिल्कुल वैसा ही)',
+    invIn: 'इनपुट', invOut: 'आउटपुट (उल्टा+प्रवर्धित)',
+    niIn: 'इनपुट', niOut: 'आउटपुट (एक दिशा, प्रवर्धित)',
+    intIn: 'इनपुट (वर्गाकार)', intOut: 'आउटपुट (त्रिकोण)',
+    diffIn: 'इनपुट (त्रिकोण)', diffOut: 'आउटपुट (वर्गाकार)',
+  }
+};
+let currentLang = 'en';
+
+function setLang(lang, btn) {
+  currentLang = lang;
+  document.body.className = lang === 'en' ? '' : 'lang-' + lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const L = LANG[lang];
+  document.querySelector('.header-title').textContent = L.headerTitle;
+  document.querySelector('.header-sub').textContent = L.headerSub;
+  const navBtns = document.querySelectorAll('#page-nav button');
+  L.nav.forEach((label, i) => { if (navBtns[i]) navBtns[i].textContent = label; });
+}
+
+// ──────────────────────────────────────────────────────────
+// NAVIGATION
+// ──────────────────────────────────────────────────────────
+const TOTAL = 11;
+let currentPage = 0;
+const animFrames = {};
+
+function goPage(n, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#page-nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page' + n).classList.add('active');
+  btn.classList.add('active');
+  currentPage = n;
+  document.getElementById('progressBar').style.width = ((n+1)/TOTAL*100) + '%';
+  document.getElementById('pageInd').textContent = (n+1) + ' / ' + TOTAL;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  // Cancel all running animations
+  Object.keys(animFrames).forEach(k => { cancelAnimationFrame(animFrames[k]); delete animFrames[k]; });
+  if (n === 3) startZCDAnimation();
+  if (n === 4) startVFAnimation();
+  if (n === 5) startInvAnimation();
+  if (n === 6) startNIAnimation();
+  if (n === 7) startIntAnimation();
+  if (n === 8) startDiffAnimation();
+}
+
+
+// ──────────────────────────────────────────────────────────
+// QUIZ HELPERS
+// ──────────────────────────────────────────────────────────
+function qAnswer(btn, qid, correct) {
+  const container = btn.closest('.quiz-container');
+  container.querySelectorAll('button').forEach(b => {
+    b.disabled = true;
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes('true')) b.classList.add('correct');
+  });
+  if (!correct) btn.classList.add('wrong');
+  const fb = document.getElementById(qid);
+  if (fb) { fb.style.display = 'block'; }
+}
+
+let fqAnswers = {};
+let fqTotal = 10;
+
+function fqAnswer(btn, qid, correct, qnum) {
+  if (fqAnswers[qnum] !== undefined) return;
+  fqAnswers[qnum] = correct ? 1 : 0;
+  const container = btn.closest('.quiz-container');
+  container.querySelectorAll('button').forEach(b => {
+    b.disabled = true;
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes('true,')) b.classList.add('correct');
+  });
+  if (!correct) btn.classList.add('wrong');
+  const fb = document.getElementById(qid);
+  if (fb) fb.style.display = 'block';
+  if (Object.keys(fqAnswers).length === fqTotal) showFinalScore();
+}
+
+function showFinalScore() {
+  const score = Object.values(fqAnswers).reduce((a,b) => a+b, 0);
+  const box = document.getElementById('finalScoreBox');
+  box.style.display = 'block';
+  document.getElementById('scoreNum').textContent = score + '/10';
+  let msg = '', detail = '';
+  if (score === 10) { msg = '🏆 PERFECT SCORE! Excellent work, Electrician!'; detail = 'You have mastered all 7 Op-Amp circuits. You are ready for the lab!'; }
+  else if (score >= 8) { msg = '⭐ Very Good! Almost perfect!'; detail = 'Review the questions you missed and try again.'; }
+  else if (score >= 6) { msg = '👍 Good Pass! Keep studying.'; detail = 'Go back and revise the topics where you made mistakes.'; }
+  else if (score >= 4) { msg = '📖 Needs more revision.'; detail = 'Please re-read the chapters and try the quiz again.'; }
+  else { msg = '🔄 Please revise all chapters.'; detail = 'Go back to Chapter 1 and work through all pages carefully.'; }
+  document.getElementById('scoreMsg').textContent = msg;
+  document.getElementById('scoreDetail').textContent = detail;
+  box.scrollIntoView({behavior:'smooth'});
+}
+
+function resetFinalQuiz() {
+  fqAnswers = {};
+  document.querySelectorAll('#page10 .quiz-container').forEach(c => {
+    c.querySelectorAll('button').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); });
+    const fb = c.querySelector('.quiz-feedback');
+    if (fb) fb.style.display = 'none';
+  });
+  document.getElementById('finalScoreBox').style.display = 'none';
+}
+
+// ──────────────────────────────────────────────────────────
+// INTERACTIVE CALCULATORS
+// ──────────────────────────────────────────────────────────
+function updateComp() {
+  const vin = parseFloat(document.getElementById('vinSlider').value);
+  const vref = parseFloat(document.getElementById('vrefSlider').value);
+  document.getElementById('vinDisp').textContent = (vin >= 0 ? '+' : '') + vin.toFixed(1) + 'V';
+  document.getElementById('vrefDisp').textContent = (vref >= 0 ? '+' : '') + vref.toFixed(1) + 'V';
+  const result = document.getElementById('compResult');
+  const voutEl = document.getElementById('compVout');
+  const emoji = document.getElementById('compEmoji');
+  const expl = document.getElementById('compExpl');
+  if (vin > vref) {
+    voutEl.textContent = '+13V'; result.style.background = '#eafaf1'; result.style.borderColor = '#1e8449';
+    emoji.textContent = '📈'; expl.textContent = 'Vin (' + vin + 'V) > Vref (' + vref + 'V), so output = POSITIVE saturation (+13V)';
+  } else if (vin < vref) {
+    voutEl.textContent = '−13V'; result.style.background = '#fdf3f0'; result.style.borderColor = '#c0392b';
+    emoji.textContent = '📉'; expl.textContent = 'Vin (' + vin + 'V) < Vref (' + vref + 'V), so output = NEGATIVE saturation (−13V)';
+  } else {
+    voutEl.textContent = '≈ 0V'; result.style.background = '#f5f5f5'; result.style.borderColor = '#888';
+    emoji.textContent = '⚖️'; expl.textContent = 'Vin = Vref exactly — output is momentarily at 0 but will quickly saturate either way.';
+  }
+}
+
+function updateInv() {
+  const rin = parseInt(document.getElementById('rinSlider').value);
+  const rf = parseInt(document.getElementById('rfSlider').value);
+  const vin = parseFloat(document.getElementById('vinInvSlider').value);
+  document.getElementById('rinDisp').textContent = rin + ' kΩ';
+  document.getElementById('rfDisp').textContent = rf + ' kΩ';
+  document.getElementById('vinInvDisp').textContent = (vin >= 0 ? '+' : '') + vin.toFixed(1) + ' V';
+  const gain = -(rf / rin);
+  let vout = gain * vin;
+  let clipped = false;
+  if (vout > 13) { vout = 13; clipped = true; }
+  if (vout < -13) { vout = -13; clipped = true; }
+  document.getElementById('invGain').textContent = gain.toFixed(1) + '×';
+  document.getElementById('invVout').textContent = (vout >= 0 ? '+' : '') + vout.toFixed(1) + 'V';
+  document.getElementById('invNote').textContent = clipped ? '⚠ CLIPPED at supply limit!' : 'Within supply range ✓';
+}
+
+function updateNonInv() {
+  const r1 = parseInt(document.getElementById('r1NiSlider').value);
+  const r2 = parseInt(document.getElementById('r2NiSlider').value);
+  const vin = parseFloat(document.getElementById('vinNiSlider').value);
+  document.getElementById('r1NiDisp').textContent = r1 + ' kΩ';
+  document.getElementById('r2NiDisp').textContent = r2 + ' kΩ';
+  document.getElementById('vinNiDisp').textContent = (vin >= 0 ? '+' : '') + vin.toFixed(1) + ' V';
+  const gain = 1 + r2 / r1;
+  let vout = gain * vin;
+  let clipped = false;
+  if (vout > 13) { vout = 13; clipped = true; }
+  if (vout < -13) { vout = -13; clipped = true; }
+  document.getElementById('niGain').textContent = '+' + gain.toFixed(1) + '×';
+  document.getElementById('niVout').textContent = (vout >= 0 ? '+' : '') + vout.toFixed(1) + 'V';
+  document.getElementById('niNote').textContent = clipped ? '⚠ CLIPPED at supply limit!' : 'Same polarity as input ✓';
+}
+
+// ──────────────────────────────────────────────────────────
+// CANVAS DRAWING HELPERS  (shared by all animations)
+// ──────────────────────────────────────────────────────────
+
+// Dark oscilloscope-style background with grid lines
+function drawBackground(ctx, W, H) {
+  ctx.fillStyle = '#0a1628';
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = '#1a2a40';
+  ctx.lineWidth = 1;
+  for (let y = 0; y <= H; y += H/4) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  for (let x = 0; x <= W; x += 80) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+}
+
+// Dashed zero-reference line at vertical position y
+function drawZeroLine(ctx, W, y) {
+  ctx.strokeStyle = '#2a3a50'; ctx.lineWidth = 1;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+// Channel labels for input (top) and output (bottom) panels
+function drawLabels(ctx, topLabel, topColor, bottomLabel, bottomColor, H) {
+  ctx.font = 'bold 12px Fira Code, monospace';
+  ctx.fillStyle = topColor;
+  ctx.fillText(topLabel, 12, 18);
+  ctx.fillStyle = bottomColor;
+  ctx.fillText(bottomLabel, 12, H/2 + 18);
+}
+
+// White dot marker on a waveform at a specific canvas position
+function drawDot(ctx, x, y, color) {
+  ctx.fillStyle = color || '#fff';
+  ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2); ctx.fill();
+}
+
+// ══════════════════════════════════════════════════════════
+// PAGE 3 — ZCD ANIMATION
+// KEY FIX: The sine wave's zero crossing now corresponds
+// EXACTLY to the inputZeroY pixel (H/4), so the dot always
+// touches the zero line when the signal crosses zero.
+// ══════════════════════════════════════════════════════════
+let zcdT = 0;
+function startZCDAnimation() {
+  const canvas = document.getElementById('zcdCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  zcdT = 0;
+
+  function draw() {
+    drawBackground(ctx, W, H);
+    const L = LANG[currentLang];
+    drawLabels(ctx, L.zcdInput, '#4fc3f7', L.zcdOutput, '#f5a623', H);
+
+    const freq = 0.018;
+    const amp = H/4 * 0.72;
+    // These Y values ARE the zero-volt lines for each panel
+    const inputZeroY = H/4;   // center of top half
+    const outputZeroY = 3*H/4; // center of bottom half
+
+    drawZeroLine(ctx, W, inputZeroY);
+    drawZeroLine(ctx, W, outputZeroY);
+
+    // INPUT sine wave — zero of sine maps to inputZeroY exactly
+    ctx.strokeStyle = '#4fc3f7'; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let x = 0; x < W; x++) {
+      // When sin(phase)=0, y = inputZeroY — this is the correct mapping
+      const y = inputZeroY - Math.sin((x - zcdT) * freq * Math.PI * 2) * amp;
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // OUTPUT square wave — HIGH when sine>0, LOW when sine<0
+    ctx.strokeStyle = '#f5a623'; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    let prevSign = null;
+    for (let x = 0; x < W; x++) {
+      const sinVal = Math.sin((x - zcdT) * freq * Math.PI * 2);
+      const sign = sinVal >= 0;
+      const outY = sign ? (outputZeroY - amp) : (outputZeroY + amp);
+      if (x === 0) { ctx.moveTo(x, outY); prevSign = sign; }
+      else { ctx.lineTo(x, outY); prevSign = sign; }
+    }
+    ctx.stroke();
+
+    // Moving WHITE dot — positioned exactly on the sine wave at x = W/2
+    const dotPhase = (W/2 - zcdT) * freq * Math.PI * 2;
+    const dotY = inputZeroY - Math.sin(dotPhase) * amp;
+    drawDot(ctx, W/2, dotY, '#ffffff');
+
+    // Zero-crossing markers: red dots exactly AT inputZeroY when sine = 0
+    // We scan for sign changes and interpolate the sub-pixel crossing x position
+    for (let x = 0; x < W - 1; x++) {
+      const s1 = Math.sin((x - zcdT) * freq * Math.PI * 2);
+      const s2 = Math.sin((x + 1 - zcdT) * freq * Math.PI * 2);
+      if (s1 * s2 <= 0 && s1 !== s2) {
+        // Linear interpolation: exact x where sin = 0
+        const exactX = x + (-s1) / (s2 - s1);
+        // Mark on input zero line — should be exactly ON the dashed line
+        ctx.fillStyle = '#ff4444';
+        ctx.beginPath(); ctx.arc(exactX, inputZeroY, 5, 0, Math.PI*2); ctx.fill();
+        // Mark on output zero line — shows the switching moment
+        ctx.fillStyle = '#ffaa00';
+        ctx.beginPath(); ctx.arc(exactX, outputZeroY, 5, 0, Math.PI*2); ctx.fill();
+      }
+    }
+
+    zcdT += 1.2;
+    animFrames['zcd'] = requestAnimationFrame(draw);
+  }
+  cancelAnimationFrame(animFrames['zcd']);
+  draw();
+}
+
+// ══════════════════════════════════════════════════════════
+// PAGE 4 — VOLTAGE FOLLOWER ANIMATION
+// Output = identical copy of input: same amplitude, same phase
+// ══════════════════════════════════════════════════════════
+let vfT = 0;
+function startVFAnimation() {
+  const canvas = document.getElementById('vfCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  vfT = 0;
+
+  function draw() {
+    drawBackground(ctx, W, H);
+    const L = LANG[currentLang];
+    drawLabels(ctx, L.vfIn, '#4fc3f7', L.vfOut, '#2ecc71', H);
+    const freq = 0.018, amp = H/4 * 0.72;
+    const inZeroY = H/4, outZeroY = 3*H/4;
+    drawZeroLine(ctx, W, inZeroY); drawZeroLine(ctx, W, outZeroY);
+
+    // Input — cyan sine
+    ctx.strokeStyle = '#4fc3f7'; ctx.lineWidth = 2.5; ctx.beginPath();
+    for (let x = 0; x < W; x++) {
+      const y = inZeroY - Math.sin((x - vfT) * freq * Math.PI * 2) * amp;
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Output — green sine, IDENTICAL phase and amplitude (Gain = 1)
+    ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 2.5; ctx.beginPath();
+    for (let x = 0; x < W; x++) {
+      const y = outZeroY - Math.sin((x - vfT) * freq * Math.PI * 2) * amp;
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    const ph = (W/2 - vfT) * freq * Math.PI * 2;
+    drawDot(ctx, W/2, inZeroY - Math.sin(ph)*amp, '#ffffff');
+    drawDot(ctx, W/2, outZeroY - Math.sin(ph)*amp, '#ffffff');
+    ctx.fillStyle = '#f5a623'; ctx.font = 'bold 13px Fira Code,monospace';
+    ctx.fillText('Vout = Vin  (Gain = 1)', W - 235, H - 10);
+
+    vfT += 1.2;
+    animFrames['vf'] = requestAnimationFrame(draw);
+  }
+  cancelAnimationFrame(animFrames['vf']); draw();
+}
+
+// ══════════════════════════════════════════════════════════
+// PAGE 5 — INVERTING AMPLIFIER ANIMATION
+// Output: inverted (180° phase shift) + larger amplitude
+// ══════════════════════════════════════════════════════════
+let invAnimT = 0;
+function startInvAnimation() {
+  const canvas = document.getElementById('invCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  invAnimT = 0;
+
+  function draw() {
+    drawBackground(ctx, W, H);
+    const L = LANG[currentLang];
+    drawLabels(ctx, L.invIn, '#4fc3f7', L.invOut, '#e74c3c', H);
+    const freq = 0.018;
+    const inAmp = H/4 * 0.50, outAmp = H/4 * 0.82; // outAmp > inAmp = gain > 1
+    const inZeroY = H/4, outZeroY = 3*H/4;
+    drawZeroLine(ctx, W, inZeroY); drawZeroLine(ctx, W, outZeroY);
+
+    ctx.strokeStyle = '#4fc3f7'; ctx.lineWidth = 2.5; ctx.beginPath();
+    for (let x = 0; x < W; x++) {
+      const y = inZeroY - Math.sin((x - invAnimT) * freq * Math.PI * 2) * inAmp;
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Key: +sin → negative (inverted) with larger amplitude
+    ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 2.5; ctx.beginPath();
+    for (let x = 0; x < W; x++) {
+      const y = outZeroY + Math.sin((x - invAnimT) * freq * Math.PI * 2) * outAmp; // + = inversion
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    const ph = (W/2 - invAnimT) * freq * Math.PI * 2;
+    drawDot(ctx, W/2, inZeroY - Math.sin(ph)*inAmp, '#ffffff');
+    drawDot(ctx, W/2, outZeroY + Math.sin(ph)*outAmp, '#ffffff');
+    ctx.fillStyle = '#f5a623'; ctx.font = 'bold 12px Fira Code,monospace';
+    ctx.fillText('Gain = −(Rf/Rin)  Output is INVERTED', W - 360, H - 10);
+
+    invAnimT += 1.2;
+    animFrames['inv'] = requestAnimationFrame(draw);
+  }
+  cancelAnimationFrame(animFrames['inv']); draw();
+}
+
+// ══════════════════════════════════════════════════════════
+// PAGE 6 — NON-INVERTING AMPLIFIER ANIMATION
+// Output: same phase + larger amplitude
+// ══════════════════════════════════════════════════════════
+let niAnimT = 0;
+function startNIAnimation() {
+  const canvas = document.getElementById('niCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  niAnimT = 0;
+
+  function draw() {
+    drawBackground(ctx, W, H);
+    const L = LANG[currentLang];
+    drawLabels(ctx, L.niIn, '#4fc3f7', L.niOut, '#2ecc71', H);
+    const freq = 0.018;
+    const inAmp = H/4 * 0.50, outAmp = H/4 * 0.82;
+    const inZeroY = H/4, outZeroY = 3*H/4;
+    drawZeroLine(ctx, W, inZeroY); drawZeroLine(ctx, W, outZeroY);
+
+    ctx.strokeStyle = '#4fc3f7'; ctx.lineWidth = 2.5; ctx.beginPath();
+    for (let x = 0; x < W; x++) {
+      const y = inZeroY - Math.sin((x - niAnimT) * freq * Math.PI * 2) * inAmp;
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Key: - sign (no inversion) + larger amplitude = non-inverting gain
+    ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 2.5; ctx.beginPath();
+    for (let x = 0; x < W; x++) {
+      const y = outZeroY - Math.sin((x - niAnimT) * freq * Math.PI * 2) * outAmp; // - = same direction
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    const ph = (W/2 - niAnimT) * freq * Math.PI * 2;
+    drawDot(ctx, W/2, inZeroY - Math.sin(ph)*inAmp, '#ffffff');
+    drawDot(ctx, W/2, outZeroY - Math.sin(ph)*outAmp, '#ffffff');
+    ctx.fillStyle = '#f5a623'; ctx.font = 'bold 12px Fira Code,monospace';
+    ctx.fillText('Gain = 1 + R2/R1  Output is SAME direction', W - 400, H - 10);
+
+    niAnimT += 1.2;
+    animFrames['ni'] = requestAnimationFrame(draw);
+  }
+  cancelAnimationFrame(animFrames['ni']); draw();
+}
+
+// ══════════════════════════════════════════════════════════
+// PAGE 7 — INTEGRATOR ANIMATION
+// Input = square wave → Output = triangle wave
+// (integration of a constant = linear ramp)
+// ══════════════════════════════════════════════════════════
+let intAnimT = 0;
+function startIntAnimation() {
+  const canvas = document.getElementById('intCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  intAnimT = 0;
+  const period = 160; // pixels per half-cycle
+
+  function draw() {
+    drawBackground(ctx, W, H);
+    const L = LANG[currentLang];
+    drawLabels(ctx, L.intIn, '#f5a623', L.intOut, '#a855f7', H);
+    const inZeroY = H/4, outZeroY = 3*H/4;
+    const inAmp = H/4 * 0.70, outAmp = H/4 * 0.70;
+    drawZeroLine(ctx, W, inZeroY); drawZeroLine(ctx, W, outZeroY);
+
+    // INPUT: square wave
+    ctx.strokeStyle = '#f5a623'; ctx.lineWidth = 2.5; ctx.beginPath();
+    let prevSqVal = null;
+    for (let x = 0; x < W; x++) {
+      const phase = ((x - intAnimT) % (period * 2) + period * 2) % (period * 2);
+      const val = phase < period ? 1 : -1;
+      const y = inZeroY - val * inAmp;
+      if (x === 0) { ctx.moveTo(x, y); prevSqVal = val; }
+      else {
+        if (val !== prevSqVal) { ctx.lineTo(x, y); prevSqVal = val; } // snap edge
+        else ctx.lineTo(x, y);
+      }
+    }
+    ctx.stroke();
+
+    // OUTPUT: triangle wave (integral of square = linear ramp up/down)
+    ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2.5; ctx.beginPath();
+    for (let x = 0; x < W; x++) {
+      const phase = ((x - intAnimT) % (period * 2) + period * 2) % (period * 2);
+      // Rising ramp during first half, falling ramp during second half
+      const triVal = phase < period ? -1 + (2 * phase / period) : 1 - (2 * (phase - period) / period);
+      const y = outZeroY - triVal * outAmp;
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    const dotX = W/2;
+    const dPhase = ((dotX - intAnimT) % (period*2) + period*2) % (period*2);
+    const dIn = dPhase < period ? 1 : -1;
+    const dTri = dPhase < period ? -1 + (2*dPhase/period) : 1 - (2*(dPhase-period)/period);
+    drawDot(ctx, dotX, inZeroY - dIn*inAmp, '#ffffff');
+    drawDot(ctx, dotX, outZeroY - dTri*outAmp, '#ffffff');
+    ctx.fillStyle = '#f5a623'; ctx.font = 'bold 12px Fira Code,monospace';
+    ctx.fillText('Square In → Triangle Out  (integration)', W - 390, H - 10);
+
+    intAnimT += 1.2;
+    animFrames['int'] = requestAnimationFrame(draw);
+  }
+  cancelAnimationFrame(animFrames['int']); draw();
+}
+
+// ══════════════════════════════════════════════════════════
+// PAGE 8 — DIFFERENTIATOR ANIMATION
+// Input = triangle wave → Output = square wave
+// (derivative of a linear ramp = constant)
+// ══════════════════════════════════════════════════════════
+let diffAnimT = 0;
+function startDiffAnimation() {
+  const canvas = document.getElementById('diffCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  diffAnimT = 0;
+  const period = 160;
+
+  function draw() {
+    drawBackground(ctx, W, H);
+    const L = LANG[currentLang];
+    drawLabels(ctx, L.diffIn, '#a855f7', L.diffOut, '#f5a623', H);
+    const inZeroY = H/4, outZeroY = 3*H/4;
+    const inAmp = H/4 * 0.70, outAmp = H/4 * 0.70;
+    drawZeroLine(ctx, W, inZeroY); drawZeroLine(ctx, W, outZeroY);
+
+    // INPUT: triangle wave
+    ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2.5; ctx.beginPath();
+    for (let x = 0; x < W; x++) {
+      const phase = ((x - diffAnimT) % (period * 2) + period * 2) % (period * 2);
+      const triVal = phase < period ? -1 + (2 * phase / period) : 1 - (2 * (phase - period) / period);
+      const y = inZeroY - triVal * inAmp;
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // OUTPUT: square wave (derivative of triangle = constant slope sign)
+    ctx.strokeStyle = '#f5a623'; ctx.lineWidth = 2.5; ctx.beginPath();
+    let prevDiffVal = null;
+    for (let x = 0; x < W; x++) {
+      const phase = ((x - diffAnimT) % (period * 2) + period * 2) % (period * 2);
+      const val = phase < period ? 1 : -1; // slope is positive or negative
+      const outY = outZeroY - val * outAmp;
+      if (x === 0) { ctx.moveTo(x, outY); prevDiffVal = val; }
+      else {
+        if (val !== prevDiffVal) { ctx.lineTo(x, outY); prevDiffVal = val; }
+        else ctx.lineTo(x, outY);
+      }
+    }
+    ctx.stroke();
+
+    const dotX = W/2;
+    const dPhase = ((dotX - diffAnimT) % (period*2) + period*2) % (period*2);
+    const dTri = dPhase < period ? -1 + (2*dPhase/period) : 1 - (2*(dPhase-period)/period);
+    const dSq = dPhase < period ? 1 : -1;
+    drawDot(ctx, dotX, inZeroY - dTri*inAmp, '#ffffff');
+    drawDot(ctx, dotX, outZeroY - dSq*outAmp, '#ffffff');
+    ctx.fillStyle = '#f5a623'; ctx.font = 'bold 12px Fira Code,monospace';
+    ctx.fillText('Triangle In → Square Out  (differentiation)', W - 410, H - 10);
+
+    diffAnimT += 1.2;
+    animFrames['diff'] = requestAnimationFrame(draw);
+  }
+  cancelAnimationFrame(animFrames['diff']); draw();
+}
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>
