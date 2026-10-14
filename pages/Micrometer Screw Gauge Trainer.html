@@ -1,0 +1,1109 @@
+<!doctype html><html><head>
+<meta name="section" content="Measurements"><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Micrometer Screw Gauge Trainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&display=swap">
+<style>
+/* Layout: workshop bench — sticky tab strip, instrument canvases as the hero of every tab, prose in 70ch columns; projector mode widens and enlarges */
+:root{
+  --bg:#edf1f2; --surface:#ffffff; --ink:#15232a; --muted:#566871; --line:#cfd8dc;
+  --accent:#1b84a3; --accent-ink:#ffffff; --hl:#d97f12; --good:#23865a; --bad:#c23b2e; --bench:#dfe5e7; --soft:#e4eef1;
+  --f-display:"Barlow Condensed","Noto Sans Devanagari","Noto Sans Malayalam","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Noto Sans Devanagari","Noto Sans Malayalam",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono","Noto Sans Devanagari","Noto Sans Malayalam",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f171b; --surface:#172228; --ink:#e3ebee; --muted:#93a5ae; --line:#2a3a42;
+  --accent:#4cb2d0; --accent-ink:#07161c; --hl:#f0a43c; --good:#4cc08a; --bad:#ef6b5e; --bench:#1c2a30; --soft:#1d3038; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f171b; --surface:#172228; --ink:#e3ebee; --muted:#93a5ae; --line:#2a3a42;
+  --accent:#4cb2d0; --accent-ink:#07161c; --hl:#f0a43c; --good:#4cc08a; --bad:#ef6b5e; --bench:#1c2a30; --soft:#1d3038; color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-body);padding-inline:16px;padding-block:0 40px}
+.wrap{max-width:1200px;margin:0 auto}
+header.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;padding-block:18px 10px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(28px,4.2vw,44px);line-height:1.08;margin:0;letter-spacing:.005em;text-wrap:balance}
+h1 small{display:block;font-size:.42em;font-weight:500;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.hright{display:grid;gap:8px;justify-items:end}
+.strip{display:flex;flex-wrap:wrap;gap:6px 16px;font:13px/1.4 var(--f-mono);color:var(--muted)}
+.strip b{color:var(--ink);font-weight:600}
+.tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tools select{width:auto;font:500 14px var(--f-body);padding:6px 8px}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:thin}
+nav.tabs button{font:600 16px/1.1 var(--f-display);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:13px 14px 11px;cursor:pointer;white-space:nowrap}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav.tabs button .n{font-family:var(--f-mono);font-size:12px;color:var(--accent);margin-right:6px}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible,.part:focus-visible{outline:2px solid var(--hl);outline-offset:2px}
+.panel{padding-block:22px}
+h2{font-family:var(--f-display);font-weight:600;font-size:28px;line-height:1.15;margin:0 0 6px;text-wrap:balance}
+h3{font-family:var(--f-display);font-weight:600;font-size:20px;line-height:1.25;letter-spacing:.02em;margin:0 0 6px}
+.lede{color:var(--muted);max-width:72ch;margin:0 0 18px}
+.prose p{max-width:70ch;margin:0 0 12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:8px;min-width:0}
+canvas{width:100%;height:auto;display:block;border-radius:6px;touch-action:none}
+.cap{font-size:13px;color:var(--muted);margin:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.stack{display:grid;gap:16px;min-width:0}
+.parts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:10px;margin-top:16px}
+.part{text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;cursor:pointer;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:start}
+.part .b{grid-row:span 2;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:600 13px/26px var(--f-mono);text-align:center}
+.part strong{font-family:var(--f-display);font-size:18px;font-weight:600;line-height:1.25}
+.part span.d{font-size:13.5px;color:var(--muted);line-height:1.5}
+.part[aria-pressed="true"]{border-color:var(--hl);box-shadow:0 0 0 1px var(--hl)}
+.part[aria-pressed="true"] .b{background:var(--hl);color:#1a1205}
+.detail{margin-top:16px}
+.detail h3{color:var(--accent)}
+.formula{font:600 17px/1.5 var(--f-mono);background:var(--soft);border-radius:8px;padding:12px 14px;margin:10px 0;overflow-x:auto}
+.formula small{display:block;font:400 13px/1.5 var(--f-body);color:var(--muted)}
+ol.seq{list-style:none;padding:0;margin:0;counter-reset:s;display:grid;gap:10px}
+ol.seq>li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px 12px 58px;position:relative}
+ol.seq>li::before{content:counter(s,decimal-leading-zero);position:absolute;left:14px;top:11px;font:600 18px/1 var(--f-mono);color:var(--accent)}
+ol.seq>li b{font-family:var(--f-display);font-size:18px;font-weight:600;display:block;line-height:1.3;margin-bottom:2px}
+ol.seq>li .why{display:block;font-size:13.5px;color:var(--muted);margin-top:4px}
+.phase{font:600 13px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--hl);margin:22px 0 10px}
+.phase:first-child{margin-top:0}
+.worked{border-left:3px solid var(--accent);padding:2px 0 2px 14px;margin:12px 0}
+.worked h4{margin:0 0 4px;font:600 15px var(--f-body)}
+.worked p,.worked ol{margin:0 0 6px;font-size:14.5px}
+.worked ol{padding-left:20px}
+.mono{font-family:var(--f-mono)}
+.simgrid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:920px){.simgrid{grid-template-columns:minmax(0,1fr)}}
+.controls{display:flex;flex-wrap:wrap;gap:6px}
+.btn{font:500 14px/1.2 var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:9px 12px;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.warm{border-color:var(--hl);color:var(--ink)}
+.btn.on{background:var(--hl);border-color:var(--hl);color:#1a1205;font-weight:600}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.grp{display:grid;gap:6px}
+.grp>label,.lbl{font:600 12px/1.3 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.msg{font-size:14px;padding:10px 12px;border-radius:7px;background:var(--soft);min-height:44px}
+.msg.warn{background:color-mix(in srgb,var(--hl) 18%,var(--surface))}
+.msg.bad{background:color-mix(in srgb,var(--bad) 16%,var(--surface))}
+.msg.good{background:color-mix(in srgb,var(--good) 16%,var(--surface))}
+.side{display:grid;gap:14px;min-width:0}
+.side .card{display:grid;gap:10px}
+.guide{list-style:none;margin:0;padding:0;display:grid;gap:2px;counter-reset:g}
+.guide li{counter-increment:g;display:grid;grid-template-columns:26px 1fr;gap:8px;font-size:13.5px;line-height:1.45;padding:5px 6px;border-radius:6px;color:var(--muted)}
+.guide li::before{content:counter(g);width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);font:600 11px/19px var(--f-mono);text-align:center}
+.guide li.done{color:var(--ink)}
+.guide li.done::before{content:"✓";background:var(--good);border-color:var(--good);color:#fff}
+.guide li.cur{background:color-mix(in srgb,var(--hl) 16%,var(--surface));color:var(--ink);font-weight:500}
+.guide li.cur::before{border-color:var(--hl);color:var(--hl)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.fields label{display:grid;gap:3px;font:600 11.5px/1.3 var(--f-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+input[type=number],select{font:500 15px var(--f-mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 8px;width:100%;min-width:0}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.res{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font:14px/1.5 var(--f-mono);font-variant-numeric:tabular-nums}
+.res>span:nth-child(odd){color:var(--muted)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font:14px var(--f-mono);font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font:600 11.5px var(--f-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+th:first-child,td:first-child{text-align:left}
+tfoot td{font-weight:600}
+.hint{font-size:12.5px;color:var(--muted);margin:0}
+footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--line);font:13px var(--f-mono);color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
+/* procedure step player */
+.procgrid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:880px){.procgrid{grid-template-columns:minmax(0,1fr)}}
+.stepcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px;min-width:0}
+.stephead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px}
+#psPhase{font:600 13px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--hl)}
+#psNum{font:600 14px var(--f-mono);color:var(--muted)}
+#psBody{font-size:16.5px;line-height:1.6;min-height:9em}
+#psBody b{display:block;font-family:var(--f-display);font-size:25px;font-weight:600;line-height:1.25;margin-bottom:8px;color:var(--ink)}
+#psBody .why{display:block;margin-top:10px;padding:8px 10px;border-left:3px solid var(--hl);background:var(--soft);border-radius:0 6px 6px 0;font-size:14.5px;color:var(--muted)}
+.stepnav{display:flex;flex-wrap:wrap;gap:8px}
+.stepnav .btn{flex:1 1 auto}
+.dots{display:flex;flex-wrap:wrap;gap:4px}
+.dot{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);font:600 12px var(--f-mono);color:var(--muted);cursor:pointer;padding:0}
+.dot.done{background:var(--soft);color:var(--ink)}
+.dot.on{background:var(--hl);border-color:var(--hl);color:#1a1205}
+details.alllist{margin-top:20px}
+details.alllist>summary{cursor:pointer;font:600 15px var(--f-body);color:var(--accent);padding:6px 0}
+html.proj #psBody{font-size:21px}
+html.proj #psBody b{font-size:31px}
+html.proj #psBody .why{font-size:18px}
+html.proj .dot{width:38px;height:38px;font-size:15px}
+html.proj .procgrid{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
+/* projector mode */
+html.proj body{font-size:19px}
+html.proj .wrap{max-width:1680px}
+html.proj h1{font-size:clamp(34px,4vw,56px)}
+html.proj h2{font-size:38px}
+html.proj h3{font-size:26px}
+html.proj nav.tabs button{font-size:21px;padding:16px 18px 13px}
+html.proj .lede,html.proj .part span.d,html.proj ol.seq>li .why,html.proj .guide li,html.proj .msg,html.proj .cap,html.proj .worked p,html.proj .worked ol,html.proj .hint{font-size:18px}
+html.proj ol.seq>li b,html.proj .part strong{font-size:23px}
+html.proj .formula{font-size:22px}
+html.proj .formula small{font-size:17px}
+html.proj .btn{font-size:18px;padding:12px 16px}
+html.proj .res,html.proj table,html.proj input[type=number],html.proj select{font-size:18px}
+html.proj .fields label,html.proj .grp>label,html.proj .lbl,html.proj th{font-size:14px}
+html.proj .strip{font-size:16px}
+html.proj .guide li::before{width:28px;height:28px;line-height:25px;font-size:14px}
+html.proj .guide li{grid-template-columns:32px 1fr}
+html.proj .simgrid{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
+@media (max-width:1100px){html.proj .simgrid{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <h1 data-i18n="h1"><small>Measuring instruments · Practical</small>Outside Micrometer, 0–25 mm</h1>
+  <div class="hright">
+    <div class="tools">
+      <select id="selLang" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="ml">മലയാളം</option></select>
+      <select id="selTheme" aria-label="Theme"><option value="auto" data-i18n="th_auto">Theme: Auto</option><option value="light" data-i18n="th_light">Light</option><option value="dark" data-i18n="th_dark">Dark</option></select>
+      <button class="btn" id="bProj" data-i18n="b_proj">Projector mode</button>
+      <button class="btn" id="bFull" data-i18n="b_full">Full screen</button>
+    </div>
+    <div class="strip">
+      <span data-i18n="s_range">Range <b>0–25 mm</b></span><span>MSD <b>0.5 mm</b></span><span data-i18n="s_pitch">Pitch <b>0.5 mm</b></span>
+      <span data-i18n="s_thim">Thimble <b id="hdrN">50 div</b></span><span data-i18n="s_lc">LC <b id="hdrLC">0.01 mm</b></span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button role="tab" data-tab="parts" aria-selected="true" data-i18n="tab1"><span class="n">1</span>Parts</button>
+  <button role="tab" data-tab="lc" aria-selected="false" data-i18n="tab2"><span class="n">2</span>MSD, CSD &amp; least count</button>
+  <button role="tab" data-tab="ze" aria-selected="false" data-i18n="tab3"><span class="n">3</span>Zero error</button>
+  <button role="tab" data-tab="proc" aria-selected="false" data-i18n="tab4"><span class="n">4</span>Procedure</button>
+  <button role="tab" data-tab="prec" aria-selected="false" data-i18n="tab5"><span class="n">5</span>Precautions</button>
+  <button role="tab" data-tab="sim" aria-selected="false" data-i18n="tab6"><span class="n">6</span>Simulator</button>
+</nav>
+
+<!-- PARTS -->
+<section class="panel" id="tab-parts" role="tabpanel">
+  <h2 data-i18n="p_h2">Parts of the outside micrometer</h2>
+  <p class="lede" data-i18n="p_lede">This drawing follows the 0–25 mm instrument in the lab kit: blue C-frame, lever-type spindle lock on the frame boss, satin sleeve, knurled thimble, ratchet stop at the end and the C-spanner supplied in the box. Tap a number on the drawing or a card below.</p>
+  <div class="stage"><canvas id="cvParts" aria-label="Labelled drawing of a micrometer"></canvas></div>
+  <div class="parts" id="partList"></div>
+  <div class="card detail" id="partDetail"></div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="card prose" data-i18n="p_c1">
+      <h3>How the parts work together</h3>
+      <p>The micrometer converts rotation into a very small, accurately known straight-line movement. Inside the sleeve is a precision-ground screw that runs in a fixed nut. The spindle is the plain front end of that screw, so every turn of the thimble moves the spindle face towards or away from the anvil by exactly one pitch, 0.5 mm on this instrument.</p>
+      <p>The sleeve does not rotate. Its datum line and main scale tell you how many whole and half millimetres the spindle has travelled. The thimble is fixed to the screw, so it turns and slides along the sleeve; its bevelled edge acts as the pointer on the main scale, and its 50 divisions split each half-millimetre turn into fifty parts.</p>
+    </div>
+    <div class="card prose" data-i18n="p_c2">
+      <h3>Why the ratchet and lock matter</h3>
+      <p>A micrometer is accurate to 0.01 mm, but a hand turning the thimble can easily push hard enough to spring the frame or squash a soft wire by more than that. The ratchet stop slips once a fixed force is reached, so every reading, by every trainee, is taken under the same pressure.</p>
+      <p>The lock lever clamps the spindle. Use it to hold a reading while you lift the instrument off the job to read it, or to hold the spindle while setting zero with the C-spanner. Never force the thimble when the lock is on; it strains the screw.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LEAST COUNT -->
+<section class="panel" id="tab-lc" role="tabpanel" hidden>
+  <h2 data-i18n="lc_h2">Finding MSD, pitch, CSD and least count</h2>
+  <p class="lede" data-i18n="lc_lede">Work through these four steps on the instrument before every practical. The magnified view below is the sleeve and thimble of the micrometer; use the buttons to turn the thimble and watch the edge travel along the main scale.</p>
+  <div class="stage">
+    <canvas id="cvLC" tabindex="0" aria-label="Magnified sleeve and thimble"></canvas>
+    <div class="row">
+      <button class="btn" id="lcDiv" data-i18n="lcDiv">Turn 1 division</button>
+      <button class="btn pri" id="lcRev" data-i18n="lcRev">Turn 1 full revolution</button>
+      <button class="btn" id="lcReset" data-i18n="lcReset">Back to zero</button>
+      <label class="row" style="gap:6px;margin-left:auto"><span class="lbl" data-i18n="lab_N">Thimble divisions</span>
+        <select id="lcN" style="width:auto"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option></select></label>
+    </div>
+    <div class="res" id="lcOut"></div>
+  </div>
+  <ol class="seq" style="margin-top:18px">
+    <li data-i18n="lc1"><b>Find the main scale division (MSD)</b>Look along the datum line on the sleeve. Whole millimetre lines are above the line (numbered 0, 5, 10, 15, 20, 25) and half-millimetre lines are below it, staggered between them. Count the spaces between the 0 and 1 mm lines: there are two. So one main scale division = 1 mm ÷ 2 = <span class="mono">0.5 mm</span>.<span class="why">The main scale runs 0–25 mm, which is 50 half-millimetre divisions along the sleeve.</span></li>
+    <li data-i18n="lc2"><b>Find the pitch of the screw</b>Bring the thimble edge exactly onto a sleeve line with the thimble 0 on the datum. Turn the thimble one complete revolution. The edge moves forward by one main scale division. Pitch = distance moved ÷ number of rotations = 0.5 mm ÷ 1 = <span class="mono">0.5 mm</span>.<span class="why">For a better measure, give 4 turns: the edge moves 2 mm, so pitch = 2 ÷ 4 = 0.5 mm. Averaging over several turns hides any small backlash.</span></li>
+    <li data-i18n="lc3"><b>Count the circular scale divisions (CSD count)</b>Count the equal divisions around the bevel of the thimble, or note the highest number before 0 and add one step (0, 5 … 45, then 0 again means 50 divisions). This thimble has <span class="mono" id="lcNtext">50</span> divisions.</li>
+    <li data-i18n="lc4"><b>Calculate the least count</b>The least count is the distance the spindle moves when the thimble turns by one division.
+      <div class="formula">LC = Pitch ÷ No. of circular scale divisions<small id="lcCalc">= 0.5 mm ÷ 50 = 0.01 mm</small></div>
+      <span class="why">The least count is the smallest length the instrument can resolve. Any reading is a whole number of least counts.</span></li>
+  </ol>
+  <div class="grid2" style="margin-top:18px">
+    <div class="card" data-i18n="lc_rf">
+      <h3>Reading formula</h3>
+      <div class="formula">Reading = MSR + (CSR × LC)<small>MSR = main scale reading: the last sleeve line visible at the thimble edge (whole mm above, plus 0.5 if a lower line is showing).<br>CSR = circular scale reading: the thimble division that lines up with the datum line.</small></div>
+      <div class="formula">Corrected reading = Observed reading − (Zero error)<small>Subtract the zero error with its sign. See tab 3.</small></div>
+    </div>
+    <div class="card" data-i18n="lc_we">
+      <h3>Worked examples</h3>
+      <div class="worked"><h4>Example 1: least count of the lab micrometer</h4>
+        <p>Thimble edge moves 2.0 mm in 4 turns; thimble has 50 divisions.</p>
+        <ol><li>Pitch = 2.0 ÷ 4 = 0.5 mm</li><li>LC = 0.5 ÷ 50 = <b>0.01 mm</b></li></ol></div>
+      <div class="worked"><h4>Example 2: taking a reading</h4>
+        <p>Last whole mm line visible: 7. A half-mm line below the datum is also visible. Thimble division 36 lines up with the datum.</p>
+        <ol><li>MSR = 7 + 0.5 = 7.5 mm</li><li>CSR × LC = 36 × 0.01 = 0.36 mm</li><li>Reading = 7.5 + 0.36 = <b>7.86 mm</b></li></ol></div>
+      <div class="worked"><h4>Example 3: a 25-division thimble</h4>
+        <p>Pitch 0.5 mm, 25 thimble divisions.</p>
+        <ol><li>LC = 0.5 ÷ 25 = <b>0.02 mm</b>. Each thimble division is now worth 0.02 mm, so CSR 12 = 0.24 mm.</li></ol></div>
+    </div>
+  </div>
+</section>
+
+<!-- ZERO ERROR -->
+<section class="panel" id="tab-ze" role="tabpanel" hidden>
+  <h2 data-i18n="ze_h2">Zero error and its correction</h2>
+  <p class="lede" data-i18n="ze_lede">Clean the faces, then close the spindle on the anvil using the ratchet until it clicks 2–3 times. With the faces touching, the thimble 0 should sit exactly on the datum line. If it does not, the instrument has a zero error.</p>
+  <div class="grid3">
+    <div class="stage"><canvas id="cvZ0"></canvas><p class="cap" data-i18n="ze_c0"><b>No zero error.</b> Thimble 0 coincides with the datum line and the sleeve 0 line is just visible.</p></div>
+    <div class="stage"><canvas id="cvZ1"></canvas><p class="cap" data-i18n="ze_c1"><b>Positive zero error.</b> Thimble 0 is <i>below</i> the datum; division 3 is on the line. Zero error = +3 × 0.01 = <span class="mono">+0.03 mm</span>.</p></div>
+    <div class="stage"><canvas id="cvZ2"></canvas><p class="cap" data-i18n="ze_c2"><b>Negative zero error.</b> Thimble 0 is <i>above</i> the datum; division 46 is on the line and the sleeve 0 is hidden. Zero error = −(50 − 46) × 0.01 = <span class="mono">−0.04 mm</span>.</p></div>
+  </div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="card prose" data-i18n="ze_sign">
+      <h3>Understanding the sign</h3>
+      <p>A positive zero error means the instrument already reads something when there is nothing between the faces, so every reading is too large by that amount. It usually comes from the sleeve having been turned slightly, or from dust left on the faces.</p>
+      <p>A negative zero error means the thimble has gone past zero before the faces meet, so every reading is too small. Read it by counting how many divisions the 0 is above the datum: it equals N minus the division on the datum.</p>
+      <div class="formula">Positive: ZE = +(n × LC)<small>n = division on the datum, thimble 0 below the line</small></div>
+      <div class="formula">Negative: ZE = −(N − n) × LC<small>N = number of thimble divisions</small></div>
+      <div class="formula">Corrected = Observed − (ZE)</div>
+      <p>Subtracting a negative zero error adds it back. Always write the sign in your record.</p>
+    </div>
+    <div class="card" data-i18n="ze_work">
+      <h3>Worked numericals</h3>
+      <div class="worked"><h4>Positive zero error</h4>
+        <p>Closed reading: division 3 on datum, 0 below it. Measured job: MSR 5.5 mm, CSR 28.</p>
+        <ol><li>ZE = +3 × 0.01 = +0.03 mm</li><li>Observed = 5.5 + 28 × 0.01 = 5.78 mm</li><li>Corrected = 5.78 − (+0.03) = <b>5.75 mm</b></li></ol></div>
+      <div class="worked"><h4>Negative zero error</h4>
+        <p>Closed reading: division 46 on datum, 0 above it. Measured wire: MSR 3.0 mm, CSR 12.</p>
+        <ol><li>ZE = −(50 − 46) × 0.01 = −0.04 mm</li><li>Observed = 3.0 + 12 × 0.01 = 3.12 mm</li><li>Corrected = 3.12 − (−0.04) = <b>3.16 mm</b></li></ol></div>
+      <h3 style="margin-top:12px">Removing it with the C-spanner</h3>
+      <p class="cap" style="font-size:14px;color:var(--ink)">Clean the faces and close them with the ratchet. Lock the spindle. Fit the pin of the C-spanner into the small hole in the sleeve and turn the sleeve gently until its datum line meets the thimble 0. Unlock, open, re-close with the ratchet and check again. Errors larger than about 0.02 mm should be referred to the instructor; they are set by adjusting the thimble on the spindle.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROCEDURE -->
+<section class="panel" id="tab-proc" role="tabpanel" hidden>
+  <h2 data-i18n="pr_h2">Procedure: measuring with the micrometer</h2>
+  <p class="lede" data-i18n="pr_lede">Each step is shown beside its animation. Press Next (or the → key) to move on; the animation repeats until you do.</p>
+  <div class="procgrid">
+    <div class="stage">
+      <canvas id="cvProc" aria-label="Micrometer animation for the current step"></canvas>
+      <canvas id="cvProcMag" aria-label="Magnified sleeve and thimble for the current step"></canvas>
+    </div>
+    <div class="stepcard" aria-live="polite">
+      <div class="stephead"><span id="psPhase"></span><span id="psNum"></span></div>
+      <div id="psBody"></div>
+      <div class="stepnav">
+        <button class="btn" id="psPrev"></button>
+        <button class="btn" id="psReplay"></button>
+        <button class="btn pri" id="psNext"></button>
+      </div>
+      <div class="dots" id="psDots"></div>
+    </div>
+  </div>
+  <details class="alllist"><summary data-i18n="pr_all">All steps as a list</summary>
+  <div class="phase" data-i18n="ph_prep">Prepare</div>
+  <ol class="seq">
+    <li data-i18n="pr1"><b>Select and inspect the instrument</b>Confirm the job size lies within 0–25 mm. Turn the thimble through its full range; it should move smoothly without play or tight spots. Check the lock lever is released.<span class="why">A 0–25 mm micrometer cannot measure 30 mm; a stiff screw gives false contact.</span></li>
+    <li data-i18n="pr2"><b>Clean the measuring faces</b>Open the spindle a little. Wipe the anvil and spindle faces with clean, lint-free cloth, or close them lightly on a piece of clean paper and draw it out.<span class="why">A dust film of a few microns is already part of 0.01 mm.</span></li>
+    <li data-i18n="pr3"><b>Find the least count</b>MSD 0.5 mm, pitch 0.5 mm, 50 thimble divisions, LC = 0.01 mm (tab 2).</li>
+    <li data-i18n="pr4"><b>Check the zero error</b>Close the spindle onto the anvil using the ratchet until it slips 2–3 clicks. Read the thimble at the datum and record the zero error with its sign.<span class="why">Check zero with the same ratchet pressure that you will use on the job.</span></li>
+  </ol>
+  <div class="phase" data-i18n="ph_meas">Measure</div>
+  <ol class="seq" style="counter-reset:s 4">
+    <li data-i18n="pr5"><b>Open the spindle beyond the job size</b>Turn the thimble anticlockwise (seen from the ratchet end) until the gap is a little larger than the job.</li>
+    <li data-i18n="pr6"><b>Hold the micrometer and place the job</b>Hold the frame in the palm of one hand, with thumb and forefinger free for the thimble. Place the job against the anvil, square to the spindle axis.<span class="why">A tilted job measures larger than its true size.</span></li>
+    <li data-i18n="pr7"><b>Close with the thimble, finish with the ratchet</b>Turn the thimble until the spindle just approaches the job, then turn only the ratchet until it slips 2–3 clicks.<span class="why">Turning the thimble after contact springs the frame and gives a low reading.</span></li>
+    <li data-i18n="pr8"><b>Lock the spindle</b>Move the lock lever to clamp the spindle, so the reading cannot change while you read or withdraw the instrument.</li>
+    <li data-i18n="pr9"><b>Read the main scale (MSR)</b>Note the last whole millimetre line visible above the datum, and add 0.5 mm if a half-millimetre line below the datum is visible past it.</li>
+    <li data-i18n="pr10"><b>Read the circular scale (CSR)</b>Note the thimble division that coincides with the datum line. Keep your eye square to the scale to avoid parallax.</li>
+    <li data-i18n="pr11"><b>Calculate</b>Observed = MSR + CSR × LC. Corrected = Observed − zero error.</li>
+    <li data-i18n="pr12"><b>Repeat and take the mean</b>Unlock, open, and measure again at three different positions (for a wire, also turn it through 90°). Record all trials and find the mean corrected reading.</li>
+  </ol>
+  <div class="phase" data-i18n="ph_fin">Finish</div>
+  <ol class="seq" style="counter-reset:s 12">
+    <li data-i18n="pr13"><b>Unlock, open and store</b>Release the lock, open the spindle, remove the job, wipe the instrument, and leave a small gap of about 0.5–1 mm between the faces. Put it back in its case with the spanner.<span class="why">Faces left touching can be strained by temperature changes and can cold-weld or rust together.</span></li>
+  </ol>
+  </details>
+</section>
+
+<!-- PRECAUTIONS -->
+<section class="panel" id="tab-prec" role="tabpanel" hidden>
+  <h2 data-i18n="pc_h2">Precautions, in the order you meet them</h2>
+  <p class="lede" data-i18n="pc_lede">Each precaution guards against a particular error. Learn the reason, not just the rule.</p>
+  <div class="grid2">
+    <div>
+      <div class="phase" data-i18n="ph_before">Before measuring</div>
+      <ol class="seq">
+        <li data-i18n="pc1"><b>Choose the right range</b>Use a 0–25 mm micrometer only for jobs up to 25 mm.<span class="why">Never try to force a bigger job between the faces.</span></li>
+        <li data-i18n="pc2"><b>Clean both measuring faces and the job</b>Remove dust, oil and burrs.<span class="why">Dirt adds its thickness to the reading.</span></li>
+        <li data-i18n="pc3"><b>Check and record zero error</b>Every time, before use, with ratchet pressure.<span class="why">Instruments get knocked; yesterday's zero is not today's.</span></li>
+        <li data-i18n="pc4"><b>Allow the job to reach room temperature</b>Do not measure a job straight off a grinder or lathe.<span class="why">Steel expands about 0.012 mm per 100 mm per °C.</span></li>
+      </ol>
+      <div class="phase" data-i18n="ph_after">After measuring</div>
+      <ol class="seq" style="counter-reset:s 11">
+        <li data-i18n="pc5"><b>Release the lock before turning the thimble</b><span class="why">Turning against the lock strains the screw and nut.</span></li>
+        <li data-i18n="pc6"><b>Leave a gap and store in the case</b>About 0.5–1 mm between the faces, wiped and lightly oiled, away from magnets and vibration.</li>
+        <li data-i18n="pc7"><b>Do not drop or knock the instrument</b><span class="why">A blow can shift the zero or bend the frame.</span></li>
+      </ol>
+    </div>
+    <div>
+      <div class="phase" data-i18n="ph_during">During measuring</div>
+      <ol class="seq" style="counter-reset:s 4">
+        <li data-i18n="pc8"><b>Hold the micrometer by the frame</b>Do not hold the sleeve or thimble in a closed fist for long.<span class="why">Body heat expands the frame and screw.</span></li>
+        <li data-i18n="pc9"><b>Use the ratchet for final contact</b>2–3 clicks only, the same for zero check and job.<span class="why">Equal pressure every time; the thimble alone gives uneven, excess force.</span></li>
+        <li data-i18n="pc10"><b>Keep the job square to the spindle</b>Rock it gently to find the true minimum for a diameter.<span class="why">A tilted job reads oversize.</span></li>
+        <li data-i18n="pc11"><b>Never measure a moving job</b><span class="why">It damages the faces and is dangerous on a running machine.</span></li>
+        <li data-i18n="pc12"><b>Do not spin the instrument by the thimble</b>Do not twirl the frame to open or close it quickly.<span class="why">It wears the screw and loses calibration.</span></li>
+        <li data-i18n="pc13"><b>Read with the eye square to the scale</b><span class="why">Viewing at an angle causes parallax error on the thimble.</span></li>
+        <li data-i18n="pc14"><b>Take several readings and use the mean</b><span class="why">Wires and jobs are seldom perfectly round or parallel.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- SIMULATOR -->
+<section class="panel" id="tab-sim" role="tabpanel" hidden>
+  <h2 data-i18n="sim_h2">Simulator</h2>
+  <p class="lede" data-i18n="sim_lede">Turn the thimble with the buttons, by dragging up or down on the thimble in the magnified view, or with the arrow keys (Page Up/Down for a full turn, R for ratchet). Follow the guided sequence on the right.</p>
+  <div class="simgrid">
+    <div class="stack">
+      <div class="stage">
+        <canvas id="cvSim" aria-label="Micrometer overview"></canvas>
+        <canvas id="cvMag" tabindex="0" aria-label="Magnified sleeve and thimble. Drag vertically or use arrow keys to turn."></canvas>
+        <div class="controls">
+          <button class="btn" data-turn="1" data-i18n="bt_o1">◀◀ Open 1 turn</button>
+          <button class="btn" data-turn="d1" data-i18n="bt_od">◀ Open 1 div</button>
+          <button class="btn" data-turn="d-1" data-i18n="bt_cd">Close 1 div ▶</button>
+          <button class="btn" data-turn="-1" data-i18n="bt_c1">Close 1 turn ▶▶</button>
+          <button class="btn warm" id="bRatchet" data-i18n="bt_r">Ratchet ▶ (fine)</button>
+        </div>
+        <div class="controls">
+          <button class="btn" id="bLock"></button>
+          <button class="btn" id="bClean"></button>
+          <button class="btn" id="bPlace"></button>
+          <button class="btn" id="bHints" data-i18n="bt_h">Show coincidence</button>
+          <button class="btn" id="bAns" data-i18n="bt_a">Show answer</button>
+        </div>
+        <div class="msg" id="msg" role="status" aria-live="polite"></div>
+        <div class="res" id="ansBox" hidden></div>
+      </div>
+      <div class="card">
+        <div class="row" style="justify-content:space-between"><h3 style="margin:0" data-i18n="obs_h">Observation table</h3>
+          <button class="btn" id="bClearRows" data-i18n="bt_clr">Clear table</button></div>
+        <div class="tablewrap"><table>
+          <thead><tr data-i18n="thead"><th>Trial</th><th>MSR mm</th><th>CSR div</th><th>Observed mm</th><th>ZE mm</th><th>Corrected mm</th></tr></thead>
+          <tbody id="rows"></tbody><tfoot id="rowsFoot"></tfoot>
+        </table></div>
+      </div>
+    </div>
+    <div class="side">
+      <div class="card">
+        <div class="row" style="justify-content:space-between"><h3 style="margin:0" data-i18n="g_h">Guided sequence</h3><button class="btn" id="bReset" data-i18n="bt_reset">Start again</button></div>
+        <ol class="guide" id="guide"></ol>
+      </div>
+      <div class="card">
+        <h3 style="margin:0" data-i18n="rd_h">Your readings</h3>
+        <div class="fields">
+          <label><span data-i18n="l_lc">Least count (mm)</span><input type="number" id="inLC" step="0.001" placeholder="0.00"></label>
+          <label><span data-i18n="l_ze">Zero error (mm, ±)</span><input type="number" id="inZE" step="0.001" placeholder="+0.00"></label>
+        </div>
+        <div class="row"><button class="btn" id="bChkLC" data-i18n="bt_clc">Check LC</button><button class="btn" id="bChkZE" data-i18n="bt_cze">Check zero error</button></div>
+        <div class="fields">
+          <label><span data-i18n="l_msr">MSR (mm)</span><input type="number" id="inMSR" step="0.5" placeholder="0.0"></label>
+          <label><span data-i18n="l_csr">CSR (divisions)</span><input type="number" id="inCSR" step="1" placeholder="0"></label>
+        </div>
+        <div class="res">
+          <span data-i18n="o_obs">Observed</span><span id="oObs">—</span>
+          <span data-i18n="o_corr">Corrected</span><span id="oCorr">—</span>
+        </div>
+        <div class="row"><button class="btn pri" id="bChkRead" data-i18n="bt_crd">Check reading</button><button class="btn" id="bRecord" data-i18n="bt_rec">Record trial</button></div>
+      </div>
+      <div class="card">
+        <h3 style="margin:0" data-i18n="ins_h">Instrument &amp; specimen</h3>
+        <div class="grp"><label for="selN" data-i18n="lab_N">Thimble divisions</label>
+          <select id="selN"><option value="25">25 (LC 0.02 mm)</option><option value="50" selected>50 (LC 0.01 mm)</option><option value="100">100 (LC 0.005 mm)</option></select></div>
+        <div class="grp"><label for="selZE" data-i18n="lab_zs">Introduce zero error</label>
+          <select id="selZE"><option value="none" data-i18n="zo_n">None</option><option value="pos" data-i18n="zo_p">Positive</option><option value="neg" data-i18n="zo_m">Negative</option><option value="hidden" data-i18n="zo_h">Random, hidden (find it)</option></select></div>
+        <div class="grp" id="zeMagGrp" hidden><label for="zeMag"><span data-i18n="lab_zm">Size (divisions)</span>: <span id="zeMagOut">3</span></label><input type="range" id="zeMag" min="1" max="10" value="3"></div>
+        <div class="grp"><label for="selSpec" data-i18n="lab_sp">Specimen</label>
+          <select id="selSpec"><option value="wire" data-i18n="so_w">Copper wire (round)</option><option value="strip" data-i18n="so_s">Steel strip (flat)</option><option value="rod" data-i18n="so_r">MS rod (round)</option></select></div>
+        <button class="btn" id="bNewSpec" data-i18n="bt_new">New specimen, unknown size</button>
+        <p class="hint" data-i18n="sim_hint">Dust on the faces adds about one least count until you wipe them. Pushing the thimble after contact springs the frame and the reading drops.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><span>NSTI Calicut · PRASAD UM, VI</span><span data-i18n="foot">CTS Electrician – measuring instruments practical</span></footer>
+</div>
+
+<script>
+const HTML_T={
+hi:{
+h1:`<small>मापन यंत्र · प्रायोगिक</small>बाहरी माइक्रोमीटर, 0–25 mm`,
+th_auto:`थीम: स्वतः`,th_light:`लाइट`,th_dark:`डार्क`,b_proj:`प्रोजेक्टर मोड`,b_full:`पूर्ण स्क्रीन`,
+s_range:`रेंज <b>0–25 mm</b>`,s_pitch:`पिच <b>0.5 mm</b>`,s_thim:`थिम्बल <b id="hdrN">50 div</b>`,s_lc:`अल्पतमांक <b id="hdrLC">0.01 mm</b>`,
+tab1:`<span class="n">1</span>भाग`,tab2:`<span class="n">2</span>MSD, CSD और अल्पतमांक`,tab3:`<span class="n">3</span>शून्य त्रुटि`,tab4:`<span class="n">4</span>प्रक्रिया`,tab5:`<span class="n">5</span>सावधानियाँ`,tab6:`<span class="n">6</span>सिम्युलेटर`,
+p_h2:`बाहरी माइक्रोमीटर के भाग`,
+p_lede:`यह चित्र लैब किट के 0–25 mm यंत्र जैसा है: नीला C-फ्रेम, फ्रेम पर लीवर वाला स्पिंडल लॉक, सैटिन स्लीव, खुरदरा (नर्ल्ड) थिम्बल, सिरे पर रैचेट स्टॉप और डिब्बे में मिलने वाला C-स्पैनर। चित्र पर कोई संख्या या नीचे कोई कार्ड दबाएँ।`,
+p_c1:`<h3>सभी भाग मिलकर कैसे काम करते हैं</h3><p>माइक्रोमीटर घुमाव (rotation) को बहुत छोटी और सटीक रूप से ज्ञात सीधी गति में बदलता है। स्लीव के अंदर एक सटीक पिसा हुआ स्क्रू एक स्थिर नट में चलता है। स्पिंडल उसी स्क्रू का सादा अगला सिरा है, इसलिए थिम्बल के हर एक चक्कर पर स्पिंडल का फेस एन्विल की ओर या उससे दूर ठीक एक पिच, यानी इस यंत्र में 0.5 mm, चलता है।</p><p>स्लीव घूमती नहीं है। इसकी डेटम रेखा और मुख्य पैमाना बताते हैं कि स्पिंडल कितने पूरे और आधे मिलीमीटर चला है। थिम्बल स्क्रू से जुड़ा है, इसलिए यह घूमता भी है और स्लीव पर खिसकता भी है; इसका ढलवाँ (bevel) किनारा मुख्य पैमाने पर सूचक का काम करता है और इसके 50 भाग हर आधे मिलीमीटर के चक्कर को पचास हिस्सों में बाँटते हैं।</p>`,
+p_c2:`<h3>रैचेट और लॉक क्यों ज़रूरी हैं</h3><p>माइक्रोमीटर 0.01 mm तक सटीक है, पर हाथ से थिम्बल घुमाने पर इतना ज़ोर लग सकता है कि फ्रेम लचक जाए या नरम तार दब जाए, और त्रुटि इससे अधिक हो जाए। रैचेट स्टॉप एक तय बल पर फिसल जाता है, इसलिए हर प्रशिक्षु की हर रीडिंग एक ही दबाव पर ली जाती है।</p><p>लॉक लीवर स्पिंडल को जकड़ देता है। जब आप यंत्र को जॉब से हटाकर पढ़ते हैं, या C-स्पैनर से शून्य सेट करते हैं, तब रीडिंग को रोके रखने के लिए इसका उपयोग करें। लॉक लगा हो तो थिम्बल को ज़बरदस्ती न घुमाएँ; इससे स्क्रू पर ज़ोर पड़ता है।</p>`,
+lc_h2:`MSD, पिच, CSD और अल्पतमांक ज्ञात करना`,
+lc_lede:`हर प्रायोगिक से पहले यंत्र पर ये चार चरण करें। नीचे का बड़ा दृश्य माइक्रोमीटर की स्लीव और थिम्बल का है; बटन से थिम्बल घुमाएँ और देखें कि किनारा मुख्य पैमाने पर कैसे आगे बढ़ता है।`,
+lcDiv:`1 भाग घुमाएँ`,lcRev:`1 पूरा चक्कर घुमाएँ`,lcReset:`शून्य पर वापस`,lab_N:`थिम्बल के भाग`,
+lc1:`<b>मुख्य पैमाने का एक भाग (MSD) ज्ञात करें</b>स्लीव की डेटम रेखा के साथ देखें। पूरे मिलीमीटर की रेखाएँ रेखा के ऊपर हैं (0, 5, 10, 15, 20, 25 अंकित) और आधे मिलीमीटर की रेखाएँ नीचे, उनके बीच में। 0 और 1 mm रेखाओं के बीच खाने गिनें: दो हैं। अतः एक MSD = 1 mm ÷ 2 = <span class="mono">0.5 mm</span>।<span class="why">मुख्य पैमाना 0–25 mm का है, यानी स्लीव पर आधे मिलीमीटर के 50 भाग।</span>`,
+lc2:`<b>स्क्रू की पिच ज्ञात करें</b>थिम्बल का 0 डेटम पर रखते हुए उसका किनारा ठीक स्लीव की किसी रेखा पर लाएँ। थिम्बल को एक पूरा चक्कर घुमाएँ। किनारा एक MSD आगे बढ़ता है। पिच = चली गई दूरी ÷ चक्करों की संख्या = 0.5 mm ÷ 1 = <span class="mono">0.5 mm</span>।<span class="why">बेहतर माप के लिए 4 चक्कर दें: किनारा 2 mm चलता है, अतः पिच = 2 ÷ 4 = 0.5 mm। कई चक्करों का औसत छोटे बैकलैश को छिपा देता है।</span>`,
+lc3:`<b>वृत्ताकार पैमाने के भाग (CSD) गिनें</b>थिम्बल के ढलवाँ किनारे पर समान भाग गिनें, या 0 से पहले की सबसे बड़ी संख्या देखकर एक कदम जोड़ें (0, 5 … 45, फिर 0 का अर्थ 50 भाग)। इस थिम्बल पर <span class="mono" id="lcNtext">50</span> भाग हैं।`,
+lc4:`<b>अल्पतमांक की गणना करें</b>थिम्बल को एक भाग घुमाने पर स्पिंडल जितना चलता है, वही अल्पतमांक (LC) है।<div class="formula">LC = पिच ÷ वृत्ताकार पैमाने के भागों की संख्या<small id="lcCalc">= 0.5 mm ÷ 50 = 0.01 mm</small></div><span class="why">अल्पतमांक वह सबसे छोटी लंबाई है जिसे यंत्र माप सकता है। हर रीडिंग अल्पतमांक की पूर्ण संख्या होती है।</span>`,
+lc_rf:`<h3>रीडिंग का सूत्र</h3><div class="formula">रीडिंग = MSR + (CSR × LC)<small>MSR = मुख्य पैमाने की रीडिंग: थिम्बल के किनारे पर दिखने वाली स्लीव की अंतिम रेखा (ऊपर पूरे mm, नीचे की रेखा दिखे तो 0.5 और जोड़ें)।<br>CSR = वृत्ताकार पैमाने की रीडिंग: थिम्बल का वह भाग जो डेटम रेखा से मिलता है।</small></div><div class="formula">संशोधित रीडिंग = प्रेक्षित रीडिंग − (शून्य त्रुटि)<small>शून्य त्रुटि को उसके चिह्न सहित घटाएँ। टैब 3 देखें।</small></div>`,
+lc_we:`<h3>हल किए गए उदाहरण</h3><div class="worked"><h4>उदाहरण 1: लैब माइक्रोमीटर का अल्पतमांक</h4><p>4 चक्करों में थिम्बल का किनारा 2.0 mm चलता है; थिम्बल पर 50 भाग हैं।</p><ol><li>पिच = 2.0 ÷ 4 = 0.5 mm</li><li>LC = 0.5 ÷ 50 = <b>0.01 mm</b></li></ol></div><div class="worked"><h4>उदाहरण 2: रीडिंग लेना</h4><p>दिखने वाली अंतिम पूरी mm रेखा: 7। डेटम के नीचे एक आधी mm रेखा भी दिख रही है। थिम्बल का भाग 36 डेटम से मिलता है।</p><ol><li>MSR = 7 + 0.5 = 7.5 mm</li><li>CSR × LC = 36 × 0.01 = 0.36 mm</li><li>रीडिंग = 7.5 + 0.36 = <b>7.86 mm</b></li></ol></div><div class="worked"><h4>उदाहरण 3: 25 भागों वाला थिम्बल</h4><p>पिच 0.5 mm, थिम्बल पर 25 भाग।</p><ol><li>LC = 0.5 ÷ 25 = <b>0.02 mm</b>। अब हर भाग 0.02 mm का है, अतः CSR 12 = 0.24 mm।</li></ol></div>`,
+ze_h2:`शून्य त्रुटि और उसका संशोधन`,
+ze_lede:`फेस साफ़ करें, फिर रैचेट से स्पिंडल को एन्विल पर बंद करें जब तक 2–3 क्लिक न हों। फेस मिलने पर थिम्बल का 0 ठीक डेटम रेखा पर होना चाहिए। यदि नहीं है, तो यंत्र में शून्य त्रुटि है।`,
+ze_c0:`<b>कोई शून्य त्रुटि नहीं।</b> थिम्बल का 0 डेटम रेखा से मिलता है और स्लीव की 0 रेखा बस दिखाई देती है।`,
+ze_c1:`<b>धनात्मक शून्य त्रुटि।</b> थिम्बल का 0 डेटम के <i>नीचे</i> है; भाग 3 रेखा पर है। शून्य त्रुटि = +3 × 0.01 = <span class="mono">+0.03 mm</span>।`,
+ze_c2:`<b>ऋणात्मक शून्य त्रुटि।</b> थिम्बल का 0 डेटम के <i>ऊपर</i> है; भाग 46 रेखा पर है और स्लीव का 0 छिपा है। शून्य त्रुटि = −(50 − 46) × 0.01 = <span class="mono">−0.04 mm</span>।`,
+ze_sign:`<h3>चिह्न को समझना</h3><p>धनात्मक शून्य त्रुटि का अर्थ है कि फेस के बीच कुछ न होने पर भी यंत्र कुछ पढ़ रहा है, इसलिए हर रीडिंग उतनी ही अधिक आएगी। यह प्रायः स्लीव के थोड़ा घूम जाने या फेस पर धूल रह जाने से होती है।</p><p>ऋणात्मक शून्य त्रुटि का अर्थ है कि फेस मिलने से पहले ही थिम्बल शून्य से आगे निकल गया, इसलिए हर रीडिंग कम आएगी। गिनें कि 0 डेटम से कितने भाग ऊपर है: यह N में से डेटम वाले भाग को घटाने के बराबर है।</p><div class="formula">धनात्मक: ZE = +(n × LC)<small>n = डेटम पर भाग, थिम्बल 0 रेखा के नीचे</small></div><div class="formula">ऋणात्मक: ZE = −(N − n) × LC<small>N = थिम्बल के कुल भाग</small></div><div class="formula">संशोधित = प्रेक्षित − (ZE)</div><p>ऋणात्मक शून्य त्रुटि घटाने से वह जुड़ जाती है। अपने रिकॉर्ड में चिह्न हमेशा लिखें।</p>`,
+ze_work:`<h3>हल किए गए प्रश्न</h3><div class="worked"><h4>धनात्मक शून्य त्रुटि</h4><p>बंद अवस्था में: भाग 3 डेटम पर, 0 उसके नीचे। जॉब का माप: MSR 5.5 mm, CSR 28।</p><ol><li>ZE = +3 × 0.01 = +0.03 mm</li><li>प्रेक्षित = 5.5 + 28 × 0.01 = 5.78 mm</li><li>संशोधित = 5.78 − (+0.03) = <b>5.75 mm</b></li></ol></div><div class="worked"><h4>ऋणात्मक शून्य त्रुटि</h4><p>बंद अवस्था में: भाग 46 डेटम पर, 0 उसके ऊपर। तार का माप: MSR 3.0 mm, CSR 12।</p><ol><li>ZE = −(50 − 46) × 0.01 = −0.04 mm</li><li>प्रेक्षित = 3.0 + 12 × 0.01 = 3.12 mm</li><li>संशोधित = 3.12 − (−0.04) = <b>3.16 mm</b></li></ol></div><h3 style="margin-top:12px">C-स्पैनर से त्रुटि हटाना</h3><p class="cap" style="font-size:14px;color:var(--ink)">फेस साफ़ करें और रैचेट से बंद करें। स्पिंडल लॉक करें। C-स्पैनर की पिन स्लीव के छोटे छेद में फँसाएँ और स्लीव को धीरे से घुमाएँ जब तक डेटम रेखा थिम्बल के 0 से न मिल जाए। लॉक खोलें, स्पिंडल खोलें, फिर रैचेट से बंद कर दोबारा जाँचें। लगभग 0.02 mm से बड़ी त्रुटि के लिए अनुदेशक से संपर्क करें; उसे स्पिंडल पर थिम्बल को समायोजित करके ठीक किया जाता है।</p>`,
+pr_h2:`प्रक्रिया: माइक्रोमीटर से मापना`,
+pr_lede:`हर चरण उसके एनिमेशन के साथ दिखाया गया है। आगे बढ़ने के लिए 'अगला' (या → कुंजी) दबाएँ; तब तक एनिमेशन दोहराता रहेगा।`,pr_all:`सभी चरण सूची में`,
+ph_prep:`तैयारी`,ph_meas:`मापन`,ph_fin:`समापन`,
+pr1:`<b>यंत्र चुनें और जाँचें</b>पुष्टि करें कि जॉब का आकार 0–25 mm के भीतर है। थिम्बल को पूरी रेंज में घुमाएँ; यह बिना ढीलेपन या अटकन के सुचारू चलना चाहिए। जाँचें कि लॉक लीवर खुला है।<span class="why">0–25 mm माइक्रोमीटर 30 mm नहीं माप सकता; सख्त स्क्रू गलत संपर्क देता है।</span>`,
+pr2:`<b>मापने वाले फेस साफ़ करें</b>स्पिंडल थोड़ा खोलें। एन्विल और स्पिंडल फेस को साफ़, रेशा-रहित कपड़े से पोंछें, या साफ़ कागज़ पर हल्के से बंद करके कागज़ खींच लें।<span class="why">कुछ माइक्रॉन की धूल भी 0.01 mm का हिस्सा है।</span>`,
+pr3:`<b>अल्पतमांक ज्ञात करें</b>MSD 0.5 mm, पिच 0.5 mm, थिम्बल के 50 भाग, LC = 0.01 mm (टैब 2)।`,
+pr4:`<b>शून्य त्रुटि जाँचें</b>रैचेट से स्पिंडल को एन्विल पर बंद करें जब तक 2–3 क्लिक न हों। डेटम पर थिम्बल पढ़ें और शून्य त्रुटि चिह्न सहित लिखें।<span class="why">शून्य उसी रैचेट दबाव से जाँचें जो जॉब पर लगाएँगे।</span>`,
+pr5:`<b>स्पिंडल को जॉब के आकार से अधिक खोलें</b>थिम्बल को वामावर्त (रैचेट की ओर से देखने पर) घुमाएँ जब तक गैप जॉब से थोड़ा बड़ा न हो जाए।`,
+pr6:`<b>माइक्रोमीटर पकड़ें और जॉब रखें</b>फ्रेम को एक हाथ की हथेली में पकड़ें, अँगूठा और तर्जनी थिम्बल के लिए खाली रखें। जॉब को एन्विल से सटाकर स्पिंडल अक्ष के समकोण पर रखें।<span class="why">तिरछा जॉब वास्तविक आकार से बड़ा मापा जाता है।</span>`,
+pr7:`<b>थिम्बल से बंद करें, रैचेट से पूरा करें</b>थिम्बल घुमाएँ जब तक स्पिंडल जॉब के पास न पहुँचे, फिर केवल रैचेट घुमाएँ जब तक 2–3 क्लिक न हों।<span class="why">संपर्क के बाद थिम्बल घुमाने से फ्रेम लचकता है और रीडिंग कम आती है।</span>`,
+pr8:`<b>स्पिंडल लॉक करें</b>लॉक लीवर से स्पिंडल को जकड़ दें, ताकि पढ़ते या यंत्र हटाते समय रीडिंग न बदले।`,
+pr9:`<b>मुख्य पैमाना पढ़ें (MSR)</b>डेटम के ऊपर दिखने वाली अंतिम पूरी मिलीमीटर रेखा लिखें, और यदि उसके बाद डेटम के नीचे आधी मिलीमीटर रेखा दिखे तो 0.5 mm जोड़ें।`,
+pr10:`<b>वृत्ताकार पैमाना पढ़ें (CSR)</b>थिम्बल का वह भाग लिखें जो डेटम रेखा से मिलता है। लंबन (parallax) से बचने के लिए आँख पैमाने के सामने सीधी रखें।`,
+pr11:`<b>गणना करें</b>प्रेक्षित = MSR + CSR × LC। संशोधित = प्रेक्षित − शून्य त्रुटि।`,
+pr12:`<b>दोहराएँ और औसत लें</b>लॉक खोलें, स्पिंडल खोलें और तीन अलग-अलग स्थानों पर फिर मापें (तार को 90° घुमाकर भी)। सभी प्रयास लिखें और संशोधित रीडिंग का औसत निकालें।`,
+pr13:`<b>लॉक खोलें, स्पिंडल खोलें और रखें</b>लॉक खोलें, स्पिंडल खोलें, जॉब निकालें, यंत्र पोंछें और फेस के बीच लगभग 0.5–1 mm का गैप छोड़ें। स्पैनर के साथ डिब्बे में रखें।<span class="why">सटे हुए फेस तापमान बदलने पर तनाव में आ सकते हैं और आपस में चिपक या जंग खा सकते हैं।</span>`,
+pc_h2:`सावधानियाँ, जिस क्रम में उनका सामना होता है`,
+pc_lede:`हर सावधानी किसी विशेष त्रुटि से बचाती है। केवल नियम नहीं, उसका कारण भी सीखें।`,
+ph_before:`मापने से पहले`,ph_after:`मापने के बाद`,ph_during:`मापते समय`,
+pc1:`<b>सही रेंज चुनें</b>0–25 mm माइक्रोमीटर केवल 25 mm तक के जॉब के लिए उपयोग करें।<span class="why">बड़े जॉब को कभी फेस के बीच ज़बरदस्ती न डालें।</span>`,
+pc2:`<b>दोनों फेस और जॉब साफ़ करें</b>धूल, तेल और बर (burr) हटाएँ।<span class="why">गंदगी की मोटाई रीडिंग में जुड़ जाती है।</span>`,
+pc3:`<b>शून्य त्रुटि जाँचें और लिखें</b>हर बार उपयोग से पहले, रैचेट दबाव से।<span class="why">यंत्र को झटके लगते हैं; कल का शून्य आज का शून्य नहीं है।</span>`,
+pc4:`<b>जॉब को कमरे के तापमान पर आने दें</b>ग्राइंडर या लेथ से तुरंत उतारा जॉब न मापें।<span class="why">स्टील लगभग 0.012 mm प्रति 100 mm प्रति °C फैलता है।</span>`,
+pc5:`<b>थिम्बल घुमाने से पहले लॉक खोलें</b><span class="why">लॉक के विरुद्ध घुमाने से स्क्रू और नट पर ज़ोर पड़ता है।</span>`,
+pc6:`<b>गैप छोड़कर डिब्बे में रखें</b>फेस के बीच लगभग 0.5–1 mm, पोंछकर हल्का तेल लगाकर, चुंबक और कंपन से दूर।`,
+pc7:`<b>यंत्र को गिराएँ या ठोकें नहीं</b><span class="why">चोट से शून्य खिसक सकता है या फ्रेम मुड़ सकता है।</span>`,
+pc8:`<b>माइक्रोमीटर को फ्रेम से पकड़ें</b>स्लीव या थिम्बल को देर तक मुट्ठी में न पकड़ें।<span class="why">शरीर की गर्मी फ्रेम और स्क्रू को फैलाती है।</span>`,
+pc9:`<b>अंतिम संपर्क रैचेट से करें</b>केवल 2–3 क्लिक, शून्य जाँच और जॉब दोनों में समान।<span class="why">हर बार समान दबाव; अकेला थिम्बल असमान और अधिक बल देता है।</span>`,
+pc10:`<b>जॉब को स्पिंडल के समकोण पर रखें</b>व्यास के लिए धीरे से हिलाकर वास्तविक न्यूनतम माप खोजें।<span class="why">तिरछा जॉब बड़ा पढ़ता है।</span>`,
+pc11:`<b>चलते हुए जॉब को कभी न मापें</b><span class="why">इससे फेस खराब होते हैं और चलती मशीन पर यह खतरनाक है।</span>`,
+pc12:`<b>थिम्बल पकड़कर यंत्र को न घुमाएँ</b>जल्दी खोलने या बंद करने के लिए फ्रेम को चकरी की तरह न घुमाएँ।<span class="why">इससे स्क्रू घिसता है और अंशांकन बिगड़ता है।</span>`,
+pc13:`<b>आँख पैमाने के सामने सीधी रखकर पढ़ें</b><span class="why">तिरछे देखने से थिम्बल पर लंबन त्रुटि होती है।</span>`,
+pc14:`<b>कई रीडिंग लेकर औसत निकालें</b><span class="why">तार और जॉब शायद ही पूरी तरह गोल या समानांतर होते हैं।</span>`,
+sim_h2:`सिम्युलेटर`,
+sim_lede:`थिम्बल को बटनों से, बड़े दृश्य में थिम्बल पर ऊपर-नीचे खींचकर, या एरो कुंजियों से घुमाएँ (पूरे चक्कर के लिए Page Up/Down, रैचेट के लिए R)। दाईं ओर दिए निर्देशित क्रम का पालन करें।`,
+bt_o1:`◀◀ 1 चक्कर खोलें`,bt_od:`◀ 1 भाग खोलें`,bt_cd:`1 भाग बंद ▶`,bt_c1:`1 चक्कर बंद ▶▶`,bt_r:`रैचेट ▶ (महीन)`,bt_h:`मिलान दिखाएँ`,bt_a:`उत्तर दिखाएँ`,
+obs_h:`प्रेक्षण तालिका`,bt_clr:`तालिका साफ़ करें`,
+thead:`<th>प्रयास</th><th>MSR mm</th><th>CSR भाग</th><th>प्रेक्षित mm</th><th>ZE mm</th><th>संशोधित mm</th>`,
+g_h:`निर्देशित क्रम`,bt_reset:`फिर से शुरू करें`,rd_h:`आपकी रीडिंग`,l_lc:`अल्पतमांक (mm)`,l_ze:`शून्य त्रुटि (mm, ±)`,bt_clc:`LC जाँचें`,bt_cze:`शून्य त्रुटि जाँचें`,
+l_msr:`MSR (mm)`,l_csr:`CSR (भाग)`,o_obs:`प्रेक्षित`,o_corr:`संशोधित`,bt_crd:`रीडिंग जाँचें`,bt_rec:`प्रयास दर्ज करें`,
+ins_h:`यंत्र और नमूना`,lab_zs:`शून्य त्रुटि डालें`,zo_n:`कोई नहीं`,zo_p:`धनात्मक`,zo_m:`ऋणात्मक`,zo_h:`यादृच्छिक, छिपी हुई (खोजें)`,lab_zm:`आकार (भाग)`,
+lab_sp:`नमूना`,so_w:`ताँबे का तार (गोल)`,so_s:`स्टील पट्टी (चपटी)`,so_r:`MS छड़ (गोल)`,bt_new:`नया नमूना, अज्ञात आकार`,
+sim_hint:`फेस पोंछने तक उन पर धूल लगभग एक अल्पतमांक जोड़ती है। संपर्क के बाद थिम्बल दबाने से फ्रेम लचकता है और रीडिंग घट जाती है।`,
+foot:`CTS इलेक्ट्रीशियन – मापन यंत्र प्रायोगिक`},
+ml:{
+h1:`<small>അളവുപകരണങ്ങൾ · പ്രായോഗികം</small>ഔട്ട്‌സൈഡ് മൈക്രോമീറ്റർ, 0–25 mm`,
+th_auto:`തീം: ഓട്ടോ`,th_light:`ലൈറ്റ്`,th_dark:`ഡാർക്ക്`,b_proj:`പ്രൊജക്ടർ മോഡ്`,b_full:`ഫുൾ സ്ക്രീൻ`,
+s_range:`റേഞ്ച് <b>0–25 mm</b>`,s_pitch:`പിച്ച് <b>0.5 mm</b>`,s_thim:`തിംബിൾ <b id="hdrN">50 div</b>`,s_lc:`ലീസ്റ്റ് കൗണ്ട് <b id="hdrLC">0.01 mm</b>`,
+tab1:`<span class="n">1</span>ഭാഗങ്ങൾ`,tab2:`<span class="n">2</span>MSD, CSD, ലീസ്റ്റ് കൗണ്ട്`,tab3:`<span class="n">3</span>സീറോ എറർ`,tab4:`<span class="n">4</span>നടപടിക്രമം`,tab5:`<span class="n">5</span>മുൻകരുതലുകൾ`,tab6:`<span class="n">6</span>സിമുലേറ്റർ`,
+p_h2:`ഔട്ട്‌സൈഡ് മൈക്രോമീറ്ററിന്റെ ഭാഗങ്ങൾ`,
+p_lede:`ലാബ് കിറ്റിലെ 0–25 mm ഉപകരണത്തെ ആധാരമാക്കിയാണ് ഈ ചിത്രം: നീല C-ഫ്രെയിം, ഫ്രെയിമിലെ ലിവർ തരം സ്പിൻഡിൽ ലോക്ക്, സാറ്റിൻ സ്ലീവ്, നേർലിങ് ഉള്ള തിംബിൾ, അറ്റത്ത് റാച്ചറ്റ് സ്റ്റോപ്പ്, പെട്ടിയിൽ ലഭിക്കുന്ന C-സ്പാനർ. ചിത്രത്തിലെ ഒരു നമ്പറോ താഴെയുള്ള ഒരു കാർഡോ അമർത്തുക.`,
+p_c1:`<h3>ഭാഗങ്ങൾ ഒരുമിച്ച് പ്രവർത്തിക്കുന്ന വിധം</h3><p>മൈക്രോമീറ്റർ കറക്കത്തെ (rotation) വളരെ ചെറിയതും കൃത്യമായി അറിയാവുന്നതുമായ നേർരേഖാ ചലനമാക്കി മാറ്റുന്നു. സ്ലീവിനുള്ളിൽ ഒരു ഉറച്ച നട്ടിൽ കൃത്യതയോടെ ഗ്രൈൻഡ് ചെയ്ത ഒരു സ്ക്രൂ കറങ്ങുന്നു. ആ സ്ക്രൂവിന്റെ മിനുസമുള്ള മുൻഭാഗമാണ് സ്പിൻഡിൽ. അതിനാൽ തിംബിളിന്റെ ഓരോ കറക്കത്തിലും സ്പിൻഡിൽ ഫേസ് ആൻവിലിന്റെ നേരെയോ അകലേക്കോ കൃത്യം ഒരു പിച്ച്, അതായത് ഈ ഉപകരണത്തിൽ 0.5 mm, നീങ്ങുന്നു.</p><p>സ്ലീവ് കറങ്ങുന്നില്ല. അതിലെ ഡേറ്റം ലൈനും മെയിൻ സ്കെയിലും സ്പിൻഡിൽ എത്ര മുഴുവൻ, അര മില്ലിമീറ്റർ നീങ്ങിയെന്ന് കാണിക്കുന്നു. തിംബിൾ സ്ക്രൂവുമായി ഉറപ്പിച്ചിരിക്കുന്നതിനാൽ അത് കറങ്ങുകയും സ്ലീവിനു മുകളിലൂടെ നീങ്ങുകയും ചെയ്യുന്നു; അതിന്റെ ചരിഞ്ഞ (bevel) അറ്റം മെയിൻ സ്കെയിലിലെ സൂചകമാണ്, അതിലെ 50 ഡിവിഷനുകൾ ഓരോ അര മില്ലിമീറ്റർ കറക്കത്തെയും അമ്പത് ഭാഗങ്ങളാക്കുന്നു.</p>`,
+p_c2:`<h3>റാച്ചറ്റും ലോക്കും എന്തിന്</h3><p>മൈക്രോമീറ്റർ 0.01 mm വരെ കൃത്യമാണ്. എന്നാൽ കൈകൊണ്ട് തിംബിൾ തിരിക്കുമ്പോൾ ഫ്രെയിം വളയാനോ മൃദുവായ വയർ അമരാനോ മാത്രം ബലം എളുപ്പത്തിൽ വരാം, പിശക് അതിലും കൂടാം. ഒരു നിശ്ചിത ബലത്തിൽ റാച്ചറ്റ് സ്റ്റോപ്പ് വഴുതുന്നതിനാൽ ഓരോ ട്രെയിനിയുടെയും ഓരോ റീഡിങ്ങും ഒരേ മർദ്ദത്തിൽ എടുക്കപ്പെടുന്നു.</p><p>ലോക്ക് ലിവർ സ്പിൻഡിലിനെ മുറുക്കി പിടിക്കുന്നു. ഉപകരണം ജോബിൽ നിന്ന് എടുത്ത് വായിക്കുമ്പോൾ റീഡിങ് മാറാതിരിക്കാനോ, C-സ്പാനർ ഉപയോഗിച്ച് സീറോ സെറ്റ് ചെയ്യുമ്പോൾ സ്പിൻഡിൽ പിടിച്ചുനിർത്താനോ ഇത് ഉപയോഗിക്കുക. ലോക്ക് ഇട്ടിരിക്കുമ്പോൾ തിംബിൾ ബലമായി തിരിക്കരുത്; അത് സ്ക്രൂവിന് ആയാസമുണ്ടാക്കും.</p>`,
+lc_h2:`MSD, പിച്ച്, CSD, ലീസ്റ്റ് കൗണ്ട് കണ്ടെത്തൽ`,
+lc_lede:`ഓരോ പ്രാക്ടിക്കലിനും മുൻപ് ഉപകരണത്തിൽ ഈ നാല് ഘട്ടങ്ങൾ ചെയ്യുക. താഴെയുള്ള വലുതാക്കിയ ദൃശ്യം മൈക്രോമീറ്ററിന്റെ സ്ലീവും തിംബിളുമാണ്; ബട്ടണുകൾ ഉപയോഗിച്ച് തിംബിൾ തിരിച്ച് അതിന്റെ അറ്റം മെയിൻ സ്കെയിലിലൂടെ നീങ്ങുന്നത് നിരീക്ഷിക്കുക.`,
+lcDiv:`1 ഡിവിഷൻ തിരിക്കുക`,lcRev:`1 മുഴുവൻ കറക്കം`,lcReset:`പൂജ്യത്തിലേക്ക്`,lab_N:`തിംബിൾ ഡിവിഷനുകൾ`,
+lc1:`<b>മെയിൻ സ്കെയിൽ ഡിവിഷൻ (MSD) കണ്ടെത്തുക</b>സ്ലീവിലെ ഡേറ്റം ലൈനിനൊപ്പം നോക്കുക. മുഴുവൻ മില്ലിമീറ്റർ വരകൾ ലൈനിന് മുകളിലും (0, 5, 10, 15, 20, 25 എന്ന് അക്കമിട്ടത്) അര മില്ലിമീറ്റർ വരകൾ താഴെ അവയ്ക്കിടയിലുമാണ്. 0, 1 mm വരകൾക്കിടയിലെ ഇടങ്ങൾ എണ്ണുക: രണ്ടെണ്ണം. അതിനാൽ ഒരു MSD = 1 mm ÷ 2 = <span class="mono">0.5 mm</span>.<span class="why">മെയിൻ സ്കെയിൽ 0–25 mm ആണ്, അതായത് സ്ലീവിൽ 50 അര-മില്ലിമീറ്റർ ഡിവിഷനുകൾ.</span>`,
+lc2:`<b>സ്ക്രൂവിന്റെ പിച്ച് കണ്ടെത്തുക</b>തിംബിളിലെ 0 ഡേറ്റത്തിൽ വരുന്ന വിധം അതിന്റെ അറ്റം ഒരു സ്ലീവ് വരയിൽ കൃത്യമായി കൊണ്ടുവരിക. തിംബിൾ ഒരു മുഴുവൻ കറക്കം തിരിക്കുക. അറ്റം ഒരു MSD മുന്നോട്ട് നീങ്ങുന്നു. പിച്ച് = നീങ്ങിയ ദൂരം ÷ കറക്കങ്ങളുടെ എണ്ണം = 0.5 mm ÷ 1 = <span class="mono">0.5 mm</span>.<span class="why">കൂടുതൽ കൃത്യതയ്ക്ക് 4 കറക്കം നൽകുക: അറ്റം 2 mm നീങ്ങും, പിച്ച് = 2 ÷ 4 = 0.5 mm. പല കറക്കങ്ങളുടെ ശരാശരി ചെറിയ ബാക്ക്‌ലാഷിനെ മറയ്ക്കുന്നു.</span>`,
+lc3:`<b>സർക്കുലർ സ്കെയിൽ ഡിവിഷനുകൾ (CSD) എണ്ണുക</b>തിംബിളിന്റെ ചരിഞ്ഞ അറ്റത്തിനു ചുറ്റുമുള്ള തുല്യ ഡിവിഷനുകൾ എണ്ണുക, അല്ലെങ്കിൽ 0-ന് മുൻപുള്ള ഏറ്റവും വലിയ സംഖ്യ നോക്കി ഒരു പടി കൂട്ടുക (0, 5 … 45, വീണ്ടും 0 എങ്കിൽ 50 ഡിവിഷനുകൾ). ഈ തിംബിളിൽ <span class="mono" id="lcNtext">50</span> ഡിവിഷനുകൾ ഉണ്ട്.`,
+lc4:`<b>ലീസ്റ്റ് കൗണ്ട് കണക്കാക്കുക</b>തിംബിൾ ഒരു ഡിവിഷൻ തിരിക്കുമ്പോൾ സ്പിൻഡിൽ നീങ്ങുന്ന ദൂരമാണ് ലീസ്റ്റ് കൗണ്ട് (LC).<div class="formula">LC = പിച്ച് ÷ സർക്കുലർ സ്കെയിൽ ഡിവിഷനുകളുടെ എണ്ണം<small id="lcCalc">= 0.5 mm ÷ 50 = 0.01 mm</small></div><span class="why">ഉപകരണത്തിന് അളക്കാവുന്ന ഏറ്റവും ചെറിയ നീളമാണ് ലീസ്റ്റ് കൗണ്ട്. ഏത് റീഡിങ്ങും ലീസ്റ്റ് കൗണ്ടിന്റെ പൂർണ ഗുണിതമാണ്.</span>`,
+lc_rf:`<h3>റീഡിങ് സൂത്രവാക്യം</h3><div class="formula">റീഡിങ് = MSR + (CSR × LC)<small>MSR = മെയിൻ സ്കെയിൽ റീഡിങ്: തിംബിൾ അറ്റത്ത് കാണുന്ന അവസാന സ്ലീവ് വര (മുകളിൽ മുഴുവൻ mm, താഴത്തെ വര കാണുന്നുണ്ടെങ്കിൽ 0.5 കൂടി).<br>CSR = സർക്കുലർ സ്കെയിൽ റീഡിങ്: ഡേറ്റം ലൈനുമായി ഒത്തുവരുന്ന തിംബിൾ ഡിവിഷൻ.</small></div><div class="formula">ശരിയാക്കിയ റീഡിങ് = നിരീക്ഷിത റീഡിങ് − (സീറോ എറർ)<small>സീറോ എറർ അതിന്റെ ചിഹ്നത്തോടെ കുറയ്ക്കുക. ടാബ് 3 കാണുക.</small></div>`,
+lc_we:`<h3>ചെയ്തു കാണിച്ച ഉദാഹരണങ്ങൾ</h3><div class="worked"><h4>ഉദാഹരണം 1: ലാബ് മൈക്രോമീറ്ററിന്റെ ലീസ്റ്റ് കൗണ്ട്</h4><p>4 കറക്കത്തിൽ തിംബിൾ അറ്റം 2.0 mm നീങ്ങുന്നു; തിംബിളിൽ 50 ഡിവിഷനുകൾ.</p><ol><li>പിച്ച് = 2.0 ÷ 4 = 0.5 mm</li><li>LC = 0.5 ÷ 50 = <b>0.01 mm</b></li></ol></div><div class="worked"><h4>ഉദാഹരണം 2: റീഡിങ് എടുക്കൽ</h4><p>കാണുന്ന അവസാന മുഴുവൻ mm വര: 7. ഡേറ്റത്തിന് താഴെ ഒരു അര mm വരയും കാണാം. തിംബിൾ ഡിവിഷൻ 36 ഡേറ്റവുമായി ഒത്തുവരുന്നു.</p><ol><li>MSR = 7 + 0.5 = 7.5 mm</li><li>CSR × LC = 36 × 0.01 = 0.36 mm</li><li>റീഡിങ് = 7.5 + 0.36 = <b>7.86 mm</b></li></ol></div><div class="worked"><h4>ഉദാഹരണം 3: 25 ഡിവിഷൻ ഉള്ള തിംബിൾ</h4><p>പിച്ച് 0.5 mm, തിംബിളിൽ 25 ഡിവിഷനുകൾ.</p><ol><li>LC = 0.5 ÷ 25 = <b>0.02 mm</b>. ഇപ്പോൾ ഓരോ ഡിവിഷനും 0.02 mm, അതിനാൽ CSR 12 = 0.24 mm.</li></ol></div>`,
+ze_h2:`സീറോ എററും അതിന്റെ തിരുത്തലും`,
+ze_lede:`ഫേസുകൾ വൃത്തിയാക്കുക, തുടർന്ന് 2–3 ക്ലിക്ക് കേൾക്കുന്നതുവരെ റാച്ചറ്റ് ഉപയോഗിച്ച് സ്പിൻഡിൽ ആൻവിലിൽ അടയ്ക്കുക. ഫേസുകൾ തൊടുമ്പോൾ തിംബിളിലെ 0 കൃത്യമായി ഡേറ്റം ലൈനിൽ വരണം. ഇല്ലെങ്കിൽ ഉപകരണത്തിന് സീറോ എറർ ഉണ്ട്.`,
+ze_c0:`<b>സീറോ എറർ ഇല്ല.</b> തിംബിൾ 0 ഡേറ്റം ലൈനുമായി ഒത്തുവരുന്നു; സ്ലീവിലെ 0 വര കഷ്ടിച്ച് കാണാം.`,
+ze_c1:`<b>പോസിറ്റീവ് സീറോ എറർ.</b> തിംബിൾ 0 ഡേറ്റത്തിന് <i>താഴെ</i>; ഡിവിഷൻ 3 ലൈനിൽ. സീറോ എറർ = +3 × 0.01 = <span class="mono">+0.03 mm</span>.`,
+ze_c2:`<b>നെഗറ്റീവ് സീറോ എറർ.</b> തിംബിൾ 0 ഡേറ്റത്തിന് <i>മുകളിൽ</i>; ഡിവിഷൻ 46 ലൈനിൽ, സ്ലീവിലെ 0 മറഞ്ഞിരിക്കുന്നു. സീറോ എറർ = −(50 − 46) × 0.01 = <span class="mono">−0.04 mm</span>.`,
+ze_sign:`<h3>ചിഹ്നം മനസ്സിലാക്കാം</h3><p>പോസിറ്റീവ് സീറോ എറർ എന്നാൽ ഫേസുകൾക്കിടയിൽ ഒന്നുമില്ലാതിരിക്കുമ്പോഴും ഉപകരണം എന്തെങ്കിലും കാണിക്കുന്നു; അതിനാൽ ഓരോ റീഡിങ്ങും അത്രയും കൂടുതലായിരിക്കും. സാധാരണ സ്ലീവ് അൽപം തിരിഞ്ഞുപോയതിനാലോ ഫേസുകളിൽ പൊടി ഉള്ളതിനാലോ ആണ് ഇത്.</p><p>നെഗറ്റീവ് സീറോ എറർ എന്നാൽ ഫേസുകൾ തൊടുന്നതിന് മുൻപേ തിംബിൾ പൂജ്യം കടന്നുപോയി; അതിനാൽ ഓരോ റീഡിങ്ങും കുറവായിരിക്കും. 0 ഡേറ്റത്തിന് എത്ര ഡിവിഷൻ മുകളിലാണെന്ന് എണ്ണുക: അത് N-ൽ നിന്ന് ഡേറ്റത്തിലെ ഡിവിഷൻ കുറച്ചതിന് തുല്യം.</p><div class="formula">പോസിറ്റീവ്: ZE = +(n × LC)<small>n = ഡേറ്റത്തിലെ ഡിവിഷൻ, തിംബിൾ 0 ലൈനിന് താഴെ</small></div><div class="formula">നെഗറ്റീവ്: ZE = −(N − n) × LC<small>N = തിംബിളിലെ ആകെ ഡിവിഷനുകൾ</small></div><div class="formula">ശരിയാക്കിയത് = നിരീക്ഷിതം − (ZE)</div><p>നെഗറ്റീവ് സീറോ എറർ കുറയ്ക്കുമ്പോൾ അത് കൂടുകയാണ് ചെയ്യുന്നത്. രേഖയിൽ ചിഹ്നം എപ്പോഴും എഴുതുക.</p>`,
+ze_work:`<h3>ചെയ്തു കാണിച്ച കണക്കുകൾ</h3><div class="worked"><h4>പോസിറ്റീവ് സീറോ എറർ</h4><p>അടച്ച നിലയിൽ: ഡിവിഷൻ 3 ഡേറ്റത്തിൽ, 0 അതിനു താഴെ. ജോബിന്റെ അളവ്: MSR 5.5 mm, CSR 28.</p><ol><li>ZE = +3 × 0.01 = +0.03 mm</li><li>നിരീക്ഷിതം = 5.5 + 28 × 0.01 = 5.78 mm</li><li>ശരിയാക്കിയത് = 5.78 − (+0.03) = <b>5.75 mm</b></li></ol></div><div class="worked"><h4>നെഗറ്റീവ് സീറോ എറർ</h4><p>അടച്ച നിലയിൽ: ഡിവിഷൻ 46 ഡേറ്റത്തിൽ, 0 അതിനു മുകളിൽ. വയറിന്റെ അളവ്: MSR 3.0 mm, CSR 12.</p><ol><li>ZE = −(50 − 46) × 0.01 = −0.04 mm</li><li>നിരീക്ഷിതം = 3.0 + 12 × 0.01 = 3.12 mm</li><li>ശരിയാക്കിയത് = 3.12 − (−0.04) = <b>3.16 mm</b></li></ol></div><h3 style="margin-top:12px">C-സ്പാനർ ഉപയോഗിച്ച് മാറ്റൽ</h3><p class="cap" style="font-size:14px;color:var(--ink)">ഫേസുകൾ വൃത്തിയാക്കി റാച്ചറ്റ് ഉപയോഗിച്ച് അടയ്ക്കുക. സ്പിൻഡിൽ ലോക്ക് ചെയ്യുക. C-സ്പാനറിന്റെ പിൻ സ്ലീവിലെ ചെറിയ ദ്വാരത്തിൽ കയറ്റി, ഡേറ്റം ലൈൻ തിംബിൾ 0-ൽ എത്തുന്നതുവരെ സ്ലീവ് പതുക്കെ തിരിക്കുക. ലോക്ക് മാറ്റി, തുറന്ന്, വീണ്ടും റാച്ചറ്റ് ഉപയോഗിച്ച് അടച്ച് പരിശോധിക്കുക. ഏകദേശം 0.02 mm-ൽ കൂടിയ എറർ ഇൻസ്ട്രക്ടറെ അറിയിക്കുക; അത് സ്പിൻഡിലിൽ തിംബിൾ ക്രമീകരിച്ചാണ് ശരിയാക്കുന്നത്.</p>`,
+pr_h2:`നടപടിക്രമം: മൈക്രോമീറ്റർ ഉപയോഗിച്ച് അളക്കൽ`,
+pr_lede:`ഓരോ ഘട്ടവും അതിന്റെ ആനിമേഷനൊപ്പം കാണിക്കുന്നു. അടുത്തതിലേക്ക് പോകാൻ 'അടുത്തത്' (അല്ലെങ്കിൽ → കീ) അമർത്തുക; അതുവരെ ആനിമേഷൻ ആവർത്തിക്കും.`,pr_all:`എല്ലാ ഘട്ടങ്ങളും പട്ടികയായി`,
+ph_prep:`തയ്യാറെടുപ്പ്`,ph_meas:`അളക്കൽ`,ph_fin:`പൂർത്തിയാക്കൽ`,
+pr1:`<b>ഉപകരണം തിരഞ്ഞെടുത്ത് പരിശോധിക്കുക</b>ജോബിന്റെ വലിപ്പം 0–25 mm-നുള്ളിലാണെന്ന് ഉറപ്പാക്കുക. തിംബിൾ മുഴുവൻ റേഞ്ചിലും തിരിക്കുക; ഇളക്കമോ മുറുക്കമോ ഇല്ലാതെ സുഗമമായി നീങ്ങണം. ലോക്ക് ലിവർ തുറന്നിട്ടുണ്ടോ എന്ന് നോക്കുക.<span class="why">0–25 mm മൈക്രോമീറ്ററിന് 30 mm അളക്കാനാവില്ല; മുറുകിയ സ്ക്രൂ തെറ്റായ സമ്പർക്കം നൽകും.</span>`,
+pr2:`<b>അളക്കുന്ന ഫേസുകൾ വൃത്തിയാക്കുക</b>സ്പിൻഡിൽ അൽപം തുറക്കുക. ആൻവിൽ, സ്പിൻഡിൽ ഫേസുകൾ വൃത്തിയുള്ള, നാരില്ലാത്ത തുണികൊണ്ട് തുടയ്ക്കുക, അല്ലെങ്കിൽ ഒരു വൃത്തിയുള്ള കടലാസിൽ പതുക്കെ അടച്ച് കടലാസ് വലിച്ചെടുക്കുക.<span class="why">ഏതാനും മൈക്രോൺ പൊടിപോലും 0.01 mm-ന്റെ ഭാഗമാണ്.</span>`,
+pr3:`<b>ലീസ്റ്റ് കൗണ്ട് കണ്ടെത്തുക</b>MSD 0.5 mm, പിച്ച് 0.5 mm, തിംബിളിൽ 50 ഡിവിഷൻ, LC = 0.01 mm (ടാബ് 2).`,
+pr4:`<b>സീറോ എറർ പരിശോധിക്കുക</b>2–3 ക്ലിക്ക് വരെ റാച്ചറ്റ് ഉപയോഗിച്ച് സ്പിൻഡിൽ ആൻവിലിൽ അടയ്ക്കുക. ഡേറ്റത്തിലെ തിംബിൾ വായിച്ച് സീറോ എറർ ചിഹ്നത്തോടെ രേഖപ്പെടുത്തുക.<span class="why">ജോബിൽ ഉപയോഗിക്കുന്ന അതേ റാച്ചറ്റ് മർദ്ദത്തിൽ സീറോ പരിശോധിക്കുക.</span>`,
+pr5:`<b>സ്പിൻഡിൽ ജോബിനേക്കാൾ അൽപം കൂടുതൽ തുറക്കുക</b>വിടവ് ജോബിനേക്കാൾ അൽപം വലുതാകുന്നതുവരെ തിംബിൾ ആന്റിക്ലോക്ക്‌വൈസ് (റാച്ചറ്റ് ഭാഗത്തുനിന്ന് നോക്കുമ്പോൾ) തിരിക്കുക.`,
+pr6:`<b>മൈക്രോമീറ്റർ പിടിച്ച് ജോബ് വയ്ക്കുക</b>ഫ്രെയിം ഒരു കൈപ്പത്തിയിൽ പിടിക്കുക, തിംബിളിനായി തള്ളവിരലും ചൂണ്ടുവിരലും സ്വതന്ത്രമാക്കുക. ജോബ് ആൻവിലിനോട് ചേർത്ത് സ്പിൻഡിൽ അക്ഷത്തിന് ലംബമായി വയ്ക്കുക.<span class="why">ചരിഞ്ഞ ജോബ് യഥാർത്ഥ വലിപ്പത്തേക്കാൾ കൂടുതൽ കാണിക്കും.</span>`,
+pr7:`<b>തിംബിൾ കൊണ്ട് അടയ്ക്കുക, റാച്ചറ്റ് കൊണ്ട് പൂർത്തിയാക്കുക</b>സ്പിൻഡിൽ ജോബിനടുത്ത് എത്തുന്നതുവരെ തിംബിൾ തിരിക്കുക, തുടർന്ന് 2–3 ക്ലിക്ക് വരെ റാച്ചറ്റ് മാത്രം തിരിക്കുക.<span class="why">സമ്പർക്കത്തിനു ശേഷം തിംബിൾ തിരിച്ചാൽ ഫ്രെയിം വളയുകയും റീഡിങ് കുറയുകയും ചെയ്യും.</span>`,
+pr8:`<b>സ്പിൻഡിൽ ലോക്ക് ചെയ്യുക</b>ലോക്ക് ലിവർ നീക്കി സ്പിൻഡിൽ മുറുക്കുക; വായിക്കുമ്പോഴോ ഉപകരണം എടുക്കുമ്പോഴോ റീഡിങ് മാറില്ല.`,
+pr9:`<b>മെയിൻ സ്കെയിൽ വായിക്കുക (MSR)</b>ഡേറ്റത്തിന് മുകളിൽ കാണുന്ന അവസാന മുഴുവൻ മില്ലിമീറ്റർ വര രേഖപ്പെടുത്തുക; അതിനപ്പുറം ഡേറ്റത്തിന് താഴെ അര മില്ലിമീറ്റർ വര കാണുന്നുണ്ടെങ്കിൽ 0.5 mm കൂട്ടുക.`,
+pr10:`<b>സർക്കുലർ സ്കെയിൽ വായിക്കുക (CSR)</b>ഡേറ്റം ലൈനുമായി ഒത്തുവരുന്ന തിംബിൾ ഡിവിഷൻ രേഖപ്പെടുത്തുക. പാരലാക്സ് ഒഴിവാക്കാൻ കണ്ണ് സ്കെയിലിന് നേരെ വയ്ക്കുക.`,
+pr11:`<b>കണക്കാക്കുക</b>നിരീക്ഷിതം = MSR + CSR × LC. ശരിയാക്കിയത് = നിരീക്ഷിതം − സീറോ എറർ.`,
+pr12:`<b>ആവർത്തിച്ച് ശരാശരി എടുക്കുക</b>ലോക്ക് മാറ്റി, തുറന്ന്, മൂന്ന് വ്യത്യസ്ത സ്ഥാനങ്ങളിൽ വീണ്ടും അളക്കുക (വയർ 90° തിരിച്ചും). എല്ലാ ശ്രമങ്ങളും രേഖപ്പെടുത്തി ശരാശരി ശരിയാക്കിയ റീഡിങ് കണ്ടെത്തുക.`,
+pr13:`<b>ലോക്ക് മാറ്റി, തുറന്ന്, സൂക്ഷിക്കുക</b>ലോക്ക് മാറ്റുക, സ്പിൻഡിൽ തുറക്കുക, ജോബ് മാറ്റുക, ഉപകരണം തുടയ്ക്കുക, ഫേസുകൾക്കിടയിൽ ഏകദേശം 0.5–1 mm വിടവ് വിടുക. സ്പാനറിനൊപ്പം പെട്ടിയിൽ വയ്ക്കുക.<span class="why">തൊട്ടിരിക്കുന്ന ഫേസുകൾക്ക് താപനില മാറ്റത്തിൽ ആയാസം വരാം, ഒട്ടിപ്പിടിക്കുകയോ തുരുമ്പിക്കുകയോ ചെയ്യാം.</span>`,
+pc_h2:`മുൻകരുതലുകൾ, നേരിടുന്ന ക്രമത്തിൽ`,
+pc_lede:`ഓരോ മുൻകരുതലും ഒരു പ്രത്യേക പിശകിൽ നിന്ന് സംരക്ഷിക്കുന്നു. നിയമം മാത്രമല്ല, കാരണവും പഠിക്കുക.`,
+ph_before:`അളക്കുന്നതിന് മുൻപ്`,ph_after:`അളന്നതിനു ശേഷം`,ph_during:`അളക്കുമ്പോൾ`,
+pc1:`<b>ശരിയായ റേഞ്ച് തിരഞ്ഞെടുക്കുക</b>0–25 mm മൈക്രോമീറ്റർ 25 mm വരെയുള്ള ജോബുകൾക്ക് മാത്രം.<span class="why">വലിയ ജോബ് ഫേസുകൾക്കിടയിൽ ബലമായി കയറ്റരുത്.</span>`,
+pc2:`<b>രണ്ട് ഫേസുകളും ജോബും വൃത്തിയാക്കുക</b>പൊടി, എണ്ണ, ബർ എന്നിവ നീക്കുക.<span class="why">അഴുക്കിന്റെ കനം റീഡിങ്ങിൽ ചേരും.</span>`,
+pc3:`<b>സീറോ എറർ പരിശോധിച്ച് രേഖപ്പെടുത്തുക</b>ഓരോ തവണയും ഉപയോഗത്തിന് മുൻപ്, റാച്ചറ്റ് മർദ്ദത്തിൽ.<span class="why">ഉപകരണത്തിന് തട്ടലുകൾ ഏൽക്കും; ഇന്നലത്തെ സീറോ ഇന്നത്തേതല്ല.</span>`,
+pc4:`<b>ജോബ് മുറിയിലെ താപനിലയിൽ എത്താൻ അനുവദിക്കുക</b>ഗ്രൈൻഡറിൽ നിന്നോ ലെയ്ത്തിൽ നിന്നോ നേരെ എടുത്ത ജോബ് അളക്കരുത്.<span class="why">സ്റ്റീൽ 100 mm-ന് ഓരോ °C-നും ഏകദേശം 0.012 mm വികസിക്കുന്നു.</span>`,
+pc5:`<b>തിംബിൾ തിരിക്കുന്നതിന് മുൻപ് ലോക്ക് മാറ്റുക</b><span class="why">ലോക്കിനെതിരെ തിരിച്ചാൽ സ്ക്രൂവിനും നട്ടിനും ആയാസം.</span>`,
+pc6:`<b>വിടവ് വിട്ട് പെട്ടിയിൽ സൂക്ഷിക്കുക</b>ഫേസുകൾക്കിടയിൽ ഏകദേശം 0.5–1 mm, തുടച്ച് നേരിയ എണ്ണ പുരട്ടി, കാന്തങ്ങളിൽ നിന്നും വിറയലിൽ നിന്നും അകലെ.`,
+pc7:`<b>ഉപകരണം താഴെയിടുകയോ തട്ടുകയോ ചെയ്യരുത്</b><span class="why">ഒരു തട്ട് സീറോ മാറ്റാനോ ഫ്രെയിം വളയ്ക്കാനോ ഇടയാക്കും.</span>`,
+pc8:`<b>മൈക്രോമീറ്റർ ഫ്രെയിമിൽ പിടിക്കുക</b>സ്ലീവോ തിംബിളോ ഏറെ നേരം മുഷ്ടിയിൽ പിടിക്കരുത്.<span class="why">ശരീര താപം ഫ്രെയിമും സ്ക്രൂവും വികസിപ്പിക്കുന്നു.</span>`,
+pc9:`<b>അവസാന സമ്പർക്കത്തിന് റാച്ചറ്റ് ഉപയോഗിക്കുക</b>2–3 ക്ലിക്ക് മാത്രം, സീറോ പരിശോധനയിലും ജോബിലും ഒരുപോലെ.<span class="why">എപ്പോഴും ഒരേ മർദ്ദം; തിംബിൾ മാത്രം ഉപയോഗിച്ചാൽ അസമവും അധികവുമായ ബലം.</span>`,
+pc10:`<b>ജോബ് സ്പിൻഡിലിന് ലംബമായി വയ്ക്കുക</b>വ്യാസത്തിന് യഥാർത്ഥ കുറഞ്ഞ അളവ് കിട്ടാൻ പതുക്കെ ആട്ടി നോക്കുക.<span class="why">ചരിഞ്ഞ ജോബ് കൂടുതൽ കാണിക്കും.</span>`,
+pc11:`<b>ചലിക്കുന്ന ജോബ് ഒരിക്കലും അളക്കരുത്</b><span class="why">ഫേസുകൾക്ക് കേടുവരും, ഓടുന്ന മെഷീനിൽ അപകടകരവുമാണ്.</span>`,
+pc12:`<b>തിംബിളിൽ പിടിച്ച് ഉപകരണം കറക്കരുത്</b>വേഗം തുറക്കാനോ അടയ്ക്കാനോ ഫ്രെയിം കറക്കി വിടരുത്.<span class="why">സ്ക്രൂ തേയുകയും കാലിബ്രേഷൻ നഷ്ടപ്പെടുകയും ചെയ്യും.</span>`,
+pc13:`<b>കണ്ണ് സ്കെയിലിന് നേരെ വച്ച് വായിക്കുക</b><span class="why">ചരിഞ്ഞു നോക്കിയാൽ തിംബിളിൽ പാരലാക്സ് എറർ ഉണ്ടാകും.</span>`,
+pc14:`<b>പല റീഡിങ്ങുകൾ എടുത്ത് ശരാശരി ഉപയോഗിക്കുക</b><span class="why">വയറുകളും ജോബുകളും പൂർണമായും ഉരുണ്ടതോ സമാന്തരമോ ആകാറില്ല.</span>`,
+sim_h2:`സിമുലേറ്റർ`,
+sim_lede:`ബട്ടണുകൾ ഉപയോഗിച്ചോ, വലുതാക്കിയ ദൃശ്യത്തിൽ തിംബിളിനു മുകളിൽ മുകളിലേക്കും താഴേക്കും വലിച്ചോ, ആരോ കീകൾ ഉപയോഗിച്ചോ (മുഴുവൻ കറക്കത്തിന് Page Up/Down, റാച്ചറ്റിന് R) തിംബിൾ തിരിക്കുക. വലതുവശത്തെ ഗൈഡഡ് ക്രമം പിന്തുടരുക.`,
+bt_o1:`◀◀ 1 കറക്കം തുറക്കുക`,bt_od:`◀ 1 ഡിവിഷൻ തുറക്കുക`,bt_cd:`1 ഡിവിഷൻ അടയ്ക്കുക ▶`,bt_c1:`1 കറക്കം അടയ്ക്കുക ▶▶`,bt_r:`റാച്ചറ്റ് ▶ (ഫൈൻ)`,bt_h:`ഒത്തുവരവ് കാണിക്കുക`,bt_a:`ഉത്തരം കാണിക്കുക`,
+obs_h:`നിരീക്ഷണ പട്ടിക`,bt_clr:`പട്ടിക മായ്ക്കുക`,
+thead:`<th>ശ്രമം</th><th>MSR mm</th><th>CSR div</th><th>നിരീക്ഷിതം mm</th><th>ZE mm</th><th>ശരിയാക്കിയത് mm</th>`,
+g_h:`ഗൈഡഡ് ക്രമം`,bt_reset:`വീണ്ടും തുടങ്ങുക`,rd_h:`നിങ്ങളുടെ റീഡിങ്ങുകൾ`,l_lc:`ലീസ്റ്റ് കൗണ്ട് (mm)`,l_ze:`സീറോ എറർ (mm, ±)`,bt_clc:`LC പരിശോധിക്കുക`,bt_cze:`സീറോ എറർ പരിശോധിക്കുക`,
+l_msr:`MSR (mm)`,l_csr:`CSR (ഡിവിഷൻ)`,o_obs:`നിരീക്ഷിതം`,o_corr:`ശരിയാക്കിയത്`,bt_crd:`റീഡിങ് പരിശോധിക്കുക`,bt_rec:`ശ്രമം രേഖപ്പെടുത്തുക`,
+ins_h:`ഉപകരണവും സാമ്പിളും`,lab_zs:`സീറോ എറർ ഉൾപ്പെടുത്തുക`,zo_n:`ഇല്ല`,zo_p:`പോസിറ്റീവ്`,zo_m:`നെഗറ്റീവ്`,zo_h:`ക്രമരഹിതം, മറച്ചത് (കണ്ടെത്തുക)`,lab_zm:`വലിപ്പം (ഡിവിഷൻ)`,
+lab_sp:`സാമ്പിൾ`,so_w:`ചെമ്പ് വയർ (ഉരുണ്ടത്)`,so_s:`സ്റ്റീൽ സ്ട്രിപ്പ് (പരന്നത്)`,so_r:`MS റോഡ് (ഉരുണ്ടത്)`,bt_new:`പുതിയ സാമ്പിൾ, അളവ് അജ്ഞാതം`,
+sim_hint:`ഫേസുകൾ തുടയ്ക്കുന്നതുവരെ പൊടി ഏകദേശം ഒരു ലീസ്റ്റ് കൗണ്ട് കൂട്ടും. സമ്പർക്കത്തിനു ശേഷം തിംബിൾ അമർത്തിയാൽ ഫ്രെയിം വളയുകയും റീഡിങ് കുറയുകയും ചെയ്യും.`,
+foot:`CTS ഇലക്ട്രീഷ്യൻ – അളവുപകരണ പ്രാക്ടിക്കൽ`}};
+
+const JS_T={
+en:{
+ parts:{frame:['Frame (C-frame)','Rigid C-shaped forging that holds anvil and sleeve in line.','Drop-forged steel, finished in blue hammer-tone enamel on this instrument. It must not bend under measuring force, or the anvil and spindle would no longer be in line. The recessed panel is where you hold it; holding by the frame keeps hand heat away from the screw. Larger micrometers carry plastic heat-insulating pads here.','Frame'],
+  anvil:['Anvil','Fixed measuring face. The job rests against it.','A hardened (often carbide-tipped) steel stud pressed into the frame. Its face is lapped flat and parallel to the spindle face. Keep it clean and never use it as a hammer or scraper.','Anvil'],
+  spindle:['Spindle','Moving measuring face; front end of the 0.5 mm pitch screw.','The spindle is the unthreaded, ground front part of the micrometer screw. It turns and advances with the thimble. One turn moves it exactly 0.5 mm towards or away from the anvil.','Spindle'],
+  lock:['Spindle lock (lock lever)','Clamps the spindle so the reading cannot change.','On this micrometer it is a small black lever on the frame boss. Swing it to clamp the spindle after the ratchet has clicked, then read or lift the instrument off the job. Release it before turning the thimble again.','Lock lever'],
+  sleeve:['Sleeve (barrel)','Fixed tube carrying the datum line and main scale.','The sleeve is fixed to the frame and contains the internal nut in which the screw runs. It can be turned slightly with the C-spanner to bring the datum line onto the thimble zero when setting zero.','Sleeve'],
+  scale:['Main scale and datum line','0–25 mm. mm lines above the datum, 0.5 mm lines below.','The long line along the sleeve is the datum (index) line. Whole millimetres are marked above it and numbered every 5 mm; half-millimetre marks are below it. One main scale division (MSD) is 0.5 mm, equal to the pitch.','Main scale'],
+  thimble:['Thimble','Rotating knurled sleeve fixed to the screw.','Turning the thimble turns the screw. Its bevelled front edge is the pointer for the main scale. Use it for quick opening and closing only; final contact is always made with the ratchet.','Thimble'],
+  cscale:['Circular (thimble) scale','50 equal divisions round the bevel; 1 div = 0.01 mm.','The bevel of the thimble is divided into 50 equal parts numbered 0, 5, 10 … 45. Since one turn = 0.5 mm, one division = 0.5/50 = 0.01 mm. The division that meets the datum line is the circular scale reading (CSR).','Circular scale'],
+  ratchet:['Ratchet stop (fine knob)','Small knob at the end; slips at a set force.','The ratchet drives the thimble through a spring and pawl. Once the faces touch the job at the correct force (about 5–10 N), it slips and clicks instead of turning further. Give 2–3 clicks for both zero check and measurement.','Ratchet stop'],
+  spanner:['C-spanner (adjusting wrench)','Supplied in the box for zero setting.','Its pin fits the small hole in the sleeve. With the faces closed and the spindle locked, the sleeve is turned slightly to bring the datum line onto the thimble zero, removing a small zero error.','C-spanner']},
+ guide:['Wipe the anvil and spindle faces','Find the least count and enter it','Close the spindle on the anvil with the ratchet (2–3 clicks)','Read and enter the zero error','Open the spindle wider than the specimen','Place the specimen against the anvil','Close with the thimble, finish with the ratchet (2–3 clicks)','Lock the spindle','Read MSR and CSR and check','Apply zero correction (corrected reading)','Unlock, open, remove the job, leave a small gap'],
+ guideDone:'Sequence complete. Record more trials or start again.',
+ start:'Wipe the measuring faces first, then follow the sequence on the right.',
+ lockedTurn:'The spindle is locked. Swing the lock lever open before turning the thimble or ratchet.',
+ rSlip:n=>`Ratchet slipping, ${n} clicks. Correct measuring pressure reached.`,
+ rFirst:'Click. The ratchet has started to slip; give one or two more clicks.',
+ excess:n=>`Excess pressure! The thimble was forced after contact; the frame springs and the reading drops by ${n} division(s). Back off and close with the ratchet.`,
+ contactR:'Faces touching. Keep turning the ratchet until it slips 2–3 clicks.',
+ contactT:'Contact made with the thimble. Finish with the ratchet for the correct pressure.',
+ closing:g=>`Closing. Gap ${g} mm.`,opening:g=>`Opening. Gap ${g} mm.`,
+ lockOn:'Spindle locked. The reading is held; you may read it or lift the instrument off the job.',lockOff:'Lock released. The thimble is free to turn.',
+ cleanLocked:'Release the lock and open the spindle before cleaning.',cleanGap:'Open the spindle at least 1 mm so you can wipe both faces.',cleaned:'Anvil and spindle faces wiped clean with a lint-free cloth.',
+ removedWarn:'Specimen removed. Better practice: lock the spindle before removing, or read it in place.',removed:'Specimen removed and placed back on the bench.',
+ gapSmall:g=>`The gap (${g} mm) is too small for the specimen. Open the spindle wider first.`,releaseLock:'Release the lock first.',
+ placed:'Specimen held against the anvil, square to the spindle. Now close the spindle.',
+ removeFirst:'Remove the current specimen first.',newSpec:'New specimen on the bench. Its size is hidden; measure it.',
+ zeHidden:'A hidden zero error has been set. Close the faces with the ratchet and find it.',zeChanged:'Zero error setting changed. Check zero again.',
+ lcEnter:'Enter the least count in mm.',lcOK:(N,l)=>`Correct. LC = pitch ÷ divisions = 0.5 ÷ ${N} = ${l} mm.`,lcBad:N=>`Not quite. Find the pitch (advance per turn) and divide by the number of thimble divisions (${N}).`,
+ zeNeedClose:'To check zero, remove the specimen and close the spindle on the anvil with the ratchet.',zeNeedR:'Use the ratchet for the zero check so the pressure matches the measurement.',
+ zeEnter:'Enter the zero error in mm with its sign, e.g. +0.03 or −0.04.',zeOK:(v,d)=>`Correct. Zero error = ${v} mm.${d?' Note: the faces are dirty, so this includes the dust film.':''}`,
+ zeBadNeg:(p,N)=>`Not right. Division ${p} is on the datum and the 0 is above it, so ZE = −(${N} − ${p}) × LC.`,zeBad:'Not right. Look at which thimble division is on the datum line when the faces touch.',
+ rdNoContact:'The spindle is not touching a specimen. Place the specimen and close with the ratchet.',rdEnter:'Enter MSR (mm) and CSR (divisions).',
+ msrBad:'MSR is not right. Find the last sleeve line visible at the thimble edge; remember the half-mm lines below the datum.',csrBad:'MSR is right, but the CSR is not. Find the thimble line that meets the datum line.',
+ rdOK:s=>`Reading correct: ${s}.`,needZE:' Now enter the zero error to get the corrected size.',corrOK:c=>` Corrected = ${c} mm. This matches the true size.`,
+ corrOff:(c,e,w)=>` Corrected = ${c} mm, which is off by ${e} mm${w?'. Likely cause: '+w:''}.`,
+ wZE:'the zero error has not been checked correctly',wOver:'excess thimble pressure',wThim:'final contact was not made with the ratchet',wClean:'the faces were cleaned after the zero check, so recheck zero',
+ checkFirst:'Check the reading first; only checked readings are recorded.',recorded:n=>`Trial ${n} recorded. Unlock, open, reposition the specimen and measure again.`,fresh:'Fresh start. Wipe the measuring faces first.',
+ lockLbl:l=>'Lock lever: '+(l?'locked':'open'),place:'Place specimen',remove:'Remove specimen',wipe:'Wipe faces',clean:'Faces clean',
+ noTrials:'No trials yet. Check a reading, then press Record trial.',mean:'Mean corrected size',
+ a_gap:'Gap between faces',a_scale:'Scale shows',a_zero:'Zero reading now',a_dust:' incl. dust',a_true:'True specimen size',a_contact:'Contact',a_none:'none',a_thim:'thimble',a_rat:n=>`ratchet, ${n} clicks`,a_over:n=>`, overpressure −${n} div`,
+ lc_turned:'Thimble turned',lc_rev:'rev',lc_div:'divisions',lc_adv:'Spindle advance',lc_per:'Per division',lc_lc:'least count',
+ capMag:'Magnified sleeve and thimble',capSim:'Magnified · drag the thimble up/down',capClosed:'Faces closed',bench:'Specimen on bench · size unknown',
+ roNeg:(p,v)=>`Faces closed: thimble ${p} on datum → ${v} mm`,enterZE:'enter zero error'},
+hi:{
+ parts:{frame:['फ्रेम (C-फ्रेम)','मज़बूत C-आकार का ढाँचा जो एन्विल और स्लीव को एक सीध में रखता है।','ड्रॉप-फोर्ज्ड स्टील, इस यंत्र पर नीले हैमर-टोन इनेमल से रंगा। मापने के बल से यह मुड़ना नहीं चाहिए, वरना एन्विल और स्पिंडल एक सीध में नहीं रहेंगे। इसे गड्ढेदार हिस्से से पकड़ें; फ्रेम से पकड़ने पर हाथ की गर्मी स्क्रू तक नहीं पहुँचती। बड़े माइक्रोमीटर पर यहाँ ऊष्मा-रोधी पैड होते हैं।','फ्रेम'],
+  anvil:['एन्विल','स्थिर मापने वाला फेस। जॉब इससे सटकर रहता है।','फ्रेम में दबाई गई कठोर (प्रायः कार्बाइड-टिप) स्टील की पिन। इसका फेस समतल लैप किया गया और स्पिंडल फेस के समानांतर है। इसे साफ़ रखें, इससे कभी ठोकें या खुरचें नहीं।','एन्विल'],
+  spindle:['स्पिंडल','चलने वाला मापने का फेस; 0.5 mm पिच स्क्रू का अगला सिरा।','स्पिंडल माइक्रोमीटर स्क्रू का बिना चूड़ी वाला, घिसा हुआ अगला हिस्सा है। यह थिम्बल के साथ घूमता और आगे बढ़ता है। एक चक्कर में यह एन्विल की ओर या दूर ठीक 0.5 mm चलता है।','स्पिंडल'],
+  lock:['स्पिंडल लॉक (लॉक लीवर)','स्पिंडल को जकड़ता है ताकि रीडिंग न बदले।','इस माइक्रोमीटर पर यह फ्रेम पर लगा छोटा काला लीवर है। रैचेट के क्लिक के बाद इसे घुमाकर स्पिंडल जकड़ें, फिर पढ़ें या यंत्र जॉब से हटाएँ। थिम्बल फिर घुमाने से पहले इसे खोलें।','लॉक लीवर'],
+  sleeve:['स्लीव (बैरल)','स्थिर नली जिस पर डेटम रेखा और मुख्य पैमाना है।','स्लीव फ्रेम से जुड़ी है और इसके अंदर वह नट है जिसमें स्क्रू चलता है। शून्य सेट करते समय C-स्पैनर से इसे थोड़ा घुमाकर डेटम रेखा को थिम्बल के शून्य पर लाया जा सकता है।','स्लीव'],
+  scale:['मुख्य पैमाना और डेटम रेखा','0–25 mm। डेटम के ऊपर mm रेखाएँ, नीचे 0.5 mm रेखाएँ।','स्लीव पर लंबी रेखा डेटम (सूचक) रेखा है। इसके ऊपर पूरे मिलीमीटर अंकित हैं, हर 5 mm पर संख्या; नीचे आधे मिलीमीटर के निशान हैं। एक MSD 0.5 mm है, जो पिच के बराबर है।','मुख्य पैमाना'],
+  thimble:['थिम्बल','स्क्रू से जुड़ी घूमने वाली खुरदरी नली।','थिम्बल घुमाने से स्क्रू घूमता है। इसका ढलवाँ अगला किनारा मुख्य पैमाने का सूचक है। इसका उपयोग केवल जल्दी खोलने-बंद करने में करें; अंतिम संपर्क हमेशा रैचेट से।','थिम्बल'],
+  cscale:['वृत्ताकार (थिम्बल) पैमाना','ढलवाँ किनारे पर 50 समान भाग; 1 भाग = 0.01 mm।','थिम्बल का ढलवाँ किनारा 0, 5, 10 … 45 अंकित 50 समान भागों में बँटा है। एक चक्कर = 0.5 mm, अतः एक भाग = 0.5/50 = 0.01 mm। डेटम रेखा से मिलने वाला भाग वृत्ताकार पैमाने की रीडिंग (CSR) है।','वृत्ताकार पैमाना'],
+  ratchet:['रैचेट स्टॉप (महीन घुंडी)','सिरे पर छोटी घुंडी; तय बल पर फिसलती है।','रैचेट एक स्प्रिंग और पॉल द्वारा थिम्बल को चलाता है। जैसे ही फेस सही बल (लगभग 5–10 N) से जॉब को छूते हैं, यह आगे घूमने के बजाय फिसलकर क्लिक करता है। शून्य जाँच और मापन दोनों में 2–3 क्लिक दें।','रैचेट स्टॉप'],
+  spanner:['C-स्पैनर (समायोजन रिंच)','शून्य सेटिंग के लिए डिब्बे में मिलता है।','इसकी पिन स्लीव के छोटे छेद में बैठती है। फेस बंद और स्पिंडल लॉक होने पर स्लीव को थोड़ा घुमाकर डेटम रेखा को थिम्बल के शून्य पर लाया जाता है, जिससे छोटी शून्य त्रुटि हट जाती है।','C-स्पैनर']},
+ guide:['एन्विल और स्पिंडल फेस पोंछें','अल्पतमांक ज्ञात कर भरें','रैचेट से स्पिंडल को एन्विल पर बंद करें (2–3 क्लिक)','शून्य त्रुटि पढ़कर भरें','स्पिंडल को नमूने से अधिक खोलें','नमूना एन्विल से सटाकर रखें','थिम्बल से बंद करें, रैचेट से पूरा करें (2–3 क्लिक)','स्पिंडल लॉक करें','MSR और CSR पढ़कर जाँचें','शून्य संशोधन लगाएँ (संशोधित रीडिंग)','लॉक खोलें, स्पिंडल खोलें, जॉब निकालें, छोटा गैप छोड़ें'],
+ guideDone:'क्रम पूरा हुआ। और प्रयास दर्ज करें या फिर से शुरू करें।',
+ start:'पहले मापने वाले फेस पोंछें, फिर दाईं ओर दिए क्रम का पालन करें।',
+ lockedTurn:'स्पिंडल लॉक है। थिम्बल या रैचेट घुमाने से पहले लॉक लीवर खोलें।',
+ rSlip:n=>`रैचेट फिसल रहा है, ${n} क्लिक। सही मापन दबाव मिल गया।`,
+ rFirst:'क्लिक। रैचेट फिसलने लगा है; एक-दो क्लिक और दें।',
+ excess:n=>`अधिक दबाव! संपर्क के बाद थिम्बल को ज़बरदस्ती घुमाया गया; फ्रेम लचकता है और रीडिंग ${n} भाग घट जाती है। पीछे हटें और रैचेट से बंद करें।`,
+ contactR:'फेस छू गए। रैचेट तब तक घुमाएँ जब तक 2–3 क्लिक न हों।',contactT:'थिम्बल से संपर्क हुआ। सही दबाव के लिए रैचेट से पूरा करें।',
+ closing:g=>`बंद हो रहा है। गैप ${g} mm।`,opening:g=>`खुल रहा है। गैप ${g} mm।`,
+ lockOn:'स्पिंडल लॉक हो गया। रीडिंग स्थिर है; अब पढ़ सकते हैं या यंत्र जॉब से हटा सकते हैं।',lockOff:'लॉक खुला। थिम्बल घूमने के लिए मुक्त है।',
+ cleanLocked:'सफ़ाई से पहले लॉक खोलें और स्पिंडल खोलें।',cleanGap:'दोनों फेस पोंछने के लिए स्पिंडल कम से कम 1 mm खोलें।',cleaned:'एन्विल और स्पिंडल फेस रेशा-रहित कपड़े से साफ़ किए गए।',
+ removedWarn:'नमूना हटाया गया। बेहतर तरीका: हटाने से पहले स्पिंडल लॉक करें, या वहीं पढ़ें।',removed:'नमूना हटाकर बेंच पर रखा गया।',
+ gapSmall:g=>`गैप (${g} mm) नमूने के लिए छोटा है। पहले स्पिंडल और खोलें।`,releaseLock:'पहले लॉक खोलें।',
+ placed:'नमूना एन्विल से सटा, स्पिंडल के समकोण पर। अब स्पिंडल बंद करें।',
+ removeFirst:'पहले वर्तमान नमूना हटाएँ।',newSpec:'बेंच पर नया नमूना। इसका आकार छिपा है; इसे मापें।',
+ zeHidden:'एक छिपी शून्य त्रुटि डाली गई है। रैचेट से फेस बंद कर इसे खोजें।',zeChanged:'शून्य त्रुटि सेटिंग बदली। शून्य फिर से जाँचें।',
+ lcEnter:'अल्पतमांक mm में भरें।',lcOK:(N,l)=>`सही। LC = पिच ÷ भाग = 0.5 ÷ ${N} = ${l} mm।`,lcBad:N=>`ठीक नहीं। पिच (प्रति चक्कर बढ़त) ज्ञात कर थिम्बल के भागों (${N}) से भाग दें।`,
+ zeNeedClose:'शून्य जाँचने के लिए नमूना हटाएँ और रैचेट से स्पिंडल को एन्विल पर बंद करें।',zeNeedR:'शून्य जाँच रैचेट से करें ताकि दबाव मापन जैसा ही रहे।',
+ zeEnter:'शून्य त्रुटि mm में चिह्न सहित भरें, जैसे +0.03 या −0.04।',zeOK:(v,d)=>`सही। शून्य त्रुटि = ${v} mm।${d?' ध्यान दें: फेस गंदे हैं, इसमें धूल की परत भी शामिल है।':''}`,
+ zeBadNeg:(p,N)=>`सही नहीं। भाग ${p} डेटम पर है और 0 उसके ऊपर है, अतः ZE = −(${N} − ${p}) × LC।`,zeBad:'सही नहीं। फेस छूने पर देखें कि थिम्बल का कौन सा भाग डेटम रेखा पर है।',
+ rdNoContact:'स्पिंडल नमूने को नहीं छू रहा। नमूना रखें और रैचेट से बंद करें।',rdEnter:'MSR (mm) और CSR (भाग) भरें।',
+ msrBad:'MSR सही नहीं। थिम्बल के किनारे पर दिखने वाली स्लीव की अंतिम रेखा खोजें; डेटम के नीचे आधी mm रेखाएँ याद रखें।',csrBad:'MSR सही है, पर CSR नहीं। थिम्बल की वह रेखा खोजें जो डेटम रेखा से मिलती है।',
+ rdOK:s=>`रीडिंग सही: ${s}।`,needZE:' अब संशोधित आकार के लिए शून्य त्रुटि भरें।',corrOK:c=>` संशोधित = ${c} mm। यह वास्तविक आकार से मेल खाता है।`,
+ corrOff:(c,e,w)=>` संशोधित = ${c} mm, जो ${e} mm अलग है${w?'। संभावित कारण: '+w:''}।`,
+ wZE:'शून्य त्रुटि सही नहीं जाँची गई',wOver:'थिम्बल का अधिक दबाव',wThim:'अंतिम संपर्क रैचेट से नहीं हुआ',wClean:'शून्य जाँच के बाद फेस साफ़ किए गए, शून्य फिर जाँचें',
+ checkFirst:'पहले रीडिंग जाँचें; केवल जाँची गई रीडिंग दर्ज होती है।',recorded:n=>`प्रयास ${n} दर्ज हुआ। लॉक खोलें, स्पिंडल खोलें, नमूना बदलकर फिर मापें।`,fresh:'नई शुरुआत। पहले मापने वाले फेस पोंछें।',
+ lockLbl:l=>'लॉक लीवर: '+(l?'लॉक':'खुला'),place:'नमूना रखें',remove:'नमूना हटाएँ',wipe:'फेस पोंछें',clean:'फेस साफ़ हैं',
+ noTrials:'अभी कोई प्रयास नहीं। रीडिंग जाँचें, फिर "प्रयास दर्ज करें" दबाएँ।',mean:'औसत संशोधित आकार',
+ a_gap:'फेस के बीच गैप',a_scale:'पैमाना दिखाता है',a_zero:'अभी शून्य रीडिंग',a_dust:' धूल सहित',a_true:'नमूने का वास्तविक आकार',a_contact:'संपर्क',a_none:'नहीं',a_thim:'थिम्बल',a_rat:n=>`रैचेट, ${n} क्लिक`,a_over:n=>`, अधिक दबाव −${n} भाग`,
+ lc_turned:'थिम्बल घुमाया',lc_rev:'चक्कर',lc_div:'भाग',lc_adv:'स्पिंडल की बढ़त',lc_per:'प्रति भाग',lc_lc:'अल्पतमांक',
+ capMag:'स्लीव और थिम्बल (बड़ा दृश्य)',capSim:'बड़ा दृश्य · थिम्बल को ऊपर/नीचे खींचें',capClosed:'फेस बंद',bench:'बेंच पर नमूना · आकार अज्ञात',
+ roNeg:(p,v)=>`फेस बंद: थिम्बल ${p} डेटम पर → ${v} mm`,enterZE:'शून्य त्रुटि भरें'},
+ml:{
+ parts:{frame:['ഫ്രെയിം (C-ഫ്രെയിം)','ആൻവിലും സ്ലീവും ഒരേ നേർരേഖയിൽ നിർത്തുന്ന ഉറച്ച C-ആകൃതി.','ഡ്രോപ്പ്-ഫോർജ്ഡ് സ്റ്റീൽ, ഈ ഉപകരണത്തിൽ നീല ഹാമർ-ടോൺ ഇനാമൽ. അളക്കുന്ന ബലത്തിൽ ഇത് വളയരുത്, ഇല്ലെങ്കിൽ ആൻവിലും സ്പിൻഡിലും നേർരേഖയിൽ നിൽക്കില്ല. കുഴിഞ്ഞ ഭാഗത്താണ് പിടിക്കേണ്ടത്; ഫ്രെയിമിൽ പിടിച്ചാൽ കൈയിലെ ചൂട് സ്ക്രൂവിലെത്തില്ല. വലിയ മൈക്രോമീറ്ററുകളിൽ ഇവിടെ താപ ഇൻസുലേഷൻ പാഡുകൾ ഉണ്ടാകും.','ഫ്രെയിം'],
+  anvil:['ആൻവിൽ','ഉറച്ച അളക്കൽ ഫേസ്. ജോബ് ഇതിനോട് ചേർന്നിരിക്കും.','ഫ്രെയിമിൽ ഉറപ്പിച്ച കാഠിന്യമുള്ള (പലപ്പോഴും കാർബൈഡ്-ടിപ്പ്) സ്റ്റീൽ കുറ്റി. ഇതിന്റെ ഫേസ് പരന്നതായി ലാപ്പ് ചെയ്ത് സ്പിൻഡിൽ ഫേസിന് സമാന്തരമാക്കിയിരിക്കുന്നു. വൃത്തിയായി സൂക്ഷിക്കുക; ചുറ്റികയായോ ചുരണ്ടാനോ ഉപയോഗിക്കരുത്.','ആൻവിൽ'],
+  spindle:['സ്പിൻഡിൽ','ചലിക്കുന്ന അളക്കൽ ഫേസ്; 0.5 mm പിച്ച് സ്ക്രൂവിന്റെ മുൻഭാഗം.','മൈക്രോമീറ്റർ സ്ക്രൂവിന്റെ പിരിയില്ലാത്ത, ഗ്രൈൻഡ് ചെയ്ത മുൻഭാഗമാണ് സ്പിൻഡിൽ. തിംബിളിനൊപ്പം കറങ്ങി മുന്നോട്ട് നീങ്ങുന്നു. ഒരു കറക്കത്തിൽ ആൻവിലിന്റെ നേരെയോ അകലേക്കോ കൃത്യം 0.5 mm നീങ്ങുന്നു.','സ്പിൻഡിൽ'],
+  lock:['സ്പിൻഡിൽ ലോക്ക് (ലോക്ക് ലിവർ)','റീഡിങ് മാറാതിരിക്കാൻ സ്പിൻഡിൽ മുറുക്കുന്നു.','ഈ മൈക്രോമീറ്ററിൽ ഫ്രെയിമിലുള്ള ചെറിയ കറുത്ത ലിവറാണ് ഇത്. റാച്ചറ്റ് ക്ലിക്ക് ചെയ്ത ശേഷം ഇത് തിരിച്ച് സ്പിൻഡിൽ മുറുക്കുക, തുടർന്ന് വായിക്കുകയോ ഉപകരണം ജോബിൽ നിന്ന് എടുക്കുകയോ ചെയ്യുക. വീണ്ടും തിംബിൾ തിരിക്കുന്നതിന് മുൻപ് ഇത് മാറ്റുക.','ലോക്ക് ലിവർ'],
+  sleeve:['സ്ലീവ് (ബാരൽ)','ഡേറ്റം ലൈനും മെയിൻ സ്കെയിലും ഉള്ള ഉറച്ച കുഴൽ.','സ്ലീവ് ഫ്രെയിമുമായി ഉറപ്പിച്ചതാണ്; സ്ക്രൂ കറങ്ങുന്ന ഉൾനട്ട് ഇതിനുള്ളിലാണ്. സീറോ സെറ്റ് ചെയ്യുമ്പോൾ C-സ്പാനർ ഉപയോഗിച്ച് ഇത് അൽപം തിരിച്ച് ഡേറ്റം ലൈൻ തിംബിൾ പൂജ്യത്തിൽ എത്തിക്കാം.','സ്ലീവ്'],
+  scale:['മെയിൻ സ്കെയിലും ഡേറ്റം ലൈനും','0–25 mm. ഡേറ്റത്തിന് മുകളിൽ mm വരകൾ, താഴെ 0.5 mm വരകൾ.','സ്ലീവിലെ നീളമുള്ള വരയാണ് ഡേറ്റം (ഇൻഡക്സ്) ലൈൻ. അതിനു മുകളിൽ മുഴുവൻ മില്ലിമീറ്ററുകൾ, ഓരോ 5 mm-ലും അക്കം; താഴെ അര മില്ലിമീറ്റർ അടയാളങ്ങൾ. ഒരു MSD 0.5 mm ആണ്, പിച്ചിന് തുല്യം.','മെയിൻ സ്കെയിൽ'],
+  thimble:['തിംബിൾ','സ്ക്രൂവുമായി ഉറപ്പിച്ച, കറങ്ങുന്ന നേർലിങ് കുഴൽ.','തിംബിൾ തിരിക്കുമ്പോൾ സ്ക്രൂ കറങ്ങുന്നു. അതിന്റെ ചരിഞ്ഞ മുൻഅറ്റം മെയിൻ സ്കെയിലിലെ സൂചകമാണ്. വേഗം തുറക്കാനും അടയ്ക്കാനും മാത്രം ഉപയോഗിക്കുക; അവസാന സമ്പർക്കം എപ്പോഴും റാച്ചറ്റ് കൊണ്ട്.','തിംബിൾ'],
+  cscale:['സർക്കുലർ (തിംബിൾ) സ്കെയിൽ','ചരിഞ്ഞ അറ്റത്ത് 50 തുല്യ ഡിവിഷൻ; 1 ഡിവിഷൻ = 0.01 mm.','തിംബിളിന്റെ ചരിഞ്ഞ അറ്റം 0, 5, 10 … 45 എന്ന് അക്കമിട്ട 50 തുല്യ ഭാഗങ്ങളായി വിഭജിച്ചിരിക്കുന്നു. ഒരു കറക്കം = 0.5 mm, അതിനാൽ ഒരു ഡിവിഷൻ = 0.5/50 = 0.01 mm. ഡേറ്റം ലൈനുമായി ഒത്തുവരുന്ന ഡിവിഷനാണ് സർക്കുലർ സ്കെയിൽ റീഡിങ് (CSR).','സർക്കുലർ സ്കെയിൽ'],
+  ratchet:['റാച്ചറ്റ് സ്റ്റോപ്പ് (ഫൈൻ നോബ്)','അറ്റത്തെ ചെറിയ നോബ്; നിശ്ചിത ബലത്തിൽ വഴുതുന്നു.','ഒരു സ്പ്രിങ്ങും പോളും വഴിയാണ് റാച്ചറ്റ് തിംബിളിനെ തിരിക്കുന്നത്. ഫേസുകൾ ശരിയായ ബലത്തിൽ (ഏകദേശം 5–10 N) ജോബിൽ തൊടുമ്പോൾ അത് കൂടുതൽ തിരിയാതെ വഴുതി ക്ലിക്ക് ചെയ്യുന്നു. സീറോ പരിശോധനയിലും അളക്കലിലും 2–3 ക്ലിക്ക് നൽകുക.','റാച്ചറ്റ്'],
+  spanner:['C-സ്പാനർ (ക്രമീകരണ റെഞ്ച്)','സീറോ സെറ്റിങ്ങിനായി പെട്ടിയിൽ ലഭിക്കുന്നു.','ഇതിന്റെ പിൻ സ്ലീവിലെ ചെറിയ ദ്വാരത്തിൽ കയറും. ഫേസുകൾ അടച്ച്, സ്പിൻഡിൽ ലോക്ക് ചെയ്ത ശേഷം സ്ലീവ് അൽപം തിരിച്ച് ഡേറ്റം ലൈൻ തിംബിൾ പൂജ്യത്തിൽ എത്തിക്കുന്നു; ചെറിയ സീറോ എറർ മാറുന്നു.','C-സ്പാനർ']},
+ guide:['ആൻവിൽ, സ്പിൻഡിൽ ഫേസുകൾ തുടയ്ക്കുക','ലീസ്റ്റ് കൗണ്ട് കണ്ടെത്തി നൽകുക','റാച്ചറ്റ് ഉപയോഗിച്ച് സ്പിൻഡിൽ ആൻവിലിൽ അടയ്ക്കുക (2–3 ക്ലിക്ക്)','സീറോ എറർ വായിച്ച് നൽകുക','സ്പിൻഡിൽ സാമ്പിളിനേക്കാൾ വിശാലമായി തുറക്കുക','സാമ്പിൾ ആൻവിലിനോട് ചേർത്ത് വയ്ക്കുക','തിംബിൾ കൊണ്ട് അടച്ച് റാച്ചറ്റ് കൊണ്ട് പൂർത്തിയാക്കുക (2–3 ക്ലിക്ക്)','സ്പിൻഡിൽ ലോക്ക് ചെയ്യുക','MSR, CSR വായിച്ച് പരിശോധിക്കുക','സീറോ തിരുത്തൽ ചെയ്യുക (ശരിയാക്കിയ റീഡിങ്)','ലോക്ക് മാറ്റി, തുറന്ന്, ജോബ് മാറ്റി, ചെറിയ വിടവ് വിടുക'],
+ guideDone:'ക്രമം പൂർത്തിയായി. കൂടുതൽ ശ്രമങ്ങൾ രേഖപ്പെടുത്തുക അല്ലെങ്കിൽ വീണ്ടും തുടങ്ങുക.',
+ start:'ആദ്യം അളക്കൽ ഫേസുകൾ തുടയ്ക്കുക, തുടർന്ന് വലതുവശത്തെ ക്രമം പിന്തുടരുക.',
+ lockedTurn:'സ്പിൻഡിൽ ലോക്ക് ആണ്. തിംബിളോ റാച്ചറ്റോ തിരിക്കുന്നതിന് മുൻപ് ലോക്ക് ലിവർ മാറ്റുക.',
+ rSlip:n=>`റാച്ചറ്റ് വഴുതുന്നു, ${n} ക്ലിക്ക്. ശരിയായ അളക്കൽ മർദ്ദം എത്തി.`,
+ rFirst:'ക്ലിക്ക്. റാച്ചറ്റ് വഴുതാൻ തുടങ്ങി; ഒന്നോ രണ്ടോ ക്ലിക്ക് കൂടി നൽകുക.',
+ excess:n=>`അമിത മർദ്ദം! സമ്പർക്കത്തിനു ശേഷം തിംബിൾ ബലമായി തിരിച്ചു; ഫ്രെയിം വളഞ്ഞ് റീഡിങ് ${n} ഡിവിഷൻ കുറയുന്നു. പിന്നോട്ട് തിരിച്ച് റാച്ചറ്റ് കൊണ്ട് അടയ്ക്കുക.`,
+ contactR:'ഫേസുകൾ തൊട്ടു. 2–3 ക്ലിക്ക് വരെ റാച്ചറ്റ് തിരിക്കുക.',contactT:'തിംബിൾ കൊണ്ട് സമ്പർക്കം. ശരിയായ മർദ്ദത്തിന് റാച്ചറ്റ് കൊണ്ട് പൂർത്തിയാക്കുക.',
+ closing:g=>`അടയ്ക്കുന്നു. വിടവ് ${g} mm.`,opening:g=>`തുറക്കുന്നു. വിടവ് ${g} mm.`,
+ lockOn:'സ്പിൻഡിൽ ലോക്ക് ചെയ്തു. റീഡിങ് ഉറച്ചു; ഇപ്പോൾ വായിക്കാം അല്ലെങ്കിൽ ഉപകരണം ജോബിൽ നിന്ന് എടുക്കാം.',lockOff:'ലോക്ക് മാറ്റി. തിംബിൾ തിരിക്കാം.',
+ cleanLocked:'വൃത്തിയാക്കുന്നതിന് മുൻപ് ലോക്ക് മാറ്റി സ്പിൻഡിൽ തുറക്കുക.',cleanGap:'രണ്ട് ഫേസുകളും തുടയ്ക്കാൻ സ്പിൻഡിൽ കുറഞ്ഞത് 1 mm തുറക്കുക.',cleaned:'ആൻവിൽ, സ്പിൻഡിൽ ഫേസുകൾ നാരില്ലാത്ത തുണികൊണ്ട് തുടച്ചു.',
+ removedWarn:'സാമ്പിൾ മാറ്റി. നല്ല രീതി: മാറ്റുന്നതിന് മുൻപ് സ്പിൻഡിൽ ലോക്ക് ചെയ്യുക, അല്ലെങ്കിൽ അവിടെ വച്ചുതന്നെ വായിക്കുക.',removed:'സാമ്പിൾ മാറ്റി ബെഞ്ചിൽ വച്ചു.',
+ gapSmall:g=>`വിടവ് (${g} mm) സാമ്പിളിന് ചെറുതാണ്. ആദ്യം സ്പിൻഡിൽ കൂടുതൽ തുറക്കുക.`,releaseLock:'ആദ്യം ലോക്ക് മാറ്റുക.',
+ placed:'സാമ്പിൾ ആൻവിലിനോട് ചേർത്ത്, സ്പിൻഡിലിന് ലംബമായി വച്ചു. ഇനി സ്പിൻഡിൽ അടയ്ക്കുക.',
+ removeFirst:'ആദ്യം ഇപ്പോഴുള്ള സാമ്പിൾ മാറ്റുക.',newSpec:'ബെഞ്ചിൽ പുതിയ സാമ്പിൾ. അളവ് മറച്ചിരിക്കുന്നു; അളന്ന് കണ്ടെത്തുക.',
+ zeHidden:'മറച്ച ഒരു സീറോ എറർ ഇട്ടിട്ടുണ്ട്. റാച്ചറ്റ് കൊണ്ട് ഫേസുകൾ അടച്ച് അത് കണ്ടെത്തുക.',zeChanged:'സീറോ എറർ ക്രമീകരണം മാറി. സീറോ വീണ്ടും പരിശോധിക്കുക.',
+ lcEnter:'ലീസ്റ്റ് കൗണ്ട് mm-ൽ നൽകുക.',lcOK:(N,l)=>`ശരി. LC = പിച്ച് ÷ ഡിവിഷനുകൾ = 0.5 ÷ ${N} = ${l} mm.`,lcBad:N=>`ശരിയല്ല. പിച്ച് (ഒരു കറക്കത്തിലെ നീക്കം) കണ്ടെത്തി തിംബിൾ ഡിവിഷനുകൾ (${N}) കൊണ്ട് ഹരിക്കുക.`,
+ zeNeedClose:'സീറോ പരിശോധിക്കാൻ സാമ്പിൾ മാറ്റി, റാച്ചറ്റ് കൊണ്ട് സ്പിൻഡിൽ ആൻവിലിൽ അടയ്ക്കുക.',zeNeedR:'മർദ്ദം അളക്കലിന് തുല്യമാകാൻ സീറോ പരിശോധന റാച്ചറ്റ് കൊണ്ട് ചെയ്യുക.',
+ zeEnter:'സീറോ എറർ mm-ൽ ചിഹ്നത്തോടെ നൽകുക, ഉദാ. +0.03 അല്ലെങ്കിൽ −0.04.',zeOK:(v,d)=>`ശരി. സീറോ എറർ = ${v} mm.${d?' ശ്രദ്ധിക്കുക: ഫേസുകളിൽ അഴുക്കുണ്ട്, ഇതിൽ പൊടിയുടെ പാളിയും ഉൾപ്പെടുന്നു.':''}`,
+ zeBadNeg:(p,N)=>`ശരിയല്ല. ഡിവിഷൻ ${p} ഡേറ്റത്തിലും 0 അതിനു മുകളിലുമാണ്, അതിനാൽ ZE = −(${N} − ${p}) × LC.`,zeBad:'ശരിയല്ല. ഫേസുകൾ തൊടുമ്പോൾ ഏത് തിംബിൾ ഡിവിഷനാണ് ഡേറ്റം ലൈനിൽ എന്ന് നോക്കുക.',
+ rdNoContact:'സ്പിൻഡിൽ സാമ്പിളിൽ തൊടുന്നില്ല. സാമ്പിൾ വച്ച് റാച്ചറ്റ് കൊണ്ട് അടയ്ക്കുക.',rdEnter:'MSR (mm), CSR (ഡിവിഷൻ) നൽകുക.',
+ msrBad:'MSR ശരിയല്ല. തിംബിൾ അറ്റത്ത് കാണുന്ന അവസാന സ്ലീവ് വര കണ്ടെത്തുക; ഡേറ്റത്തിന് താഴെയുള്ള അര mm വരകൾ ഓർക്കുക.',csrBad:'MSR ശരി, CSR ശരിയല്ല. ഡേറ്റം ലൈനുമായി ഒത്തുവരുന്ന തിംബിൾ വര കണ്ടെത്തുക.',
+ rdOK:s=>`റീഡിങ് ശരി: ${s}.`,needZE:' ശരിയാക്കിയ അളവിന് ഇനി സീറോ എറർ നൽകുക.',corrOK:c=>` ശരിയാക്കിയത് = ${c} mm. ഇത് യഥാർത്ഥ അളവുമായി യോജിക്കുന്നു.`,
+ corrOff:(c,e,w)=>` ശരിയാക്കിയത് = ${c} mm, ${e} mm വ്യത്യാസം${w?'. സാധ്യതയുള്ള കാരണം: '+w:''}.`,
+ wZE:'സീറോ എറർ ശരിയായി പരിശോധിച്ചിട്ടില്ല',wOver:'തിംബിളിന്റെ അമിത മർദ്ദം',wThim:'അവസാന സമ്പർക്കം റാച്ചറ്റ് കൊണ്ടല്ല',wClean:'സീറോ പരിശോധനയ്ക്ക് ശേഷം ഫേസുകൾ വൃത്തിയാക്കി, സീറോ വീണ്ടും നോക്കുക',
+ checkFirst:'ആദ്യം റീഡിങ് പരിശോധിക്കുക; പരിശോധിച്ചവ മാത്രം രേഖപ്പെടുത്തും.',recorded:n=>`ശ്രമം ${n} രേഖപ്പെടുത്തി. ലോക്ക് മാറ്റി, തുറന്ന്, സാമ്പിൾ സ്ഥാനം മാറ്റി വീണ്ടും അളക്കുക.`,fresh:'പുതിയ തുടക്കം. ആദ്യം അളക്കൽ ഫേസുകൾ തുടയ്ക്കുക.',
+ lockLbl:l=>'ലോക്ക് ലിവർ: '+(l?'ലോക്ക്':'തുറന്നത്'),place:'സാമ്പിൾ വയ്ക്കുക',remove:'സാമ്പിൾ മാറ്റുക',wipe:'ഫേസുകൾ തുടയ്ക്കുക',clean:'ഫേസുകൾ വൃത്തി',
+ noTrials:'ഇതുവരെ ശ്രമങ്ങളില്ല. റീഡിങ് പരിശോധിച്ച് "ശ്രമം രേഖപ്പെടുത്തുക" അമർത്തുക.',mean:'ശരാശരി ശരിയാക്കിയ അളവ്',
+ a_gap:'ഫേസുകൾക്കിടയിലെ വിടവ്',a_scale:'സ്കെയിൽ കാണിക്കുന്നത്',a_zero:'ഇപ്പോഴത്തെ സീറോ റീഡിങ്',a_dust:' പൊടി ഉൾപ്പെടെ',a_true:'സാമ്പിളിന്റെ യഥാർത്ഥ അളവ്',a_contact:'സമ്പർക്കം',a_none:'ഇല്ല',a_thim:'തിംബിൾ',a_rat:n=>`റാച്ചറ്റ്, ${n} ക്ലിക്ക്`,a_over:n=>`, അമിത മർദ്ദം −${n} ഡിവിഷൻ`,
+ lc_turned:'തിംബിൾ തിരിച്ചത്',lc_rev:'കറക്കം',lc_div:'ഡിവിഷൻ',lc_adv:'സ്പിൻഡിൽ നീക്കം',lc_per:'ഒരു ഡിവിഷന്',lc_lc:'ലീസ്റ്റ് കൗണ്ട്',
+ capMag:'സ്ലീവും തിംബിളും (വലുതാക്കിയത്)',capSim:'വലുതാക്കിയത് · തിംബിൾ മുകളിലേക്ക്/താഴേക്ക് വലിക്കുക',capClosed:'ഫേസുകൾ അടച്ചത്',bench:'ബെഞ്ചിൽ സാമ്പിൾ · അളവ് അജ്ഞാതം',
+ roNeg:(p,v)=>`ഫേസുകൾ അടച്ചു: തിംബിൾ ${p} ഡേറ്റത്തിൽ → ${v} mm`,enterZE:'സീറോ എറർ നൽകുക'}};
+
+Object.assign(JS_T.en,{next:'Next ▶',prev:'◀ Previous',replay:'↻ Replay',step:(n,N)=>`Step ${n} of ${N}`,obs:'Observed',corr:'Corrected',trial:'Trial'});
+Object.assign(JS_T.hi,{next:'अगला ▶',prev:'◀ पिछला',replay:'↻ फिर चलाएँ',step:(n,N)=>`चरण ${n} / ${N}`,obs:'प्रेक्षित',corr:'संशोधित',trial:'प्रयास'});
+Object.assign(JS_T.ml,{next:'അടുത്തത് ▶',prev:'◀ മുമ്പത്തേത്',replay:'↻ വീണ്ടും കാണിക്കുക',step:(n,N)=>`ഘട്ടം ${n} / ${N}`,obs:'നിരീക്ഷിതം',corr:'ശരിയാക്കിയത്',trial:'ശ്രമം'});
+
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let LANG='en';
+const t=(k,...a)=>{const d=JS_T[LANG]||JS_T.en;const v=d[k]??JS_T.en[k];return typeof v==='function'?v(...a):v;};
+const EN_HTML={};$$('[data-i18n]').forEach(el=>EN_HTML[el.dataset.i18n]=el.innerHTML);
+const TEAL='#1f8db0',TEAL_D='#145f78',K=8;
+
+const S={pitch:0.5,N:50,rev:16,ze:0,zeMode:'none',zeMag:3,locked:false,dirty:true,spec:null,specType:'wire',placed:false,
+  contactBy:null,clicks:0,over:0,hints:false,ans:false,lcOK:false,zeOK:false,zeVal:null,readOK:false,corrOK:false,rows:[],guide:[]};
+const LC=()=>S.pitch/S.N, dec=()=>S.N===100?3:2, gap=()=>S.rev*S.pitch, dust=()=>S.dirty?LC():0;
+const minGap=()=>(S.placed?S.spec.d:0)+dust();
+const contact=()=>Math.abs(gap()-minGap())<1e-9;
+const reading=()=>gap()+S.ze*LC()-(contact()?S.over*LC():0);
+const fx=(v,d)=>{d=d??dec();const r=Math.abs(v)<1e-9?0:v;return r.toFixed(d)};
+const sg=v=>(v>0?'+':v<0?'−':'')+fx(Math.abs(v));
+
+function setup(cv,W,H){const d=Math.max(1,window.devicePixelRatio||1);cv.width=Math.round(W*d);cv.height=Math.round(H*d);
+  const c=cv.getContext('2d');c.setTransform(d,0,0,d,0,0);cv._W=W;cv._H=H;return c;}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function steel(c,y0,y1,dark){const g=c.createLinearGradient(0,y0,0,y1);
+  g.addColorStop(0,dark?'#5f676c':'#7d858b');g.addColorStop(.3,dark?'#d9dee1':'#f4f6f7');g.addColorStop(.55,dark?'#aab1b6':'#cfd5d9');g.addColorStop(1,dark?'#4d5459':'#62696e');return g;}
+function knurl(c,x,y,w,h){c.save();c.beginPath();c.rect(x,y,w,h);c.clip();c.strokeStyle='rgba(30,36,40,.38)';c.lineWidth=1;
+  for(let i=-h;i<w+h;i+=6){c.beginPath();c.moveTo(x+i,y);c.lineTo(x+i+h,y+h);c.stroke();c.beginPath();c.moveTo(x+i+h,y);c.lineTo(x+i,y+h);c.stroke();}c.restore();}
+const thimblePos=(R,N,p)=>{const q=R*N/p;return ((q%N)+N)%N;};
+const FONT=w=>`${w} "IBM Plex Sans","Noto Sans Devanagari","Noto Sans Malayalam",sans-serif`;
+
+function drawSpec(c,type,dmm,x0,yc,rot){const d=dmm*K;
+  if(type==='strip'){c.fillStyle=steel(c,yc-34,yc+34,true);c.fillRect(x0,yc-34,d,68);c.strokeStyle='rgba(0,0,0,.35)';c.lineWidth=1;c.strokeRect(x0,yc-34,d,68);return;}
+  const r=d/2,g2=c.createRadialGradient(x0+r*0.7,yc-r*0.35,1,x0+r,yc,r);
+  if(type==='wire'){g2.addColorStop(0,'#f6c49a');g2.addColorStop(.6,'#c8702f');g2.addColorStop(1,'#7d3c14');}
+  else{g2.addColorStop(0,'#eef1f3');g2.addColorStop(.6,'#9aa2a8');g2.addColorStop(1,'#545b60');}
+  c.fillStyle=g2;c.beginPath();c.arc(x0+r,yc,r,0,7);c.fill();
+  if(rot!==undefined){c.save();c.strokeStyle='#c23b2e';c.lineWidth=2.5;c.beginPath();c.moveTo(x0+r,yc);c.lineTo(x0+r+Math.cos(rot-Math.PI/2)*r*.85,yc+Math.sin(rot-Math.PI/2)*r*.85);c.stroke();c.restore();}}
+function geom(g,R,cy){const AF=260,SF=AF+g*K,E=SF+250+(R-g)*K;return {AF,SF,E,cy};}
+function drawOverview(cv,st,o){
+  const c=cv.getContext('2d'),W=cv._W,H=cv._H,cy=o.cy;const G=geom(st.g,st.R,cy),{AF,SF,E}=G;
+  c.clearRect(0,0,W,H);c.fillStyle=css('--bench');c.fillRect(0,0,W,H);
+  const fpath=()=>{c.beginPath();c.moveTo(229,cy);c.bezierCurveTo(229,cy+200,471,cy+200,471,cy);};
+  c.lineCap='butt';c.strokeStyle=TEAL_D;c.lineWidth=50;fpath();c.stroke();
+  c.strokeStyle=TEAL;c.lineWidth=44;fpath();c.stroke();
+  c.strokeStyle='rgba(10,50,65,.35)';c.lineWidth=14;fpath();c.stroke();
+  rr(c,292,cy+136,114,24,12);c.fillStyle='#1a1e21';c.fill();
+  c.fillStyle='#e9eef0';c.font='600 11px "IBM Plex Mono",monospace';c.textAlign='center';c.textBaseline='middle';
+  c.fillText('0–25 mm  '+fx(st.LC)+' mm',349,cy+148);
+  [[198,56],[436,70]].forEach(([x,w])=>{rr(c,x,cy-33,w,66,9);c.fillStyle=TEAL;c.fill();c.strokeStyle=TEAL_D;c.lineWidth=2;c.stroke();});
+  c.fillStyle=steel(c,cy-13,cy+13);c.fillRect(254,cy-13,AF-254,26);
+  c.fillStyle=steel(c,cy-13,cy+13);c.fillRect(SF,cy-13,436-SF,26);
+  c.fillStyle='rgba(0,0,0,.35)';c.fillRect(SF,cy-13,1.5,26);c.fillRect(AF-1.5,cy-13,1.5,26);
+  if(st.dirty){c.fillStyle='#8a6a3c';[[AF+1,-7],[AF+2,4],[AF+1,9],[SF-2,-4],[SF-3,6],[SF-2,-10]].forEach(([x,y])=>{c.beginPath();c.arc(x,cy+y,1.6,0,7);c.fill();});}
+  if(st.spec){const d=st.spec.d*K;const draw=(x0,yc)=>drawSpec(c,st.spec.type,st.spec.d,x0,yc);
+    if(st.placed)draw(AF+(st.dirty?0.5:0),cy);
+    else if(o.bench){draw(800-d/2,cy+118);c.fillStyle=css('--muted');c.font=FONT('13px');c.textAlign='center';
+      c.fillText(t('bench'),800,Math.min(H-10,cy+118+Math.max(d/2,34)+14));}}
+  c.save();c.translate(471,cy-33);c.rotate(st.lockAng??(st.locked?0:-2.3));rr(c,-3,-4.5,32,9,4.5);c.fillStyle='#1b1e20';c.fill();c.restore();
+  c.beginPath();c.arc(471,cy-33,8.5,0,7);c.fillStyle='#2b3035';c.fill();c.strokeStyle='#888f94';c.lineWidth=1.2;c.beginPath();c.moveTo(466,cy-33);c.lineTo(476,cy-33);c.stroke();
+  const sx=506;c.fillStyle=steel(c,cy-19,cy+19);c.fillRect(sx,cy-19,Math.max(0,E-sx),38);
+  c.strokeStyle='#20272b';c.lineWidth=1;c.beginPath();c.moveTo(sx,cy);c.lineTo(E,cy);c.stroke();
+  const z=E-st.R*K;
+  for(let i=0;i<=50;i++){const x=z+i*0.5*K;if(x>E+0.5||x<sx)continue;c.beginPath();
+    if(i%2===0){c.moveTo(x,cy);c.lineTo(x,cy-(i%10===0?10:6));}else{c.moveTo(x,cy);c.lineTo(x,cy+5);}c.stroke();}
+  c.fillStyle='rgba(0,0,0,.25)';c.fillRect(E-4,cy-19,4,38);
+  c.fillStyle=steel(c,cy-30,cy+30);c.fillRect(E,cy-30,150,60);
+  c.fillStyle='rgba(0,0,0,.10)';c.fillRect(E,cy-30,7,60);
+  const pos=thimblePos(st.R,st.N,st.pitch);c.strokeStyle='#20272b';
+  for(let k=0;k<st.N;k++){const th=(k-pos)*2*Math.PI/st.N,co=Math.cos(th);if(co<0.15)continue;const y=cy-Math.sin(th)*27;
+    const maj=st.N===100?k%10===0:k%5===0;c.lineWidth=0.4+co*0.8;c.beginPath();c.moveTo(E+1,y);c.lineTo(E+(maj?15:9),y);c.stroke();}
+  knurl(c,E+66,cy-30,84,60);
+  c.fillStyle=steel(c,cy-11,cy+11);c.fillRect(E+150,cy-11,10,22);
+  c.fillStyle=steel(c,cy-17,cy+17);c.fillRect(E+160,cy-17,44,34);knurl(c,E+164,cy-17,36,34);
+  rr(c,E+202,cy-14,8,28,3);c.fillStyle=steel(c,cy-14,cy+14,true);c.fill();
+  if(o.hi)outline(c,o.hi,G,cy);
+  if(o.labels)drawLabels(c,G,o.hi);
+}
+function regions(G){const {AF,SF,E,cy}=G;return {frame:{t:'frame'},anvil:[244,cy-16,AF-238,32],spindle:[SF,cy-16,436-SF,32],lock:[455,cy-56,42,34],
+  sleeve:[506,cy-21,E-506,42],scale:[506,cy-12,E-506,24],thimble:[E+40,cy-32,110,64],cscale:[E,cy-32,40,64],ratchet:[E+150,cy-19,62,38],spanner:[740,cy+148,190,46]};}
+function outline(c,id,G,cy){const R=regions(G)[id];if(!R)return;c.save();c.strokeStyle=css('--hl');c.lineWidth=3;c.setLineDash([6,4]);
+  if(R.t==='frame'){c.beginPath();c.moveTo(229,cy);c.bezierCurveTo(229,cy+200,471,cy+200,471,cy);c.lineWidth=58;c.globalAlpha=.28;c.setLineDash([]);c.stroke();}
+  else c.strokeRect(R[0]-3,R[1]-3,R[2]+6,R[3]+6);c.restore();}
+
+const PIDS=['frame','anvil','spindle','lock','sleeve','scale','thimble','cscale','ratchet','spanner'];
+const LABELPOS={frame:[120,410],anvil:[150,40],spindle:[330,40],lock:[490,40],sleeve:[470,410],scale:[640,40],thimble:[810,40],cscale:[640,410],ratchet:[900,250],spanner:[860,410]};
+let partSel='thimble';
+function anchors(G){const {SF,E,cy}=G;return {frame:[300,cy+138],anvil:[256,cy-12],spindle:[(SF+436)/2,cy-12],lock:[471,cy-40],
+  sleeve:[(506+E)/2,cy+17],scale:[(506+E)/2+6,cy],thimble:[E+100,cy-30],cscale:[E+16,cy+24],ratchet:[E+190,cy+17],spanner:[790,cy+170]};}
+function drawLabels(c,G,hi){const A=anchors(G),cy=G.cy;
+  c.save();c.fillStyle='#24292d';rr(c,786,cy+164,130,14,7);c.fill();
+  c.beginPath();c.arc(776,cy+171,20,0,Math.PI*2);c.fill();c.globalCompositeOperation='destination-out';
+  c.beginPath();c.arc(770,cy+171,13,0,Math.PI*2);c.fill();c.fillRect(746,cy+158,22,10);c.restore();
+  c.fillStyle='#24292d';c.beginPath();c.arc(760,cy+165,3.5,0,7);c.fill();
+  const P=t('parts');
+  PIDS.forEach((id,i)=>{const [ax,ay]=A[id],[lx,ly]=LABELPOS[id];const on=id===hi;
+    c.strokeStyle=on?css('--hl'):css('--muted');c.lineWidth=on?2:1;c.globalAlpha=on?1:.75;
+    c.beginPath();c.moveTo(lx,ly);c.lineTo(ax,ay);c.stroke();c.globalAlpha=1;
+    c.fillStyle=on?css('--hl'):css('--ink');c.beginPath();c.arc(ax,ay,3,0,7);c.fill();
+    c.fillStyle=on?css('--hl'):css('--accent');c.beginPath();c.arc(lx,ly,13,0,7);c.fill();
+    c.fillStyle=on?'#1a1205':css('--accent-ink');c.font='600 13px "IBM Plex Mono",monospace';c.textAlign='center';c.textBaseline='middle';c.fillText(i+1,lx,ly+0.5);
+    c.font=FONT(on?'600 15px':'500 15px');c.fillStyle=css('--ink');const right=lx>820;c.textAlign=right?'right':'left';c.fillText(P[id][3],right?lx-19:lx+19,ly+0.5);});
+}
+
+function drawMag(cv,R,o){
+  const c=cv.getContext('2d'),W=cv._W,H=cv._H,cy=H/2,k=56,E=Math.round(W*(o.edge||0.56)),N=o.N;
+  c.clearRect(0,0,W,H);c.fillStyle=css('--bench');c.fillRect(0,0,W,H);
+  const x0=E-(R+1.4)*k,sx=Math.max(0,x0);
+  if(x0>0){c.fillStyle=TEAL;c.fillRect(0,cy-74,x0,148);c.fillStyle=TEAL_D;c.fillRect(x0-3,cy-74,3,148);}
+  c.fillStyle=steel(c,cy-46,cy+46);c.fillRect(sx,cy-46,Math.max(0,E-sx),92);
+  c.fillStyle='#1e2528';c.fillRect(sx,cy-0.8,Math.max(0,E-sx),1.6);
+  c.strokeStyle='#1e2528';c.fillStyle='#1e2528';c.textAlign='center';c.textBaseline='alphabetic';
+  for(let i=0;i<=50;i++){const v=i*0.5,x=E-(R-v)*k;if(x>E+0.6||x<sx-1)continue;c.lineWidth=1.6;c.beginPath();
+    if(i%2===0){c.moveTo(x,cy);c.lineTo(x,cy-(v%5===0?28:22));c.stroke();if(v%5===0){c.font='600 15px "IBM Plex Mono",monospace';c.fillText(v,x,cy-33);}}
+    else{c.moveTo(x,cy);c.lineTo(x,cy+18);c.stroke();}}
+  const g=c.createLinearGradient(0,cy-84,0,cy+84);g.addColorStop(0,'#6c7378');g.addColorStop(.25,'#e9ecee');g.addColorStop(.45,'#f8f9fa');g.addColorStop(.75,'#bcc3c7');g.addColorStop(1,'#5b6266');
+  c.fillStyle='rgba(0,0,0,.28)';c.fillRect(E-7,cy-46,7,92);
+  c.fillStyle=g;c.fillRect(E,cy-84,W-E,168);
+  c.fillStyle='rgba(0,0,0,.07)';c.fillRect(E,cy-84,12,168);
+  knurl(c,E+160,cy-84,W-E-160,168);
+  const pos=thimblePos(R,N,0.5),kc=Math.round(pos)%N;
+  c.textBaseline='middle';c.textAlign='left';
+  for(let kk=0;kk<N;kk++){const th=(kk-pos)*2*Math.PI/N,co=Math.cos(th);if(co<0.06)continue;const y=cy-Math.sin(th)*80;
+    const maj=N===100?kk%10===0:kk%5===0,mid=N===100&&kk%5===0,hl=o.hints&&kk===kc;
+    c.globalAlpha=0.35+0.65*co;c.strokeStyle=hl?css('--hl'):'#1e2528';c.lineWidth=(hl?2.6:1.5)*co+0.3;
+    c.beginPath();c.moveTo(E,y);c.lineTo(E+(maj?34:mid?27:20),y);c.stroke();
+    if(maj||hl){c.save();c.translate(E+42,y);c.scale(1,Math.max(co,0.05));c.fillStyle=hl?css('--hl'):'#1e2528';c.font=`600 ${maj?16:13}px "IBM Plex Mono",monospace`;c.fillText(kk,0,0);c.restore();}}
+  c.globalAlpha=1;c.fillStyle='#1e2528';c.fillRect(E-1,cy-84,1.2,168);
+  if(o.caption){c.fillStyle=css('--muted');c.font=FONT('13px');c.textAlign='left';c.textBaseline='top';c.fillText(o.caption,10,8);}
+  if(o.readout){c.fillStyle=css('--ink');c.font=FONT('600 15px');c.textAlign='left';c.textBaseline='bottom';c.fillText(o.readout,10,H-8);}
+}
+
+const TABS=['parts','lc','ze','proc','prec','sim'];
+function show(tab){if(!TABS.includes(tab))tab='parts';$$('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
+  TABS.forEach(x=>$('#tab-'+x).hidden=x!==tab);store.set('mic-tab',tab);renderAll();}
+$$('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+
+const cvParts=$('#cvParts');setup(cvParts,940,440);
+function buildPartList(){const P=t('parts');$('#partList').innerHTML=PIDS.map((id,i)=>`<button class="part" data-id="${id}" aria-pressed="false"><span class="b">${i+1}</span><strong>${P[id][0]}</strong><span class="d">${P[id][1]}</span></button>`).join('');
+  $$('.part').forEach(b=>b.onclick=()=>{partSel=b.dataset.id;renderParts();});}
+function renderParts(){drawOverview(cvParts,{g:6,R:6,locked:false,dirty:false,spec:null,N:S.N,pitch:.5,LC:LC()},{cy:180,hi:partSel,labels:true});
+  $$('.part').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===partSel));
+  const P=t('parts')[partSel],i=PIDS.indexOf(partSel)+1;$('#partDetail').innerHTML=`<h3>${i}. ${P[0]}</h3><p style="margin:0;max-width:75ch">${P[2]}</p>`;}
+cvParts.addEventListener('click',e=>{const r=cvParts.getBoundingClientRect(),x=(e.clientX-r.left)*940/r.width,y=(e.clientY-r.top)*440/r.height;
+  const G=geom(6,6,180);for(const id of PIDS){const [lx,ly]=LABELPOS[id];if(Math.hypot(x-lx,y-ly)<18){partSel=id;renderParts();return;}}
+  const R=regions(G);for(const id of ['ratchet','cscale','thimble','lock','scale','sleeve','spindle','anvil','spanner']){const q=R[id];if(x>=q[0]&&x<=q[0]+q[2]&&y>=q[1]&&y<=q[1]+q[3]){partSel=id;renderParts();return;}}
+  if(x>190&&x<510&&y>G.cy+20&&y<G.cy+190){partSel='frame';renderParts();}});
+
+const cvLC=$('#cvLC');setup(cvLC,940,240);
+const L={rev:0,anim:null};
+function renderLC(){const R=L.rev*0.5;drawMag(cvLC,R,{N:S.N,hints:true,caption:t('capMag')});
+  const lc=LC();const nt=$('#lcNtext');if(nt)nt.textContent=S.N;const lcc=$('#lcCalc');if(lcc)lcc.textContent=`= 0.5 mm ÷ ${S.N} = ${+lc.toFixed(3)} mm`;
+  const d=Math.round(L.rev*S.N);$('#lcOut').innerHTML=`<span>${t('lc_turned')}</span><span>${(d/S.N).toFixed(2)} ${t('lc_rev')} = ${d} ${t('lc_div')}</span>
+  <span>${t('lc_adv')}</span><span>${fx(R)} mm</span><span>${t('lc_per')}</span><span>${fx(lc)} mm (${t('lc_lc')})</span>`;}
+function animRev(to){cancelAnimationFrame(L.anim);const from=L.rev,t0=performance.now(),dur=matchMedia('(prefers-reduced-motion: reduce)').matches?1:900;
+  const step=now=>{const p=Math.min(1,(now-t0)/dur);L.rev=from+(to-from)*(p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2);renderLC();if(p<1)L.anim=requestAnimationFrame(step);else{L.rev=to;renderLC();}};L.anim=requestAnimationFrame(step);}
+$('#lcDiv').onclick=()=>{cancelAnimationFrame(L.anim);L.rev=Math.round(L.rev*S.N+1)/S.N;if(L.rev>50)L.rev=0;renderLC();};
+$('#lcRev').onclick=()=>{let to=Math.round(L.rev*S.N)/S.N+1;if(to>50)to=0;animRev(to);};
+$('#lcReset').onclick=()=>{cancelAnimationFrame(L.anim);L.rev=0;renderLC();};
+$('#lcN').onchange=e=>setN(+e.target.value);
+
+const zcv=[$('#cvZ0'),$('#cvZ1'),$('#cvZ2')];zcv.forEach(cv=>setup(cv,460,240));
+function renderZE(){[0,0.03,-0.04].forEach((R,i)=>drawMag(zcv[i],R,{N:50,hints:true,edge:.55,caption:t('capClosed')}));}
+
+const cvSim=$('#cvSim'),cvMag=$('#cvMag');setup(cvSim,940,310);setup(cvMag,940,240);
+const GUIDE=[()=>!S.dirty,()=>S.lcOK,()=>!S.placed&&contact()&&S.contactBy==='ratchet'&&S.clicks>=2,()=>S.zeOK,
+ ()=>!S.placed&&gap()>S.spec.d+0.05,()=>S.placed,()=>S.placed&&contact()&&S.contactBy==='ratchet'&&S.clicks>=2,
+ ()=>S.locked&&S.placed&&contact(),()=>S.readOK,()=>S.corrOK,()=>!S.locked&&!S.placed&&!contact()&&gap()<=2&&gap()>0.1];
+function evalGuide(){let i=S.guide.length;while(i<GUIDE.length&&GUIDE[i]()){S.guide.push(true);i++;}}
+function renderGuide(){const n=S.guide.length,G=t('guide');$('#guide').innerHTML=G.map((g,i)=>`<li class="${i<n?'done':i===n?'cur':''}">${g}</li>`).join('')+
+  (n===G.length?`<li class="done" style="grid-template-columns:1fr;font-weight:600">${t('guideDone')}</li>`:'');}
+let msgT={f:()=>t('start'),k:''};
+function say(f,k){msgT={f,k:k||''};}
+
+function newSpec(){const lc=LC();const lo=S.specType==='strip'?1:0.5,hi=S.specType==='rod'?15:S.specType==='strip'?12:4;
+  S.spec={type:S.specType,d:Math.round((lo+Math.random()*(hi-lo))/lc)*lc};S.placed=false;S.readOK=false;S.corrOK=false;}
+function setZE(){const m=S.zeMode;S.ze=m==='pos'?S.zeMag:m==='neg'?-S.zeMag:m==='hidden'?(Math.random()<.5?-1:1)*(1+Math.floor(Math.random()*6)):0;S.zeOK=false;}
+function snap(){S.rev=Math.round(S.rev*S.N)/S.N;}
+let ac=null;function click(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();
+  o.type='square';o.frequency.value=1900;g.gain.setValueAtTime(.06,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+.04);
+  o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.05);}catch(e){}}
+
+function turn(dRev,ratchet){
+  if(S.locked){say(()=>t('lockedTurn'),'warn');renderSim();return;}
+  const minR=minGap()/S.pitch,maxR=25/S.pitch;
+  if(dRev<0){
+    if(S.rev<=minR+1e-9){
+      if(ratchet){S.clicks++;S.over=0;S.contactBy='ratchet';click();const n=S.clicks;say(()=>n>=2?t('rSlip',n):t('rFirst'),'good');}
+      else{S.over=Math.min(S.over+1,3);S.contactBy='thimble';S.clicks=0;const n=S.over;say(()=>t('excess',n),'bad');}
+    }else{S.rev=Math.max(S.rev+dRev,minR);
+      if(S.rev<=minR+1e-9){S.contactBy=ratchet?'ratchet':'thimble';S.clicks=0;say(()=>t(ratchet?'contactR':'contactT'),'warn');}
+      else{const g=fx(gap());say(()=>t('closing',g));}}
+  }else{S.rev=Math.min(S.rev+dRev,maxR);S.over=0;S.contactBy=null;S.clicks=0;const g=fx(gap());say(()=>t('opening',g));}
+  S.readOK=false;S.corrOK=false;evalGuide();renderSim();}
+function holdBtn(b,fn){let t1,t2;const stop=()=>{clearTimeout(t1);clearInterval(t2);};
+  b.addEventListener('pointerdown',e=>{if(e.button)return;fn();t1=setTimeout(()=>t2=setInterval(fn,85),380);});
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,stop));
+  b.addEventListener('click',e=>{if(e.detail===0)fn();});}
+$$('[data-turn]').forEach(b=>{const v=b.dataset.turn;holdBtn(b,()=>v[0]==='d'?turn(+v.slice(1)/S.N,false):turn(+v,false));});
+holdBtn($('#bRatchet'),()=>turn(-0.5,true));
+
+$('#bLock').onclick=()=>{S.locked=!S.locked;const l=S.locked;say(()=>t(l?'lockOn':'lockOff'),l?'good':'');evalGuide();renderSim();};
+$('#bClean').onclick=()=>{if(S.locked)say(()=>t('cleanLocked'),'warn');else if(gap()<1)say(()=>t('cleanGap'),'warn');
+  else{S.dirty=false;S.zeOK=false;say(()=>t('cleaned'),'good');}evalGuide();renderSim();};
+$('#bPlace').onclick=()=>{if(S.placed){const w=contact()&&!S.locked;say(()=>t(w?'removedWarn':'removed'),w?'warn':'');S.placed=false;S.over=0;S.contactBy=null;S.clicks=0;}
+  else{if(gap()<=S.spec.d+dust()){const g=fx(gap());say(()=>t('gapSmall',g),'bad');}
+    else if(S.locked)say(()=>t('releaseLock'),'warn');
+    else{S.placed=true;S.readOK=false;S.corrOK=false;say(()=>t('placed'));}}
+  evalGuide();renderSim();};
+$('#bHints').onclick=()=>{S.hints=!S.hints;renderSim();};
+$('#bAns').onclick=()=>{S.ans=!S.ans;renderSim();};
+$('#bNewSpec').onclick=()=>{if(S.placed){say(()=>t('removeFirst'),'warn');renderSim();return;}newSpec();S.rows=[];say(()=>t('newSpec'));renderSim();};
+$('#selSpec').onchange=e=>{S.specType=e.target.value;if(!S.placed){newSpec();S.rows=[];}renderSim();};
+$('#selZE').onchange=e=>{S.zeMode=e.target.value;$('#zeMagGrp').hidden=!(S.zeMode==='pos'||S.zeMode==='neg');setZE();
+  const h=S.zeMode==='hidden';say(()=>t(h?'zeHidden':'zeChanged'));renderSim();};
+$('#zeMag').oninput=e=>{S.zeMag=+e.target.value;$('#zeMagOut').textContent=S.zeMag;setZE();renderSim();};
+$('#selN').onchange=e=>setN(+e.target.value);
+function updHdr(){const a=$('#hdrN'),b=$('#hdrLC');if(a)a.textContent=S.N+' div';if(b)b.textContent=fx(LC())+' mm';}
+function setN(n){S.N=n;$('#selN').value=n;$('#lcN').value=n;snap();L.rev=Math.round(L.rev*n)/n;S.lcOK=false;S.zeOK=false;
+  if(!S.placed)newSpec();if(S.zeMode!=='none')setZE();S.rows=[];updHdr();renderAll();}
+
+const num=id=>{const v=parseFloat($(id).value);return isNaN(v)?null:v;};
+const near=(a,b)=>Math.abs(a-b)<1e-6;
+$('#bChkLC').onclick=()=>{const v=num('#inLC'),N=S.N,l=fx(LC());if(v===null)say(()=>t('lcEnter'),'warn');
+  else if(near(v,LC())){S.lcOK=true;say(()=>t('lcOK',N,l),'good');}else{S.lcOK=false;say(()=>t('lcBad',N),'bad');}evalGuide();renderSim();};
+$('#bChkZE').onclick=()=>{const v=num('#inZE');
+  if(S.placed||!contact())say(()=>t('zeNeedClose'),'warn');
+  else if(S.contactBy!=='ratchet'||S.clicks<1)say(()=>t('zeNeedR'),'warn');
+  else if(v===null)say(()=>t('zeEnter'),'warn');
+  else{const zr=reading();if(Math.abs(v-zr)<LC()/2){S.zeOK=true;S.zeVal=v;const s=sg(zr),d=S.dirty;say(()=>t('zeOK',s,d),'good');}
+    else{S.zeOK=false;const p=Math.round(thimblePos(zr,S.N,.5))%S.N,N=S.N;say(()=>zr<-1e-9?t('zeBadNeg',p,N):t('zeBad'),'bad');}}
+  evalGuide();renderSim();};
+function expected(){const R=reading();let m=Math.floor(R/S.pitch+1e-9)*S.pitch,cs=Math.round((R-m)/LC());if(cs>=S.N){cs-=S.N;m+=S.pitch;}return {R,m,cs};}
+function updOut(){const m=num('#inMSR'),c=num('#inCSR'),z=num('#inZE');
+  if(m===null||c===null){$('#oObs').textContent='—';$('#oCorr').textContent='—';return;}
+  const o=m+c*LC();$('#oObs').textContent=`${fx(m,1)} + ${c} × ${fx(LC())} = ${fx(o)} mm`;
+  $('#oCorr').textContent=z===null?t('enterZE'):`${fx(o)} − (${sg(z)}) = ${fx(o-z)} mm`;}
+['#inMSR','#inCSR','#inZE'].forEach(id=>$(id).addEventListener('input',updOut));
+$('#bChkRead').onclick=()=>{const m=num('#inMSR'),c=num('#inCSR'),z=num('#inZE');
+  if(!S.placed||!contact()){say(()=>t('rdNoContact'),'warn');renderSim();return;}
+  if(m===null||c===null){say(()=>t('rdEnter'),'warn');renderSim();return;}
+  const e=expected();const okM=near(m,e.m),okC=c===e.cs;
+  if(!(okM&&okC)){S.readOK=false;say(()=>t(!okM?'msrBad':'csrBad'),'bad');renderSim();return;}
+  S.readOK=true;const base=`${fx(m,1)} + ${c} × ${fx(LC())} = ${fx(e.R)} mm`;let tail,k='good';
+  if(z===null){tail=()=>t('needZE');k='warn';S.corrOK=false;}
+  else{const corr=m+c*LC()-z,err=corr-S.spec.d,cs=fx(corr);
+    if(Math.abs(err)<LC()/2&&S.zeOK){S.corrOK=true;tail=()=>t('corrOK',cs);}
+    else{S.corrOK=false;k='warn';const why=[];if(!S.zeOK)why.push('wZE');if(S.over)why.push('wOver');if(S.contactBy!=='ratchet')why.push('wThim');
+      if(S.zeOK&&S.zeVal!==null&&Math.abs(S.zeVal-(S.ze*LC()+dust()))>1e-6)why.push('wClean');const es=fx(err);
+      tail=()=>t('corrOff',cs,es,why.map(w=>t(w)).join('; '));}}
+  say(()=>t('rdOK',base)+tail(),k);evalGuide();renderSim();};
+$('#bRecord').onclick=()=>{if(!S.readOK){say(()=>t('checkFirst'),'warn');renderSim();return;}
+  const m=num('#inMSR'),c=num('#inCSR'),z=num('#inZE')??0,o=m+c*LC();S.rows.push({m,c,o,z,k:o-z});const n=S.rows.length;
+  say(()=>t('recorded',n),'good');S.readOK=false;renderSim();};
+$('#bClearRows').onclick=()=>{S.rows=[];renderSim();};
+$('#bReset').onclick=()=>{Object.assign(S,{rev:16,locked:false,dirty:true,placed:false,contactBy:null,clicks:0,over:0,lcOK:false,zeOK:false,zeVal:null,readOK:false,corrOK:false,rows:[],guide:[]});
+  snap();newSpec();setZE();['#inLC','#inZE','#inMSR','#inCSR'].forEach(i=>$(i).value='');updOut();say(()=>t('fresh'));renderSim();};
+
+let drag=null,acc=0;
+cvMag.addEventListener('pointerdown',e=>{const r=cvMag.getBoundingClientRect(),x=(e.clientX-r.left)*940/r.width;if(x<940*0.56-10)return;drag={y:e.clientY,s:240/r.height};cvMag.setPointerCapture(e.pointerId);});
+cvMag.addEventListener('pointermove',e=>{if(!drag)return;const dy=(e.clientY-drag.y)*drag.s;drag.y=e.clientY;acc+=dy/(2*Math.PI*80);
+  const st=1/S.N;while(Math.abs(acc)>=st){const s=Math.sign(acc);acc-=s*st;turn(s*st,false);}});
+['pointerup','pointercancel'].forEach(ev=>cvMag.addEventListener(ev,()=>{drag=null;acc=0;}));
+cvMag.addEventListener('wheel',e=>{e.preventDefault();turn((e.deltaY>0?1:-1)/S.N,false);},{passive:false});
+cvMag.addEventListener('keydown',e=>{const m={ArrowUp:-1/S.N,ArrowRight:-1/S.N,ArrowDown:1/S.N,ArrowLeft:1/S.N,PageUp:-1,PageDown:1};
+  if(e.key in m){e.preventDefault();turn(m[e.key],false);}else if(e.key==='r'||e.key==='R'){e.preventDefault();turn(-0.5,true);}});
+
+function renderSim(){const R=reading();
+  drawOverview(cvSim,{g:gap(),R,locked:S.locked,dirty:S.dirty,spec:S.spec,placed:S.placed,N:S.N,pitch:S.pitch,LC:LC()},{cy:110,bench:true});
+  let ro=null;if(S.hints){const e=expected();ro=R<-1e-9?t('roNeg',Math.round(thimblePos(R,S.N,.5))%S.N,sg(R)):`MSR ${fx(e.m,1)} + CSR ${e.cs} × ${fx(LC())} = ${fx(R)} mm`;}
+  drawMag(cvMag,R,{N:S.N,hints:S.hints,caption:t('capSim'),readout:ro});
+  const m=$('#msg');m.textContent=msgT.f();m.className='msg '+msgT.k;
+  $('#bLock').textContent=t('lockLbl',S.locked);$('#bLock').classList.toggle('on',S.locked);
+  $('#bPlace').textContent=t(S.placed?'remove':'place');
+  $('#bHints').classList.toggle('on',S.hints);$('#bAns').classList.toggle('on',S.ans);
+  $('#bClean').disabled=!S.dirty;$('#bClean').textContent=t(S.dirty?'wipe':'clean');
+  const ab=$('#ansBox');ab.hidden=!S.ans;if(S.ans){const e=expected();
+    ab.innerHTML=`<span>${t('a_gap')}</span><span>${fx(gap())} mm</span><span>${t('a_scale')}</span><span>${fx(R)} mm${R>=0?` (MSR ${fx(e.m,1)}, CSR ${e.cs})`:''}</span>
+    <span>${t('a_zero')}</span><span>${sg(S.ze*LC()+dust())} mm${S.dirty?t('a_dust'):''}</span><span>${t('a_true')}</span><span>${fx(S.spec.d)} mm</span>
+    <span>${t('a_contact')}</span><span>${contact()?(S.contactBy==='ratchet'?t('a_rat',S.clicks):t('a_thim')):t('a_none')}${S.over?t('a_over',S.over):''}</span>`;}
+  const tb=$('#rows'),tf=$('#rowsFoot');
+  if(!S.rows.length){tb.innerHTML=`<tr><td colspan="6" style="text-align:left;color:var(--muted);white-space:normal">${t('noTrials')}</td></tr>`;tf.innerHTML='';}
+  else{tb.innerHTML=S.rows.map((r,i)=>`<tr><td>${i+1}</td><td>${fx(r.m,1)}</td><td>${r.c}</td><td>${fx(r.o)}</td><td>${sg(r.z)}</td><td>${fx(r.k)}</td></tr>`).join('');
+    const mean=S.rows.reduce((a,r)=>a+r.k,0)/S.rows.length;tf.innerHTML=`<tr><td colspan="5">${t('mean')}</td><td>${fx(mean,dec()+1)}</td></tr>`;}
+  renderGuide();updOut();}
+
+/* ---------- PROCEDURE step player ---------- */
+const cvPO=$('#cvProc'),cvPM=$('#cvProcMag');setup(cvPO,940,310);setup(cvPM,940,220);
+const PD=7.86,PZ=0.02,PCY=110,OPEN=-2.3;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),seg=(p,a,b)=>clamp((p-a)/(b-a),0,1),ez=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2,lerp=(a,b,u)=>a+(b-a)*u;
+const BENCH={x:800-PD*K/2,y:PCY+118};
+const ANV=()=>({x:260,y:PCY});
+const mixPos=(a,b,u)=>({x:lerp(a.x,b.x,u),y:lerp(a.y,b.y,u)-Math.sin(Math.PI*u)*70});
+function lbox(c,x,y,lines,alpha){if(alpha<=0)return;c.save();c.globalAlpha=Math.min(1,alpha);c.font=FONT('600 16px');
+  const w=Math.max(...lines.map(l=>c.measureText(l).width))+24,h=lines.length*24+14;x=Math.min(x,930-w);
+  rr(c,x,y,w,h,8);c.fillStyle=css('--surface');c.fill();c.strokeStyle=css('--hl');c.lineWidth=2;c.stroke();
+  c.fillStyle=css('--ink');c.textAlign='left';c.textBaseline='top';lines.forEach((l,i)=>c.fillText(l,x+12,y+9+i*24));c.restore();}
+function rotArrow(c,x,cy,rx,ry,dir){c.save();c.strokeStyle=css('--hl');c.fillStyle=css('--hl');c.lineWidth=3;
+  const A=Math.PI/2.5;c.beginPath();c.ellipse(x,cy,rx,ry,0,-A,A);c.stroke();
+  const a=dir==='close'?A:-A,ex=x+rx*Math.cos(a),ey=cy+ry*Math.sin(a),s=dir==='close'?1:-1;
+  c.beginPath();c.moveTo(ex-7,ey-s*3);c.lineTo(ex+7,ey-s*3);c.lineTo(ex,ey+s*9);c.closePath();c.fill();c.restore();}
+function spArrow(c,G,dir){const y=G.cy-46,x1=G.SF+6,x2=G.SF+56;c.save();c.strokeStyle=css('--hl');c.fillStyle=css('--hl');c.lineWidth=3;
+  c.beginPath();c.moveTo(x1,y);c.lineTo(x2,y);c.stroke();const tip=dir==='close'?x1:x2,s=dir==='close'?-1:1;
+  c.beginPath();c.moveTo(tip+s*8,y);c.lineTo(tip-s*4,y-7);c.lineTo(tip-s*4,y+7);c.closePath();c.fill();c.restore();}
+function clickBurst(c,x,y){c.save();c.strokeStyle=css('--hl');c.lineWidth=2.5;for(let i=0;i<8;i++){const a=i*Math.PI/4;c.beginPath();c.moveTo(x+Math.cos(a)*8,y+Math.sin(a)*8);c.lineTo(x+Math.cos(a)*16,y+Math.sin(a)*16);c.stroke();}
+  c.fillStyle=css('--hl');c.font=FONT('700 16px');c.textAlign='center';c.textBaseline='bottom';c.fillText('click',x,y-20);c.restore();}
+const STEPS=[
+ /*1 inspect*/{dur:4,f:p=>{const u=ez(p);return {g:3+9*Math.sin(Math.PI*u),dirty:true,spec:'bench',arrow:p>.02&&p<.98?(p<.5?'open':'close'):null,ring:p>.8?'lock':null};}},
+ /*2 clean*/{dur:3.5,f:p=>({g:4,dirty:p<.62,spec:'bench',ov:(c,G)=>{const y=lerp(G.cy-95,G.cy+55,ez(seg(p,.1,.85)));c.save();c.fillStyle='#efe8d4';c.strokeStyle='#b9ad8c';c.lineWidth=1.5;
+   rr(c,G.AF+3,y,G.SF-G.AF-6,46,4);c.fill();c.stroke();c.strokeStyle='rgba(150,135,95,.5)';for(let i=1;i<4;i++){c.beginPath();c.moveTo(G.AF+5,y+i*11);c.lineTo(G.SF-5,y+i*11);c.stroke();}c.restore();}})},
+ /*3 LC*/{dur:3.8,f:p=>{const u=ez(seg(p,.12,.72));return {g:4+.5*u,spec:'bench',hints:true,arrow:p>.12&&p<.72?'open':null,
+   mov:(c)=>lbox(c,20,30,['1 rev = 0.5 mm','LC = 0.5 ÷ 50 = 0.01 mm'],seg(p,.72,.8))};}},
+ /*4 zero*/{dur:4.5,f:p=>({g:4*(1-ez(seg(p,0,.42))),spec:'bench',arrow:p<.42?'close':null,ratchet:p>.45&&p<.95,clicks:[.55,.68,.81],hints:p>.5,
+   mov:(c)=>lbox(c,20,30,['ZE = +2 × 0.01 = +0.02 mm'],seg(p,.85,.92))})},
+ /*5 open*/{dur:3.5,f:p=>{const u=seg(p,.08,.85);return {g:9.5*ez(u),spec:'bench',arrow:u>0&&u<1?'open':null};}},
+ /*6 place*/{dur:3.2,f:p=>({g:9.5,spec:mixPos(BENCH,ANV(),ez(seg(p,.1,.85)))})},
+ /*7 close*/{dur:5,f:p=>({g:p<.55?lerp(9.5,PD+.25,ez(seg(p,.05,.55))):lerp(PD+.25,PD,ez(seg(p,.58,.66))),spec:'anvil',arrow:p>.05&&p<.55?'close':null,ratchet:p>=.55,clicks:[.7,.81,.92]})},
+ /*8 lock*/{dur:2.8,f:p=>({g:PD,spec:'anvil',lock:lerp(OPEN,0,ez(seg(p,.2,.6))),ring:'lock'})},
+ /*9 MSR*/{dur:3,f:p=>({g:PD,spec:'anvil',lock:0,mov:(c,M)=>{const a=seg(p,.15,.4);if(!a)return;c.save();c.globalAlpha=a;c.strokeStyle=css('--hl');c.lineWidth=3;c.setLineDash([6,4]);
+   c.strokeRect(M.E-(M.R-7)*M.k-12,M.cy-52,(M.R-7)*M.k+6,80);c.restore();lbox(c,20,30,['MSR = 7 + 0.5 = 7.5 mm'],seg(p,.4,.55));}})},
+ /*10 CSR*/{dur:3,f:p=>({g:PD,spec:'anvil',lock:0,hints:p>.15,mov:(c,M)=>{const a=seg(p,.25,.45);if(!a)return;c.save();c.globalAlpha=a;c.strokeStyle=css('--hl');c.fillStyle=css('--hl');c.lineWidth=3;
+   const tx=M.E+82,ty=M.cy-6;c.beginPath();c.moveTo(M.E+190,M.cy-70);c.lineTo(tx+10,ty-10);c.stroke();c.beginPath();c.moveTo(tx,ty);c.lineTo(tx+16,ty-6);c.lineTo(tx+6,ty-16);c.closePath();c.fill();c.restore();
+   lbox(c,M.E+200,20,['CSR = 38'],seg(p,.45,.6));}})},
+ /*11 calc*/{dur:4.5,f:p=>({g:PD,spec:'anvil',lock:0,hints:true,ov:(c)=>{const L=[`${t('obs')} = 7.5 + 38 × 0.01 = 7.88 mm`,'ZE = +0.02 mm',`${t('corr')} = 7.88 − (+0.02) = 7.86 mm`];
+   const n=p<.1?0:p<.4?1:p<.7?2:3;if(n)lbox(c,520,176,L.slice(0,n),1);}})},
+ /*12 repeat*/{dur:7.5,f:p=>{const tg=[7.86,7.87,7.86],w=Math.min(2,Math.floor(p*3)),q=p*3-w;const target=tg[w],prev=w?tg[w-1]:PD;
+   let g;if(q<.3)g=lerp(prev,PD+.6,ez(seg(q,0,.3)));else g=lerp(PD+.6,target,ez(seg(q,.35,.7)));
+   const rot=(w+seg(q,.3,.35))*Math.PI/4;const rows=[];for(let i=0;i<3;i++)if(i<w||(i===w&&q>.8))rows.push(`${t('trial')} ${i+1}    ${tg[i].toFixed(2)} mm`);
+   if(p>.96)rows.push(`${t('mean')} = 7.863 mm`);
+   return {g,spec:'anvil',rot,arrow:q<.3&&q>0?'open':(q>.35&&q<.7?'close':null),hints:true,ov:(c)=>rows.length&&lbox(c,560,176,rows,1)};}},
+ /*13 store*/{dur:6,f:p=>{const g=p<.15?PD:p<.38?lerp(PD,9.5,ez(seg(p,.15,.38))):p<.62?9.5:lerp(9.5,.8,ez(seg(p,.62,.88)));
+   const sp=p<.38?'anvil':p<.62?mixPos(ANV(),BENCH,ez(seg(p,.4,.6))):'bench';
+   return {g,spec:sp,lock:lerp(0,OPEN,ez(seg(p,0,.12))),arrow:p>.15&&p<.38?'open':(p>.62&&p<.88?'close':null),
+     ov:(c,G)=>{const a=seg(p,.88,.95);if(!a)return;c.save();c.globalAlpha=a;c.strokeStyle=css('--hl');c.lineWidth=2;const y=G.cy-22;
+       c.beginPath();c.moveTo(G.AF,y+6);c.lineTo(G.AF,y);c.lineTo(G.SF,y);c.lineTo(G.SF,y+6);c.stroke();c.restore();lbox(c,G.AF-40,G.cy-74,['0.5 – 1 mm'],a);}};}}];
+const PHASE=[0,0,0,0,1,1,1,1,1,1,1,1,2];
+const PL={i:0,t0:0,raf:0};
+{const s=parseInt(store.get('mic-step'),10);if(s>=0&&s<STEPS.length)PL.i=s;}
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function plRender(p){const s=STEPS[PL.i].f(p),G=geom(s.g,s.g+PZ,PCY);
+  drawOverview(cvPO,{g:s.g,R:s.g+PZ,lockAng:s.lock??OPEN,dirty:!!s.dirty,spec:null,N:50,pitch:.5,LC:.01},{cy:PCY});
+  const c=cvPO.getContext('2d');let sp=s.spec;if(sp==='bench')sp=BENCH;else if(sp==='anvil')sp={x:G.AF,y:PCY};
+  if(sp)drawSpec(c,'rod',PD,sp.x,sp.y,s.rot);
+  if(s.ring)outline(c,s.ring,G,PCY);
+  if(s.arrow){rotArrow(c,G.E+105,PCY,12,42,s.arrow);spArrow(c,G,s.arrow);}
+  if(s.ratchet)rotArrow(c,G.E+182,PCY,7,26,'close');
+  (s.clicks||[]).forEach(ct=>{if(p>=ct&&p<ct+.07)clickBurst(c,G.E+182,PCY-36);});
+  s.ov&&s.ov(c,G,p);
+  drawMag(cvPM,s.g+PZ,{N:50,hints:!!s.hints,caption:t('capMag')});
+  s.mov&&s.mov(cvPM.getContext('2d'),{E:Math.round(940*.56),k:56,cy:110,R:s.g+PZ},p);}
+function plLoop(now){if($('#tab-proc').hidden){PL.raf=0;return;}const d=STEPS[PL.i].dur;
+  const p=RM?1:Math.min(1,(((now-PL.t0)/1000)%(d+1.8))/d);plRender(p);PL.raf=requestAnimationFrame(plLoop);}
+function plCard(){const lis=$$('#tab-proc ol.seq>li'),ph=$$('#tab-proc .phase'),n=STEPS.length;
+  $('#psPhase').textContent=ph[PHASE[PL.i]]?.textContent||'';$('#psNum').textContent=t('step',PL.i+1,n);
+  $('#psBody').innerHTML=lis[PL.i]?.innerHTML||'';
+  $('#psPrev').textContent=t('prev');$('#psNext').textContent=t('next');$('#psReplay').textContent=t('replay');
+  $('#psPrev').disabled=PL.i===0;$('#psNext').disabled=PL.i===n-1;
+  $('#psDots').innerHTML=STEPS.map((_,i)=>`<button class="dot${i===PL.i?' on':i<PL.i?' done':''}" data-i="${i}" aria-label="${t('step',i+1,n)}">${i+1}</button>`).join('');
+  $$('#psDots .dot').forEach(b=>b.onclick=()=>plGo(+b.dataset.i));}
+function plStart(){PL.t0=performance.now();if(!PL.raf)PL.raf=requestAnimationFrame(plLoop);}
+function plGo(i){PL.i=clamp(i,0,STEPS.length-1);store.set('mic-step',PL.i);plCard();plStart();}
+$('#psNext').onclick=()=>plGo(PL.i+1);$('#psPrev').onclick=()=>plGo(PL.i-1);$('#psReplay').onclick=()=>plStart();
+cvPO.addEventListener('click',()=>plStart());
+document.addEventListener('keydown',e=>{if($('#tab-proc').hidden||/INPUT|SELECT|TEXTAREA/.test(e.target.tagName))return;
+  if(e.key==='ArrowRight'||e.key===' '&&e.target===document.body){e.preventDefault();plGo(PL.i+1);}else if(e.key==='ArrowLeft'){e.preventDefault();plGo(PL.i-1);}});
+
+function renderAll(){const tab=$$('nav.tabs button').find(b=>b.getAttribute('aria-selected')==='true')?.dataset.tab;
+  if(tab==='proc'){plCard();if(!PL.raf)plStart();}
+  if(tab==='parts')renderParts();if(tab==='lc')renderLC();if(tab==='ze')renderZE();if(tab==='sim')renderSim();}
+
+function setLang(l){LANG=JS_T[l]?l:'en';document.documentElement.lang=LANG;$('#selLang').value=LANG;
+  $$('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;const v=LANG==='en'?EN_HTML[k]:(HTML_T[LANG][k]??EN_HTML[k]);if(v!==undefined)el.innerHTML=v;});
+  const zm=$('#zeMagOut');if(zm)zm.textContent=S.zeMag;
+  updHdr();buildPartList();store.set('mic-lang',LANG);renderAll();}
+function setTheme(v){const r=document.documentElement;if(v==='light'||v==='dark')r.setAttribute('data-theme',v);else r.removeAttribute('data-theme');$('#selTheme').value=v;store.set('mic-theme',v);}
+function setProj(on){document.documentElement.classList.toggle('proj',on);$('#bProj').classList.toggle('on',on);$('#bProj').setAttribute('aria-pressed',on);store.set('mic-proj',on?'1':'0');}
+$('#selLang').onchange=e=>setLang(e.target.value);
+$('#selTheme').onchange=e=>setTheme(e.target.value);
+$('#bProj').onclick=()=>setProj(!document.documentElement.classList.contains('proj'));
+$('#bFull').onclick=()=>{try{const d=document;if(d.fullscreenElement)d.exitFullscreen?.();else{const p=d.documentElement.requestFullscreen?.();p&&p.catch&&p.catch(()=>{});}}catch(e){}};
+
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',renderAll);
+new MutationObserver(renderAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+document.fonts?.ready.then(renderAll);
+
+newSpec();setZE();
+setTheme(store.get('mic-theme')||'auto');setProj(store.get('mic-proj')==='1');
+let start='parts';const h=(location.hash||'').slice(1);if(TABS.includes(h))start=h;else{const s=store.get('mic-tab');if(TABS.includes(s))start=s;}
+$$('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===start));TABS.forEach(x=>$('#tab-'+x).hidden=x!==start);
+setLang(store.get('mic-lang')||'en');
+})();
+</script>
+
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body></html>
