@@ -1,0 +1,1349 @@
+<title>Earth Leakage Breakers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Noto+Sans:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
+<style>
+/* Layout: projector stage — header controls, grouped tabs, two-column slide (text + steps | animation), fixed footer for slide + step control */
+:root{
+  --bg:#eceff1; --panel:#ffffff; --ink:#132029; --muted:#55636e; --line:#c6cfd6;
+  --accent:#0a6880; --accent-ink:#ffffff; --hlbg:#fff1cc; --metal:#dce3e8;
+  --phase:#c3161c; --neutral:#1a1f24; --earth:#1b8538; --fault:#d47500; --core:#7d8891;
+  --good:#1b8538; --bad:#c3161c; --ry:#a87800; --rb:#1556c0;
+  --plastic:#fbfbf6; --plastic-edge:#8f999f; --plastic-ink:#1c2328; --slot:#c7cdd2; --lever:#27406a; --tbtn:#d9a400;
+  --f-disp:"Barlow Condensed","Noto Sans Devanagari","Noto Sans Malayalam","Arial Narrow",sans-serif;
+  --f-body:"Noto Sans","Noto Sans Devanagari","Noto Sans Malayalam",system-ui,sans-serif;
+  --scale:1; --swm:1;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]):not([data-theme="contrast"]){
+    --bg:#0e151b; --panel:#162029; --ink:#e6ecf0; --muted:#9aa9b4; --line:#2d3b46;
+    --accent:#4ec4dd; --accent-ink:#04262f; --hlbg:#2e2711; --metal:#24313b;
+    --phase:#ff5b60; --neutral:#d3d9df; --earth:#4fd072; --fault:#ffb02e; --core:#8d99a3;
+    --good:#4fd072; --bad:#ff5b60; --ry:#ffd23f; --rb:#62a2ff;
+    --plastic:#e2e5e7; --plastic-edge:#7e888e; --slot:#b4bbc0; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e151b; --panel:#162029; --ink:#e6ecf0; --muted:#9aa9b4; --line:#2d3b46;
+  --accent:#4ec4dd; --accent-ink:#04262f; --hlbg:#2e2711; --metal:#24313b;
+  --phase:#ff5b60; --neutral:#d3d9df; --earth:#4fd072; --fault:#ffb02e; --core:#8d99a3;
+  --good:#4fd072; --bad:#ff5b60; --ry:#ffd23f; --rb:#62a2ff;
+  --plastic:#e2e5e7; --plastic-edge:#7e888e; --slot:#b4bbc0; color-scheme:dark;
+}
+:root[data-theme="contrast"]{
+  --bg:#000000; --panel:#000000; --ink:#ffffff; --muted:#ffffff; --line:#ffffff;
+  --accent:#ffff00; --accent-ink:#000000; --hlbg:#3a3a00; --metal:#000000;
+  --phase:#ff4545; --neutral:#ffffff; --earth:#00ff6a; --fault:#ff9d00; --core:#c8c8c8;
+  --good:#00ff6a; --bad:#ff4545; --ry:#ffff3d; --rb:#4dabff;
+  --plastic:#000000; --plastic-edge:#ffffff; --plastic-ink:#ffffff; --slot:#333333; --lever:#ffffff; --tbtn:#ffff00;
+  --swm:1.35; color-scheme:dark;
+}
+html,body{height:100%}
+html{font-size:calc(clamp(15px, 9.6px + 0.75vw, 26px) * var(--scale))}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);line-height:1.45}
+#app{height:100%;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;padding-inline:clamp(16px,2vw,40px)}
+
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6rem 1.2rem;padding-block:.6rem .3rem;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:.7rem;min-width:0}
+.plate{font-family:var(--f-disp);font-weight:700;font-size:1rem;letter-spacing:.04em;border:2px solid var(--ink);border-radius:4px;padding:.05em .45em;line-height:1.2;font-variant-numeric:tabular-nums}
+.brand h1{font-family:var(--f-disp);font-weight:700;font-size:1.35rem;margin:0;line-height:1.15;text-wrap:balance}
+.brand small{display:block;font-family:var(--f-body);font-weight:600;font-size:.72rem;color:var(--muted);letter-spacing:.06em}
+.ctrls{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center}
+.grp{display:flex;gap:.25rem;align-items:center}
+.grp .lab{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-right:.2rem}
+.btn{font:600 .85rem/1.1 var(--f-body);color:var(--ink);background:var(--panel);border:1.5px solid var(--line);border-radius:6px;padding:.45em .75em;min-height:2.3em;cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+.btn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:disabled{opacity:.35;cursor:default}
+.btn:focus-visible,.tab:focus-visible,.steps li:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.tabs{display:flex;gap:.35rem;overflow-x:auto;padding-block:.5rem;scrollbar-width:thin}
+.tab{flex:0 0 auto;display:flex;align-items:baseline;gap:.4em;font:600 .85rem/1.1 var(--f-body);color:var(--ink);background:var(--panel);border:1.5px solid var(--line);border-radius:5px;padding:.45em .7em;cursor:pointer}
+.tab b{font-family:var(--f-disp);font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.tab[aria-current="true"]{border-color:var(--ink);box-shadow:inset 0 -4px 0 var(--accent)}
+.tabsep{flex:0 0 auto;align-self:center;font-family:var(--f-disp);font-weight:700;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-inline:.5rem .2rem;border-left:2px solid var(--line);margin-left:.3rem}
+.tabsep:first-child{border-left:0;margin-left:0;padding-left:0}
+
+main{min-height:0;overflow:auto;padding-block:.4rem .6rem}
+.slide{height:100%;min-height:0}
+.kind-svg{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.5fr);gap:clamp(1rem,2.2vw,2.4rem)}
+.txt{min-width:0;overflow:auto;padding-right:.3rem}
+.txt h2{font-family:var(--f-disp);font-weight:700;font-size:2.05rem;line-height:1.1;margin:.1rem 0 .55rem;text-wrap:balance}
+.pts{margin:0 0 .8rem;padding-left:1.15em;font-size:1.02rem;display:grid;gap:.3rem}
+.pts li::marker{color:var(--accent)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:.3rem;border-top:1px solid var(--line);padding-top:.6rem}
+.steps li{display:grid;grid-template-columns:2em minmax(0,1fr);gap:.6em;align-items:start;padding:.35em .5em;border-radius:6px;font-size:.98rem;cursor:pointer;color:var(--muted)}
+.steps li .n{display:grid;place-items:center;width:1.75em;height:1.75em;border-radius:50%;border:2px solid var(--line);font-family:var(--f-disp);font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted)}
+.steps li.done{color:var(--ink)}
+.steps li.done .n{border-color:var(--ink);color:var(--ink)}
+.steps li.cur{background:var(--hlbg);color:var(--ink);font-weight:600}
+.steps li.cur .n{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.fig{min-width:0;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:.5rem;display:flex;align-items:center;justify-content:center}
+.fig svg{width:100%;height:100%;max-height:100%;display:block}
+
+svg text{font-family:var(--f-body)}
+svg .b{font-weight:700}
+.t-sm{font-size:calc(17px * (.6 + .4 * var(--scale)))}
+.t-md{font-size:calc(21px * (.6 + .4 * var(--scale)))}
+.t-lg{font-size:calc(30px * (.6 + .4 * var(--scale)))}
+.t-xl{font-size:calc(46px * (.6 + .4 * var(--scale)));font-family:var(--f-disp)}
+.tx{fill:var(--ink)} .tx-m{fill:var(--muted)} .tx-L{fill:var(--phase)} .tx-N{fill:var(--neutral)} .tx-Y{fill:var(--ry)} .tx-B{fill:var(--rb)}
+.tx-f{fill:var(--fault)} .tx-a{fill:var(--accent)} .tx-bad{fill:var(--bad)} .tx-good{fill:var(--good)} .tx-ai{fill:var(--accent-ink)}
+.wL,.wN,.wE,.wY,.wB{fill:none;stroke-width:calc(4px * var(--swm));stroke-linecap:round;stroke-linejoin:round}
+.wL{stroke:var(--phase)} .wN{stroke:var(--neutral)} .wE{stroke:var(--earth)} .wY{stroke:var(--ry)} .wB{stroke:var(--rb)}
+.dash{stroke-dasharray:8 8}
+.ink-s{fill:none;stroke:var(--ink);stroke-width:calc(2.5px * var(--swm));stroke-linecap:round;stroke-linejoin:round}
+.ink-s.thick{stroke-width:calc(5px * var(--swm))}
+.dot{fill:var(--ink);stroke:none}
+.box{fill:var(--panel);stroke:var(--ink);stroke-width:2}
+.metal{fill:var(--metal);stroke:var(--ink);stroke-width:calc(3px * var(--swm))}
+.motor,.coil,.relay{fill:var(--panel);stroke:var(--ink);stroke-width:calc(2.5px * var(--swm))}
+.plunger{fill:var(--core);stroke:var(--ink);stroke-width:2}
+.core{fill:none;stroke:var(--core);stroke-width:18;opacity:.9}
+.core.sat{stroke:var(--bad);opacity:.75}
+.dcs{fill:none;stroke:var(--accent);stroke-width:8}
+.mech{fill:none;stroke:var(--muted);stroke-width:calc(2.5px * var(--swm));stroke-dasharray:7 6}
+.bolt{fill:var(--fault);stroke:none}
+.pipe{fill:none;stroke:var(--core);stroke-width:12;stroke-linecap:round;stroke-linejoin:round}
+.person{fill:none;stroke:var(--ink);stroke-width:calc(4px * var(--swm));stroke-linecap:round}
+.head{fill:var(--panel);stroke:var(--ink);stroke-width:calc(3px * var(--swm))}
+.xmark{fill:none;stroke:var(--bad);stroke-width:5;stroke-linecap:round}
+.bimetal{fill:none;stroke:var(--core);stroke-width:11;stroke-linecap:round}
+.heat{fill:none;stroke:var(--fault);stroke-width:3;stroke-linecap:round}
+.latch{fill:var(--metal);stroke:var(--ink);stroke-width:2}
+.track{fill:var(--line)} .fill-good{fill:var(--good)} .fill-warn{fill:var(--fault)} .fill-acc{fill:var(--accent)} .fill-bad{fill:var(--bad)}
+.ptr{fill:var(--ink)}
+.rcdline{stroke:var(--accent);stroke-width:4;stroke-dasharray:10 6;fill:none}
+.ovl{fill:var(--accent)}
+.scope{fill:var(--bg);stroke:var(--ink);stroke-width:1.5}
+.axis{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 4}
+.wave{fill:none;stroke:var(--accent);stroke-width:3;stroke-linejoin:round}
+.car{fill:var(--metal);stroke:var(--ink);stroke-width:2.5}
+.phone{fill:var(--ink)} .screen{fill:var(--bg)}
+.wifi{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round}
+.fbox{fill:var(--panel);stroke:var(--ink);stroke-width:2}
+.fbox.dashb{stroke-dasharray:8 6}
+/* device front views */
+.plas{fill:var(--plastic);stroke:var(--plastic-edge);stroke-width:2}
+.pt{fill:var(--plastic-ink)}
+.screw{fill:var(--core);stroke:var(--plastic-ink);stroke-width:1.5}
+.ink-p{fill:none;stroke:var(--plastic-ink);stroke-width:1.5}
+.slot{fill:var(--slot)}
+.lever{fill:var(--lever)}
+.tbtn{fill:var(--tbtn)} .tbt{fill:#1c2328}
+.led{fill:var(--good)} .led.red{fill:var(--bad)} .ledoff{fill:var(--slot)}
+.knob{fill:var(--core);stroke:var(--plastic-ink);stroke-width:1.5}
+.lcd{fill:var(--bg);stroke:var(--plastic-ink);stroke-width:1.5}
+
+.flow{fill:none;stroke:var(--fault);stroke-width:calc(6px * var(--swm));stroke-dasharray:10 12;stroke-linecap:round;stroke-linejoin:round;animation:dash .8s linear infinite}
+.flow.acc{stroke:var(--accent);stroke-width:calc(4px * var(--swm))}
+.flow.rev{animation-direction:reverse}
+.flow.fast{animation-duration:.3s;stroke-width:calc(8px * var(--swm))}
+.flow.thin{stroke-width:calc(3px * var(--swm))}
+@keyframes dash{to{stroke-dashoffset:-22}}
+[data-show],[data-hl],[data-dim]{transition:opacity .35s ease, visibility .35s ease}
+.off{opacity:0;visibility:hidden}
+.dim{opacity:.18}
+svg .hl{filter:drop-shadow(0 0 4px var(--accent)) drop-shadow(0 0 2px var(--accent))}
+
+.terms{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.25rem .7rem;margin:0 0 .8rem;padding:.55rem .75rem;background:var(--panel);border:1px solid var(--line);border-radius:8px;font-size:.88rem}
+.terms dt{font-weight:700;color:var(--accent)}
+.terms dd{margin:0}
+.badge{fill:var(--panel);stroke:var(--accent);stroke-width:2.5}
+.badge-big{fill:var(--accent)}
+.kind-table,.kind-list{display:flex;flex-direction:column;gap:.8rem;height:auto}
+.kind-table .txt,.kind-list .txt{overflow:visible}
+.tblwrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:1.05rem}
+th,td{padding:.6em .8em;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font-family:var(--f-disp);font-size:1.4rem;background:var(--bg)}
+tbody th{font-weight:600;color:var(--muted);width:28%}
+td.yes{color:var(--good);font-weight:700}
+td.no{color:var(--bad);font-weight:700}
+tr:last-child th,tr:last-child td{border-bottom:0}
+.rules{margin:0;padding:0;list-style:none;display:grid;gap:.5rem;counter-reset:r}
+.rules li{counter-increment:r;display:grid;grid-template-columns:2.2em minmax(0,1fr);gap:.6em;align-items:start;background:var(--panel);border:1.5px solid var(--line);border-radius:8px;padding:.6em .8em;font-size:1.1rem;transition:background .3s,border-color .3s;cursor:pointer}
+.rules li::before{content:counter(r);display:grid;place-items:center;width:1.9em;height:1.9em;border-radius:50%;background:var(--ink);color:var(--bg);font-family:var(--f-disp);font-weight:700}
+.rules li.hl{background:var(--hlbg);border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+
+.bot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem 1rem;padding-block:.5rem .7rem;border-top:1px solid var(--line)}
+.stepctl{display:flex;align-items:center;gap:.35rem}
+.stepctl .cnt{font-family:var(--f-disp);font-weight:700;font-size:1.15rem;min-width:5.5em;text-align:center;font-variant-numeric:tabular-nums}
+.credit{font-size:.72rem;color:var(--muted)}
+.nav{display:flex;gap:.35rem;align-items:center}
+.nav .cnt{font-family:var(--f-disp);font-weight:700;font-size:1.05rem;min-width:3.4em;text-align:center;font-variant-numeric:tabular-nums}
+
+@media (max-width: 900px){
+  #app{height:auto;min-height:100%}
+  .slide{height:auto}
+  .kind-svg{grid-template-columns:minmax(0,1fr)}
+  .txt{overflow:visible}
+  .fig svg{height:auto}
+  main{overflow:visible}
+}
+@media (prefers-reduced-motion: reduce){
+  .flow{animation:none}
+  [data-show],[data-hl],[data-dim],.rules li{transition:none}
+}
+</style>
+
+<div id="app">
+  <header class="top">
+<meta name="section" content="Protection Devices">
+    <div class="brand">
+      <span class="plate">IΔn 30 mA</span>
+      <div><h1 id="brand"></h1><small>ELCB · RCCB · RCBO · RCD · AFDD · ELR</small></div>
+    </div>
+    <div class="ctrls">
+      <div class="grp" role="group" aria-label="Language">
+        <button class="btn" data-lang="en" id="lang-en">EN</button>
+        <button class="btn" data-lang="hi" id="lang-hi">हिंदी</button>
+        <button class="btn" data-lang="ml" id="lang-ml">മലയാളം</button>
+      </div>
+      <div class="grp" role="group">
+        <span class="lab" id="lab-text"></span>
+        <button class="btn" id="fs-dn" aria-label="Smaller text">A−</button>
+        <button class="btn" id="fs-rs" aria-label="Reset text size">A</button>
+        <button class="btn" id="fs-up" aria-label="Larger text">A+</button>
+      </div>
+      <div class="grp" role="group" aria-label="Theme">
+        <button class="btn" data-theme-btn="light" id="th-light"></button>
+        <button class="btn" data-theme-btn="dark" id="th-dark"></button>
+        <button class="btn" data-theme-btn="contrast" id="th-contrast"></button>
+      </div>
+      <button class="btn" id="full"></button>
+    </div>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Slides"></nav>
+  <main id="stage" aria-live="polite"></main>
+  <footer class="bot">
+    <div class="nav">
+      <button class="btn" id="sl-prev"></button>
+      <span class="cnt" id="sl-cnt"></span>
+      <button class="btn" id="sl-next"></button>
+    </div>
+    <div class="stepctl" id="stepctl">
+      <button class="btn" id="st-prev" aria-label="Previous step">◀</button>
+      <span class="cnt" id="st-cnt"></span>
+      <button class="btn" id="st-next" aria-label="Next step">▶</button>
+      <button class="btn" id="st-play"></button>
+      <button class="btn" id="st-reset"></button>
+    </div>
+    <div class="credit">NSTI Calicut · PRASAD UM, VI · CTS Electrician</div>
+  </footer>
+</div>
+
+<script>
+const L=(en,hi,ml)=>({en,hi,ml});
+let lang='en', cur=0, step=1, timer=null, scale=1;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const T=o=>o==null?'':(typeof o==='string'?o:(o[lang]||o.en));
+
+const UI={
+  brand:L('Earth Leakage Protection','अर्थ लीकेज सुरक्षा','എർത്ത് ലീക്കേജ് സംരക്ഷണം'),
+  text:L('Text','अक्षर','അക്ഷരം'),
+  light:L('Light','लाइट','ലൈറ്റ്'), dark:L('Dark','डार्क','ഡാർക്ക്'), contrast:L('High contrast','हाई कॉन्ट्रास्ट','ഹൈ കോൺട്രാസ്റ്റ്'),
+  full:L('Full screen','पूर्ण स्क्रीन','പൂർണ്ണ സ്ക്രീൻ'),
+  prev:L('◀ Previous','◀ पिछला','◀ മുൻപത്തേത്'), next:L('Next ▶','अगला ▶','അടുത്തത് ▶'),
+  step:L('Step','चरण','ഘട്ടം'), play:L('Play','चलाएँ','പ്ലേ'), pause:L('Pause','रोकें','നിർത്തുക'), reset:L('Restart','फिर से','വീണ്ടും')
+};
+
+const LBL={
+  coil:L('Trip coil','ट्रिप कॉइल','ട്രിപ്പ് കോയിൽ'),
+  elec:L('Separate earth electrode','अलग अर्थ इलेक्ट्रोड','പ്രത്യേക എർത്ത് ഇലക്ട്രോഡ്'),
+  body:L('Metal body','धातु बॉडी','ലോഹ ബോഡി'),
+  body0:L('Body 0 V','बॉडी 0 V','ബോഡി 0 V'),
+  body230:L('Body ≈ 230 V','बॉडी ≈ 230 V','ബോഡി ≈ 230 V'),
+  fault:L('Insulation fault','इन्सुलेशन फॉल्ट','ഇൻസുലേഷൻ ഫോൾട്ട്'),
+  off:L('OFF','बंद','ഓഫ്'),
+  pipe:L('Water pipe','पानी का पाइप','വാട്ടർ പൈപ്പ്'),
+  notrip:L('No trip!','ट्रिप नहीं!','ട്രിപ്പ് ഇല്ല!'),
+  broken:L('Earth wire broken','अर्थ तार टूटा','എർത്ത് വയർ പൊട്ടി'),
+  stray:L('Stray voltage','बाहरी वोल्टेज','പുറമേ വോൾട്ടേജ്'),
+  falsetrip:L('False trip','गलत ट्रिप','തെറ്റായ ട്രിപ്പ്'),
+  coilpath:L('Not through coil','कॉइल से नहीं','കോയിലിലൂടെ അല്ല'),
+  meas:L('Measures current, not voltage','वोल्टेज नहीं, करंट मापता है','വോൾട്ടേജ് അല്ല, കറന്റ് അളക്കുന്നു'),
+  core:L('Toroidal core','टोरॉइडल कोर','ടൊറോയ്ഡൽ കോർ'),
+  sec:L('Secondary coil','सेकेंडरी कॉइल','സെക്കൻഡറി കോയിൽ'),
+  relay:L('Trip relay','ट्रिप रिले','ട്രിപ്പ് റിലേ'),
+  load:L('Load','लोड','ലോഡ്'),
+  leak:L('Leakage 30 mA','लीकेज 30 mA','ലീക്കേജ് 30 mA'),
+  rccbok:L('RCCB healthy ✓','RCCB ठीक ✓','RCCB ശരി ✓'),
+  bimetal:L('Bimetal','बाइमेटल','ബൈമെറ്റൽ'),
+  magcoil:L('Magnetic coil','मैग्नेटिक कॉइल','മാഗ്നറ്റിക് കോയിൽ'),
+  toroid:L('Toroid','टोरॉइड','ടൊറോയ്ഡ്'),
+  latch:L('Common latch','साझा लैच','പൊതു ലാച്ച്'),
+  normal:L('Normal: I ≤ In','सामान्य: I ≤ In','സാധാരണ: I ≤ In'),
+  st1:L('Overload: I > In','ओवरलोड: I > In','ഓവർലോഡ്: I > In'),
+  st2:L('Short circuit: I ≫ In','शॉर्ट सर्किट: I ≫ In','ഷോർട്ട് സർക്യൂട്ട്: I ≫ In'),
+  st3:L('Earth leakage: I(L) ≠ I(N)','अर्थ लीकेज: I(L) ≠ I(N)','എർത്ത് ലീക്കേജ്: I(L) ≠ I(N)'),
+  offol:L('OFF: overload','बंद: ओवरलोड','ഓഫ്: ഓവർലോഡ്'),
+  offsc:L('OFF: short circuit','बंद: शॉर्ट सर्किट','ഓഫ്: ഷോർട്ട് സർക്യൂട്ട്'),
+  offel:L('OFF: earth leakage','बंद: अर्थ लीकेज','ഓഫ്: എർത്ത് ലീക്കേജ്'),
+  bodyI:L('Current through body','शरीर से करंट','ശരീരത്തിലൂടെയുള്ള കറന്റ്'),
+  rcdline:L('RCD trips','RCD ट्रिप','RCD ട്രിപ്പ്'),
+  feel:L('Felt as tingle','हल्की झनझनाहट','നേരിയ തരിപ്പ്'),
+  letgo:L('Muscles lock','मांसपेशियाँ जकड़ती हैं','പേശികൾ മുറുകുന്നു'),
+  rcd30:L('RCD must trip','RCD ट्रिप होना चाहिए','RCD ട്രിപ്പ് ആകണം'),
+  fib:L('Heart danger','हृदय को खतरा','ഹൃദയത്തിന് അപകടം'),
+  sum0:L('Sum = 0 → no trip','योग = 0 → ट्रिप नहीं','തുക = 0 → ട്രിപ്പ് ഇല്ല'),
+  front:L('Front view','सामने का दृश्य','മുൻ കാഴ്ച'),
+  family:L('Residual Current Device','रेज़िडुअल करंट डिवाइस','റെസിഡ്യുവൽ കറന്റ് ഡിവൈസ്'),
+  fsub1:L('No overcurrent','ओवरकरंट नहीं','ഓവർകറന്റ് ഇല്ല'),
+  fsub2:L('With MCB','MCB सहित','MCB ഉൾപ്പെടെ'),
+  fsub3:L('In socket','सॉकेट में','സോക്കറ്റിൽ'),
+  fsub4:L('Portable','पोर्टेबल','പോർട്ടബിൾ'),
+  fsub5:L('Large feeders','बड़े फीडर','വലിയ ഫീഡർ'),
+  velcb:L('Voltage ELCB','वोल्टेज ELCB','വോൾട്ടേജ് ELCB'),
+  notrcd:L('Not an RCD','RCD नहीं','RCD അല്ല'),
+  heater:L('Heater','हीटर','ഹീറ്റർ'),
+  wm:L('Washing machine','वॉशिंग मशीन','വാഷിങ് മെഷീൻ'),
+  evvfd:L('EV charger / 3φ VFD','EV चार्जर / 3φ VFD','EV ചാർജർ / 3φ VFD'),
+  leakI:L('Leakage current','लीकेज करंट','ലീക്കേജ് കറന്റ്'),
+  trips:L('Trips ✓','ट्रिप ✓','ട്രിപ്പ് ✓'),
+  blind:L('Core saturated: no trip ✗','कोर सैचुरेट: ट्रिप नहीं ✗','കോർ സാച്ചുറേറ്റ്: ട്രിപ്പ് ഇല്ല ✗'),
+  dcsens:L('DC sensor','DC सेंसर','DC സെൻസർ'),
+  satur:L('Saturated','सैचुरेटेड','സാച്ചുറേറ്റഡ്'),
+  loose:L('Loose terminal','ढीला टर्मिनल','അയഞ്ഞ ടെർമിനൽ'),
+  curwave:L('Current waveform','करंट तरंग','കറന്റ് തരംഗം'),
+  sensor:L('HF sensor','HF सेंसर','HF സെൻസർ'),
+  mcbno:L('MCB cannot see it: I < In','MCB इसे नहीं देख सकता: I < In','MCB-ക്ക് ഇത് കാണാനാവില്ല: I < In'),
+  fireok:L('OFF: fire prevented','बंद: आग रुकी','ഓഫ്: തീ തടഞ്ഞു'),
+  evch:L('EV charger','EV चार्जर','EV ചാർജർ'),
+  blinded:L('Blinded by DC','DC से अंधा','DC മൂലം അന്ധം'),
+  typeBok:L('Detects AC + DC','AC + DC पहचानता है','AC + DC കണ്ടെത്തുന്നു'),
+  ardmotor:L('ARD motor','ARD मोटर','ARD മോട്ടോർ'),
+  pump:L('Pump','पंप','പമ്പ്'),
+  surge:L('Surge','सर्ज','സർജ്'),
+  wait:L('Wait, then ON','रुको, फिर चालू','കാത്തിരുന്ന് ഓൺ'),
+  lockout:L('LOCKOUT','लॉकआउट','ലോക്കൗട്ട്'),
+  tries:L('Tries: 3 of 3','प्रयास: 3 में 3','ശ്രമം: 3-ൽ 3'),
+  house:L('House','घर','വീട്'),
+  leakw:L('Leak','लीक','ലീക്ക്'),
+  st_ok:L('OK','ठीक','ശരി'),
+  st_alert:L('Alert!','चेतावनी!','മുന്നറിയിപ്പ്!'),
+  st_trip:L('Tripped 10:42','ट्रिप 10:42','ട്രിപ്പ് 10:42'),
+  st_clear:L('Fault cleared','फॉल्ट ठीक','ഫോൾട്ട് മാറ്റി'),
+  pcs:L('Computers / UPS','कंप्यूटर / UPS','കമ്പ്യൂട്ടർ / UPS'),
+  filt:L('Filter','फ़िल्टर','ഫിൽട്ടർ'),
+  ordtrip:L('Ordinary RCCB: false trip','साधारण RCCB: गलत ट्रिप','സാധാരണ RCCB: തെറ്റായ ട്രിപ്പ്'),
+  sion:L('SI RCCB: stays ON','SI RCCB: चालू रहता है','SI RCCB: ഓണായി തുടരുന്നു'),
+  sitrip:L('Real fault: SI trips','असली फॉल्ट: SI ट्रिप','യഥാർത്ഥ ഫോൾട്ട്: SI ട്രിപ്പ്'),
+  yol:L('Y phase overload','Y फेज़ ओवरलोड','Y ഫേസ് ഓവർലോഡ്'),
+  off4:L('OFF: all 4 poles','बंद: चारों पोल','ഓഫ്: നാല് പോളുകളും'),
+  npfree:L('N pole not used','N पोल उपयोग में नहीं','N പോൾ ഉപയോഗിക്കുന്നില്ല'),
+  noN:L('No neutral: TEST fails ✗','न्यूट्रल नहीं: TEST काम नहीं करता ✗','ന്യൂട്രൽ ഇല്ല: TEST പരാജയം ✗'),
+  testok:L('With N: TEST trips ✓','N सहित: TEST ट्रिप ✓','N ഉണ്ടെങ്കിൽ: TEST ട്രിപ്പ് ✓'),
+  st:L('Shunt trip','शंट ट्रिप','ഷണ്ട് ട്രിപ്പ്'),
+  delay:L('Delay 0.1 s','देरी 0.1 s','താമസം 0.1 s'),
+  leak500:L('Leakage 500 mA','लीकेज 500 mA','ലീക്കേജ് 500 mA'),
+  peout:L('Earth wire outside CBCT','अर्थ तार CBCT के बाहर','എർത്ത് വയർ CBCT-ക്ക് പുറത്ത്'),
+  panel:L('Panel','पैनल','പാനൽ'),
+  tripunit:L('Trip unit','ट्रिप यूनिट','ട്രിപ്പ് യൂണിറ്റ്'),
+  ablind:L('AC / A core: blind','AC / A कोर: अंधा','AC / A കോർ: അന്ധം'),
+  dcok:L('DC sensor ✓','DC सेंसर ✓','DC സെൻസർ ✓'),
+  st3b:L('Earth leakage: ΣI ≠ 0','अर्थ लीकेज: ΣI ≠ 0','എർത്ത് ലീക്കേജ്: ΣI ≠ 0'),
+  smoothdc:L('Smooth DC','स्मूथ DC','സ്മൂത്ത് DC')
+};
+
+/* ---------- drawing helpers ---------- */
+const earthSym=(x,y)=>`<path class="ink-s" d="M${x-24} ${y} H${x+24} M${x-16} ${y+9} H${x+16} M${x-8} ${y+18} H${x+8}"/>`;
+const lab=(x,y,k,cls,o={})=>`<text class="${cls}" x="${x}" y="${y}" text-anchor="${o.a||'middle'}"${o.s?` data-show="${o.s}"`:''}${o.h?` data-hl="${o.h}"`:''} data-t="${k}"></text>`;
+const txt=(x,y,s,cls,o={})=>`<text class="${cls}" x="${x}" y="${y}" text-anchor="${o.a||'middle'}"${o.s?` data-show="${o.s}"`:''}>${s}</text>`;
+function contacts(x1,x2,ys,closed,open){
+  return `<path class="ink-s thick" data-show="${closed}" d="${ys.map(y=>`M${x1} ${y} H${x2}`).join(' ')}"/>`+
+    `<path class="ink-s thick" data-show="${open}" d="${ys.map(y=>`M${x1} ${y} L${x2-6} ${y-24}`).join(' ')}"/>`+
+    ys.map(y=>`<circle class="dot" cx="${x1}" cy="${y}" r="5"/><circle class="dot" cx="${x2}" cy="${y}" r="5"/>`).join('');
+}
+function wp(t,x0,y0,w,a){
+  let d='';
+  for(let i=0;i<=w;i+=2){
+    const u=i/w, th=u*4*Math.PI; let v=0;
+    if(t==='sine') v=Math.sin(th);
+    else if(t==='pulse') v=Math.max(Math.sin(th),0);
+    else if(t==='mixed') v=.6*Math.sin(th)+.35*Math.sin(th*6);
+    else if(t==='dc') v=.75+.04*Math.sin(th*6);
+    else if(t==='arc'){const s=Math.sin(th); v=Math.abs(s)<.22?0:s+.22*Math.sin(th*23)*Math.sin(th*7);}
+    else if(t==='ripple') v=.12*Math.sin(th);
+    else if(t==='spike') v=.12*Math.sin(th)+.95*Math.exp(-Math.pow((u-.5)/.018,2));
+    d+=(i?'L':'M')+(x0+i)+' '+(y0-v*a).toFixed(1)+' ';
+  }
+  return d;
+}
+function scope(x,y,w,h,key,waves){
+  const ay=y+h/2+8;
+  return `<rect class="scope" x="${x}" y="${y}" width="${w}" height="${h}" rx="6"/>`+lab(x+10,y-8,key,'t-sm tx-m b',{a:'start'})+
+    `<line class="axis" x1="${x+12}" y1="${ay}" x2="${x+w-12}" y2="${ay}"/>`+
+    waves.map(([t,s])=>`<path class="wave" data-show="${s}" d="${wp(t,x+12,ay,w-24,h*.36)}"/>`).join('');
+}
+function mod(o){
+  const {x,y,w,h}=o,p=o.poles||2,cx=x+w/2;
+  let s=`<rect class="plas" x="${x}" y="${y}" width="${w}" height="${h}" rx="6"/>`;
+  for(let i=0;i<p;i++){const tx=x+w*(i+.5)/p;[y+20,y+h-20].forEach(ty=>{s+=`<circle class="screw" cx="${tx}" cy="${ty}" r="7"/><path class="ink-p" d="M${tx-5} ${ty} H${tx+5}"/>`;});}
+  s+=txt(cx,y+h*.2,o.name,'pt b t-sm');
+  const sw=p>2?w*.6:22, sy=y+h*.29, sh=h*.27;
+  s+=`<rect class="slot" x="${cx-sw/2}" y="${sy}" width="${sw}" height="${sh}" rx="4"/>`;
+  s+=`<rect class="lever"${o.on?` data-show="${o.on}"`:''} x="${cx-sw/2+3}" y="${sy+3}" width="${sw-6}" height="${sh*.42}" rx="3"/>`;
+  if(o.off) s+=`<rect class="lever" data-show="${o.off}" x="${cx-sw/2+3}" y="${(sy+sh-3-sh*.42).toFixed(1)}" width="${sw-6}" height="${(sh*.42).toFixed(1)}" rx="3"/>`;
+  s+=txt(cx+sw/2+7,sy+14,'I','pt t-sm',{a:'start'})+txt(cx+sw/2+7,sy+sh-2,'O','pt t-sm',{a:'start'});
+  s+=txt(cx,y+h*.67,o.rate||'','pt b t-sm');
+  if(o.sub) s+=txt(cx,y+h*.76,o.sub,'pt t-sm');
+  s+=`<rect class="tbtn" x="${x+w-32}" y="${y+h*.8}" width="22" height="17" rx="3"/><text class="tbt b" style="font-size:11px" x="${x+w-21}" y="${y+h*.8+13}" text-anchor="middle">T</text>`;
+  if(o.led) s+=`<circle class="led" cx="${x+18}" cy="${y+h*.8+8}" r="6"/>`;
+  s+=lab(cx,y+h+26,'front','t-sm tx-m');
+  return s;
+}
+
+/* ---------- SVG scenes ---------- */
+const SVG={};
+
+SVG.scale=`<svg viewBox="0 0 800 380" role="img" aria-label="Body current scale">
+${lab(60,118,'bodyI','t-sm tx-m b',{a:'start'})}
+<rect class="track" x="60" y="170" width="680" height="50" rx="8"/>
+<rect class="fill-good" data-show="1" x="60" y="170" width="90" height="50" rx="8"/>
+<rect class="fill-warn" data-show="2" x="60" y="170" width="270" height="50" rx="8"/>
+<rect class="fill-acc" data-show="3" x="60" y="170" width="450" height="50" rx="8"/>
+<rect class="fill-bad" data-show="4" x="60" y="170" width="630" height="50" rx="8"/>
+${[150,330,510,690].map((x,i)=>`<line class="ink-s" x1="${x}" y1="160" x2="${x}" y2="230"/>`+txt(x,152,[1,10,30,50][i]+' mA','t-md tx b')).join('')}
+<line class="rcdline" x1="510" y1="88" x2="510" y2="250"/>
+${lab(510,78,'rcdline','t-sm tx-a b')}
+${[150,330,510,690].map((x,i)=>`<polygon class="ptr" data-show="${i+1}" points="${x-15},266 ${x+15},266 ${x},242"/>`).join('')}
+${['feel','letgo','rcd30','fib'].map((k,i)=>lab(400,330,k,'t-lg b '+['tx-good','tx-f','tx-a','tx-bad'][i],{s:i+1})).join('')}
+</svg>`;
+
+SVG.elcb=`<svg viewBox="0 0 800 450" role="img" aria-label="Voltage operated ELCB">
+<rect class="box" x="130" y="50" width="210" height="300" rx="10"/>
+${txt(235,38,'ELCB','t-md tx b')}${txt(16,108,'L','t-md tx-L b',{a:'start'})}${txt(16,188,'N','t-md tx-N b',{a:'start'})}
+<path class="wL" d="M45 100 H170 M210 100 H540"/><path class="wN" d="M45 180 H170 M210 180 H540"/>
+${contacts(170,210,[100,180],'1-4','5')}
+<path class="mech" data-hl="5" d="M190 112 V260 H245"/>
+<path class="wE" data-hl="1" d="M275 240 H640 V220"/>${txt(350,232,'F','t-sm tx-m b',{a:'start'})}
+<path class="wE" data-hl="1" d="M260 295 V390"/>${earthSym(260,392)}
+${txt(272,372,'E','t-sm tx-m b',{a:'start'})}${lab(296,410,'elec','t-sm tx',{a:'start'})}
+<g data-hl="1,4"><rect class="coil" x="245" y="225" width="30" height="70" rx="4"/>
+<path class="ink-s" d="M245 237 H275 M245 249 H275 M245 261 H275 M245 273 H275 M245 285 H275"/></g>
+${lab(260,325,'coil','t-sm tx')}
+<rect class="metal" data-hl="3" x="540" y="60" width="200" height="160" rx="12"/>
+<circle class="motor" cx="660" cy="140" r="38"/>${txt(660,151,'M','t-lg tx b')}
+<path class="ink-s" d="M540 100 L624 124 M540 180 L624 156"/>
+${lab(640,46,'body','t-sm tx')}
+${lab(640,285,'body0','t-md tx-good b',{s:'2'})}${lab(640,285,'body230','t-md tx-bad b',{s:'3-4'})}
+<polygon data-show="3-4" class="bolt" points="562,98 590,98 578,128 598,128 562,178 572,140 552,140"/>
+${lab(560,330,'fault','t-sm tx-f b',{s:'3'})}
+<path data-show="4" class="flow" d="M45 100 H560 L600 150 L640 205 V240 H280 M260 300 V388"/>
+${lab(450,320,'off','t-xl tx-a b',{s:'5'})}
+</svg>`;
+
+SVG.why=`<svg viewBox="0 0 800 450" role="img" aria-label="ELCB limitations">
+<g data-dim="5">
+<rect class="box" x="130" y="50" width="210" height="300" rx="10"/>
+${txt(235,38,'ELCB','t-md tx b')}${txt(16,108,'L','t-md tx-L b',{a:'start'})}${txt(16,188,'N','t-md tx-N b',{a:'start'})}
+<path class="wL" d="M45 100 H170 M210 100 H540"/><path class="wN" d="M45 180 H170 M210 180 H540"/>
+${contacts(170,210,[100,180],'1-3,5','4')}
+<path class="mech" d="M190 112 V260 H245"/>
+<path class="wE" data-show="1-2,4-5" d="M275 240 H640 V220"/>
+<path class="wE" data-show="3" d="M275 240 H418 M462 240 H640 V220"/>
+<path class="xmark" data-show="3" d="M428 228 L452 252 M452 228 L428 252"/>
+${lab(440,278,'broken','t-sm tx-bad b',{s:'3'})}
+<path class="wE" d="M260 295 V390"/>${earthSym(260,392)}
+<g data-hl="4"><rect class="coil" x="245" y="225" width="30" height="70" rx="4"/>
+<path class="ink-s" d="M245 237 H275 M245 249 H275 M245 261 H275 M245 273 H275 M245 285 H275"/></g>
+${lab(260,325,'coil','t-sm tx')}
+<rect class="metal" x="540" y="60" width="200" height="160" rx="12"/>
+<circle class="motor" cx="660" cy="140" r="38"/>${txt(660,151,'M','t-lg tx b')}
+<path class="ink-s" d="M540 100 L624 124 M540 180 L624 156"/>
+<polygon data-show="1,3" class="bolt" points="562,98 590,98 578,128 598,128 562,178 572,140 552,140"/>
+<g data-show="1"><path class="pipe" d="M740 160 H772 V408"/>${earthSym(772,410)}
+${lab(755,330,'pipe','t-sm tx b',{a:'end'})}
+<path class="flow" d="M45 100 H560 L600 150 L640 200 L740 165 H772 V404"/></g>
+${lab(440,330,'notrip','t-md tx-bad b',{s:'1,3'})}
+<g data-show="2"><path class="wL" d="M470 100 V252"/><circle class="dot" cx="470" cy="256" r="5"/>
+<circle class="head" cx="440" cy="298" r="14"/>
+<path class="person" d="M468 262 L440 318 M440 312 V368 M440 368 L424 416 M440 368 L456 416 M440 330 L418 354"/>
+${earthSym(440,420)}<path class="flow" d="M45 100 H470 V262 L440 316 V368 L440 416"/>
+${lab(620,350,'coilpath','t-md tx-bad b')}</g>
+<g data-show="4"><path class="heat" d="M296 366 q10 -12 20 0 t20 0 t20 0 t20 0 t20 0"/>
+${lab(404,372,'stray','t-sm tx-f b',{a:'start'})}${lab(450,322,'falsetrip','t-md tx-bad b')}</g>
+</g>
+<g data-show="5"><rect class="ovl" x="170" y="140" width="460" height="150" rx="16"/>
+${txt(400,212,'ELCB → RCCB','t-xl tx-ai b')}${lab(400,258,'meas','t-md tx-ai b')}</g>
+</svg>`;
+
+/* RCCB: 1 core, 2 balance, 3 leakage, 4 secondary, 5 trip, 6 reset + TEST, 7 trip by test */
+SVG.rccb=`<svg viewBox="0 0 800 450" role="img" aria-label="RCCB construction">
+<rect class="box" x="85" y="60" width="395" height="355" rx="12"/>
+${txt(282,48,'RCCB','t-md tx b')}${txt(12,158,'L','t-md tx-L b',{a:'start'})}${txt(12,248,'N','t-md tx-N b',{a:'start'})}
+<ellipse class="core" data-hl="1" cx="330" cy="195" rx="34" ry="95"/>
+<path class="wL" d="M36 150 H110 M150 150 H640"/><path class="wN" d="M36 240 H110 M150 240 H640"/>
+${lab(284,202,'core','t-sm tx',{a:'end'})}
+${contacts(110,150,[150,240],'1-4,6','5,7')}
+<g data-hl="4,6"><path class="ink-s" d="M308 286 l6 12 l6 -12 l6 12 l6 -12 l6 12 l6 -12 l6 12"/>
+<path class="ink-s" d="M314 298 V340 M350 298 V340"/></g>
+${lab(302,324,'sec','t-sm tx',{a:'end'})}
+<rect class="relay" data-hl="5,7" x="258" y="340" width="144" height="50" rx="6"/>
+${lab(330,371,'relay','t-sm tx b')}
+<path class="mech" data-hl="5,7" d="M258 365 H130 V160"/>
+<g data-hl="6-7"><path class="ink-s" d="M230 150 V80 H290 l5 -10 l10 20 l10 -20 l10 20 l10 -20 l10 20 l5 -10 H385"/>
+<path class="ink-s" d="M425 80 H450 V141 A9 9 0 0 1 450 159 V240"/>
+<circle class="dot" cx="388" cy="80" r="4"/><circle class="dot" cx="422" cy="80" r="4"/>
+<circle class="dot" cx="230" cy="150" r="5"/><circle class="dot" cx="450" cy="240" r="5"/></g>
+<path class="ink-s thick" data-show="1-5" d="M382 64 H428 M405 64 V52"/>
+<path class="ink-s thick" data-show="6-7" d="M382 76 H428 M405 76 V64"/>
+${txt(405,44,'TEST','t-sm tx b')}${txt(325,62,'R','t-sm tx-m b')}
+<rect class="metal" data-hl="3" x="640" y="110" width="140" height="170" rx="12"/>
+${lab(710,203,'load','t-md tx b')}
+<path class="flow acc" data-show="2-4" d="M36 150 H640"/><path class="flow acc rev" data-show="2-4" d="M36 240 H640"/>
+<g data-show="2">${txt(560,136,'I(L) = 5.00 A →','t-sm tx-L b')}${txt(560,270,'← I(N) = 5.00 A','t-sm tx-N b')}${txt(330,201,'Φ=0','t-sm tx-good b')}</g>
+<g data-show="3-4">${txt(560,136,'I(L) = 5.03 A →','t-sm tx-L b')}${txt(560,270,'← I(N) = 5.00 A','t-sm tx-N b')}
+<path class="flow" d="M710 280 V396"/>${earthSym(710,400)}${lab(694,352,'leak','t-sm tx-f b',{a:'end'})}</g>
+${txt(330,201,'Φ≠0','t-sm tx-bad b',{s:'3-4,6'})}
+<path class="flow" data-show="4,6" d="M314 298 V340 M350 298 V340"/>
+<path class="flow" data-show="6" d="M36 150 H230 V80 H450 V240 H36"/>
+${lab(200,312,'off','t-xl tx-a b',{s:'5,7'})}
+${lab(620,360,'rccbok','t-md tx-good b',{s:'7'})}
+</svg>`;
+
+/* RCBO: 1 normal, 2 overload, 3 OFF, 4 short circuit, 5 OFF, 6 leakage, 7 OFF */
+SVG.rcbo=`<svg viewBox="0 0 800 420" role="img" aria-label="RCBO construction">
+<rect class="box" x="60" y="40" width="620" height="340" rx="12"/>
+${txt(370,30,'RCBO','t-md tx b')}${txt(10,178,'L','t-md tx-L b',{a:'start'})}${txt(10,308,'N','t-md tx-N b',{a:'start'})}
+<ellipse class="core" data-hl="6-7" cx="580" cy="235" rx="28" ry="95"/>
+<path class="wL" d="M34 170 H100 M140 170 H200 M300 170 H380 M480 170 H780"/>
+<path class="wN" d="M34 300 H100 M140 300 H780"/>
+${contacts(100,140,[170,300],'1,2,4,6','3,5,7')}
+<rect class="latch" data-hl="3,5,7" x="100" y="70" width="500" height="12" rx="6"/>
+${lab(350,62,'latch','t-sm tx-m b')}
+<path class="mech" data-hl="3,5,7" d="M120 82 V290"/>
+<path class="mech" data-hl="2-3" d="M296 140 V82"/>
+<path class="mech" data-hl="4-5" d="M430 104 V82"/>
+<path class="mech" data-hl="6-7" d="M580 128 V82"/>
+<path class="bimetal" data-show="1,4-7" d="M200 170 H300"/>
+<path class="bimetal" data-show="2-3" data-hl="2-3" d="M200 170 Q255 166 296 140"/>
+<path class="heat" data-show="2" d="M225 186 q6 6 0 12 t0 12 M250 186 q6 6 0 12 t0 12 M275 186 q6 6 0 12 t0 12"/>
+${lab(250,238,'bimetal','t-sm tx')}
+<path class="ink-s" data-hl="4-5" d="M380 170 a10 10 0 0 1 20 0 a10 10 0 0 1 20 0 a10 10 0 0 1 20 0 a10 10 0 0 1 20 0 a10 10 0 0 1 20 0"/>
+<rect class="plunger" data-show="1-3,6-7" x="410" y="128" width="40" height="14" rx="3"/>
+<rect class="plunger" data-show="4-5" data-hl="4-5" x="410" y="104" width="40" height="14" rx="3"/>
+${lab(430,238,'magcoil','t-sm tx')}${lab(580,366,'toroid','t-sm tx')}
+<path class="flow acc" data-show="1" d="M34 170 H780"/><path class="flow acc rev" data-show="1" d="M34 300 H780"/>
+<path class="flow" data-show="2" d="M34 170 H780"/>
+<path class="flow fast" data-show="4" d="M34 170 H780"/>
+<g data-show="6"><path class="flow" d="M740 170 V392"/>${earthSym(740,396)}${lab(790,146,'leak','t-sm tx-f b',{a:'end'})}</g>
+${lab(330,276,'normal','t-md tx-good b',{s:'1'})}
+${lab(330,276,'st1','t-md tx-f b',{s:'2'})}
+${lab(330,280,'offol','t-lg tx-a b',{s:'3'})}
+${lab(330,276,'st2','t-md tx-bad b',{s:'4'})}
+${lab(330,280,'offsc','t-lg tx-a b',{s:'5'})}
+${lab(330,276,'st3','t-md tx-f b',{s:'6'})}
+${lab(330,280,'offel','t-lg tx-a b',{s:'7'})}
+</svg>`;
+
+SVG.family=(()=>{
+  const cx=[90,245,400,555,710], names=['RCCB','RCBO','SRCD','PRCD','ELR / CBR'];
+  const icon=i=>{const x=cx[i];
+    if(i<2) return `<rect class="plas" x="${x-22}" y="265" width="44" height="62" rx="4"/><rect class="slot" x="${x-6}" y="276" width="12" height="20" rx="2"/><rect class="lever" x="${x-4}" y="278" width="8" height="8" rx="1"/>${txt(x,312,i?'C16':'30mA','pt b',{})}<rect class="tbtn" x="${x+8}" y="316" width="9" height="7" rx="1"/>`;
+    if(i===2) return `<rect class="plas" x="${x-30}" y="263" width="60" height="64" rx="7"/><circle class="dot" cx="${x}" cy="281" r="5"/><circle class="dot" cx="${x-12}" cy="303" r="4"/><circle class="dot" cx="${x+12}" cy="303" r="4"/><rect class="tbtn" x="${x+14}" y="316" width="10" height="7" rx="1"/>`;
+    if(i===3) return `<path class="ink-s" d="M${x-8} 262 V272 M${x+8} 262 V272"/><rect class="plas" x="${x-24}" y="272" width="48" height="40" rx="8"/><rect class="tbtn" x="${x+6}" y="280" width="11" height="8" rx="1"/><path class="ink-s" d="M${x} 312 C${x} 326 ${x-30} 322 ${x-34} 334"/>`;
+    return `<path class="wL" d="M${x-50} 286 H${x+12}"/><path class="wY" d="M${x-50} 296 H${x+12}"/><path class="wB" d="M${x-50} 306 H${x+12}"/><ellipse class="dcs" cx="${x-20}" cy="296" rx="9" ry="24"/><rect class="relay" x="${x+16}" y="276" width="40" height="36" rx="4"/>${txt(x+36,299,'ELR','tx b',{})}`;
+  };
+  return `<svg viewBox="0 0 800 430" role="img" aria-label="RCD family">
+<g data-hl="1-5"><rect class="fbox" x="250" y="16" width="300" height="84" rx="10"/></g>
+${txt(400,54,'RCD','t-lg tx b')}${lab(400,86,'family','t-sm tx-m')}
+<path class="ink-s" d="M400 100 V132 M90 132 H710 ${cx.map(x=>`M${x} 132 V160`).join(' ')}"/>
+${cx.map((x,i)=>`<g data-hl="${i+1}"><rect class="fbox" x="${x-70}" y="160" width="140" height="160" rx="10"/></g>${txt(x,192,names[i],'t-md tx b')}${lab(x,220,'fsub'+(i+1),'t-sm tx-m')}${icon(i)}`).join('')}
+<g data-hl="6"><rect class="fbox dashb" x="290" y="350" width="220" height="70" rx="10"/></g>
+${lab(400,378,'velcb','t-sm tx b')}${lab(400,404,'notrcd','t-sm tx-bad b')}
+<path class="xmark" data-show="6" d="M262 360 L282 380 M282 360 L262 380"/>
+</svg>`;})();
+
+/* RCD types: circuit per type */
+SVG.types=`<svg viewBox="0 0 800 450" role="img" aria-label="RCD types with load circuits">
+${txt(14,118,'L','t-md tx-L b',{a:'start'})}${txt(14,208,'N','t-md tx-N b',{a:'start'})}
+<rect class="box" x="120" y="50" width="180" height="220" rx="12"/>
+<path class="wL" d="M36 110 H380"/><path class="wN" d="M36 200 H380"/>
+<ellipse class="core" cx="210" cy="155" rx="24" ry="72"/>
+<ellipse class="core sat" data-show="5" cx="210" cy="155" rx="24" ry="72"/>
+<ellipse class="dcs" data-show="4" cx="262" cy="155" rx="10" ry="72"/>
+${['Type AC','Type A','Type F','Type B','Type AC / A'].map((s,i)=>txt(210,40,s,'t-md tx-a b',{s:i+1})).join('')}
+${lab(262,292,'dcsens','t-sm tx-a b',{s:'4'})}${lab(210,292,'satur','t-sm tx-bad b',{s:'5'})}
+<g data-show="1"><path class="wL" d="M380 110 H620 V128"/><path class="ink-s" d="M620 128 l12 6 l-24 12 l24 12 l-24 12 l24 12 l-12 6"/><path class="wN" d="M620 188 V200 H380"/>
+${lab(650,162,'heater','t-sm tx b',{a:'start'})}<path class="flow" d="M626 158 H720 V292"/>${earthSym(720,296)}</g>
+<g data-show="2"><path class="wL" d="M380 110 H458 M484 110 H620 V125"/><polygon class="dot" points="458,96 458,124 482,110"/><path class="ink-s" d="M484 96 V124"/>
+<circle class="motor" cx="620" cy="155" r="30"/>${txt(620,163,'M','t-md tx b')}<path class="wN" d="M620 185 V200 H380"/>
+${lab(560,240,'wm','t-sm tx b')}<path class="flow" d="M650 155 H720 V292"/>${earthSym(720,296)}</g>
+<g data-show="3"><path class="wL" d="M380 110 H420"/><path class="wN" d="M380 200 H420"/>
+<rect class="relay" x="420" y="90" width="80" height="130" rx="6"/>${txt(460,160,'AC→DC','t-sm tx b')}
+<path class="ink-s" d="M500 130 H540 M500 180 H540"/>
+<rect class="relay" x="540" y="90" width="80" height="130" rx="6"/>${txt(580,160,'DC→AC','t-sm tx b')}
+<path class="ink-s" d="M620 130 L654 145 M620 180 L654 165"/><circle class="motor" cx="680" cy="155" r="28"/>${txt(680,163,'M','t-md tx b')}
+${txt(520,245,'1φ VFD','t-sm tx b')}<path class="flow" d="M708 155 H730 V292"/>${earthSym(730,296)}</g>
+<g data-show="4-5"><path class="wL" d="M380 110 H420"/><path class="wN" d="M380 200 H420"/>
+<rect class="relay" x="420" y="90" width="80" height="130" rx="6"/>${txt(460,160,'AC→DC','t-sm tx b')}
+<path class="ink-s" d="M500 130 H680 M500 180 H680"/><path class="ink-s" d="M590 130 V148 M590 162 V180"/><path class="ink-s thick" d="M572 148 H608 M572 162 H608"/>
+<rect class="relay" x="680" y="90" width="80" height="130" rx="6"/>${txt(720,160,'DC→AC','t-sm tx b')}
+${lab(650,250,'evvfd','t-sm tx b')}<path class="flow" d="M540 180 V292"/>${earthSym(540,296)}</g>
+${scope(110,330,300,105,'leakI',[['sine','1'],['pulse','2'],['mixed','3'],['dc','4-5']])}
+${lab(600,390,'trips','t-lg tx-good b',{s:'1-4'})}${lab(600,390,'blind','t-md tx-bad b',{s:'5'})}
+</svg>`;
+
+/* AFDD */
+SVG.afdd=`<svg viewBox="0 0 800 450" role="img" aria-label="AFDD">
+${mod({x:24,y:60,w:130,h:250,name:'AFDD',rate:'16 A',sub:'IEC 62606',on:'1-3',off:'4',led:true})}
+${txt(176,138,'L','t-md tx-L b',{a:'start'})}${txt(176,228,'N','t-md tx-N b',{a:'start'})}
+<rect class="box" x="220" y="70" width="200" height="215" rx="10"/>${txt(320,60,'AFDD','t-md tx b')}
+<path class="wL" d="M196 130 H236 M262 130 H640"/><path class="wN" d="M196 220 H236 M262 220 H640"/>
+${contacts(236,262,[130,220],'1-3','4')}
+<ellipse class="dcs" data-hl="3" cx="300" cy="130" rx="10" ry="24"/>${lab(300,96,'sensor','t-sm tx-a b')}
+<rect class="relay" data-hl="3" x="320" y="236" width="88" height="40" rx="6"/>${txt(364,262,'μP','t-md tx b')}
+<path class="mech" d="M300 154 V250 H320"/><path class="mech" data-hl="4" d="M320 266 H249 V230"/>
+<circle class="motor" cx="560" cy="130" r="10"/>
+<g data-show="2-3"><polygon class="bolt" points="552,92 570,92 562,106 574,106 555,124 560,110 548,110"/>${lab(560,80,'loose','t-sm tx-f b')}</g>
+<rect class="metal" x="640" y="90" width="130" height="170" rx="12"/>${lab(705,182,'load','t-md tx b')}
+<path class="flow acc" data-show="1-3" d="M196 130 H640"/><path class="flow acc rev" data-show="1-3" d="M196 220 H640"/>
+${lab(650,296,'mcbno','t-sm tx-bad b',{s:'2'})}
+${scope(220,320,300,110,'curwave',[['sine','1'],['arc','2-3'],['zero','4']])}
+${lab(650,380,'fireok','t-md tx-a b',{s:'4'})}
+</svg>`;
+
+/* EV: Type A + RDC-DD / Type B */
+SVG.ev=`<svg viewBox="0 0 800 450" role="img" aria-label="EV charging protection">
+${mod({x:24,y:60,w:130,h:250,name:'Type B',rate:'40 A 30 mA',sub:'RCCB',on:'1-3,5',off:'4'})}
+${txt(178,138,'L','t-md tx-L b',{a:'start'})}${txt(178,218,'N','t-md tx-N b',{a:'start'})}
+<rect class="box" x="220" y="80" width="100" height="180" rx="10"/>
+${txt(270,72,'Type A','t-md tx b',{s:'1-4'})}${txt(270,72,'Type B','t-md tx-good b',{s:'5'})}
+<path class="wL" d="M198 130 H460 M490 130 H520 H555 V190 H600"/><path class="wN" d="M198 210 H460 M490 210 H600"/>
+<ellipse class="core" cx="270" cy="170" rx="18" ry="60"/><ellipse class="core sat" data-show="3" cx="270" cy="170" rx="18" ry="60"/>
+<ellipse class="dcs" data-show="5" cx="304" cy="170" rx="8" ry="60"/>
+<rect class="box" x="360" y="70" width="160" height="210" rx="10"/>${lab(440,62,'evch','t-md tx b')}
+<ellipse class="dcs" data-hl="4" cx="400" cy="170" rx="12" ry="60"/>${txt(440,262,'RDC-DD','t-sm tx-a b')}
+${contacts(460,490,[130,210],'1-3,5','4')}
+<path class="mech" data-hl="4" d="M412 170 H475 V140"/>
+<path class="car" d="M580 250 V200 Q590 160 640 155 L680 118 H738 L772 160 V250 Z"/>
+<circle class="motor" cx="620" cy="256" r="17"/><circle class="motor" cx="742" cy="256" r="17"/>
+<rect class="relay" x="600" y="175" width="62" height="50" rx="5"/>${txt(631,205,'AC→DC','tx b',{})}
+<rect class="relay" x="690" y="190" width="60" height="34" rx="4"/>${txt(720,213,'+ −','t-sm tx b')}
+<path class="ink-s" d="M662 200 H690"/>
+<path class="flow acc" data-show="1-3,5" d="M198 130 H555 V190 H600"/><path class="flow acc rev" data-show="1-3,5" d="M198 210 H600"/>
+<g data-show="2-5"><path class="flow" d="M700 224 V300"/>${earthSym(700,304)}${txt(712,290,'6 mA DC','t-sm tx-f b',{a:'start'})}</g>
+${lab(270,300,'blinded','t-sm tx-bad b',{s:'3'})}${lab(270,300,'typeBok','t-sm tx-good b',{s:'5'})}
+${lab(640,380,'off','t-xl tx-a b',{s:'4'})}
+${scope(220,330,300,100,'leakI',[['zero','1'],['dc','2-5']])}
+</svg>`;
+
+/* ARD */
+SVG.ard=`<svg viewBox="0 0 800 450" role="img" aria-label="Auto reclosing device">
+${mod({x:20,y:60,w:84,h:250,name:'RCCB',rate:'30 mA',on:'1,3',off:'2,4'})}
+<rect class="plas" x="104" y="60" width="62" height="250" rx="6"/>${txt(135,110,'ARD','pt b t-sm')}
+<circle class="led" data-show="1,3" cx="135" cy="150" r="8"/><circle class="led red" data-show="2,4" cx="135" cy="150" r="8"/>
+<circle class="knob" cx="135" cy="210" r="14"/><path class="ink-p" d="M135 210 L143 200"/>
+${txt(186,138,'L','t-md tx-L b',{a:'start'})}${txt(186,218,'N','t-md tx-N b',{a:'start'})}
+<rect class="box" x="220" y="80" width="120" height="180" rx="10"/>${txt(280,72,'RCCB','t-md tx b')}
+<path class="wL" d="M206 130 H236 M262 130 H580"/><path class="wN" d="M206 210 H236 M262 210 H580"/>
+${contacts(236,262,[130,210],'1,3','2,4')}<ellipse class="core" cx="305" cy="170" rx="16" ry="58"/>
+<rect class="relay" data-hl="3" x="220" y="290" width="120" height="56" rx="8"/>${lab(280,324,'ardmotor','t-sm tx b')}
+<path class="mech" data-hl="3" d="M249 290 V222"/>
+<circle class="motor" cx="620" cy="170" r="40"/>${txt(620,180,'P','t-lg tx b')}${lab(620,236,'pump','t-sm tx b')}
+<path class="ink-s" d="M580 130 L596 140 M580 210 L596 200"/>
+<g data-show="2"><polygon class="bolt" points="190,22 214,22 202,48 220,48 186,86 196,56 178,56"/>${lab(228,40,'surge','t-md tx-f b',{a:'start'})}</g>
+<g data-show="3"><circle class="motor" cx="410" cy="318" r="22"/><path class="ink-s" d="M410 318 V302 M410 318 L422 326"/>${lab(442,326,'wait','t-md tx-a b',{a:'start'})}</g>
+<path class="flow acc" data-show="1,3" d="M206 130 H580"/><path class="flow acc rev" data-show="1,3" d="M206 210 H580"/>
+<g data-show="4"><path class="flow" d="M620 210 V290"/>${earthSym(620,294)}${lab(460,400,'lockout','t-lg tx-bad b')}${lab(460,432,'tries','t-sm tx-m b')}</g>
+${lab(460,400,'off','t-xl tx-a b',{s:'2'})}
+</svg>`;
+
+/* Smart RCBO */
+SVG.smart=`<svg viewBox="0 0 800 450" role="img" aria-label="Smart RCBO">
+${mod({x:24,y:60,w:130,h:250,name:'Smart RCBO',rate:'C32 30 mA',sub:'Wi-Fi',on:'1,2,4',off:'3',led:true})}
+${txt(178,148,'L','t-md tx-L b',{a:'start'})}${txt(178,208,'N','t-md tx-N b',{a:'start'})}
+<rect class="box" x="220" y="70" width="190" height="192" rx="10"/>${txt(315,62,'Smart RCBO','t-md tx b')}
+<path class="wL" d="M198 140 H350 M376 140 H560"/><path class="wN" d="M198 200 H350 M376 200 H560"/>
+${contacts(350,376,[140,200],'1,2,4','3')}
+<ellipse class="dcs" data-hl="1-3" cx="260" cy="170" rx="12" ry="46"/>
+<rect class="relay" data-hl="1-3" x="272" y="214" width="128" height="40" rx="6"/>${txt(336,240,'μP + Wi-Fi','t-sm tx b')}
+<path class="mech" d="M260 216 V234 H272"/><path class="mech" data-hl="3" d="M363 214 V206"/>
+<path class="metal" d="M560 210 V130 L620 82 L680 130 V210 Z"/>${lab(620,180,'house','t-sm tx b')}
+<path class="wifi" d="M424 236 a18 18 0 0 1 0 28 M436 228 a30 30 0 0 1 0 44 M448 220 a42 42 0 0 1 0 60"/>
+<rect class="phone" x="500" y="250" width="200" height="190" rx="18"/><rect class="screen" x="510" y="266" width="180" height="160" rx="8"/>
+${txt(600,296,'230 V · 4.2 A','t-sm tx b',{s:'1-2'})}${txt(600,296,'230 V · 0 A','t-sm tx b',{s:'3'})}${txt(600,296,'230 V · 4.0 A','t-sm tx b',{s:'4'})}
+${lab(522,330,'leakw','t-sm tx',{a:'start'})}
+${txt(678,330,'3 mA','t-sm tx b',{a:'end',s:'1'})}${txt(678,330,'18 mA','t-sm tx-f b',{a:'end',s:'2'})}${txt(678,330,'31 mA','t-sm tx-bad b',{a:'end',s:'3'})}${txt(678,330,'2 mA','t-sm tx b',{a:'end',s:'4'})}
+${lab(600,368,'st_ok','t-md tx-good b',{s:'1'})}${lab(600,368,'st_alert','t-md tx-f b',{s:'2'})}${lab(600,368,'st_trip','t-md tx-bad b',{s:'3'})}${lab(600,368,'st_clear','t-md tx-good b',{s:'4'})}
+<g data-show="4" data-hl="4"><rect class="ovl" x="555" y="384" width="90" height="30" rx="15"/>${txt(600,405,'ON','t-sm tx-ai b')}</g>
+<path class="flow acc" data-show="1,2,4" d="M198 140 H560"/><path class="flow acc rev" data-show="1,2,4" d="M198 200 H560"/>
+<g data-show="2-3"><path class="flow" d="M680 190 H740 V300"/>${earthSym(740,304)}</g>
+</svg>`;
+
+/* SI / Hpi RCCB */
+const pcs=[500,600,700];
+SVG.si=`<svg viewBox="0 0 800 450" role="img" aria-label="High immunity RCCB">
+${mod({x:24,y:60,w:130,h:250,name:'RCCB A-SI',rate:'40 A 30 mA',on:'1-2,4',off:'3,5'})}
+${txt(176,108,'L','t-md tx-L b',{a:'start'})}${txt(176,268,'N','t-md tx-N b',{a:'start'})}
+<rect class="box" x="220" y="60" width="160" height="240" rx="10"/>
+${txt(300,52,'SI RCCB','t-md tx b',{s:'1-2,4-5'})}${lab(300,52,'ordtrip','t-sm tx-bad b',{s:'3'})}
+<path class="wL" d="M198 100 H330 M356 100 H740"/><path class="wN" d="M198 260 H330 M356 260 H740"/>
+${contacts(330,356,[100,260],'1-2,4','3,5')}
+<ellipse class="core" cx="260" cy="180" rx="20" ry="100"/>
+<g data-dim="3" data-hl="4"><rect class="relay" x="290" y="152" width="84" height="48" rx="6"/></g>${lab(332,182,'filt','t-sm tx b')}
+<path class="mech" d="M280 176 H290"/><path class="mech" data-hl="3,5" d="M343 152 V112"/>
+${pcs.map(x=>`<path class="wL" d="M${x-14} 100 V130"/><rect class="relay" x="${x-28}" y="130" width="56" height="40" rx="5"/>${txt(x,156,'PC','t-sm tx b')}<path class="wN" d="M${x-14} 170 V260"/>
+<path class="ink-s" d="M${x+18} 170 V186 M${x+18} 194 V208"/><path class="ink-s thick" d="M${x+6} 186 H${x+30} M${x+6} 194 H${x+30}"/>${earthSym(x+18,210)}
+<path class="flow thin" data-show="1-4" d="M${x+18} 170 V206"/>`).join('')}
+${lab(600,292,'pcs','t-sm tx-m b')}
+<g data-show="2-4"><polygon class="bolt" points="196,14 218,14 207,36 223,36 192,70 201,44 185,44"/>${lab(232,34,'surge','t-sm tx-f b',{a:'start'})}</g>
+<g data-show="5"><polygon class="bolt" points="724,128 740,128 732,142 744,142 728,164 732,148 722,148"/><path class="flow" d="M728 150 H760 V236"/>${earthSym(760,240)}</g>
+${scope(220,330,250,105,'leakI',[['ripple','1'],['spike','2-4'],['sine','5']])}
+${lab(630,380,'ordtrip','t-md tx-bad b',{s:'3'})}${lab(630,380,'sion','t-md tx-good b',{s:'4'})}${lab(630,380,'sitrip','t-md tx-a b',{s:'5'})}
+</svg>`;
+
+/* 3-phase 4P RCCB */
+SVG.rccb3=`<svg viewBox="0 0 800 470" role="img" aria-label="Four-pole RCCB">
+<rect class="box" x="85" y="40" width="395" height="410" rx="12"/>${txt(282,30,'4P RCCB','t-md tx b')}
+${txt(10,108,'R','t-md tx-L b',{a:'start'})}${txt(10,168,'Y','t-md tx-Y b',{a:'start'})}${txt(10,228,'B','t-md tx-B b',{a:'start'})}${txt(10,288,'N','t-md tx-N b',{a:'start'})}
+<ellipse class="core" data-hl="1" cx="330" cy="190" rx="34" ry="130"/>
+<path class="wL" d="M36 100 H110 M150 100 H640"/><path class="wY" d="M36 160 H110 M150 160 H640"/>
+<path class="wB" d="M36 220 H110 M150 220 H640"/><path class="wN" d="M36 280 H110 M150 280 H640"/>
+${lab(284,196,'core','t-sm tx',{a:'end'})}
+${contacts(110,150,[100,160,220,280],'1-4','5')}
+<g data-hl="4-5"><path class="ink-s" d="M308 318 l6 12 l6 -12 l6 12 l6 -12 l6 12 l6 -12 l6 12"/><path class="ink-s" d="M314 330 V370 M350 330 V370"/></g>
+${lab(302,352,'sec','t-sm tx',{a:'end'})}
+<rect class="relay" data-hl="5" x="258" y="370" width="144" height="48" rx="6"/>${lab(330,400,'relay','t-sm tx b')}
+<path class="mech" data-hl="5" d="M258 394 H130 V110"/>
+<rect class="metal" data-hl="4" x="640" y="70" width="140" height="240" rx="12"/>${txt(710,185,'3φ','t-md tx b')}${lab(710,212,'load','t-sm tx')}
+<path class="flow acc" data-show="2-4" d="M36 100 H640 M36 160 H640 M36 220 H640"/><path class="flow acc rev" data-show="3-4" d="M36 280 H640"/>
+${[['2',['10.00','10.00','10.00','0.00']],['3',['10.00','6.00','8.00','3.46']],['4',['10.00','6.03','8.00','3.46']]].map(([s,v])=>`<g data-show="${s}">${['L','Y','B','N'].map((p,i)=>txt(560,88+i*60,`I${p==='L'?'R':p} = ${v[i]} A`,`t-sm tx-${p} b`)).join('')}</g>`).join('')}
+${txt(330,256,'ΣI=0','t-sm tx-good b',{s:'2-3'})}${txt(330,256,'ΣI≠0','t-sm tx-bad b',{s:'4'})}
+${lab(590,400,'sum0','t-md tx-good b',{s:'3'})}
+<g data-show="4"><path class="flow" d="M710 310 V418"/>${earthSym(710,422)}${lab(694,372,'leak','t-sm tx-f b',{a:'end'})}</g>
+<path class="flow" data-show="5" d="M314 330 V370 M350 330 V370"/>
+${lab(580,410,'off','t-xl tx-a b',{s:'5'})}
+</svg>`;
+
+/* shared 3-phase line block, x0 = start x */
+const lines3=(x0,xe,ne)=>`${txt(x0-16,116,'R','t-sm tx-L b')}${txt(x0-16,176,'Y','t-sm tx-Y b')}${txt(x0-16,236,'B','t-sm tx-B b')}${txt(x0-16,296,'N','t-sm tx-N b')}`;
+const motor3=`<circle class="motor" cx="700" cy="170" r="48"/>${txt(700,178,'3φ M','t-md tx b')}`;
+
+/* 4P RCBO */
+SVG.rcbo4=`<svg viewBox="0 0 800 470" role="img" aria-label="Four-pole RCBO">
+${mod({x:14,y:70,w:170,h:250,poles:4,name:'4P RCBO',rate:'C32 30 mA',on:'1,2,4',off:'3,5'})}
+${lines3(216)}
+<rect class="box" x="236" y="46" width="330" height="296" rx="10"/>${txt(400,38,'4P RCBO','t-md tx b')}
+<path class="wL" d="M210 110 H256 M282 110 H640 L660 140"/><path class="wY" d="M210 170 H256 M282 170 H652"/>
+<path class="wB" d="M210 230 H256 M282 230 H640 L660 200"/><path class="wN" d="M210 290 H256 M282 290 H590"/>
+<ellipse class="core" data-hl="4-5" cx="480" cy="200" rx="24" ry="118"/>
+${contacts(256,282,[110,170,230,290],'1,2,4','3,5')}
+${[110,170,230].map((y,i)=>`<rect class="coil"${i===1?' data-hl="2"':''} x="320" y="${y-14}" width="70" height="28" rx="4"/>${txt(355,y+6,'T+M','t-sm tx b')}`).join('')}
+<path class="heat" data-show="2" d="M336 152 q5 -6 0 -12 M354 152 q5 -6 0 -12 M372 152 q5 -6 0 -12"/>
+<rect class="latch" data-hl="3,5" x="262" y="56" width="236" height="12" rx="6"/>
+<path class="mech" data-hl="3,5" d="M269 68 V282"/>
+<path class="mech" data-hl="2-3" d="M404 68 V216 M390 96 H404 M390 156 H404 M390 216 H404"/>
+<path class="mech" data-hl="4-5" d="M480 68 V80"/>
+${motor3}
+<path class="flow acc" data-show="1" d="M210 110 H640 M210 170 H652 M210 230 H640"/>
+<path class="flow" data-show="2" d="M210 170 H652"/>
+<g data-show="4"><path class="flow" d="M700 218 V318"/>${earthSym(700,322)}${lab(672,352,'leak','t-sm tx-f b',{a:'end'})}</g>
+${lab(400,400,'normal','t-md tx-good b',{s:'1'})}${lab(400,400,'yol','t-md tx-f b',{s:'2'})}
+${lab(400,404,'off4','t-lg tx-a b',{s:'3,5'})}${lab(400,400,'st3b','t-md tx-f b',{s:'4'})}
+</svg>`;
+
+/* 4P RCCB on 3-wire motor */
+SVG.rccb3w=`<svg viewBox="0 0 800 470" role="img" aria-label="Four-pole RCCB on three-wire motor">
+${mod({x:14,y:70,w:170,h:250,poles:4,name:'4P RCCB',rate:'40 A 100 mA',on:'1,2,4',off:'3,5'})}
+${lines3(216)}
+<rect class="box" x="236" y="46" width="330" height="340" rx="10"/>${txt(400,38,'4P RCCB','t-md tx b')}
+<path class="wL" d="M210 110 H256 M282 110 H640 L660 140"/><path class="wY" d="M210 170 H256 M282 170 H652"/>
+<path class="wB" d="M210 230 H256 M282 230 H640 L660 200"/>
+<path class="wN dash" data-show="1-4" d="M210 290 H256"/><path class="wN" data-show="5" d="M210 290 H256"/>
+<path class="ink-s" d="M282 290 H320"/>
+<ellipse class="core" data-hl="1" cx="430" cy="200" rx="24" ry="118"/>
+${contacts(256,282,[110,170,230,290],'1,2,4','3,5')}
+<path class="mech" data-hl="3,5" d="M269 60 V282"/>
+<g data-hl="4-5"><path class="ink-s" d="M520 230 V350 H420 l-5 -10 l-10 20 l-10 -20 l-10 20 l-10 -20 l-10 20 l-5 -10 H330"/>
+<path class="ink-s" d="M296 350 H245 V290"/><circle class="dot" cx="520" cy="230" r="5"/><circle class="dot" cx="245" cy="290" r="5"/>
+<circle class="dot" cx="327" cy="350" r="4"/><circle class="dot" cx="299" cy="350" r="4"/></g>
+<path class="ink-s thick" data-show="1-3" d="M292 334 H334 M313 334 V322"/><path class="ink-s thick" data-show="4-5" d="M292 346 H334 M313 346 V334"/>
+${txt(313,316,'TEST','t-sm tx b')}
+${motor3}
+${lab(330,318,'npfree','t-sm tx-m b',{s:'1'})}
+<path class="flow acc" data-show="2" d="M210 110 H640 M210 170 H652 M210 230 H640"/>${txt(430,206,'ΣI=0','t-sm tx-good b',{s:'2'})}
+<g data-show="3"><path class="flow" d="M700 218 V318"/>${earthSym(700,322)}${lab(686,300,'leak','t-sm tx-f b',{a:'end'})}</g>
+<path class="xmark" data-show="4" d="M222 280 L240 298 M240 280 L222 298"/>
+${lab(400,430,'noN','t-md tx-bad b',{s:'4'})}
+<path class="flow" data-show="5" d="M210 230 H520 V350 H245 V290 H210"/>
+${lab(400,430,'testok','t-md tx-good b',{s:'5'})}${lab(640,430,'off','t-lg tx-a b',{s:'3'})}
+</svg>`;
+
+/* ELR + CBCT */
+SVG.elr=`<svg viewBox="0 0 800 470" role="img" aria-label="Earth leakage relay with CBCT">
+<rect class="plas" x="14" y="70" width="170" height="260" rx="8"/>${txt(99,100,'ELR','pt b t-md')}
+<rect class="lcd" x="38" y="114" width="122" height="38" rx="4"/>${txt(99,141,'300 mA','t-sm tx b')}
+${txt(99,172,'t = 0.1 s','pt t-sm')}
+<circle class="knob" cx="60" cy="214" r="20"/><path class="ink-p" d="M60 214 L72 200"/><circle class="knob" cx="138" cy="214" r="20"/><path class="ink-p" d="M138 214 L126 200"/>
+${txt(60,254,'IΔn','pt t-sm b')}${txt(138,254,'t','pt t-sm b')}
+<circle class="led" cx="58" cy="290" r="7"/><circle class="ledoff" data-show="1-3" cx="140" cy="290" r="7"/><circle class="led red" data-show="4-5" cx="140" cy="290" r="7"/>
+${txt(58,316,'ON','pt t-sm')}${txt(140,316,'TRIP','pt t-sm')}
+${lab(99,356,'front','t-sm tx-m')}
+${lines3(216)}
+<rect class="box" x="236" y="46" width="110" height="320" rx="10"/>${txt(291,38,'MCCB','t-md tx b')}
+<path class="wL" d="M210 110 H256 M282 110 H640 L660 140"/><path class="wY" d="M210 170 H256 M282 170 H652"/>
+<path class="wB" d="M210 230 H256 M282 230 H640 L660 200"/><path class="wN" d="M210 290 H256 M282 290 H600"/>
+${contacts(256,282,[110,170,230,290],'1-4','5')}
+<rect class="coil" data-hl="5" x="276" y="316" width="56" height="30" rx="4"/>${txt(304,336,'ST','t-sm tx b')}
+<path class="mech" data-hl="5" d="M304 316 V302 H269 V100"/>
+<ellipse class="dcs" data-hl="1,3" cx="470" cy="200" rx="24" ry="118"/>${txt(470,62,'CBCT','t-sm tx-a b')}
+<path class="ink-s" d="M462 326 V384 M478 326 V384"/>
+<rect class="relay" data-hl="3-4" x="410" y="384" width="120" height="50" rx="6"/>${txt(470,416,'ELR','t-md tx b')}
+<path class="ink-s" d="M410 410 H304 V346"/>
+${motor3}
+<path class="wE" d="M700 218 V320"/>${earthSym(700,322)}${lab(690,372,'peout','t-sm tx-good b',{s:'1'})}
+<path class="flow acc" data-show="2-4" d="M210 110 H640 M210 170 H652 M210 230 H640"/>
+<g data-show="3-4"><path class="flow" d="M700 218 V318"/>${lab(672,350,'leak500','t-sm tx-f b',{a:'end'})}</g>
+<path class="flow" data-show="3-4" d="M462 326 V384 M478 326 V384"/>
+${lab(546,416,'delay','t-sm tx-a b',{a:'start',s:'4'})}
+<path class="flow" data-show="5" d="M410 410 H304 V346"/>
+${lab(640,440,'off','t-xl tx-a b',{s:'5'})}
+</svg>`;
+
+/* MCCB / ACB with G */
+SVG.mccbg=`<svg viewBox="0 0 800 470" role="img" aria-label="MCCB with earth fault release">
+<rect class="plas" x="14" y="60" width="170" height="290" rx="8"/>${txt(99,88,'MCCB','pt b t-md')}
+<rect class="slot" x="80" y="104" width="38" height="84" rx="4"/>
+<rect class="lever" data-show="1-3" x="84" y="108" width="30" height="34" rx="3"/><rect class="lever" data-show="4" x="84" y="150" width="30" height="34" rx="3"/>
+<rect class="lcd" x="28" y="210" width="142" height="124" rx="6"/>${txt(99,234,'LSIG','t-sm tx b')}
+${['Ir','Isd','Ii','Ig'].map((k,i)=>`<g${i===3?' data-hl="3"':''}><circle class="knob" cx="${50+i*33}" cy="270" r="12"/></g>${txt(50+i*33,306,k,'t-sm tx b')}`).join('')}
+${lab(99,376,'front','t-sm tx-m')}
+${lines3(216)}
+<rect class="box" x="236" y="46" width="300" height="330" rx="10"/>${txt(386,38,'MCCB / ACB','t-md tx b')}
+<path class="wL" d="M210 110 H256 M282 110 H600"/><path class="wY" d="M210 170 H256 M282 170 H600"/>
+<path class="wB" d="M210 230 H256 M282 230 H600"/><path class="wN" d="M210 290 H256 M282 290 H600"/>
+${contacts(256,282,[110,170,230,290],'1-3','4')}
+<g data-hl="1">${[110,170,230,290].map(y=>`<ellipse class="dcs" cx="340" cy="${y}" rx="8" ry="18"/>`).join('')}</g>
+<path class="mech" d="M348 122 H366 M348 182 H366 M348 242 H366 M348 302 H366 M366 122 V330 H390"/>
+<rect class="relay" data-hl="3-4" x="390" y="310" width="132" height="48" rx="6"/>${lab(456,340,'tripunit','t-sm tx b')}
+<path class="mech" data-hl="4" d="M390 348 H269 V302"/>
+${txt(456,206,'ΣI = 0','t-md tx-good b',{s:'2'})}${txt(456,206,'ΣI = 150 A','t-md tx-bad b',{s:'3-4'})}
+<rect class="metal" x="600" y="80" width="170" height="230" rx="10"/>${lab(685,140,'panel','t-md tx b')}
+<path class="flow acc" data-show="2" d="M210 110 H600 M210 170 H600 M210 230 H600"/><path class="flow acc rev" data-show="2" d="M210 290 H600"/>
+<g data-show="3"><polygon class="bolt" points="670,200 696,200 684,228 702,228 668,276 678,244 660,244"/><path class="flow" d="M685 276 V378"/>${earthSym(685,382)}</g>
+${txt(560,444,'Ig 150 A > set 100 A','t-sm tx-bad b',{a:'start',s:'3-4'})}
+${lab(400,440,'off','t-lg tx-a b',{s:'4'})}
+</svg>`;
+
+/* 4P Type B */
+SVG.typeb4=`<svg viewBox="0 0 800 470" role="img" aria-label="Four-pole Type B RCCB">
+${mod({x:14,y:70,w:170,h:250,poles:4,name:'Type B 4P',rate:'63 A 30 mA',on:'1-3',off:'4'})}
+${lines3(216)}
+<rect class="box" x="236" y="46" width="214" height="296" rx="10"/>${txt(343,38,'Type B RCCB','t-md tx b')}
+<path class="wL" d="M210 110 H256 M282 110 H490"/><path class="wY" d="M210 170 H256 M282 170 H490"/>
+<path class="wB" d="M210 230 H256 M282 230 H490"/><path class="wN" d="M210 290 H256 M282 290 H470"/>
+${contacts(256,282,[110,170,230,290],'1-3','4')}
+<ellipse class="core" cx="340" cy="200" rx="22" ry="118"/><ellipse class="core sat" data-show="3" cx="340" cy="200" rx="22" ry="118"/>
+<ellipse class="dcs" data-hl="4" cx="400" cy="200" rx="12" ry="118"/>
+<path class="mech" data-hl="4" d="M412 60 H269 V282"/>
+<rect class="relay" x="490" y="86" width="72" height="166" rx="6"/>${txt(526,174,'AC→DC','t-sm tx b')}
+<path class="ink-s" d="M562 120 H700 M562 220 H700"/>${txt(578,112,'+','t-md tx b')}${txt(578,246,'−','t-md tx b')}
+<path class="ink-s" d="M630 120 V162 M630 178 V220"/><path class="ink-s thick" d="M610 162 H650 M610 178 H650"/>
+<rect class="relay" x="700" y="86" width="72" height="166" rx="6"/>${txt(736,174,'DC→AC','t-sm tx b')}${txt(736,278,'→ M','t-sm tx b')}
+<path class="flow acc" data-show="1" d="M210 110 H490 M210 170 H490 M210 230 H490"/>
+<g data-show="2-4"><path class="flow" d="M670 220 V320"/>${earthSym(670,324)}${lab(684,306,'smoothdc','t-sm tx-f b',{a:'start'})}</g>
+${lab(330,380,'ablind','t-sm tx-bad b',{s:'3'})}${lab(400,380,'dcok','t-sm tx-a b',{s:'4'})}
+${lab(560,420,'off4','t-lg tx-a b',{s:'4'})}
+</svg>`;
+
+/* ---------- slides ---------- */
+const SLIDES=[
+{sep:L('Single phase','सिंगल फेज़','സിംഗിൾ ഫേസ്'), tab:L('Why','क्यों','എന്തിന്'), svg:'scale',
+ title:L('Why leakage protection?','लीकेज सुरक्षा क्यों?','ലീക്കേജ് സംരക്ഷണം എന്തിന്?'),
+ pts:[L('Current leaking to earth can kill or start a fire.','पृथ्वी में लीक करंट जान ले सकता है या आग लगा सकता है।','എർത്തിലേക്ക് ചോരുന്ന കറന്റ് ജീവന് ഭീഷണിയാണ്, തീപിടിത്തത്തിനും കാരണമാകാം.'),
+      L('MCB and fuse trip only on large current. A few mA of leakage goes unnoticed.','MCB और फ्यूज केवल बड़े करंट पर ट्रिप होते हैं। कुछ mA का लीकेज पकड़ में नहीं आता।','MCB-യും ഫ്യൂസും വലിയ കറന്റിൽ മാത്രമേ ട്രിപ്പ് ആകൂ. ഏതാനും mA ലീക്കേജ് അവ തിരിച്ചറിയില്ല.'),
+      L('30 mA RCD protects people. 100 / 300 mA protects against fire.','30 mA RCD व्यक्ति की सुरक्षा करता है। 100 / 300 mA आग से बचाता है।','30 mA RCD മനുഷ്യരെ സംരക്ഷിക്കുന്നു. 100 / 300 mA തീയിൽ നിന്ന്.')],
+ steps:[L('1 mA: just felt.','1 mA: हल्का झटका महसूस होता है।','1 mA: നേരിയ തരിപ്പ് മാത്രം.'),
+        L('10 mA: muscles lock, cannot let go.','10 mA: मांसपेशियाँ जकड़ती हैं, छोड़ नहीं पाते।','10 mA: പേശികൾ മുറുകും, പിടി വിടാൻ കഴിയില്ല.'),
+        L('30 mA: RCD must trip here.','30 mA: यहाँ RCD ट्रिप होना चाहिए।','30 mA: ഇവിടെ RCD ട്രിപ്പ് ആകണം.'),
+        L('50 mA and above: heart may fibrillate.','50 mA से अधिक: हृदय की धड़कन बिगड़ सकती है।','50 mA-ന് മുകളിൽ: ഹൃദയമിടിപ്പ് തകരാറിലാകാം.')]},
+
+{tab:L('ELCB','ELCB','ELCB'), svg:'elcb',
+ title:L('ELCB (voltage operated)','ELCB (वोल्टेज संचालित)','ELCB (വോൾട്ടേജ് പ്രവർത്തിതം)'),
+ pts:[L('Older design. Senses voltage on the body, not current.','पुराना डिज़ाइन। बॉडी पर वोल्टेज पहचानता है, करंट नहीं।','പഴയ ഡിസൈൻ. ബോഡിയിലെ വോൾട്ടേജ് തിരിച്ചറിയുന്നു, കറന്റ് അല്ല.'),
+      L('Trip coil between metal body and a separate earth electrode.','ट्रिप कॉइल धातु बॉडी और अलग अर्थ इलेक्ट्रोड के बीच।','ട്രിപ്പ് കോയിൽ ലോഹ ബോഡിക്കും പ്രത്യേക എർത്ത് ഇലക്ട്രോഡിനും ഇടയിൽ.'),
+      L('Terminals: L, N, F (frame), E (earth).','टर्मिनल: L, N, F (फ्रेम), E (अर्थ)।','ടെർമിനലുകൾ: L, N, F (ഫ്രെയിം), E (എർത്ത്).')],
+ steps:[L('Coil connects body to separate earth.','कॉइल बॉडी को अलग अर्थ से जोड़ती है।','കോയിൽ ബോഡിയെ പ്രത്യേക എർത്തുമായി ബന്ധിപ്പിക്കുന്നു.'),
+        L('Normal: body at 0 V, no coil current.','सामान्य: बॉडी 0 V, कॉइल में करंट नहीं।','സാധാരണ: ബോഡി 0 V, കോയിലിൽ കറന്റ് ഇല്ല.'),
+        L('Insulation fails: live touches body.','इन्सुलेशन खराब: फेज़ बॉडी से छूता है।','ഇൻസുലേഷൻ തകരാർ: ഫേസ് ബോഡിയിൽ തൊടുന്നു.'),
+        L('Fault current flows through coil to earth.','फॉल्ट करंट कॉइल से होकर अर्थ में जाता है।','ഫോൾട്ട് കറന്റ് കോയിലിലൂടെ എർത്തിലേക്ക് ഒഴുകുന്നു.'),
+        L('Coil releases latch: supply OFF.','कॉइल लैच छोड़ती है: सप्लाई बंद।','കോയിൽ ലാച്ച് വിടുന്നു: സപ്ലൈ ഓഫ്.')]},
+
+{tab:L('ELCB ✗','ELCB ✗','ELCB ✗'), svg:'why',
+ title:L('Why ELCB is not used now','अब ELCB क्यों नहीं','ELCB ഇപ്പോൾ ഉപയോഗിക്കാത്തത് എന്തുകൊണ്ട്'),
+ pts:[L('Voltage ELCB is obsolete.','वोल्टेज ELCB अब अप्रचलित है।','വോൾട്ടേജ് ELCB ഇപ്പോൾ കാലഹരണപ്പെട്ടു.'),
+      L('In shops, “ELCB” today usually means RCCB.','दुकानों में आज “ELCB” कहने पर प्रायः RCCB मिलता है।','കടകളിൽ ഇന്ന് “ELCB” എന്ന് പറഞ്ഞാൽ സാധാരണ RCCB ആണ് കിട്ടുക.'),
+      L('Replaced by RCCB and RCBO.','इसकी जगह RCCB और RCBO।','പകരം RCCB-യും RCBO-യും.')],
+ steps:[L('Parallel path (water pipe, steel frame) bypasses the coil.','समानांतर रास्ता (पानी का पाइप, स्टील फ्रेम) कॉइल को बायपास करता है।','സമാന്തര പാത (വാട്ടർ പൈപ്പ്, സ്റ്റീൽ ഫ്രെയിം) കോയിലിനെ ഒഴിവാക്കുന്നു.'),
+        L('Person touches live directly: current goes through body to ground, not the coil.','व्यक्ति सीधे फेज़ छूता है: करंट शरीर से ज़मीन में जाता है, कॉइल से नहीं।','വ്യക്തി നേരിട്ട് ഫേസിൽ തൊടുന്നു: കറന്റ് ശരീരത്തിലൂടെ ഭൂമിയിലേക്ക്, കോയിലിലൂടെ അല്ല.'),
+        L('Broken earth wire: no protection and no warning.','अर्थ तार टूटा: सुरक्षा नहीं, चेतावनी भी नहीं।','എർത്ത് വയർ പൊട്ടിയാൽ: സംരക്ഷണമില്ല, മുന്നറിയിപ്പുമില്ല.'),
+        L('Stray voltages cause false tripping.','बाहरी वोल्टेज से गलत ट्रिपिंग।','പുറമേയുള്ള വോൾട്ടേജ് തെറ്റായ ട്രിപ്പിങ്ങിന് കാരണമാകുന്നു.'),
+        L('Replaced by RCCB: it measures current, not voltage.','RCCB ने जगह ली: यह वोल्टेज नहीं, करंट मापता है।','പകരം RCCB: ഇത് വോൾട്ടേജ് അല്ല, കറന്റ് അളക്കുന്നു.')]},
+
+{tab:L('RCCB','RCCB','RCCB'), svg:'rccb',
+ title:L('RCCB (current operated)','RCCB (करंट संचालित)','RCCB (കറന്റ് പ്രവർത്തിതം)'),
+ pts:[L('Ratings: 30 mA (people), 100 / 300 mA (fire).','रेटिंग: 30 mA (व्यक्ति), 100 / 300 mA (आग)।','റേറ്റിംഗ്: 30 mA (മനുഷ്യർ), 100 / 300 mA (തീ).'),
+      L('Trip time: ≤ 300 ms at IΔn, ≤ 40 ms at 5 IΔn.','ट्रिप समय: IΔn पर ≤ 300 ms, 5 IΔn पर ≤ 40 ms।','ട്രിപ്പ് സമയം: IΔn-ൽ ≤ 300 ms, 5 IΔn-ൽ ≤ 40 ms.'),
+      L('No overload or short-circuit protection. Use MCB with it.','ओवरलोड या शॉर्ट सर्किट सुरक्षा नहीं। साथ में MCB लगाएँ।','ഓവർലോഡ് / ഷോർട്ട് സർക്യൂട്ട് സംരക്ഷണമില്ല. കൂടെ MCB വേണം.')],
+ steps:[L('Phase and neutral both pass through a toroidal core.','फेज़ और न्यूट्रल दोनों टोरॉइडल कोर से गुजरते हैं।','ഫേസും ന്യൂട്രലും ടൊറോയ്ഡൽ കോറിലൂടെ കടന്നുപോകുന്നു.'),
+        L('Normal: I(L) = I(N). Fluxes cancel. Net flux = 0.','सामान्य: I(L) = I(N)। फ्लक्स रद्द। कुल फ्लक्स = 0।','സാധാരണ: I(L) = I(N). ഫ്ലക്സുകൾ റദ്ദാകുന്നു. ആകെ ഫ്ലക്സ് = 0.'),
+        L('Leakage to earth: I(L) > I(N).','अर्थ में लीकेज: I(L) > I(N)।','എർത്തിലേക്ക് ലീക്കേജ്: I(L) > I(N).'),
+        L('Net flux induces voltage in the secondary coil.','शेष फ्लक्स सेकेंडरी कॉइल में वोल्टेज बनाता है।','ബാക്കി ഫ്ലക്സ് സെക്കൻഡറി കോയിലിൽ വോൾട്ടേജ് ഉണ്ടാക്കുന്നു.'),
+        L('Trip relay opens both L and N: OFF.','ट्रिप रिले L और N दोनों खोलता है: बंद।','ട്രിപ്പ് റിലേ L-ഉം N-ഉം തുറക്കുന്നു: ഓഫ്.'),
+        L('Fault removed, RCCB switched ON. Press TEST: current flows through R and bypasses the core.','फॉल्ट हटाया, RCCB चालू किया। TEST दबाएँ: करंट R से होकर कोर को बायपास करता है।','ഫോൾട്ട് മാറ്റി RCCB ഓൺ ചെയ്തു. TEST അമർത്തുക: കറന്റ് R-ലൂടെ കോറിനെ ഒഴിവാക്കി ഒഴുകുന്നു.'),
+        L('Core sees imbalance → relay trips: OFF. RCCB is healthy.','कोर असंतुलन देखता है → रिले ट्रिप: बंद। RCCB ठीक है।','കോർ അസന്തുലനം കാണുന്നു → റിലേ ട്രിപ്പ്: ഓഫ്. RCCB ശരിയാണ്.')]},
+
+{tab:L('RCBO','RCBO','RCBO'), svg:'rcbo',
+ title:L('RCBO = RCCB + MCB','RCBO = RCCB + MCB','RCBO = RCCB + MCB'),
+ pts:[L('One device: overload + short circuit + earth leakage.','एक डिवाइस: ओवरलोड + शॉर्ट सर्किट + अर्थ लीकेज।','ഒരു ഉപകരണം: ഓവർലോഡ് + ഷോർട്ട് സർക്യൂട്ട് + എർത്ത് ലീക്കേജ്.'),
+      L('Each fault trips the same latch.','हर फॉल्ट उसी लैच को ट्रिप करता है।','ഓരോ ഫോൾട്ടും ഒരേ ലാച്ച് ട്രിപ്പ് ചെയ്യുന്നു.'),
+      L('RCBO per circuit: a fault trips only that circuit.','हर सर्किट पर RCBO: फॉल्ट से केवल वही सर्किट ट्रिप।','ഓരോ സർക്യൂട്ടിനും RCBO: ഫോൾട്ട് ആ സർക്യൂട്ട് മാത്രം ട്രിപ്പ് ചെയ്യും.')],
+ steps:[L('Normal: current within rating.','सामान्य: करंट रेटिंग के भीतर।','സാധാരണ: കറന്റ് റേറ്റിംഗിനുള്ളിൽ.'),
+        L('Overload: bimetal heats and bends.','ओवरलोड: बाइमेटल गर्म होकर मुड़ता है।','ഓവർലോഡ്: ബൈമെറ്റൽ ചൂടായി വളയുന്നു.'),
+        L('Bimetal pushes latch: OFF.','बाइमेटल लैच को धकेलता है: बंद।','ബൈമെറ്റൽ ലാച്ച് തള്ളുന്നു: ഓഫ്.'),
+        L('Reset. Short circuit: coil pulls plunger instantly.','फिर चालू। शॉर्ट सर्किट: कॉइल तुरंत प्लंजर खींचती है।','വീണ്ടും ഓൺ. ഷോർട്ട് സർക്യൂട്ട്: കോയിൽ ഉടൻ പ്ലഞ്ചർ വലിക്കുന്നു.'),
+        L('Plunger hits latch: OFF.','प्लंजर लैच पर लगता है: बंद।','പ്ലഞ്ചർ ലാച്ചിൽ തട്ടുന്നു: ഓഫ്.'),
+        L('Reset. Earth leakage: toroid senses imbalance.','फिर चालू। अर्थ लीकेज: टोरॉइड असंतुलन पहचानता है।','വീണ്ടും ഓൺ. എർത്ത് ലീക്കേജ്: ടൊറോയ്ഡ് അസന്തുലനം തിരിച്ചറിയുന്നു.'),
+        L('Relay releases latch: OFF.','रिले लैच छोड़ता है: बंद।','റിലേ ലാച്ച് വിടുന്നു: ഓഫ്.')]},
+
+{tab:L('What is RCD','RCD क्या है','RCD എന്ത്'), svg:'family',
+ title:L('What is an RCD?','RCD क्या है?','RCD എന്നാൽ എന്ത്?'),
+ pts:[L('RCD = Residual Current Device. It is the family name.','RCD = रेज़िडुअल करंट डिवाइस। यह परिवार का नाम है।','RCD = റെസിഡ്യുവൽ കറന്റ് ഡിവൈസ്. ഇത് കുടുംബപ്പേരാണ്.'),
+      L('Residual current = sum of all live conductor currents. Normally zero.','रेज़िडुअल करंट = सभी लाइव कंडक्टरों के करंट का योग। सामान्यतः शून्य।','റെസിഡ്യുവൽ കറന്റ് = എല്ലാ ലൈവ് കണ്ടക്ടറുകളിലെയും കറന്റിന്റെ തുക. സാധാരണ പൂജ്യം.'),
+      L('Every RCCB is an RCD. Not every RCD is an RCCB.','हर RCCB एक RCD है। हर RCD, RCCB नहीं है।','എല്ലാ RCCB-യും RCD ആണ്. എല്ലാ RCD-യും RCCB അല്ല.')],
+ steps:[L('RCCB: leakage only, no overload or short-circuit protection.','RCCB: केवल लीकेज, ओवरलोड या शॉर्ट सर्किट सुरक्षा नहीं।','RCCB: ലീക്കേജ് മാത്രം, ഓവർലോഡ് / ഷോർട്ട് സർക്യൂട്ട് സംരക്ഷണമില്ല.'),
+        L('RCBO: RCD and MCB in one device.','RCBO: RCD और MCB एक ही डिवाइस में।','RCBO: RCD-യും MCB-യും ഒരു ഉപകരണത്തിൽ.'),
+        L('SRCD: a socket outlet with an RCD inside. It protects only that socket and what is plugged in.','SRCD: अंदर RCD वाला सॉकेट। यह केवल उसी सॉकेट और उसमें लगे उपकरण की सुरक्षा करता है।','SRCD: ഉള്ളിൽ RCD ഉള്ള സോക്കറ്റ്. ആ സോക്കറ്റിനും അതിൽ ഘടിപ്പിച്ചതിനും മാത്രം സംരക്ഷണം.'),
+        L('PRCD: a portable RCD that plugs in between the socket and a power tool. It protects the worker even if the site wiring has no RCD.','PRCD: सॉकेट और पावर टूल के बीच लगने वाला पोर्टेबल RCD। साइट वायरिंग में RCD न हो तब भी कारीगर सुरक्षित।','PRCD: സോക്കറ്റിനും പവർ ടൂളിനും ഇടയിൽ ഘടിപ്പിക്കുന്ന പോർട്ടബിൾ RCD. സൈറ്റ് വയറിംഗിൽ RCD ഇല്ലെങ്കിലും തൊഴിലാളി സുരക്ഷിതൻ.'),
+        L('ELR + CBCT: a ring CT (CBCT) around all live cables sends the leakage signal to a relay (ELR), which trips a big breaker. CBR: an MCCB with a built-in RCD. Both are used where current is too large for an RCCB (above 100 A).','ELR + CBCT: सभी लाइव केबल के चारों ओर छल्ला CT (CBCT) लीकेज सिग्नल रिले (ELR) को भेजता है, जो बड़े ब्रेकर को ट्रिप करता है। CBR: अंदर RCD वाला MCCB। दोनों वहाँ लगते हैं जहाँ करंट RCCB के लिए बहुत अधिक हो (100 A से ऊपर)।','ELR + CBCT: എല്ലാ ലൈവ് കേബിളുകൾക്കും ചുറ്റുമുള്ള വളയ CT (CBCT) ലീക്കേജ് സിഗ്നൽ റിലേയിലേക്ക് (ELR) അയക്കുന്നു; അത് വലിയ ബ്രേക്കർ ട്രിപ്പ് ചെയ്യുന്നു. CBR: ഉള്ളിൽ RCD ഉള്ള MCCB. കറന്റ് RCCB-ക്ക് കൂടുതലായ ഇടങ്ങളിൽ (100 A-ക്ക് മുകളിൽ) ഇവ ഉപയോഗിക്കുന്നു.'),
+        L('Voltage ELCB senses voltage, so it is not an RCD.','वोल्टेज ELCB वोल्टेज पहचानता है, इसलिए यह RCD नहीं है।','വോൾട്ടേജ് ELCB വോൾട്ടേജ് ആണ് അളക്കുന്നത്, അതിനാൽ ഇത് RCD അല്ല.')]},
+
+{tab:L('RCD types','RCD प्रकार','RCD തരങ്ങൾ'), svg:'types',
+ title:L('RCD types: AC, A, F, B','RCD के प्रकार: AC, A, F, B','RCD തരങ്ങൾ: AC, A, F, B'),
+ pts:[L('Type = which leakage waveform the RCD can detect.','प्रकार = RCD कौन-सी लीकेज तरंग पहचान सकता है।','തരം = RCD-ക്ക് തിരിച്ചറിയാൻ കഴിയുന്ന ലീക്കേജ് തരംഗം.'),
+      L('Electronic loads with rectifiers leak DC.','रेक्टिफायर वाले इलेक्ट्रॉनिक लोड DC लीक करते हैं।','റെക്റ്റിഫയർ ഉള്ള ഇലക്ട്രോണിക് ലോഡുകൾ DC ചോർത്തുന്നു.'),
+      L('The type symbol is printed on the device.','प्रकार का चिह्न डिवाइस पर छपा होता है।','തരം ചിഹ്നം ഉപകരണത്തിൽ അച്ചടിച്ചിരിക്കും.')],
+ steps:[L('Type AC: heater or lamp leaks pure AC.','टाइप AC: हीटर या लैंप शुद्ध AC लीक करता है।','ടൈപ്പ് AC: ഹീറ്റർ / ലാമ്പ് ശുദ്ധ AC ചോർത്തുന്നു.'),
+        L('Type A: diode load (washing machine) leaks pulsating DC.','टाइप A: डायोड लोड (वॉशिंग मशीन) स्पंदित DC लीक करता है।','ടൈപ്പ് A: ഡയോഡ് ലോഡ് (വാഷിങ് മെഷീൻ) സ്പന്ദിക്കുന്ന DC ചോർത്തുന്നു.'),
+        L('Type F: single-phase VFD leaks mixed frequencies.','टाइप F: सिंगल-फेज़ VFD मिश्रित आवृत्ति लीक करता है।','ടൈപ്പ് F: സിംഗിൾ-ഫേസ് VFD മിശ്ര ആവൃത്തി ചോർത്തുന്നു.'),
+        L('Type B: EV charger or 3-phase VFD leaks smooth DC. Extra DC sensor.','टाइप B: EV चार्जर या 3-फेज़ VFD स्मूथ DC लीक करता है। अतिरिक्त DC सेंसर।','ടൈപ്പ് B: EV ചാർജർ / 3-ഫേസ് VFD സ്മൂത്ത് DC ചോർത്തുന്നു. അധിക DC സെൻസർ.'),
+        L('Smooth DC saturates a Type AC or A core: it becomes blind.','स्मूथ DC टाइप AC या A कोर को सैचुरेट करता है: वह अंधा हो जाता है।','സ്മൂത്ത് DC ടൈപ്പ് AC / A കോറിനെ സാച്ചുറേറ്റ് ചെയ്യുന്നു: അത് അന്ധമാകുന്നു.')]},
+
+{sep:L('New devices','नए उपकरण','പുതിയ ഉപകരണങ്ങൾ'), tab:L('AFDD','AFDD','AFDD'), svg:'afdd',
+ title:L('AFDD: arc fault detection device','AFDD: आर्क फॉल्ट डिटेक्शन डिवाइस','AFDD: ആർക്ക് ഫോൾട്ട് ഡിറ്റക്ഷൻ ഡിവൈസ്'),
+ pts:[L('Detects arcs from loose terminals, crushed or rat-bitten cables.','ढीले टर्मिनल, दबी या चूहे से कटी केबल की आर्क पहचानता है।','അയഞ്ഞ ടെർമിനൽ, ചതഞ്ഞതോ എലി കടിച്ചതോ ആയ കേബിളിലെ ആർക്ക് കണ്ടെത്തുന്നു.'),
+      L('MCB and RCD cannot detect a series arc.','MCB और RCD सीरीज़ आर्क नहीं पहचान सकते।','MCB-ക്കും RCD-ക്കും സീരീസ് ആർക്ക് കണ്ടെത്താനാവില്ല.'),
+      L('Standard IEC 62606. Often combined with an RCBO.','मानक IEC 62606। प्रायः RCBO के साथ संयुक्त।','മാനദണ്ഡം IEC 62606. പലപ്പോഴും RCBO-യോടൊപ്പം.')],
+ steps:[L('Normal: smooth sine current.','सामान्य: साफ़ साइन करंट।','സാധാരണ: സുഗമമായ സൈൻ കറന്റ്.'),
+        L('Loose terminal makes a series arc. Current stays below MCB rating.','ढीला टर्मिनल सीरीज़ आर्क बनाता है। करंट MCB रेटिंग से कम रहता है।','അയഞ്ഞ ടെർമിനൽ സീരീസ് ആർക്ക് ഉണ്ടാക്കുന്നു. കറന്റ് MCB റേറ്റിംഗിൽ താഴെ.'),
+        L('HF sensor sees noise and flat zero zones. μP recognises an arc.','HF सेंसर शोर और समतल शून्य भाग देखता है। μP आर्क पहचानता है।','HF സെൻസർ ശബ്ദവും പരന്ന പൂജ്യഭാഗങ്ങളും കാണുന്നു. μP ആർക്ക് തിരിച്ചറിയുന്നു.'),
+        L('AFDD trips: fire prevented.','AFDD ट्रिप: आग रुकी।','AFDD ട്രിപ്പ്: തീ തടഞ്ഞു.')]},
+
+{tab:L('EV / Type B','EV / टाइप B','EV / ടൈപ്പ് B'), svg:'ev',
+ title:L('EV charging: Type B and RDC-DD','EV चार्जिंग: टाइप B और RDC-DD','EV ചാർജിങ്: ടൈപ്പ് B, RDC-DD'),
+ pts:[L('EV and solar inverters can leak smooth DC.','EV और सोलर इन्वर्टर स्मूथ DC लीक कर सकते हैं।','EV-യും സോളാർ ഇൻവെർട്ടറും സ്മൂത്ത് DC ചോർത്താം.'),
+      L('RDC-DD: 6 mA DC detecting device (IEC 62955).','RDC-DD: 6 mA DC पहचानने वाला डिवाइस (IEC 62955)।','RDC-DD: 6 mA DC കണ്ടെത്തുന്ന ഉപകരണം (IEC 62955).'),
+      L('Type B RCCB: AC + pulsating DC + smooth DC.','टाइप B RCCB: AC + स्पंदित DC + स्मूथ DC।','ടൈപ്പ് B RCCB: AC + സ്പന്ദിക്കുന്ന DC + സ്മൂത്ത് DC.')],
+ steps:[L('Charging: AC to car, on-board charger makes DC.','चार्जिंग: कार को AC, ऑन-बोर्ड चार्जर DC बनाता है।','ചാർജിങ്: കാറിലേക്ക് AC, ഓൺ-ബോർഡ് ചാർജർ DC ആക്കുന്നു.'),
+        L('Insulation fault in car: smooth DC 6 mA leaks to earth.','कार में इन्सुलेशन फॉल्ट: 6 mA स्मूथ DC अर्थ में लीक।','കാറിൽ ഇൻസുലേഷൻ ഫോൾട്ട്: 6 mA സ്മൂത്ത് DC എർത്തിലേക്ക്.'),
+        L('DC magnetises the Type A core. It may not trip.','DC टाइप A कोर को चुंबकित करता है। ट्रिप न हो।','DC ടൈപ്പ് A കോറിനെ കാന്തീകരിക്കുന്നു. ട്രിപ്പ് ആകാതിരിക്കാം.'),
+        L('RDC-DD in the charger detects 6 mA DC and opens the contactor.','चार्जर में RDC-DD 6 mA DC पहचानकर कॉन्टैक्टर खोलता है।','ചാർജറിലെ RDC-DD 6 mA DC കണ്ടെത്തി കോൺടാക്ടർ തുറക്കുന്നു.'),
+        L('Or use a Type B RCCB: it detects AC and DC.','या टाइप B RCCB लगाएँ: यह AC और DC दोनों पहचानता है।','അല്ലെങ്കിൽ ടൈപ്പ് B RCCB: ഇത് AC-യും DC-യും കണ്ടെത്തുന്നു.')]},
+
+{tab:L('ARD','ARD','ARD'), svg:'ard',
+ title:L('ARD: auto-reclosing RCCB','ARD: ऑटो-रीक्लोज़िंग RCCB','ARD: ഓട്ടോ-റീക്ലോസിംഗ് RCCB'),
+ pts:[L('For unmanned sites: pumps, towers, ATMs.','मानवरहित स्थानों के लिए: पंप, टावर, ATM।','ആളില്ലാത്ത സ്ഥലങ്ങൾക്ക്: പമ്പ്, ടവർ, ATM.'),
+      L('Locks out on a permanent fault: needs a visit.','स्थायी फॉल्ट पर लॉकआउट: जाँच ज़रूरी।','സ്ഥിരം ഫോൾട്ടിൽ ലോക്കൗട്ട്: പരിശോധന വേണം.'),
+      L('Standard IEC 63024.','मानक IEC 63024।','മാനദണ്ഡം IEC 63024.')],
+ steps:[L('Unmanned pump runs. RCCB is ON.','मानवरहित पंप चल रहा है। RCCB चालू।','ആളില്ലാത്ത പമ്പ് പ്രവർത്തിക്കുന്നു. RCCB ഓൺ.'),
+        L('Lightning surge: false trip. Supply OFF.','बिजली का सर्ज: गलत ट्रिप। सप्लाई बंद।','ഇടിമിന്നൽ സർജ്: തെറ്റായ ട്രിപ്പ്. സപ്ലൈ ഓഫ്.'),
+        L('ARD waits, checks, then switches the RCCB ON. No site visit needed.','ARD रुकता है, जाँचता है, फिर RCCB चालू करता है। साइट जाना ज़रूरी नहीं।','ARD കാത്തിരുന്ന് പരിശോധിച്ച് RCCB ഓണാക്കുന്നു. സൈറ്റിൽ പോകേണ്ടതില്ല.'),
+        L('Real fault: trips again. After set tries, ARD locks out.','असली फॉल्ट: फिर ट्रिप। तय प्रयासों के बाद ARD लॉकआउट।','യഥാർത്ഥ ഫോൾട്ട്: വീണ്ടും ട്രിപ്പ്. നിശ്ചിത ശ്രമങ്ങൾക്ക് ശേഷം ARD ലോക്കൗട്ട്.')]},
+
+{tab:L('Smart RCBO','स्मार्ट RCBO','സ്മാർട്ട് RCBO'), svg:'smart',
+ title:L('Smart RCBO','स्मार्ट RCBO','സ്മാർട്ട് RCBO'),
+ pts:[L('Protection works even without Wi-Fi.','Wi-Fi न होने पर भी सुरक्षा काम करती है।','Wi-Fi ഇല്ലെങ്കിലും സംരക്ഷണം പ്രവർത്തിക്കും.'),
+      L('Remote ON only after the fault is found and cleared.','फॉल्ट मिलने और ठीक होने के बाद ही दूर से ON।','ഫോൾട്ട് കണ്ടെത്തി മാറ്റിയ ശേഷം മാത്രം ദൂരെ നിന്ന് ON.')],
+ steps:[L('Measures voltage, current, energy and leakage. Sends to the phone.','वोल्टेज, करंट, ऊर्जा और लीकेज मापता है। फोन पर भेजता है।','വോൾട്ടേജ്, കറന്റ്, ഊർജ്ജം, ലീക്കേജ് അളക്കുന്നു. ഫോണിലേക്ക് അയക്കുന്നു.'),
+        L('Leakage rising to 18 mA: alert before trip.','लीकेज 18 mA तक बढ़ा: ट्रिप से पहले चेतावनी।','ലീക്കേജ് 18 mA ആയി: ട്രിപ്പിന് മുമ്പ് മുന്നറിയിപ്പ്.'),
+        L('Leakage crosses 30 mA: trips. Value and time saved.','लीकेज 30 mA पार: ट्रिप। मान और समय सेव।','ലീക്കേജ് 30 mA കടന്നു: ട്രിപ്പ്. മൂല്യവും സമയവും സേവ് ചെയ്യുന്നു.'),
+        L('After repair, switch ON from the app.','मरम्मत के बाद ऐप से चालू करें।','അറ്റകുറ്റപ്പണിക്ക് ശേഷം ആപ്പിൽ നിന്ന് ഓൺ ചെയ്യുക.')]},
+
+{tab:L('SI / Hpi','SI / Hpi','SI / Hpi'), svg:'si',
+ title:L('SI / Hpi high-immunity RCCB','SI / Hpi हाई-इम्युनिटी RCCB','SI / Hpi ഹൈ-ഇമ്മ്യൂണിറ്റി RCCB'),
+ pts:[L('For computers, UPS, LED drivers, hospitals, offices.','कंप्यूटर, UPS, LED ड्राइवर, अस्पताल, कार्यालय के लिए।','കമ്പ്യൂട്ടർ, UPS, LED ഡ്രൈവർ, ആശുപത്രി, ഓഫീസ് എന്നിവയ്ക്ക്.'),
+      L('Still a 30 mA RCD: personal protection is not reduced.','फिर भी 30 mA RCD: व्यक्तिगत सुरक्षा कम नहीं।','ഇപ്പോഴും 30 mA RCD: വ്യക്തിസുരക്ഷ കുറയുന്നില്ല.')],
+ steps:[L('Each PC or UPS leaks about 1 mA through filter capacitors.','हर PC या UPS फ़िल्टर कैपेसिटर से लगभग 1 mA लीक करता है।','ഓരോ PC-യും UPS-ഉം ഫിൽട്ടർ കപ്പാസിറ്ററിലൂടെ ഏകദേശം 1 mA ചോർത്തുന്നു.'),
+        L('Lightning or switching surge: short leakage pulse.','बिजली या स्विचिंग सर्ज: छोटा लीकेज पल्स।','ഇടിമിന്നൽ / സ്വിച്ചിങ് സർജ്: ചെറിയ ലീക്കേജ് പൾസ്.'),
+        L('Ordinary RCCB trips falsely. Computers lose data.','साधारण RCCB गलत ट्रिप करता है। कंप्यूटर का डेटा खो जाता है।','സാധാരണ RCCB തെറ്റായി ട്രിപ്പ് ചെയ്യുന്നു. കമ്പ്യൂട്ടർ ഡാറ്റ നഷ്ടപ്പെടുന്നു.'),
+        L('SI RCCB filter ignores the short pulse: stays ON.','SI RCCB का फ़िल्टर छोटे पल्स को नज़रअंदाज़ करता है: चालू रहता है।','SI RCCB-യുടെ ഫിൽട്ടർ ചെറിയ പൾസ് അവഗണിക്കുന്നു: ഓണായി തുടരുന്നു.'),
+        L('Real 30 mA leakage that lasts: SI RCCB still trips.','लगातार 30 mA असली लीकेज: SI RCCB फिर भी ट्रिप करता है।','തുടരുന്ന യഥാർത്ഥ 30 mA ലീക്കേജ്: SI RCCB ട്രിപ്പ് ചെയ്യും.')]},
+
+{sep:L('Three phase','थ्री फेज़','ത്രീ ഫേസ്'), tab:L('4P RCCB','4P RCCB','4P RCCB'), svg:'rccb3',
+ title:L('3-phase RCCB (4-pole)','3-फेज़ RCCB (4-पोल)','3-ഫേസ് RCCB (4-പോൾ)'),
+ pts:[L('R, Y, B and N all pass through one core.','R, Y, B और N चारों एक ही कोर से गुजरते हैं।','R, Y, B, N നാലും ഒരേ കോറിലൂടെ കടന്നുപോകുന്നു.'),
+      L('Trips when IR + IY + IB + IN ≠ 0 (phasor sum).','IR + IY + IB + IN ≠ 0 (फेज़र योग) होने पर ट्रिप।','IR + IY + IB + IN ≠ 0 (ഫേസർ തുക) ആയാൽ ട്രിപ്പ്.'),
+      L('Unbalanced load does not trip it.','असंतुलित लोड से ट्रिप नहीं होता।','അസന്തുലിത ലോഡ് കാരണം ട്രിപ്പ് ആകില്ല.')],
+ steps:[L('R, Y, B and N pass through one toroidal core.','R, Y, B और N एक टोरॉइडल कोर से गुजरते हैं।','R, Y, B, N ഒരു ടൊറോയ്ഡൽ കോറിലൂടെ കടന്നുപോകുന്നു.'),
+        L('Balanced load: 10 A in each phase, IN = 0. Sum = 0.','संतुलित लोड: हर फेज़ में 10 A, IN = 0। योग = 0।','സന്തുലിത ലോഡ്: ഓരോ ഫേസിലും 10 A, IN = 0. തുക = 0.'),
+        L('Unbalanced load: neutral carries 3.46 A. Sum still 0. No trip.','असंतुलित लोड: न्यूट्रल में 3.46 A। योग फिर भी 0। ट्रिप नहीं।','അസന്തുലിത ലോഡ്: ന്യൂട്രലിൽ 3.46 A. തുക ഇപ്പോഴും 0. ട്രിപ്പ് ഇല്ല.'),
+        L('Y phase leaks 30 mA to earth. Sum ≠ 0.','Y फेज़ से 30 mA अर्थ में लीक। योग ≠ 0।','Y ഫേസിൽ നിന്ന് 30 mA എർത്തിലേക്ക് ചോരുന്നു. തുക ≠ 0.'),
+        L('Secondary coil drives the relay. All 4 poles open.','सेकेंडरी कॉइल रिले चलाती है। चारों पोल खुलते हैं।','സെക്കൻഡറി കോയിൽ റിലേ പ്രവർത്തിപ്പിക്കുന്നു. നാല് പോളുകളും തുറക്കുന്നു.')]},
+
+{tab:L('4P RCBO','4P RCBO','4P RCBO'), svg:'rcbo4',
+ title:L('4P RCBO','4P RCBO','4P RCBO'),
+ pts:[L('Full protection for one 3-phase circuit.','एक 3-फेज़ सर्किट की पूरी सुरक्षा।','ഒരു 3-ഫേസ് സർക്യൂട്ടിന് പൂർണ്ണ സംരക്ഷണം.'),
+      L('All poles trip together: no single phasing.','सभी पोल एक साथ ट्रिप: सिंगल फेज़िंग नहीं।','എല്ലാ പോളുകളും ഒരുമിച്ച് ട്രിപ്പ്: സിംഗിൾ ഫേസിംഗ് ഇല്ല.'),
+      L('Standard IS 12640-2.','मानक IS 12640-2।','മാനദണ്ഡം IS 12640-2.')],
+ steps:[L('Each phase has its own thermal + magnetic element. One toroid for all.','हर फेज़ का अपना थर्मल + मैग्नेटिक तत्व। सबके लिए एक टोरॉइड।','ഓരോ ഫേസിനും സ്വന്തം തെർമൽ + മാഗ്നറ്റിക് ഘടകം. എല്ലാറ്റിനും ഒരു ടൊറോയ്ഡ്.'),
+        L('Y phase overloads: its bimetal heats.','Y फेज़ ओवरलोड: उसका बाइमेटल गर्म होता है।','Y ഫേസ് ഓവർലോഡ്: അതിന്റെ ബൈമെറ്റൽ ചൂടാകുന്നു.'),
+        L('Common latch opens all 4 poles. Motor never runs on 2 phases.','साझा लैच चारों पोल खोलता है। मोटर 2 फेज़ पर नहीं चलती।','പൊതു ലാച്ച് നാല് പോളുകളും തുറക്കുന്നു. മോട്ടോർ 2 ഫേസിൽ ഓടില്ല.'),
+        L('Reset. Motor winding leaks 30 mA: toroid senses.','फिर चालू। मोटर वाइंडिंग से 30 mA लीक: टोरॉइड पहचानता है।','വീണ്ടും ഓൺ. മോട്ടോർ വൈൻഡിംഗിൽ നിന്ന് 30 mA ചോർച്ച: ടൊറോയ്ഡ് തിരിച്ചറിയുന്നു.'),
+        L('All 4 poles open.','चारों पोल खुलते हैं।','നാല് പോളുകളും തുറക്കുന്നു.')]},
+
+{tab:L('3-wire motor','3-तार मोटर','3-വയർ മോട്ടോർ'), svg:'rccb3w',
+ title:L('4P RCCB on a 3-wire motor','3-तार मोटर पर 4P RCCB','3-വയർ മോട്ടോറിൽ 4P RCCB'),
+ pts:[L('Many 4P RCCB test circuits use phase and N.','कई 4P RCCB का टेस्ट सर्किट फेज़ और N पर होता है।','പല 4P RCCB-കളുടെയും ടെസ്റ്റ് സർക്യൂട്ട് ഫേസും N-ഉം ഉപയോഗിക്കുന്നു.'),
+      L('Check the data sheet, or choose a 3P RCCB with phase-to-phase test.','डेटा शीट देखें, या फेज़-टू-फेज़ टेस्ट वाला 3P RCCB चुनें।','ഡാറ്റാ ഷീറ്റ് നോക്കുക, അല്ലെങ്കിൽ ഫേസ്-ടു-ഫേസ് ടെസ്റ്റ് ഉള്ള 3P RCCB തിരഞ്ഞെടുക്കുക.')],
+ steps:[L('Motor uses only R, Y, B. N pole is not used.','मोटर केवल R, Y, B उपयोग करती है। N पोल खाली।','മോട്ടോർ R, Y, B മാത്രം ഉപയോഗിക്കുന്നു. N പോൾ ഉപയോഗിക്കുന്നില്ല.'),
+        L('Balanced motor currents: sum = 0.','संतुलित मोटर करंट: योग = 0।','സന്തുലിത മോട്ടോർ കറന്റ്: തുക = 0.'),
+        L('Winding fault to body: leakage to earth. All poles trip.','वाइंडिंग से बॉडी फॉल्ट: अर्थ में लीकेज। सभी पोल ट्रिप।','വൈൻഡിംഗ്-ബോഡി ഫോൾട്ട്: എർത്തിലേക്ക് ലീക്കേജ്. എല്ലാ പോളുകളും ട്രിപ്പ്.'),
+        L('Reset and press TEST. Test resistor needs N. No N: TEST fails.','फिर चालू कर TEST दबाएँ। टेस्ट रेज़िस्टर को N चाहिए। N नहीं: TEST फेल।','വീണ്ടും ഓൺ ചെയ്ത് TEST അമർത്തുക. ടെസ്റ്റ് റെസിസ്റ്ററിന് N വേണം. N ഇല്ലെങ്കിൽ TEST പരാജയം.'),
+        L('Connect supply N to the RCCB N input (as the maker allows). TEST trips.','सप्लाई N को RCCB के N इनपुट से जोड़ें (निर्माता अनुसार)। TEST ट्रिप करता है।','സപ്ലൈ N, RCCB-യുടെ N ഇൻപുട്ടിൽ ചേർക്കുക (നിർമ്മാതാവ് അനുവദിക്കുന്നതുപോലെ). TEST ട്രിപ്പ് ചെയ്യുന്നു.')]},
+
+{tab:L('ELR + CBCT','ELR + CBCT','ELR + CBCT'), svg:'elr',
+ title:L('ELR + CBCT','ELR + CBCT','ELR + CBCT'),
+ pts:[L('Used for big motors, panels and feeders.','बड़ी मोटर, पैनल और फीडर के लिए।','വലിയ മോട്ടോറുകൾ, പാനലുകൾ, ഫീഡറുകൾ എന്നിവയ്ക്ക്.'),
+      L('Adjustable sensitivity (30 mA–30 A) and time delay.','समायोज्य संवेदनशीलता (30 mA–30 A) और समय देरी।','ക്രമീകരിക്കാവുന്ന സംവേദനക്ഷമത (30 mA–30 A), സമയതാമസം.'),
+      L('Needs an MCCB with shunt trip, or a contactor.','शंट ट्रिप वाला MCCB या कॉन्टैक्टर चाहिए।','ഷണ്ട് ട്രിപ്പ് ഉള്ള MCCB അല്ലെങ്കിൽ കോൺടാക്ടർ വേണം.')],
+ steps:[L('All live conductors (R, Y, B, N) pass through the CBCT. Never the earth wire.','सभी लाइव कंडक्टर (R, Y, B, N) CBCT से गुजरें। अर्थ तार कभी नहीं।','എല്ലാ ലൈവ് കണ്ടക്ടറുകളും (R, Y, B, N) CBCT-യിലൂടെ. എർത്ത് വയർ ഒരിക്കലും അല്ല.'),
+        L('Normal: currents sum to zero. No CBCT output.','सामान्य: करंट का योग शून्य। CBCT आउटपुट नहीं।','സാധാരണ: കറന്റുകളുടെ തുക പൂജ്യം. CBCT ഔട്ട്പുട്ട് ഇല്ല.'),
+        L('Motor insulation fault: 500 mA to earth. Setting is 300 mA.','मोटर इन्सुलेशन फॉल्ट: 500 mA अर्थ में। सेटिंग 300 mA।','മോട്ടോർ ഇൻസുലേഷൻ ഫോൾട്ട്: 500 mA എർത്തിലേക്ക്. സെറ്റിംഗ് 300 mA.'),
+        L('ELR waits the set delay (0.1 s), then closes its output contact.','ELR तय देरी (0.1 s) तक रुकता है, फिर आउटपुट कॉन्टैक्ट बंद करता है।','ELR നിശ്ചിത താമസം (0.1 s) കാത്തിരുന്ന് ഔട്ട്പുട്ട് കോൺടാക്ട് അടയ്ക്കുന്നു.'),
+        L('Shunt trip coil opens the MCCB: feeder OFF.','शंट ट्रिप कॉइल MCCB खोलती है: फीडर बंद।','ഷണ്ട് ട്രിപ്പ് കോയിൽ MCCB തുറക്കുന്നു: ഫീഡർ ഓഫ്.')]},
+
+{tab:L('MCCB (G)','MCCB (G)','MCCB (G)'), svg:'mccbg',
+ title:L('MCCB / ACB with earth fault (G)','अर्थ फॉल्ट (G) सहित MCCB / ACB','എർത്ത് ഫോൾട്ട് (G) ഉള്ള MCCB / ACB'),
+ pts:[L('Main incomer of buildings and factories.','भवनों और कारखानों का मुख्य इनकमर।','കെട്ടിടങ്ങളുടെയും ഫാക്ടറികളുടെയും മെയിൻ ഇൻകമർ.'),
+      L('L, S, I = overload, short delay, instant. G = ground fault.','L, S, I = ओवरलोड, शॉर्ट डिले, इंस्टेंट। G = ग्राउंड फॉल्ट।','L, S, I = ഓവർലോഡ്, ഷോർട്ട് ഡിലേ, ഇൻസ്റ്റന്റ്. G = ഗ്രൗണ്ട് ഫോൾട്ട്.'),
+      L('Setting is in amperes: protects equipment and prevents fire, not people.','सेटिंग एम्पियर में: उपकरण व आग से सुरक्षा, व्यक्ति की नहीं।','സെറ്റിംഗ് ആമ്പിയറിൽ: ഉപകരണവും തീയും, മനുഷ്യരെയല്ല.')],
+ steps:[L('A CT on every pole feeds the electronic trip unit.','हर पोल पर CT इलेक्ट्रॉनिक ट्रिप यूनिट को सिग्नल देता है।','ഓരോ പോളിലെയും CT ഇലക്ട്രോണിക് ട്രിപ്പ് യൂണിറ്റിലേക്ക് സിഗ്നൽ നൽകുന്നു.'),
+        L('Normal: vector sum IR + IY + IB + IN = 0.','सामान्य: सदिश योग IR + IY + IB + IN = 0।','സാധാരണ: വെക്ടർ തുക IR + IY + IB + IN = 0.'),
+        L('Earth fault in panel: 150 A. Setting Ig = 100 A.','पैनल में अर्थ फॉल्ट: 150 A। सेटिंग Ig = 100 A।','പാനലിൽ എർത്ത് ഫോൾട്ട്: 150 A. സെറ്റിംഗ് Ig = 100 A.'),
+        L('After delay tg, the trip unit opens the breaker.','देरी tg के बाद ट्रिप यूनिट ब्रेकर खोलती है।','tg താമസത്തിന് ശേഷം ട്രിപ്പ് യൂണിറ്റ് ബ്രേക്കർ തുറക്കുന്നു.')]},
+
+{tab:L('4P Type B','4P टाइप B','4P ടൈപ്പ് B'), svg:'typeb4',
+ title:L('4P Type B RCCB','4P टाइप B RCCB','4P ടൈപ്പ് B RCCB'),
+ pts:[L('For 3-phase VFDs, DC fast chargers, solar inverters, UPS.','3-फेज़ VFD, DC फास्ट चार्जर, सोलर इन्वर्टर, UPS के लिए।','3-ഫേസ് VFD, DC ഫാസ്റ്റ് ചാർജർ, സോളാർ ഇൻവെർട്ടർ, UPS എന്നിവയ്ക്ക്.'),
+      L('Do not put a Type AC / A RCD upstream of a Type B.','टाइप B के ऊपर टाइप AC / A RCD न लगाएँ।','ടൈപ്പ് B-ക്ക് മുകളിൽ ടൈപ്പ് AC / A RCD വയ്ക്കരുത്.')],
+ steps:[L('3-phase bridge makes a smooth DC bus in the VFD.','3-फेज़ ब्रिज VFD में स्मूथ DC बस बनाता है।','3-ഫേസ് ബ്രിഡ്ജ് VFD-യിൽ സ്മൂത്ത് DC ബസ് ഉണ്ടാക്കുന്നു.'),
+        L('Insulation fault on DC bus: smooth DC leaks to earth.','DC बस पर इन्सुलेशन फॉल्ट: स्मूथ DC अर्थ में लीक।','DC ബസിൽ ഇൻസുലേഷൻ ഫോൾട്ട്: സ്മൂത്ത് DC എർത്തിലേക്ക്.'),
+        L('Type AC / A core is magnetised by DC: it cannot see it.','टाइप AC / A कोर DC से चुंबकित: यह इसे नहीं देख सकता।','ടൈപ്പ് AC / A കോർ DC കൊണ്ട് കാന്തീകരിക്കപ്പെടുന്നു: അതിന് കാണാനാവില്ല.'),
+        L('Type B DC sensor detects it: all 4 poles open.','टाइप B का DC सेंसर पहचानता है: चारों पोल खुलते हैं।','ടൈപ്പ് B DC സെൻസർ കണ്ടെത്തുന്നു: നാല് പോളുകളും തുറക്കുന്നു.')]},
+
+{sep:L('Summary','सारांश','സംഗ്രഹം'), tab:L('Compare','तुलना','താരതമ്യം'), kind:'table',
+ title:L('ELCB vs RCCB vs RCBO','ELCB बनाम RCCB बनाम RCBO','ELCB / RCCB / RCBO താരതമ്യം'),
+ table:{rows:[
+  {h:L('Senses','क्या पहचानता है','തിരിച്ചറിയുന്നത്'),c:[[L('Body voltage','बॉडी वोल्टेज','ബോഡി വോൾട്ടേജ്')],[L('Current imbalance','करंट असंतुलन','കറന്റ് അസന്തുലനം')],[L('Imbalance + overcurrent','असंतुलन + ओवरकरंट','അസന്തുലനം + ഓവർകറന്റ്')]]},
+  {h:L('Separate earth needed','अलग अर्थ ज़रूरी','പ്രത്യേക എർത്ത് വേണോ'),c:[[L('Yes','हाँ','വേണം'),'no'],[L('No','नहीं','വേണ്ട'),'yes'],[L('No','नहीं','വേണ്ട'),'yes']]},
+  {h:L('Direct touch protection','सीधे स्पर्श से सुरक्षा','നേരിട്ടുള്ള സ്പർശനത്തിൽ സംരക്ഷണം'),c:[[L('No','नहीं','ഇല്ല'),'no'],[L('Yes (30 mA)','हाँ (30 mA)','ഉണ്ട് (30 mA)'),'yes'],[L('Yes (30 mA)','हाँ (30 mA)','ഉണ്ട് (30 mA)'),'yes']]},
+  {h:L('Overload / short circuit','ओवरलोड / शॉर्ट सर्किट','ഓവർലോഡ് / ഷോർട്ട് സർക്യൂട്ട്'),c:[[L('No','नहीं','ഇല്ല'),'no'],[L('No','नहीं','ഇല്ല'),'no'],[L('Yes','हाँ','ഉണ്ട്'),'yes']]},
+  {h:L('Is it an RCD?','क्या यह RCD है?','ഇത് RCD ആണോ?'),c:[[L('No','नहीं','അല്ല'),'no'],[L('Yes','हाँ','അതെ'),'yes'],[L('Yes','हाँ','അതെ'),'yes']]},
+  {h:L('Standard','मानक','മാനദണ്ഡം'),c:[['—'],['IS 12640-1'],['IS 12640-2']]},
+  {h:L('Status today','आज की स्थिति','ഇന്നത്തെ നില'),c:[[L('Obsolete','अप्रचलित','കാലഹരണപ്പെട്ടു'),'no'],[L('In use','उपयोग में','ഉപയോഗത്തിൽ'),'yes'],[L('Preferred','पसंदीदा','മുൻഗണന'),'yes']]}
+ ]}},
+
+{tab:L('Rules','नियम','നിയമങ്ങൾ'), kind:'list',
+ title:L('Field rules and standards','फील्ड नियम और मानक','ഫീൽഡ് നിയമങ്ങളും മാനദണ്ഡങ്ങളും'),
+ rules:[
+  L('Press the TEST button once a month.','महीने में एक बार TEST बटन दबाएँ।','മാസത്തിലൊരിക്കൽ TEST ബട്ടൺ അമർത്തുക.'),
+  L('Each circuit’s neutral must pass through its own RCD. Never mix neutrals.','हर सर्किट का न्यूट्रल उसी RCD से जाए। न्यूट्रल आपस में न मिलाएँ।','ഓരോ സർക്യൂട്ടിന്റെയും ന്യൂട്രൽ അതിന്റെ RCD-യിലൂടെ തന്നെ പോകണം. ന്യൂട്രലുകൾ കൂട്ടിക്കലർത്തരുത്.'),
+  L('Never join neutral to earth after the RCD. It will trip.','RCD के बाद न्यूट्रल को अर्थ से न जोड़ें। ट्रिप होगा।','RCD-ക്ക് ശേഷം ന്യൂട്രൽ എർത്തുമായി ചേർക്കരുത്. ട്രിപ്പ് ആകും.'),
+  L('RCD cannot protect a person touching L and N together.','व्यक्ति L और N दोनों छुए तो RCD नहीं बचा सकता।','ഒരാൾ L-ഉം N-ഉം ഒരുമിച്ച് തൊട്ടാൽ RCD രക്ഷിക്കില്ല.'),
+  L('RCD does not replace earthing. Keep good earthing (IS 3043).','RCD अर्थिंग का विकल्प नहीं। अच्छी अर्थिंग रखें (IS 3043)।','RCD എർത്തിംഗിന് പകരമല്ല. നല്ല എർത്തിംഗ് ഉറപ്പാക്കുക (IS 3043).'),
+  L('3-phase 4-wire supply needs a 4-pole RCD. Never a 2-pole on one phase.','3-फेज़ 4-तार सप्लाई के लिए 4-पोल RCD। एक फेज़ पर 2-पोल कभी नहीं।','3-ഫേസ് 4-വയർ സപ്ലൈക്ക് 4-പോൾ RCD. ഒരു ഫേസിൽ 2-പോൾ ഒരിക്കലും അരുത്.'),
+  L('IS 732: 30 mA RCD for socket outlets and wet areas.','IS 732: सॉकेट और गीले स्थानों के लिए 30 mA RCD।','IS 732: സോക്കറ്റുകൾക്കും നനവുള്ള സ്ഥലങ്ങൾക്കും 30 mA RCD.'),
+  L('CEA Safety Regulations: earth leakage protection for installations above 5 kW.','CEA सुरक्षा विनियम: 5 kW से अधिक के संस्थापन में अर्थ लीकेज सुरक्षा।','CEA സുരക്ഷാ ചട്ടങ്ങൾ: 5 kW-ന് മുകളിലുള്ള ഇൻസ്റ്റലേഷനുകളിൽ എർത്ത് ലീക്കേജ് സംരക്ഷണം.')]}
+];
+
+/* ---------- terms: explain every abbreviation used on a slide ---------- */
+const D={
+  IDn:L('Rated residual current. It trips when leakage reaches this value.','रेटेड रेज़िडुअल करंट। लीकेज इस मान तक पहुँचे तो ट्रिप।','റേറ്റഡ് റെസിഡ്യുവൽ കറന്റ്. ലീക്കേജ് ഈ മൂല്യത്തിൽ എത്തിയാൽ ട്രിപ്പ്.'),
+  In:L('Rated current: the load current it can carry all the time.','रेटेड करंट: लगातार वहन किया जाने वाला लोड करंट।','റേറ്റഡ് കറന്റ്: എപ്പോഴും വഹിക്കാവുന്ന ലോഡ് കറന്റ്.'),
+  tor:L('Ring-shaped iron core.','छल्ले के आकार का लोहे का कोर।','വളയാകൃതിയിലുള്ള ഇരുമ്പ് കോർ.'),
+  mcb:L('Miniature circuit breaker: overload and short-circuit protection.','मिनिएचर सर्किट ब्रेकर: ओवरलोड और शॉर्ट सर्किट सुरक्षा।','മിനിയേച്ചർ സർക്യൂട്ട് ബ്രേക്കർ: ഓവർലോഡ്, ഷോർട്ട് സർക്യൂട്ട് സംരക്ഷണം.'),
+  bim:L('Two metals joined together; bends when hot.','दो धातुएँ जुड़ी; गर्म होने पर मुड़ती हैं।','രണ്ട് ലോഹങ്ങൾ ചേർന്നത്; ചൂടായാൽ വളയും.'),
+  fib:L('Heart quivers instead of pumping blood.','हृदय रक्त पंप करने के बजाय काँपता है।','ഹൃദയം രക്തം പമ്പ് ചെയ്യുന്നതിന് പകരം വിറയ്ക്കുന്നു.'),
+  srcd:L('Socket-outlet RCD: a socket with an RCD inside.','सॉकेट-आउटलेट RCD: अंदर RCD वाला सॉकेट।','സോക്കറ്റ്-ഔട്ട്‌ലെറ്റ് RCD: ഉള്ളിൽ RCD ഉള്ള സോക്കറ്റ്.'),
+  prcd:L('Portable RCD: plugs in between socket and tool.','पोर्टेबल RCD: सॉकेट और टूल के बीच लगता है।','പോർട്ടബിൾ RCD: സോക്കറ്റിനും ടൂളിനും ഇടയിൽ.'),
+  elr:L('Earth leakage relay: separate relay box with adjustable settings.','अर्थ लीकेज रिले: समायोज्य सेटिंग वाला अलग रिले बॉक्स।','എർത്ത് ലീക്കേജ് റിലേ: ക്രമീകരിക്കാവുന്ന സെറ്റിംഗുള്ള പ്രത്യേക റിലേ.'),
+  cbct:L('Core balance current transformer: ring CT around all live cables.','कोर बैलेंस करंट ट्रांसफॉर्मर: सभी लाइव केबल के चारों ओर छल्ला CT।','കോർ ബാലൻസ് കറന്റ് ട്രാൻസ്ഫോർമർ: എല്ലാ ലൈവ് കേബിളുകൾക്കും ചുറ്റുമുള്ള വളയ CT.'),
+  cbr:L('Circuit breaker with built-in residual current protection (MCCB + RCD).','अंतर्निर्मित रेज़िडुअल करंट सुरक्षा वाला सर्किट ब्रेकर (MCCB + RCD)।','ഉള്ളിൽ റെസിഡ്യുവൽ കറന്റ് സംരക്ഷണമുള്ള സർക്യൂട്ട് ബ്രേക്കർ (MCCB + RCD).'),
+  vfd:L('Variable frequency drive: controls motor speed.','वेरिएबल फ्रीक्वेंसी ड्राइव: मोटर की गति नियंत्रित करता है।','വേരിയബിൾ ഫ്രീക്വൻസി ഡ്രൈവ്: മോട്ടോർ വേഗത നിയന്ത്രിക്കുന്നു.'),
+  rect:L('Converts AC to DC.','AC को DC में बदलता है।','AC-യെ DC ആക്കുന്നു.'),
+  sat:L('Core is fully magnetised and cannot sense any more change.','कोर पूरी तरह चुंबकित है, अब बदलाव नहीं पहचानता।','കോർ പൂർണ്ണമായി കാന്തീകരിക്കപ്പെട്ടു, കൂടുതൽ മാറ്റം അറിയില്ല.'),
+  sarc:L('Spark in one conductor at a loose or broken joint.','ढीले या टूटे जोड़ पर एक कंडक्टर में चिंगारी।','അയഞ്ഞതോ പൊട്ടിയതോ ആയ ജോയിന്റിൽ ഒരു കണ്ടക്ടറിലെ തീപ്പൊരി.'),
+  hf:L('High frequency noise made by arcing.','आर्किंग से बना उच्च आवृत्ति शोर।','ആർക്കിംഗ് ഉണ്ടാക്കുന്ന ഉയർന്ന ആവൃത്തി ശബ്ദം.'),
+  up:L('Microprocessor: a small computer that checks the signal.','माइक्रोप्रोसेसर: सिग्नल जाँचने वाला छोटा कंप्यूटर।','മൈക്രോപ്രൊസസർ: സിഗ്നൽ പരിശോധിക്കുന്ന ചെറിയ കമ്പ്യൂട്ടർ.'),
+  rdc:L('Residual direct current detecting device: senses 6 mA DC.','रेज़िडुअल DC डिटेक्टिंग डिवाइस: 6 mA DC पहचानता है।','റെസിഡ്യുവൽ DC ഡിറ്റക്റ്റിംഗ് ഡിവൈസ്: 6 mA DC അറിയുന്നു.'),
+  obc:L('On-board charger: inside the car, turns AC into DC for the battery.','ऑन-बोर्ड चार्जर: कार के अंदर, बैटरी के लिए AC को DC बनाता है।','ഓൺ-ബോർഡ് ചാർജർ: കാറിനുള്ളിൽ, ബാറ്ററിക്കായി AC-യെ DC ആക്കുന്നു.'),
+  cont:L('Power switch closed by a coil.','कॉइल से बंद होने वाला पावर स्विच।','കോയിൽ അടയ്ക്കുന്ന പവർ സ്വിച്ച്.'),
+  ard:L('Automatic reclosing device: motor unit fixed beside the RCCB that switches it ON again.','ऑटोमैटिक रीक्लोज़िंग डिवाइस: RCCB के बगल की मोटर यूनिट जो उसे फिर चालू करती है।','ഓട്ടോമാറ്റിക് റീക്ലോസിംഗ് ഡിവൈസ്: RCCB-യുടെ അരികിലെ മോട്ടോർ യൂണിറ്റ്, അതിനെ വീണ്ടും ഓണാക്കുന്നു.'),
+  lock:L('Stays OFF until someone resets it by hand.','हाथ से रीसेट होने तक बंद रहता है।','കൈകൊണ്ട് റീസെറ്റ് ചെയ്യും വരെ ഓഫ്.'),
+  app:L('Phone software that shows readings and controls the RCBO.','फोन सॉफ़्टवेयर जो रीडिंग दिखाता और RCBO नियंत्रित करता है।','റീഡിംഗ് കാണിക്കുകയും RCBO നിയന്ത്രിക്കുകയും ചെയ്യുന്ന ഫോൺ സോഫ്റ്റ്‌വെയർ.'),
+  kwh:L('Energy unit: 1 unit on the electricity bill.','ऊर्जा इकाई: बिजली बिल की 1 यूनिट।','ഊർജ്ജ യൂണിറ്റ്: വൈദ്യുതി ബില്ലിലെ 1 യൂണിറ്റ്.'),
+  ycap:L('Capacitor from line to earth inside PCs and UPS to reduce noise.','शोर घटाने के लिए PC और UPS में लाइन से अर्थ तक कैपेसिटर।','ശബ്ദം കുറയ്ക്കാൻ PC-യിലും UPS-ലും ലൈനിൽ നിന്ന് എർത്തിലേക്കുള്ള കപ്പാസിറ്റർ.'),
+  surge:L('Very short voltage spike from lightning or switching.','बिजली या स्विचिंग से बहुत छोटा वोल्टेज उछाल।','ഇടിമിന്നൽ / സ്വിച്ചിങ് മൂലമുള്ള വളരെ ചെറിയ വോൾട്ടേജ് കുതിപ്പ്.'),
+  si:L('Maker names for super-immunity / high-immunity type.','सुपर / हाई-इम्युनिटी प्रकार के निर्माता नाम।','സൂപ്പർ / ഹൈ-ഇമ്മ്യൂണിറ്റി തരത്തിന്റെ നിർമ്മാതാവ് പേരുകൾ.'),
+  phasor:L('Sum that includes the 120° angle between phases.','फेज़ों के बीच 120° कोण सहित योग।','ഫേസുകൾക്കിടയിലെ 120° കോൺ ഉൾപ്പെടുത്തിയ തുക.'),
+  tm:L('Thermal (bimetal) + magnetic (coil) trip element.','थर्मल (बाइमेटल) + मैग्नेटिक (कॉइल) ट्रिप तत्व।','തെർമൽ (ബൈമെറ്റൽ) + മാഗ്നറ്റിക് (കോയിൽ) ട്രിപ്പ് ഘടകം.'),
+  sph:L('3-phase motor running on 2 phases. It overheats and burns.','3-फेज़ मोटर का 2 फेज़ पर चलना। गर्म होकर जलती है।','3-ഫേസ് മോട്ടോർ 2 ഫേസിൽ ഓടുന്നു. ചൂടായി കത്തും.'),
+  w3:L('Load with R, Y, B only and no neutral, e.g. a delta motor.','केवल R, Y, B वाला लोड, न्यूट्रल नहीं, जैसे डेल्टा मोटर।','R, Y, B മാത്രമുള്ള ലോഡ്, ന്യൂട്രൽ ഇല്ല, ഉദാ. ഡെൽറ്റ മോട്ടോർ.'),
+  st:L('Shunt trip: coil that trips the MCCB when it gets supply.','शंट ट्रिप: सप्लाई मिलने पर MCCB ट्रिप करने वाली कॉइल।','ഷണ്ട് ട്രിപ്പ്: സപ്ലൈ കിട്ടുമ്പോൾ MCCB ട്രിപ്പ് ചെയ്യുന്ന കോയിൽ.'),
+  mccb:L('Moulded case circuit breaker: for larger currents than an MCB.','मोल्डेड केस सर्किट ब्रेकर: MCB से बड़े करंट के लिए।','മോൾഡഡ് കേസ് സർക്യൂട്ട് ബ്രേക്കർ: MCB-യേക്കാൾ വലിയ കറന്റിന്.'),
+  acb:L('Air circuit breaker: for very large currents at the main incomer.','एयर सर्किट ब्रेकर: मुख्य इनकमर पर बहुत बड़े करंट के लिए।','എയർ സർക്യൂട്ട് ബ്രേക്കർ: മെയിൻ ഇൻകമറിൽ വളരെ വലിയ കറന്റിന്.'),
+  ct:L('Current transformer: gives a small copy of the line current.','करंट ट्रांसफॉर्मर: लाइन करंट की छोटी प्रतिलिपि देता है।','കറന്റ് ട്രാൻസ്ഫോർമർ: ലൈൻ കറന്റിന്റെ ചെറിയ പകർപ്പ് നൽകുന്നു.'),
+  ig:L('Earth fault pickup current / its time delay.','अर्थ फॉल्ट पिकअप करंट / उसकी समय देरी।','എർത്ത് ഫോൾട്ട് പിക്കപ്പ് കറന്റ് / അതിന്റെ സമയതാമസം.'),
+  dcbus:L('Smooth DC link inside the drive, after the rectifier.','ड्राइव के अंदर रेक्टिफायर के बाद स्मूथ DC लिंक।','ഡ്രൈവിനുള്ളിൽ റെക്റ്റിഫയറിന് ശേഷമുള്ള സ്മൂത്ത് DC ലിങ്ക്.'),
+  dcs:L('Extra electronic sensor (fluxgate) that measures DC leakage.','DC लीकेज मापने वाला अतिरिक्त इलेक्ट्रॉनिक सेंसर (फ्लक्सगेट)।','DC ലീക്കേജ് അളക്കുന്ന അധിക ഇലക്ട്രോണിക് സെൻസർ (ഫ്ലക്സ്ഗേറ്റ്).')
+};
+const TERMS={
+  scale:[['Fibrillation',D.fib]],
+  rccb:[['IΔn',D.IDn],['Toroid',D.tor]],
+  rcbo:[['In',D.In],['MCB',D.mcb],['Bimetal',D.bim]],
+  family:[['SRCD',D.srcd],['PRCD',D.prcd],['ELR',D.elr],['CBCT',D.cbct],['CBR',D.cbr]],
+  types:[['VFD',D.vfd],['AC→DC',D.rect],['Saturated',D.sat]],
+  afdd:[['Series arc',D.sarc],['HF',D.hf],['μP',D.up]],
+  ev:[['RDC-DD',D.rdc],['On-board charger',D.obc],['Contactor',D.cont]],
+  ard:[['ARD',D.ard],['Lockout',D.lock]],
+  smart:[['App',D.app],['kWh',D.kwh]],
+  si:[['SI / Hpi',D.si],['Filter capacitor',D.ycap],['Surge',D.surge]],
+  rccb3:[['Phasor sum',D.phasor]],
+  rcbo4:[['T+M',D.tm],['Single phasing',D.sph]],
+  rccb3w:[['3-wire load',D.w3]],
+  elr:[['ELR',D.elr],['CBCT',D.cbct],['ST',D.st],['MCCB',D.mccb]],
+  mccbg:[['ACB',D.acb],['CT',D.ct],['LSIG',L('L = long time (overload), S = short delay, I = instant, G = ground (earth) fault.','L = लॉन्ग टाइम (ओवरलोड), S = शॉर्ट डिले, I = इंस्टेंट, G = ग्राउंड (अर्थ) फॉल्ट।','L = ലോങ് ടൈം (ഓവർലോഡ്), S = ഷോർട്ട് ഡിലേ, I = ഇൻസ്റ്റന്റ്, G = ഗ്രൗണ്ട് (എർത്ത്) ഫോൾട്ട്.')],['Ig / tg',D.ig]],
+  typeb4:[['DC bus',D.dcbus],['DC sensor',D.dcs],['VFD',D.vfd]]
+};
+SLIDES.forEach(s=>{if(s.svg&&TERMS[s.svg]) s.terms=TERMS[s.svg];});
+
+/* ---------- specifications: what is printed on each device ---------- */
+const SP={
+  In:L('In: rated current. The most current it carries all day. Choose In equal to or above the MCB or fuse before it.','In: रेटेड करंट। दिन भर वहन करने वाला अधिकतम करंट। In को पहले लगे MCB या फ्यूज के बराबर या अधिक चुनें।','In: റേറ്റഡ് കറന്റ്. ദിവസം മുഴുവൻ വഹിക്കാവുന്ന പരമാവധി കറന്റ്. മുന്നിലുള്ള MCB / ഫ്യൂസിന് തുല്യമോ കൂടുതലോ ആയ In തിരഞ്ഞെടുക്കുക.'),
+  IDn:L('IΔn: rated residual current. It trips at this leakage or less. 30 mA protects people; 100 / 300 mA protects against fire.','IΔn: रेटेड रेज़िडुअल करंट। इतने या कम लीकेज पर ट्रिप। 30 mA व्यक्ति की, 100 / 300 mA आग से सुरक्षा।','IΔn: റേറ്റഡ് റെസിഡ്യുവൽ കറന്റ്. ഈ ലീക്കേജിലോ അതിൽ കുറവിലോ ട്രിപ്പ്. 30 mA മനുഷ്യരെ, 100 / 300 mA തീയിൽ നിന്ന് സംരക്ഷിക്കുന്നു.'),
+  IDn100:L('IΔn 100 mA or 300 mA: for fire protection and main incomers. Use 30 mA on final circuits.','IΔn 100 mA या 300 mA: आग सुरक्षा और मुख्य इनकमर के लिए। अंतिम सर्किट पर 30 mA।','IΔn 100 mA / 300 mA: തീ സംരക്ഷണത്തിനും മെയിൻ ഇൻകമറിനും. അവസാന സർക്യൂട്ടുകളിൽ 30 mA.'),
+  Un1:L('230 V~ 50 Hz: rated voltage and frequency. Must match the supply.','230 V~ 50 Hz: रेटेड वोल्टेज और आवृत्ति। सप्लाई से मेल खाना चाहिए।','230 V~ 50 Hz: റേറ്റഡ് വോൾട്ടേജും ആവൃത്തിയും. സപ്ലൈയുമായി യോജിക്കണം.'),
+  Un3:L('415 V~ 50 Hz: rated voltage for a 3-phase supply.','415 V~ 50 Hz: 3-फेज़ सप्लाई के लिए रेटेड वोल्टेज।','415 V~ 50 Hz: 3-ഫേസ് സപ്ലൈക്കുള്ള റേറ്റഡ് വോൾട്ടേജ്.'),
+  Inc:L('Inc in a box: the short-circuit current it can survive when backed up by the correct MCB or fuse. Choose it above the fault level.','बॉक्स में Inc: सही MCB या फ्यूज के साथ सहन करने योग्य शॉर्ट सर्किट करंट। फॉल्ट लेवल से अधिक चुनें।','ബോക്സിൽ Inc: ശരിയായ MCB / ഫ്യൂസ് പിന്തുണയോടെ താങ്ങാവുന്ന ഷോർട്ട് സർക്യൂട്ട് കറന്റ്. ഫോൾട്ട് ലെവലിന് മുകളിൽ തിരഞ്ഞെടുക്കുക.'),
+  TypeA:L('Type A symbol: detects AC and pulsating DC leakage. Pick the type by the load (see RCD types).','टाइप A चिह्न: AC और स्पंदित DC लीकेज पहचानता है। लोड अनुसार प्रकार चुनें (RCD प्रकार देखें)।','ടൈപ്പ് A ചിഹ്നം: AC-യും സ്പന്ദിക്കുന്ന DC-യും കണ്ടെത്തുന്നു. ലോഡ് അനുസരിച്ച് തരം തിരഞ്ഞെടുക്കുക (RCD തരങ്ങൾ കാണുക).'),
+  P2:L('2P (1P + N): two poles, for a single-phase supply.','2P (1P + N): दो पोल, सिंगल-फेज़ सप्लाई के लिए।','2P (1P + N): രണ്ട് പോൾ, സിംഗിൾ-ഫേസ് സപ്ലൈക്ക്.'),
+  P4:L('4P (3P + N): four poles, for a 3-phase 4-wire supply.','4P (3P + N): चार पोल, 3-फेज़ 4-तार सप्लाई के लिए।','4P (3P + N): നാല് പോൾ, 3-ഫേസ് 4-വയർ സപ്ലൈക്ക്.'),
+  IS1:L('IS 12640-1: Indian standard for RCCB. Buy only devices with this mark.','IS 12640-1: RCCB का भारतीय मानक। केवल इस चिह्न वाले डिवाइस खरीदें।','IS 12640-1: RCCB-യുടെ ഇന്ത്യൻ മാനദണ്ഡം. ഈ അടയാളമുള്ളവ മാത്രം വാങ്ങുക.'),
+  IS2:L('IS 12640-2: Indian standard for RCBO.','IS 12640-2: RCBO का भारतीय मानक।','IS 12640-2: RCBO-യുടെ ഇന്ത്യൻ മാനദണ്ഡം.'),
+  Test:L('T button: press once a month. It must trip. If it does not, replace the device.','T बटन: महीने में एक बार दबाएँ। ट्रिप होना चाहिए। न हो तो डिवाइस बदलें।','T ബട്ടൺ: മാസത്തിലൊരിക്കൽ അമർത്തുക. ട്രിപ്പ് ആകണം. ഇല്ലെങ്കിൽ ഉപകരണം മാറ്റുക.'),
+  Lever:L('I = ON, O = OFF. After a trip the lever falls to OFF. Find the fault before switching ON.','I = चालू, O = बंद। ट्रिप पर लीवर बंद पर गिरता है। चालू करने से पहले फॉल्ट खोजें।','I = ഓൺ, O = ഓഫ്. ട്രിപ്പിൽ ലിവർ ഓഫിലേക്ക് വീഴും. ഓൺ ചെയ്യുന്നതിന് മുമ്പ് ഫോൾട്ട് കണ്ടെത്തുക.'),
+  Curve:L('C32: trip curve + rated current. B for lights and sockets, C for general loads and motors, D for high inrush.','C32: ट्रिप कर्व + रेटेड करंट। लाइट-सॉकेट के लिए B, सामान्य लोड व मोटर के लिए C, अधिक इनरश के लिए D।','C32: ട്രിപ്പ് കർവ് + റേറ്റഡ് കറന്റ്. ലൈറ്റ്, സോക്കറ്റിന് B; പൊതു ലോഡിനും മോട്ടോറിനും C; ഉയർന്ന ഇൻറഷിന് D.'),
+  B16:L('B16: trip curve B, rated current 16 A (the MCB part).','B16: ट्रिप कर्व B, रेटेड करंट 16 A (MCB भाग)।','B16: ട്രിപ്പ് കർവ് B, റേറ്റഡ് കറന്റ് 16 A (MCB ഭാഗം).'),
+  Icn:L('6000 in a box: breaking capacity Icn = 6 kA. It must be above the fault level at that point.','बॉक्स में 6000: ब्रेकिंग क्षमता Icn = 6 kA। उस स्थान के फॉल्ट लेवल से अधिक हो।','ബോക്സിൽ 6000: ബ്രേക്കിംഗ് ശേഷി Icn = 6 kA. ആ സ്ഥലത്തെ ഫോൾട്ട് ലെവലിന് മുകളിൽ ആകണം.'),
+  Class3:L('3 in a square: energy limiting class 3. Lets less energy through in a short circuit, so cables stay safe.','वर्ग में 3: ऊर्जा सीमित वर्ग 3। शॉर्ट सर्किट में कम ऊर्जा जाने देता है, केबल सुरक्षित।','ചതുരത്തിൽ 3: എനർജി ലിമിറ്റിംഗ് ക്ലാസ് 3. ഷോർട്ട് സർക്യൂട്ടിൽ കുറഞ്ഞ ഊർജ്ജം മാത്രം കടത്തുന്നു, കേബിൾ സുരക്ഷിതം.'),
+  S:L('S in a box: time-delayed (selective) type. Fit it upstream so the 30 mA RCD below trips first.','बॉक्स में S: समय-विलंबित (सेलेक्टिव) प्रकार। ऊपर लगाएँ ताकि नीचे का 30 mA RCD पहले ट्रिप हो।','ബോക്സിൽ S: സമയതാമസമുള്ള (സെലക്ടീവ്) തരം. താഴെയുള്ള 30 mA RCD ആദ്യം ട്രിപ്പ് ആകാൻ മുകളിൽ ഘടിപ്പിക്കുക.'),
+  Npos:L('N marked terminal: connect neutral only here. Check whether N is on the left or the right.','N चिह्नित टर्मिनल: न्यूट्रल केवल यहीं जोड़ें। देखें N बाएँ है या दाएँ।','N അടയാളമുള്ള ടെർമിനൽ: ന്യൂട്രൽ ഇവിടെ മാത്രം. N ഇടത്തോ വലത്തോ എന്ന് നോക്കുക.'),
+  AFDsym:L('Arc symbol + IEC 62606: shows the arc fault detection function.','आर्क चिह्न + IEC 62606: आर्क फॉल्ट पहचान कार्य दर्शाता है।','ആർക്ക് ചിഹ്നം + IEC 62606: ആർക്ക് ഫോൾട്ട് കണ്ടെത്തൽ പ്രവർത്തനം കാണിക്കുന്നു.'),
+  AFDled:L('LED: shows status and the trip reason. Read the maker’s code chart.','LED: स्थिति और ट्रिप कारण दिखाता है। निर्माता का कोड चार्ट देखें।','LED: നിലയും ട്രിപ്പ് കാരണവും കാണിക്കുന്നു. നിർമ്മാതാവിന്റെ കോഡ് ചാർട്ട് നോക്കുക.'),
+  TypeB:L('Type B symbol: also detects smooth DC leakage. Needed for EV chargers, drives and solar inverters.','टाइप B चिह्न: स्मूथ DC लीकेज भी पहचानता है। EV चार्जर, ड्राइव और सोलर इन्वर्टर के लिए ज़रूरी।','ടൈപ്പ് B ചിഹ്നം: സ്മൂത്ത് DC ലീക്കേജും കണ്ടെത്തുന്നു. EV ചാർജർ, ഡ്രൈവ്, സോളാർ ഇൻവെർട്ടർ എന്നിവയ്ക്ക് വേണം.'),
+  kHz:L('Up to 1 kHz: detects leakage at higher frequencies from drives.','1 kHz तक: ड्राइव से उच्च आवृत्ति लीकेज पहचानता है।','1 kHz വരെ: ഡ്രൈവുകളിൽ നിന്നുള്ള ഉയർന്ന ആവൃത്തി ലീക്കേജ് കണ്ടെത്തുന്നു.'),
+  IEC62423:L('IEC 62423: standard for Type F and Type B RCDs.','IEC 62423: टाइप F और टाइप B RCD का मानक।','IEC 62423: ടൈപ്പ് F, ടൈപ്പ് B RCD-കളുടെ മാനദണ്ഡം.'),
+  DD6:L('6 mA DC (IEC 62955): DC fault detection, often built inside the EV charger.','6 mA DC (IEC 62955): DC फॉल्ट पहचान, प्रायः EV चार्जर के अंदर।','6 mA DC (IEC 62955): DC ഫോൾട്ട് കണ്ടെത്തൽ, പലപ്പോഴും EV ചാർജറിനുള്ളിൽ.'),
+  ARDcomp:L('Compatible device: the ARD fits only the RCCB / RCBO models listed by the maker.','संगत डिवाइस: ARD केवल निर्माता द्वारा बताए RCCB / RCBO पर लगता है।','യോജിക്കുന്ന ഉപകരണം: നിർമ്മാതാവ് പറയുന്ന RCCB / RCBO-യിൽ മാത്രം ARD ഘടിപ്പിക്കാം.'),
+  ARDn:L('Reclose attempts: number of tries before lockout (often 3).','रीक्लोज़ प्रयास: लॉकआउट से पहले प्रयासों की संख्या (प्रायः 3)।','റീക്ലോസ് ശ്രമങ്ങൾ: ലോക്കൗട്ടിന് മുമ്പുള്ള ശ്രമങ്ങളുടെ എണ്ണം (പലപ്പോഴും 3).'),
+  ARDt:L('Reclose delay: wait time before each try. Set on the unit.','रीक्लोज़ देरी: हर प्रयास से पहले प्रतीक्षा समय। यूनिट पर सेट करें।','റീക്ലോസ് താമസം: ഓരോ ശ്രമത്തിനും മുമ്പുള്ള കാത്തിരിപ്പ്. യൂണിറ്റിൽ സെറ്റ് ചെയ്യാം.'),
+  ARDlock:L('Lockout: after the last try it stays OFF. Reset by hand after repair.','लॉकआउट: अंतिम प्रयास के बाद बंद रहता है। मरम्मत के बाद हाथ से रीसेट।','ലോക്കൗട്ട്: അവസാന ശ്രമത്തിന് ശേഷം ഓഫ്. അറ്റകുറ്റപ്പണിക്ക് ശേഷം കൈകൊണ്ട് റീസെറ്റ്.'),
+  IEC63024:L('IEC 63024: standard for automatic reclosing devices.','IEC 63024: ऑटोमैटिक रीक्लोज़िंग डिवाइस का मानक।','IEC 63024: ഓട്ടോമാറ്റിക് റീക്ലോസിംഗ് ഉപകരണങ്ങളുടെ മാനദണ്ഡം.'),
+  wifi:L('Wi-Fi (usually 2.4 GHz): needed for the app. Check the signal at the distribution board.','Wi-Fi (प्रायः 2.4 GHz): ऐप के लिए ज़रूरी। डिस्ट्रीब्यूशन बोर्ड पर सिग्नल जाँचें।','Wi-Fi (സാധാരണ 2.4 GHz): ആപ്പിന് വേണം. ഡിസ്ട്രിബ്യൂഷൻ ബോർഡിൽ സിഗ്നൽ പരിശോധിക്കുക.'),
+  meas:L('Measures V, A, kWh and leakage in mA.','V, A, kWh और लीकेज (mA) मापता है।','V, A, kWh, ലീക്കേജ് (mA) എന്നിവ അളക്കുന്നു.'),
+  alarm:L('Alarm level: leakage warning before trip, e.g. 15 mA. Set it in the app.','अलार्म स्तर: ट्रिप से पहले लीकेज चेतावनी, जैसे 15 mA। ऐप में सेट करें।','അലാറം നില: ട്രിപ്പിന് മുമ്പ് ലീക്കേജ് മുന്നറിയിപ്പ്, ഉദാ. 15 mA. ആപ്പിൽ സെറ്റ് ചെയ്യുക.'),
+  manual:L('Manual lever: I = ON, O = OFF. It always works, even without Wi-Fi.','मैनुअल लीवर: I = चालू, O = बंद। Wi-Fi के बिना भी हमेशा काम करता है।','മാനുവൽ ലിവർ: I = ഓൺ, O = ഓഫ്. Wi-Fi ഇല്ലെങ്കിലും എപ്പോഴും പ്രവർത്തിക്കും.'),
+  SImark:L('A-SI / Hpi / HI mark: high-immunity type. Fewer false trips.','A-SI / Hpi / HI चिह्न: हाई-इम्युनिटी प्रकार। कम गलत ट्रिप।','A-SI / Hpi / HI അടയാളം: ഹൈ-ഇമ്മ്യൂണിറ്റി തരം. തെറ്റായ ട്രിപ്പ് കുറവ്.'),
+  surge:L('Surge withstand (kA, 8/20 µs): higher than an ordinary RCCB. See the data sheet.','सर्ज सहनशीलता (kA, 8/20 µs): साधारण RCCB से अधिक। डेटा शीट देखें।','സർജ് താങ്ങൽ (kA, 8/20 µs): സാധാരണ RCCB-യേക്കാൾ കൂടുതൽ. ഡാറ്റാ ഷീറ്റ് നോക്കുക.'),
+  ELRrange:L('IΔn setting range, e.g. 30 mA to 30 A, set with a knob.','IΔn सेटिंग रेंज, जैसे 30 mA से 30 A, नॉब से सेट।','IΔn സെറ്റിംഗ് പരിധി, ഉദാ. 30 mA മുതൽ 30 A വരെ, നോബ് വഴി.'),
+  ELRt:L('Time delay range, e.g. instant to a few seconds. Instant for people; delay so smaller breakers below trip first.','समय देरी रेंज, जैसे तुरंत से कुछ सेकंड। व्यक्ति के लिए तुरंत; देरी ताकि नीचे के छोटे ब्रेकर पहले ट्रिप हों।','സമയതാമസ പരിധി, ഉദാ. ഉടൻ മുതൽ ഏതാനും സെക്കൻഡ്. മനുഷ്യർക്ക് ഉടൻ; താഴെയുള്ള ചെറിയ ബ്രേക്കറുകൾ ആദ്യം ട്രിപ്പ് ആകാൻ താമസം.'),
+  aux:L('Aux supply, e.g. 230 V AC: the relay needs its own supply to work.','ऑक्स सप्लाई, जैसे 230 V AC: रिले को काम करने के लिए अलग सप्लाई चाहिए।','ഓക്സ് സപ്ലൈ, ഉദാ. 230 V AC: റിലേക്ക് പ്രവർത്തിക്കാൻ സ്വന്തം സപ്ലൈ വേണം.'),
+  contacts:L('Output contacts NO / NC with rating, e.g. 5 A 230 V: they drive the shunt trip or contactor coil.','आउटपुट कॉन्टैक्ट NO / NC रेटिंग सहित, जैसे 5 A 230 V: ये शंट ट्रिप या कॉन्टैक्टर कॉइल चलाते हैं।','ഔട്ട്പുട്ട് കോൺടാക്ട് NO / NC റേറ്റിംഗ് സഹിതം, ഉദാ. 5 A 230 V: ഷണ്ട് ട്രിപ്പ് / കോൺടാക്ടർ കോയിൽ പ്രവർത്തിപ്പിക്കുന്നു.'),
+  window:L('CBCT window size (mm): all live cables must pass through it.','CBCT विंडो आकार (mm): सभी लाइव केबल इसमें से गुजरें।','CBCT വിൻഡോ വലുപ്പം (mm): എല്ലാ ലൈവ് കേബിളുകളും ഇതിലൂടെ കടക്കണം.'),
+  match:L('CBCT type: use the CBCT made for that ELR (same make and ratio).','CBCT प्रकार: उसी ELR के लिए बना CBCT लगाएँ (एक ही निर्माता और अनुपात)।','CBCT തരം: ആ ELR-നായി നിർമ്മിച്ച CBCT ഉപയോഗിക്കുക (ഒരേ നിർമ്മാതാവ്, അനുപാതം).'),
+  elrtest:L('Test / Reset buttons: test the relay monthly; reset after a trip.','टेस्ट / रीसेट बटन: रिले की मासिक जाँच; ट्रिप के बाद रीसेट।','ടെസ്റ്റ് / റീസെറ്റ് ബട്ടൺ: റിലേ മാസംതോറും പരിശോധിക്കുക; ട്രിപ്പിന് ശേഷം റീസെറ്റ്.'),
+  frame:L('Frame 250 A: the largest current the breaker body can handle.','फ्रेम 250 A: ब्रेकर बॉडी द्वारा संभाला जाने वाला अधिकतम करंट।','ഫ്രെയിം 250 A: ബ്രേക്കർ ബോഡിക്ക് താങ്ങാവുന്ന പരമാവധി കറന്റ്.'),
+  Ir:L('Ir: overload setting, e.g. 0.4 to 1 × In. Set it to the load current.','Ir: ओवरलोड सेटिंग, जैसे 0.4 से 1 × In। लोड करंट पर सेट करें।','Ir: ഓവർലോഡ് സെറ്റിംഗ്, ഉദാ. 0.4 മുതൽ 1 × In. ലോഡ് കറന്റിന് സെറ്റ് ചെയ്യുക.'),
+  Icu:L('Icu / Ics (kA): breaking capacity. Icu = maximum it can break; Ics = it can break this and still be used. Choose above the fault level.','Icu / Ics (kA): ब्रेकिंग क्षमता। Icu = अधिकतम जो तोड़ सके; Ics = इसे तोड़कर भी उपयोग योग्य। फॉल्ट लेवल से अधिक चुनें।','Icu / Ics (kA): ബ്രേക്കിംഗ് ശേഷി. Icu = പരമാവധി; Ics = ഇത് മുറിച്ചശേഷവും ഉപയോഗിക്കാം. ഫോൾട്ട് ലെവലിന് മുകളിൽ തിരഞ്ഞെടുക്കുക.'),
+  Ig:L('Ig: earth fault setting in amperes, e.g. 0.2 to 1 × In.','Ig: एम्पियर में अर्थ फॉल्ट सेटिंग, जैसे 0.2 से 1 × In।','Ig: ആമ്പിയറിൽ എർത്ത് ഫോൾട്ട് സെറ്റിംഗ്, ഉദാ. 0.2 മുതൽ 1 × In.'),
+  tg:L('tg: earth fault time delay. Keep it longer than the breakers below.','tg: अर्थ फॉल्ट समय देरी। नीचे वाले ब्रेकरों से अधिक रखें।','tg: എർത്ത് ഫോൾട്ട് സമയതാമസം. താഴെയുള്ള ബ്രേക്കറുകളേക്കാൾ കൂടുതൽ വയ്ക്കുക.'),
+  Ue:L('Ue 415 V: rated operating voltage.','Ue 415 V: रेटेड ऑपरेटिंग वोल्टेज।','Ue 415 V: റേറ്റഡ് ഓപ്പറേറ്റിംഗ് വോൾട്ടേജ്.'),
+  IEC60947:L('IS/IEC 60947-2: standard for MCCB and ACB.','IS/IEC 60947-2: MCCB और ACB का मानक।','IS/IEC 60947-2: MCCB-യുടെയും ACB-യുടെയും മാനദണ്ഡം.'),
+  push:L('Push to trip: tests the trip mechanism. Press during maintenance.','पुश टू ट्रिप: ट्रिप तंत्र की जाँच। रखरखाव के समय दबाएँ।','പുഷ് ടു ട്രിപ്പ്: ട്രിപ്പ് മെക്കാനിസം പരിശോധന. മെയിന്റനൻസ് സമയത്ത് അമർത്തുക.')
+};
+LBL.lookfor=L('Find this on the label','लेबल पर यह खोजें','ലേബലിൽ ഇത് കണ്ടെത്തുക');
+function specPlate(name,items,poles){
+  const cx=190; let s=`<svg viewBox="0 0 800 450" role="img" aria-label="${name} label"><rect class="plas" x="40" y="22" width="300" height="414" rx="10"/>`;
+  for(let i=0;i<poles;i++){const tx=40+300*(i+.5)/poles;[44,414].forEach(ty=>{s+=`<circle class="screw" cx="${tx}" cy="${ty}" r="8"/><path class="ink-p" d="M${tx-5} ${ty} H${tx+5}"/>`;});}
+  s+=txt(cx,82,name,'pt b t-md');
+  let line=0;
+  items.forEach((it,i)=>{
+    const n=i+1; let g='';
+    if(it.pos==='lever'){
+      const sw=poles>2?120:30;
+      g=`<rect class="slot" x="${cx-sw/2}" y="98" width="${sw}" height="74" rx="5"/><rect class="lever" x="${cx-sw/2+4}" y="102" width="${sw-8}" height="30" rx="3"/>${txt(cx+sw/2+10,114,'I','pt t-md b',{a:'start'})}${txt(cx+sw/2+10,168,'O','pt t-md b',{a:'start'})}`;
+      g+=`<circle class="badge" cx="366" cy="118" r="14"/>${txt(366,124,n,'t-sm tx-a b')}`;
+    } else if(it.pos==='test'){
+      g=`<rect class="tbtn" x="288" y="144" width="34" height="26" rx="4"/><text class="tbt b" style="font-size:15px" x="305" y="163" text-anchor="middle">T</text>`;
+      g+=`<circle class="badge" cx="366" cy="158" r="14"/>${txt(366,164,n,'t-sm tx-a b')}`;
+    } else if(it.pos==='led'){
+      g=`<circle class="led" cx="78" cy="135" r="10"/>${txt(78,162,'LED','pt t-sm b')}`;
+      g+=`<circle class="badge" cx="20" cy="135" r="14"/>${txt(20,141,n,'t-sm tx-a b')}`;
+    } else {
+      const nl=items.filter(t=>!t.pos).length, y=(nl>7?206:212)+line*(nl>7?24:27); line++;
+      const w=it.mark.length*11+14;
+      g=(it.box?`<rect fill="none" class="ink-p" x="58" y="${y-20}" width="${w}" height="27" rx="2"/>`:'')+txt(64,y,it.mark,'pt b t-md',{a:'start'});
+      if(it.sym){const x0=64+it.mark.length*11+18; g+=`<path class="ink-p" style="stroke-width:2.5" d="${wp(it.sym,x0,y-6,42,9)}"/>`;}
+      g+=`<circle class="badge" cx="366" cy="${y-7}" r="14"/>${txt(366,y-1,n,'t-sm tx-a b')}`;
+    }
+    s+=`<g data-hl="${n}">${g}</g>`;
+  });
+  s+=`<rect class="box" x="400" y="40" width="380" height="370" rx="14"/>`;
+  items.forEach((it,i)=>{
+    const m=it.pos==='lever'?'I / O':it.pos==='test'?'T':it.pos==='led'?'LED':it.mark;
+    s+=`<g data-show="${i+1}"><circle class="badge-big" cx="590" cy="120" r="34"/>${txt(590,132,i+1,'t-lg tx-ai b')}${txt(590,240,m,(m.length>14?'t-md':'t-lg')+' tx b')}</g>`;
+  });
+  s+=lab(590,330,'lookfor','t-sm tx-m');
+  return s+'</svg>';
+}
+const SPECS=[
+  {id:'rccb',name:'RCCB',poles:2,items:[{pos:'lever',k:'Lever'},{pos:'test',k:'Test'},{mark:'In 40 A',k:'In'},{mark:'IΔn 30 mA',k:'IDn'},{mark:'230 V~ 50 Hz',k:'Un1'},{mark:'Inc 10000 A',k:'Inc',box:1},{mark:'Type A',k:'TypeA',sym:'pulse'},{mark:'2P (1P+N)',k:'P2'},{mark:'IS 12640-1',k:'IS1'}]},
+  {id:'rcbo',name:'RCBO',poles:2,items:[{pos:'lever',k:'Lever'},{pos:'test',k:'Test'},{mark:'C32',k:'Curve'},{mark:'IΔn 30 mA',k:'IDn'},{mark:'6000',k:'Icn',box:1},{mark:'3',k:'Class3',box:1},{mark:'Type A',k:'TypeA',sym:'pulse'},{mark:'230 V~ 50 Hz',k:'Un1'},{mark:'1P+N',k:'P2'},{mark:'IS 12640-2',k:'IS2'}]},
+  {id:'afdd',name:'AFDD + RCBO',poles:2,items:[{pos:'lever',k:'Lever'},{pos:'test',k:'Test'},{pos:'led',k:'AFDled'},{mark:'B16',k:'B16'},{mark:'IΔn 30 mA',k:'IDn'},{mark:'6000',k:'Icn',box:1},{mark:'AFDD IEC 62606',k:'AFDsym'},{mark:'230 V~ 50 Hz',k:'Un1'}]},
+  {id:'typeb',name:'Type B RCCB',poles:4,items:[{pos:'lever',k:'Lever'},{pos:'test',k:'Test'},{mark:'In 40 A',k:'In'},{mark:'IΔn 30 mA',k:'IDn'},{mark:'Type B',k:'TypeB',sym:'dc'},{mark:'≤ 1 kHz',k:'kHz'},{mark:'IEC 62423',k:'IEC62423'},{mark:'6 mA DC',k:'DD6'},{mark:'4P 415 V~',k:'P4'}]},
+  {id:'ard',name:'ARD',poles:2,items:[{mark:'For RCCB 40 A 2P',k:'ARDcomp'},{mark:'Tries: 3',k:'ARDn'},{mark:'Delay: set',k:'ARDt'},{mark:'Lockout / Reset',k:'ARDlock'},{mark:'230 V~ 50 Hz',k:'Un1'},{mark:'IEC 63024',k:'IEC63024'}]},
+  {id:'smart',name:'Smart RCBO',poles:2,items:[{pos:'lever',k:'manual'},{pos:'test',k:'Test'},{mark:'C32',k:'Curve'},{mark:'IΔn 30 mA',k:'IDn'},{mark:'Wi-Fi 2.4 GHz',k:'wifi'},{mark:'V A kWh mA',k:'meas'},{mark:'Alarm 15 mA',k:'alarm'},{mark:'6000',k:'Icn',box:1}]},
+  {id:'si',name:'RCCB A-SI',poles:2,items:[{pos:'lever',k:'Lever'},{pos:'test',k:'Test'},{mark:'A-SI',k:'SImark',box:1},{mark:'IΔn 30 mA',k:'IDn'},{mark:'In 40 A',k:'In'},{mark:'3 kA 8/20 µs',k:'surge'},{mark:'Type A',k:'TypeA',sym:'pulse'},{mark:'IS 12640-1',k:'IS1'}]},
+  {id:'rccb4',name:'4P RCCB',poles:4,items:[{pos:'lever',k:'Lever'},{pos:'test',k:'Test'},{mark:'In 63 A',k:'In'},{mark:'IΔn 300 mA',k:'IDn100'},{mark:'S',k:'S',box:1},{mark:'415 V~ 50 Hz',k:'Un3'},{mark:'4P (3P+N)',k:'P4'},{mark:'N ← left',k:'Npos'},{mark:'Inc 10000 A',k:'Inc',box:1},{mark:'IS 12640-1',k:'IS1'}]},
+  {id:'elr',name:'ELR + CBCT',poles:2,items:[{pos:'test',k:'elrtest'},{mark:'IΔn 0.03–30 A',k:'ELRrange'},{mark:'t 0–5 s',k:'ELRt'},{mark:'Aux 230 V~',k:'aux'},{mark:'NO / NC 5 A',k:'contacts'},{mark:'CBCT Ø 60 mm',k:'window'},{mark:'CBCT for ELR',k:'match'}]},
+  {id:'mccb',name:'MCCB (LSIG)',poles:4,items:[{pos:'lever',k:'Lever'},{pos:'test',k:'push'},{mark:'Frame 250 A',k:'frame'},{mark:'Ir 0.4–1 × In',k:'Ir'},{mark:'Icu 36 kA',k:'Icu'},{mark:'Ig 0.2–1 × In',k:'Ig'},{mark:'tg 0.1–0.4 s',k:'tg'},{mark:'Ue 415 V',k:'Ue'},{mark:'IS/IEC 60947-2',k:'IEC60947'}]}
+];
+const specSlides=SPECS.map((sp,i)=>{
+  SVG['spec_'+sp.id]=specPlate(sp.name,sp.items,sp.poles);
+  return {sep:i?null:L('Specifications','विनिर्देश','സ്പെസിഫിക്കേഷനുകൾ'), tab:L(sp.name,sp.name,sp.name), svg:'spec_'+sp.id,
+    title:L(sp.name+': reading the label',sp.name+': लेबल पढ़ना',sp.name+': ലേബൽ വായന'),
+    pts:[L('Check these marks before you buy or install. Values shown are typical examples.','खरीदने या लगाने से पहले ये चिह्न जाँचें। दिखाए मान सामान्य उदाहरण हैं।','വാങ്ങുന്നതിനോ ഘടിപ്പിക്കുന്നതിനോ മുമ്പ് ഈ അടയാളങ്ങൾ പരിശോധിക്കുക. കാണിച്ച മൂല്യങ്ങൾ സാധാരണ ഉദാഹരണങ്ങൾ.')],
+    steps:sp.items.map(it=>SP[it.k])};
+});
+SLIDES.splice(SLIDES.findIndex(s=>s.kind==='table'),0,...specSlides);
+
+const nSteps=s=>s.steps?s.steps.length:s.rules?s.rules.length:0;
+const $=id=>document.getElementById(id);
+function inRange(spec,s){
+  return String(spec).split(',').some(p=>{
+    if(p.includes('-')){const [a,b]=p.split('-');return s>=+a&&(b===''||s<=+b);}
+    return +p===s;
+  });
+}
+function slideHTML(s){
+  const head=`<h2>${T(s.title)}</h2>${s.pts?`<ul class="pts">${s.pts.map(p=>`<li>${T(p)}</li>`).join('')}</ul>`:''}${s.terms?`<dl class="terms">${s.terms.map(([t,d])=>`<dt>${t}</dt><dd>${T(d)}</dd>`).join('')}</dl>`:''}`;
+  if(s.svg){
+    const st=`<ol class="steps">${s.steps.map((x,i)=>`<li tabindex="0" data-go="${i+1}"><span class="n">${i+1}</span><span>${T(x)}</span></li>`).join('')}</ol>`;
+    return `<section class="slide kind-svg"><div class="txt">${head}${st}</div><div class="fig">${SVG[s.svg]}</div></section>`;
+  }
+  if(s.kind==='table'){
+    return `<section class="slide kind-table"><div class="txt">${head}</div><div class="tblwrap"><table><thead><tr><th></th><th>ELCB</th><th>RCCB</th><th>RCBO</th></tr></thead><tbody>${s.table.rows.map(r=>`<tr><th scope="row">${T(r.h)}</th>${r.c.map(c=>`<td class="${c[1]||''}">${T(c[0])}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>`;
+  }
+  return `<section class="slide kind-list"><div class="txt">${head}</div><ol class="rules">${s.rules.map((r,i)=>`<li data-hl="${i+1}" data-go="${i+1}">${T(r)}</li>`).join('')}</ol></section>`;
+}
+function render(){
+  document.documentElement.lang=lang;
+  const s=SLIDES[cur];
+  $('stage').innerHTML=slideHTML(s);
+  $('stage').querySelectorAll('[data-t]').forEach(el=>{el.textContent=T(LBL[el.dataset.t]);});
+  $('stage').querySelectorAll('[data-go]').forEach(el=>{
+    const go=()=>{stop();step=+el.dataset.go;apply();};
+    el.addEventListener('click',go);
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+  });
+  $('tabs').innerHTML=SLIDES.map((x,i)=>`${x.sep?`<span class="tabsep">${T(x.sep)}</span>`:''}<button class="tab" data-i="${i}" aria-current="${i===cur}"><b>${i+1}</b>${T(x.tab)}</button>`).join('');
+  $('tabs').querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>goSlide(+b.dataset.i)));
+  const at=$('tabs').querySelector('[aria-current="true"]'); if(at) try{at.scrollIntoView({block:'nearest',inline:'nearest'})}catch(e){}
+  ui(); apply();
+}
+function apply(){
+  const s=SLIDES[cur], n=nSteps(s), root=$('stage');
+  root.querySelectorAll('[data-show]').forEach(el=>el.classList.toggle('off',!inRange(el.dataset.show,step)));
+  root.querySelectorAll('[data-hl]').forEach(el=>el.classList.toggle('hl',inRange(el.dataset.hl,step)));
+  root.querySelectorAll('[data-dim]').forEach(el=>el.classList.toggle('dim',inRange(el.dataset.dim,step)));
+  root.querySelectorAll('.steps li').forEach((li,i)=>{li.classList.toggle('cur',i+1===step);li.classList.toggle('done',i+1<step);});
+  $('stepctl').hidden=!n;
+  $('st-cnt').textContent=`${T(UI.step)} ${step} / ${n}`;
+  $('st-prev').disabled=step<=1; $('st-next').disabled=step>=n;
+  $('sl-cnt').textContent=`${cur+1} / ${SLIDES.length}`;
+  $('sl-prev').disabled=cur===0; $('sl-next').disabled=cur===SLIDES.length-1;
+  $('st-play').textContent=timer?T(UI.pause):T(UI.play);
+  $('st-play').setAttribute('aria-pressed',!!timer);
+}
+function ui(){
+  $('brand').textContent=T(UI.brand);
+  $('lab-text').textContent=T(UI.text);
+  $('th-light').textContent=T(UI.light); $('th-dark').textContent=T(UI.dark); $('th-contrast').textContent=T(UI.contrast);
+  $('full').textContent=T(UI.full);
+  $('sl-prev').textContent=T(UI.prev); $('sl-next').textContent=T(UI.next);
+  $('st-reset').textContent=T(UI.reset);
+  document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===lang));
+  const th=document.documentElement.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  document.querySelectorAll('[data-theme-btn]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.themeBtn===th));
+}
+function stop(){if(timer){clearInterval(timer);timer=null;}}
+function goSlide(i,last){stop();cur=Math.max(0,Math.min(SLIDES.length-1,i));step=last?Math.max(1,nSteps(SLIDES[cur])):1;render();try{$('stage').scrollTop=0}catch(e){}}
+function next(){const n=nSteps(SLIDES[cur]);if(step<n){step++;apply();}else if(cur<SLIDES.length-1)goSlide(cur+1);}
+function prev(){if(step>1){step--;apply();}else if(cur>0)goSlide(cur-1,true);}
+
+$('st-next').onclick=()=>{stop();if(step<nSteps(SLIDES[cur])){step++;apply();}};
+$('st-prev').onclick=()=>{stop();if(step>1){step--;apply();}};
+$('st-reset').onclick=()=>{stop();step=1;apply();};
+$('st-play').onclick=()=>{
+  if(timer){stop();apply();return;}
+  if(step>=nSteps(SLIDES[cur])) step=1;
+  timer=setInterval(()=>{if(step<nSteps(SLIDES[cur])){step++;apply();}else{stop();apply();}},3200);
+  apply();
+};
+$('sl-next').onclick=()=>goSlide(cur+1);
+$('sl-prev').onclick=()=>goSlide(cur-1);
+document.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{lang=b.dataset.lang;store.set('elb-lang',lang);render();});
+function setScale(v){scale=Math.round(Math.max(.7,Math.min(1.8,v))*10)/10;document.documentElement.style.setProperty('--scale',scale);store.set('elb-scale',scale);}
+$('fs-up').onclick=()=>setScale(scale+.1);
+$('fs-dn').onclick=()=>setScale(scale-.1);
+$('fs-rs').onclick=()=>setScale(1);
+document.querySelectorAll('[data-theme-btn]').forEach(b=>b.onclick=()=>{document.documentElement.dataset.theme=b.dataset.themeBtn;store.set('elb-theme',b.dataset.themeBtn);ui();});
+$('full').onclick=()=>{
+  try{
+    if(document.fullscreenElement) document.exitFullscreen();
+    else{const p=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen(); if(p&&p.catch)p.catch(()=>{});}
+  }catch(e){}
+};
+document.addEventListener('keydown',e=>{
+  const onBtn=e.target.closest&&e.target.closest('button,li[tabindex]');
+  if(e.key==='ArrowRight'||e.key==='PageDown'||(e.key===' '&&!onBtn)){e.preventDefault();stop();next();}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();stop();prev();}
+  else if(e.key==='ArrowDown'){e.preventDefault();goSlide(cur+1);}
+  else if(e.key==='ArrowUp'){e.preventDefault();goSlide(cur-1);}
+  else if(e.key==='+'||e.key==='='){setScale(scale+.1);}
+  else if(e.key==='-'){setScale(scale-.1);}
+});
+(function init(){
+  const l=store.get('elb-lang'); if(l&&['en','hi','ml'].includes(l)) lang=l;
+  const sc=parseFloat(store.get('elb-scale')); if(sc) setScale(sc);
+  const th=store.get('elb-theme'); if(th&&['light','dark','contrast'].includes(th)) document.documentElement.dataset.theme=th;
+  try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',ui);}catch(e){}
+  render();
+})();
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
