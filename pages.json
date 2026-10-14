@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-14T02:54:50.537Z",
+  "updated": "2026-10-14T08:48:11.301Z",
   "sections": [
     {
       "name": "Electrical Machines & Control",
@@ -245,6 +245,19 @@
           "title": "SWG Measurement Simulator",
           "description": "",
           "section": "Measurements",
+          "sectionOrder": 999,
+          "order": 999
+        }
+      ]
+    },
+    {
+      "name": "Protection Devices",
+      "pages": [
+        {
+          "file": "pages/earth-leakage-breakers.html",
+          "title": "Earth Leakage Breakers",
+          "description": "",
+          "section": "Protection Devices",
           "sectionOrder": 999,
           "order": 999
         }
