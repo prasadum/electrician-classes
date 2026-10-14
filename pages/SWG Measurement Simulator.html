@@ -1,0 +1,630 @@
+<!doctype html><html><head>
+<meta name="section" content="Measurements"><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>SWG Measurement Simulator</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&family=Saira+Semi+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: two-column workbench — procedure card left, large animated stage right; stacks on phones */
+:root{
+  --bg:#eef1f3;--panel:#ffffff;--fg:#15202b;--muted:#56636f;--line:#c8d0d7;--chip:#e6ebef;
+  --accent:#b4561e;--accent-fg:#ffffff;
+  --stage:#f8fafb;--steel:#a9b4be;--steel-edge:#5f6c78;--plate-ink:#17212a;--frame:#44515f;
+  --ins:#c3352f;--cu:#de8a45;--cu-dull:#80573d;--grip:#2e5f8f;--emery:#bfa57c;--emery-dot:#7d6748;
+  --ok:#1d8a4b;--warn:#a86c0c;--bad:#c43131;
+  --f-disp:"Saira Semi Condensed","Noto Sans Malayalam","Noto Sans Devanagari",system-ui,sans-serif;
+  --f-ui:"IBM Plex Sans","Noto Sans Malayalam","Noto Sans Devanagari",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono","Noto Sans Malayalam","Noto Sans Devanagari",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#11161b;--panel:#1a2129;--fg:#e8edf1;--muted:#9eabb7;--line:#2f3a45;--chip:#232c36;
+  --accent:#e8975c;--accent-fg:#1a0e05;
+  --stage:#0d1216;--steel:#8794a0;--steel-edge:#c3ccd4;--plate-ink:#0a0f13;--frame:#9aa6b2;
+  --ins:#d9473f;--cu:#ec9a55;--cu-dull:#7a5338;--grip:#5a8fc4;--emery:#9c875f;--emery-dot:#5e4c31;
+  --ok:#4cc982;--warn:#e3b04e;--bad:#f06a6a;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11161b;--panel:#1a2129;--fg:#e8edf1;--muted:#9eabb7;--line:#2f3a45;--chip:#232c36;
+  --accent:#e8975c;--accent-fg:#1a0e05;
+  --stage:#0d1216;--steel:#8794a0;--steel-edge:#c3ccd4;--plate-ink:#0a0f13;--frame:#9aa6b2;
+  --ins:#d9473f;--cu:#ec9a55;--cu-dull:#7a5338;--grip:#5a8fc4;--emery:#9c875f;--emery-dot:#5e4c31;
+  --ok:#4cc982;--warn:#e3b04e;--bad:#f06a6a;color-scheme:dark}
+/* Projector theme chosen inside the page wins over the viewer setting */
+:root[data-skin="light"]{
+  --bg:#eef1f3;--panel:#ffffff;--fg:#15202b;--muted:#56636f;--line:#c8d0d7;--chip:#e6ebef;
+  --accent:#b4561e;--accent-fg:#ffffff;
+  --stage:#f8fafb;--steel:#a9b4be;--steel-edge:#5f6c78;--plate-ink:#17212a;--frame:#44515f;
+  --ins:#c3352f;--cu:#de8a45;--cu-dull:#80573d;--grip:#2e5f8f;--emery:#bfa57c;--emery-dot:#7d6748;
+  --ok:#1d8a4b;--warn:#a86c0c;--bad:#c43131;color-scheme:light}
+:root[data-skin="dark"]{
+  --bg:#11161b;--panel:#1a2129;--fg:#e8edf1;--muted:#9eabb7;--line:#2f3a45;--chip:#232c36;
+  --accent:#e8975c;--accent-fg:#1a0e05;
+  --stage:#0d1216;--steel:#8794a0;--steel-edge:#c3ccd4;--plate-ink:#0a0f13;--frame:#9aa6b2;
+  --ins:#d9473f;--cu:#ec9a55;--cu-dull:#7a5338;--grip:#5a8fc4;--emery:#9c875f;--emery-dot:#5e4c31;
+  --ok:#4cc982;--warn:#e3b04e;--bad:#f06a6a;color-scheme:dark}
+:root[data-skin="hc"]{
+  --bg:#000000;--panel:#000000;--fg:#ffffff;--muted:#f0f0f0;--line:#ffffff;--chip:#1c1c1c;
+  --accent:#ffd400;--accent-fg:#000000;
+  --stage:#000000;--steel:#cfd6dc;--steel-edge:#ffffff;--plate-ink:#000000;--frame:#ffffff;
+  --ins:#ff3b30;--cu:#ff9a3c;--cu-dull:#a3602b;--grip:#00c8ff;--emery:#c9a86c;--emery-dot:#5b4728;
+  --ok:#2bff88;--warn:#ffd400;--bad:#ff5a5a;color-scheme:dark}
+
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--f-ui);font-size:17px;line-height:1.5}
+:root[lang="ml"] body{line-height:1.65}
+.page{max-width:1720px;margin:0 auto;padding-inline:clamp(16px,2.4vw,36px);padding-block:16px 22px;display:flex;flex-direction:column;gap:16px}
+header.top{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:flex-end;justify-content:space-between;padding-bottom:12px;border-bottom:2px solid var(--line)}
+.brand{min-width:0;flex:1 1 360px}
+.eyebrow{font-family:var(--f-mono);font-size:.8rem;letter-spacing:.06em;color:var(--accent);margin:0 0 2px}
+h1{font-family:var(--f-disp);font-weight:700;font-size:clamp(1.6rem,2.7vw,2.5rem);line-height:1.1;margin:0;text-wrap:balance}
+.sub{margin:4px 0 0;color:var(--muted);font-size:1rem}
+.ctrls{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.ctrls label{display:flex;flex-direction:column;gap:3px;font-size:.85rem;color:var(--muted)}
+select,button{font:inherit;font-size:1rem;min-height:44px;padding:.45em .8em;border:2px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg);cursor:pointer}
+button:hover,select:hover{border-color:var(--accent)}
+button:disabled{opacity:.4;cursor:default}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:600}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+main.wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.8fr);gap:20px;align-items:start}
+.proc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:clamp(16px,1.6vw,26px);display:flex;flex-direction:column;gap:14px;min-width:0}
+.bar{height:6px;background:var(--chip);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:12.5%;transition:width .4s}
+.stepno{font-family:var(--f-mono);font-size:1.05rem;color:var(--accent);font-weight:600}
+#stepTitle{font-family:var(--f-disp);font-weight:700;font-size:clamp(1.5rem,2.4vw,2.3rem);line-height:1.15;margin:0;text-wrap:balance}
+#stepText{font-size:clamp(1.15rem,1.55vw,1.55rem);line-height:1.55;margin:0;min-height:7.2em}
+.nav{display:flex;gap:10px;flex-wrap:wrap}
+.nav button{flex:1 1 auto}
+#stepList{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+#stepList button{width:100%;min-height:40px;display:flex;gap:10px;align-items:center;text-align:left;background:transparent;border:2px solid transparent;color:var(--muted);font-size:.98rem;padding:.3em .6em}
+#stepList .nb{font-family:var(--f-mono);font-weight:600;min-width:1.6em}
+#stepList button.on{background:var(--chip);border-color:var(--accent);color:var(--fg);font-weight:600}
+#stepList button.done .nb{color:var(--ok)}
+.keys{margin:0;font-size:.85rem;color:var(--muted)}
+
+.stageCol{display:flex;flex-direction:column;gap:12px;min-width:0}
+.stageBox{background:var(--stage);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+#stage{display:block;width:100%;height:auto}
+.readout{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ro{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px;min-width:0}
+.ro small{display:block;color:var(--muted);font-size:.9rem}
+.ro b{display:block;font-family:var(--f-mono);font-size:clamp(1.2rem,1.9vw,1.75rem);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ro b.loose{color:var(--warn)} .ro b.snug,.ro b.confirmed{color:var(--ok)} .ro b.tight{color:var(--bad)}
+footer{display:flex;flex-wrap:wrap;gap:6px 20px;justify-content:space-between;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:10px}
+
+@media (max-width:920px){main.wrap{grid-template-columns:minmax(0,1fr)}.stageCol{order:-1}#stepText{min-height:0}}
+@media (max-width:560px){.readout{grid-template-columns:minmax(0,1fr)}.ctrls label{flex:1 1 40%}.ctrls select{width:100%}}
+
+/* SVG paint */
+.stg{fill:var(--stage)}
+.stl{fill:var(--steel);stroke:var(--steel-edge);stroke-width:1.5}
+.stl0{fill:var(--steel)}
+.plateDisc{fill:var(--steel);stroke:var(--steel-edge);stroke-width:2}
+.plateRing{fill:none;stroke:var(--steel-edge);stroke-width:1;opacity:.45}
+.pn{fill:var(--plate-ink);font:600 15px var(--f-mono)}
+.pn.mmf{font-size:10.5px}
+.pc{fill:var(--plate-ink);font:600 15px var(--f-mono);letter-spacing:.08em}
+.ins{fill:var(--ins)}
+.cu{fill:var(--cu);stroke:var(--cu-dull);stroke-width:1.2}
+.cuS{fill:none;stroke:var(--cu-dull)}
+.cuB{fill:none;stroke:var(--cu)}
+.insS{stroke:var(--ins);stroke-linecap:butt}
+.cuL{stroke:var(--cu);stroke-linecap:butt}
+.cuFace{fill:var(--cu-dull);stroke:var(--cu);stroke-width:1.5}
+.hdl{fill:none;stroke:var(--grip);stroke-width:12;stroke-linecap:round}
+.piv{fill:var(--steel-edge)}
+.notch{stroke:var(--stage);stroke-width:3}
+.em{fill:var(--emery)} .emd{fill:var(--emery-dot)}
+.emS{stroke:var(--emery-dot);stroke-width:1.5}
+.frm{fill:none;stroke:var(--frame);stroke-width:24;stroke-linecap:round}
+.frmI{fill:none;stroke:var(--frame);stroke-width:9;stroke-linecap:round}
+.frmF{fill:var(--frame)}
+.spn{fill:var(--steel-edge)}
+.slv{fill:var(--steel);stroke:var(--steel-edge);stroke-width:1}
+.thim{fill:var(--steel);stroke:var(--steel-edge);stroke-width:1.5}
+.tick{stroke:var(--plate-ink);stroke-width:1.2}
+.lbl{fill:var(--fg);font:500 17px var(--f-ui)}
+.lblS{fill:var(--muted);font:500 14px var(--f-ui)}
+.lblB{fill:var(--fg);font:600 18px var(--f-ui)}
+.co{fill:var(--accent);font:600 17px var(--f-ui)}
+.lead{fill:none;stroke:var(--accent);stroke-width:2}
+.tag{fill:var(--ok);font:700 21px var(--f-ui)}
+.dimL{fill:none;stroke:var(--muted);stroke-width:1.5}
+.hi{fill:none;stroke-width:3.5}
+.hiN{stroke:var(--accent)} .hiOk{stroke:var(--ok)} .hiWarn{stroke:var(--warn)} .hiBad{stroke:var(--bad)}
+.hiDash{fill:none;stroke:var(--accent);stroke-width:3;stroke-dasharray:6 5}
+.insetBg{fill:var(--stage);stroke:var(--line);stroke-width:1}
+.insetRing{fill:none;stroke:var(--accent);stroke-width:3}
+.magR{fill:none;stroke:var(--accent);stroke-width:5}
+.magH{stroke:var(--accent);stroke-width:9;stroke-linecap:round}
+.logN{fill:var(--fg);font:600 15px var(--f-mono)}
+.logF{font:600 15px var(--f-ui)}
+.f-loose{fill:var(--warn)} .f-snug,.f-confirmed{fill:var(--ok)} .f-tight{fill:var(--bad)}
+.readBox{fill:var(--panel);stroke:var(--accent);stroke-width:2}
+.readTxt{fill:var(--fg);font:600 34px var(--f-mono)}
+.tblH{fill:var(--muted);font:600 15px var(--f-ui)}
+.tblR{fill:var(--fg);font:500 17px var(--f-mono)}
+.tblNew{fill:var(--accent)}
+.tblLine{stroke:var(--line);stroke-width:1.5}
+:root[data-skin="hc"] .hi{stroke-width:5}
+:root[data-skin="hc"] .lbl,:root[data-skin="hc"] .lblS{font-weight:600}
+:root[data-skin="hc"] .proc,:root[data-skin="hc"] .ro,:root[data-skin="hc"] .stageBox{border-width:2px}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+<div class="page">
+<header class="top">
+  <div class="brand">
+    <p class="eyebrow">NSTI CALICUT · CTS ELECTRICIAN – POWER DISTRIBUTION</p>
+    <h1 data-en="SWG Wire Gauge Measurement" data-hi="SWG वायर गेज द्वारा मापन" data-ml="SWG വയർ ഗേജ് ഉപയോഗിച്ചുള്ള അളവെടുപ്പ്">SWG Wire Gauge Measurement</h1>
+    <p class="sub" data-en="Finding conductor size with a slot-type Standard Wire Gauge plate" data-hi="स्लॉट प्रकार की मानक वायर गेज प्लेट से चालक का आकार ज्ञात करना" data-ml="സ്ലോട്ട് ടൈപ്പ് സ്റ്റാൻഡേർഡ് വയർ ഗേജ് പ്ലേറ്റ് ഉപയോഗിച്ച് കണ്ടക്ടറിന്റെ വലുപ്പം കണ്ടെത്തൽ">Finding conductor size with a slot-type Standard Wire Gauge plate</p>
+  </div>
+  <div class="ctrls">
+    <label for="selSample"><span data-en="Sample wire" data-hi="नमूना तार" data-ml="സാമ്പിൾ വയർ">Sample wire</span>
+      <select id="selSample"></select></label>
+    <label for="selLang"><span data-en="Language" data-hi="भाषा" data-ml="ഭാഷ">Language</span>
+      <select id="selLang"><option value="en">English</option><option value="hi">हिन्दी</option><option value="ml">മലയാളം</option></select></label>
+    <label for="selTheme"><span data-en="Theme" data-hi="थीम" data-ml="തീം">Theme</span>
+      <select id="selTheme">
+        <option value="auto" data-en="Auto" data-hi="स्वतः" data-ml="ഓട്ടോ">Auto</option>
+        <option value="light" data-en="Light" data-hi="लाइट" data-ml="ലൈറ്റ്">Light</option>
+        <option value="dark" data-en="Dark" data-hi="डार्क" data-ml="ഡാർക്ക്">Dark</option>
+        <option value="hc" data-en="High contrast" data-hi="उच्च कंट्रास्ट" data-ml="ഹൈ കോൺട്രാസ്റ്റ്">High contrast</option>
+      </select></label>
+    <label for="selSpeed"><span data-en="Speed" data-hi="गति" data-ml="വേഗത">Speed</span>
+      <select id="selSpeed">
+        <option value="1" data-en="Normal" data-hi="सामान्य" data-ml="സാധാരണ">Normal</option>
+        <option value="1.7" data-en="Slow" data-hi="धीमा" data-ml="പതുക്കെ">Slow</option>
+      </select></label>
+    <button id="btnFs" type="button" data-en="Full screen" data-hi="पूर्ण स्क्रीन" data-ml="ഫുൾ സ്ക്രീൻ">Full screen</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="proc" aria-live="polite">
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="stepno"><span data-en="Step" data-hi="चरण" data-ml="ഘട്ടം">Step</span> <span id="stepNum">1</span> / 8</div>
+    <h2 id="stepTitle"></h2>
+    <p id="stepText"></p>
+    <div class="nav">
+      <button id="btnPrev" type="button">← <span data-en="Previous" data-hi="पिछला" data-ml="മുമ്പത്തെ">Previous</span></button>
+      <button id="btnReplay" type="button">↻ <span data-en="Replay" data-hi="फिर से चलाएँ" data-ml="വീണ്ടും കാണിക്കുക">Replay</span></button>
+      <button id="btnNext" type="button" class="primary"><span data-en="Next" data-hi="अगला" data-ml="അടുത്തത്">Next</span> →</button>
+    </div>
+    <ol id="stepList"></ol>
+    <p class="keys" data-en="Keys: ← → or Space · R replay · F full screen" data-hi="कुंजियाँ: ← → या स्पेस · R फिर से · F पूर्ण स्क्रीन" data-ml="കീകൾ: ← → അല്ലെങ്കിൽ സ്പേസ് · R വീണ്ടും · F ഫുൾ സ്ക്രീൻ">Keys: ← → or Space · R replay · F full screen</p>
+  </section>
+
+  <section class="stageCol">
+    <div class="stageBox">
+<svg id="stage" viewBox="0 0 800 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SWG measurement animation">
+  <defs>
+    <pattern id="grit" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" class="em"/><circle cx="2" cy="2" r="1" class="emd"/><circle cx="5" cy="5.2" r=".8" class="emd"/></pattern>
+    <clipPath id="insClip"><circle r="86"/></clipPath>
+  </defs>
+  <rect width="800" height="480" class="stg"/>
+
+  <!-- Step 1: kit -->
+  <g id="sKit">
+    <g><g class="kitItem">
+      <rect x="140" y="78" width="520" height="30" rx="15" class="ins"/>
+      <circle cx="652" cy="93" r="9" class="cu"/>
+      <text x="400" y="142" class="lbl" text-anchor="middle" data-t="conductor"></text>
+    </g></g>
+    <g transform="translate(140,280)"><g class="kitItem">
+      <path d="M -6 0 L -34 96" class="hdl"/><path d="M 6 0 L 34 96" class="hdl"/>
+      <rect x="-16" y="-54" width="32" height="56" rx="5" class="stl"/>
+      <path d="M -16 -30 H -3 M 16 -30 H 3" class="notch"/>
+      <circle r="5" class="piv"/>
+      <text y="132" class="lbl" text-anchor="middle" data-t="stripper"></text>
+    </g></g>
+    <g transform="translate(330,290)"><g class="kitItem">
+      <rect x="-60" y="-42" width="120" height="78" rx="3" fill="url(#grit)" class="emS"/>
+      <text y="122" class="lbl" text-anchor="middle" data-t="emery"></text>
+    </g></g>
+    <g transform="translate(520,290)"><g class="kitItem">
+      <g id="miniPlate" transform="scale(0.36)"></g>
+      <text y="122" class="lbl" text-anchor="middle" data-t="gauge"></text>
+    </g></g>
+    <g transform="translate(690,290)"><g class="kitItem">
+      <path d="M -46 -12 V 18 Q -46 44 -20 44 H 4 Q 28 44 28 18 V -4" class="frmI"/>
+      <rect x="-50" y="-20" width="22" height="10" class="stl"/>
+      <rect x="-16" y="-20" width="50" height="10" class="stl"/>
+      <rect x="30" y="-24" width="34" height="18" class="slv"/>
+      <rect x="56" y="-28" width="36" height="26" rx="3" class="thim"/>
+      <text y="122" class="lbl" text-anchor="middle" data-t="micrometer"></text>
+    </g></g>
+  </g>
+
+  <!-- Steps 2–3: stripping and cleaning (side view) -->
+  <g id="sWire">
+    <path id="cuDull" class="cuS"/>
+    <path id="cuBright" class="cuB" opacity="0"/>
+    <rect id="insMain" class="ins"/>
+    <g id="slug"><rect id="insSlug" class="ins"/></g>
+    <g id="dim25"><path id="dimPath" class="dimL"/><text id="dimTxt" class="lblS" text-anchor="middle">25 mm</text></g>
+    <text id="wireLbl" x="250" y="330" class="lbl" text-anchor="middle" data-t="conductor"></text>
+    <g id="stripTool"></g>
+    <g id="emeryTool"><rect x="-36" y="-34" width="72" height="68" rx="3" fill="url(#grit)" class="emS"/></g>
+    <text id="tagWire" x="400" y="420" class="tag" text-anchor="middle"></text>
+  </g>
+
+  <!-- Steps 4–7: gauge plate (face view) -->
+  <g id="sPlate">
+    <text x="776" y="30" class="lblS" text-anchor="end" data-t="endview"></text>
+    <g id="plateWrap" transform="translate(400,300)"><g id="plate"></g></g>
+    <rect id="slotHi" class="hi hiN"/>
+    <circle id="holeHi" class="hiDash"/>
+    <g id="vwire"><line id="vIns" class="insS"/><line id="vCu" class="cuL"/><circle id="vFace" class="cuFace"/></g>
+    <g id="callouts">
+      <g id="coSlotG"><path id="coSlotL" class="lead"/><text id="coSlot" x="468" y="112" class="co" data-t="slot"></text></g>
+      <g id="coHoleG"><path id="coHoleL" class="lead"/><text id="coHole" x="468" y="200" class="co" data-t="hole"></text></g>
+    </g>
+    <g id="inset" transform="translate(690,178)">
+      <circle r="88" class="insetBg"/>
+      <g clip-path="url(#insClip)"><rect id="wallL" class="stl0"/><rect id="wallR" class="stl0"/><circle id="iWire" class="cu"/></g>
+      <circle r="88" class="insetRing"/>
+      <text y="114" class="lblS" text-anchor="middle" data-t="zoom"></text>
+    </g>
+    <g id="log" transform="translate(24,96)"><text class="lblB" data-t="trials"></text><g id="logRows"></g></g>
+    <g id="mag"><circle id="magC" r="27" class="magR"/><line id="magH" class="magH"/></g>
+    <text id="faceTag" x="24" y="462" class="lblB"></text>
+  </g>
+
+  <!-- Step 8: micrometer and record -->
+  <g id="sMic">
+    <g transform="translate(140,170) scale(1.3)">
+      <path d="M -34 -18 V 62 Q -34 104 8 104 H 150 Q 192 104 192 62 V 22" class="frm"/>
+      <rect x="-34" y="-9" width="34" height="18" class="stl"/>
+      <circle id="mWire" class="cu"/>
+      <rect id="mSp" y="-7" height="14" class="spn"/>
+      <rect x="172" y="-24" width="36" height="48" rx="4" class="frmF"/>
+      <rect x="206" y="-13" width="112" height="26" class="slv"/>
+      <g id="mTicks"></g>
+      <g id="mTh"><rect x="0" y="-21" width="82" height="42" rx="3" class="thim"/><g id="mGrad"></g><rect x="82" y="-13" width="34" height="26" rx="3" class="thim"/></g>
+    </g>
+    <g transform="translate(560,34)">
+      <rect width="214" height="86" rx="8" class="readBox"/>
+      <text x="107" y="28" class="lblS" text-anchor="middle" data-t="micrometer"></text>
+      <text id="micRead" x="107" y="68" class="readTxt" text-anchor="middle">0.00 mm</text>
+      <text x="107" y="108" class="lblS" text-anchor="middle" data-t="lc"></text>
+    </g>
+    <g id="table" transform="translate(110,348)"></g>
+  </g>
+</svg>
+    </div>
+    <div class="readout">
+      <div class="ro"><small data-en="Slot under trial" data-hi="परीक्षण स्लॉट" data-ml="പരീക്ഷിക്കുന്ന സ്ലോട്ട്">Slot under trial</small><b id="roSlot">—</b></div>
+      <div class="ro"><small data-en="Fit" data-hi="फिट" data-ml="ഫിറ്റ്">Fit</small><b id="roFit">—</b></div>
+      <div class="ro"><small data-en="Wire size" data-hi="तार का आकार" data-ml="വയർ വലുപ്പം">Wire size</small><b id="roWire">?</b></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>Prepared by PRASAD UM, VI · NSTI Calicut</span>
+  <span>SWG sizes and diameters per BS 3737</span>
+</footer>
+</div>
+
+<!-- Procedure source (trilingual) -->
+<div id="steps" hidden>
+  <div><span class="ti" data-en="Prepare conductor and tools" data-hi="चालक और औज़ार तैयार करें" data-ml="കണ്ടക്ടറും ഉപകരണങ്ങളും തയ്യാറാക്കുക"></span>
+  <span class="tx" data-en="Take the given PVC-insulated copper conductor. Keep ready the SWG wire gauge (slot type), a wire stripper, fine emery paper and a micrometer for cross-checking." data-hi="दिया गया PVC इन्सुलेटेड कॉपर चालक लें। SWG वायर गेज (स्लॉट प्रकार), वायर स्ट्रिपर, बारीक एमरी पेपर और जाँच के लिए माइक्रोमीटर तैयार रखें।" data-ml="നൽകിയിരിക്കുന്ന PVC ഇൻസുലേറ്റഡ് കോപ്പർ കണ്ടക്ടർ എടുക്കുക. SWG വയർ ഗേജ് (സ്ലോട്ട് ടൈപ്പ്), വയർ സ്ട്രിപ്പർ, നേർത്ത എമറി പേപ്പർ, ഒത്തുനോക്കാൻ മൈക്രോമീറ്റർ എന്നിവ തയ്യാറാക്കി വയ്ക്കുക."></span></div>
+  <div><span class="ti" data-en="Strip the insulation" data-hi="इन्सुलेशन हटाएँ" data-ml="ഇൻസുലേഷൻ നീക്കുക"></span>
+  <span class="tx" data-en="Strip about 25 mm of insulation with the wire stripper set to the conductor size. Do not nick the copper: a nick reduces the diameter and gives a wrong reading." data-hi="चालक के आकार पर सेट वायर स्ट्रिपर से लगभग 25 mm इन्सुलेशन हटाएँ। तांबे पर खरोंच न आने दें: खरोंच से व्यास घटता है और रीडिंग गलत आती है।" data-ml="കണ്ടക്ടറിന്റെ വലുപ്പത്തിന് സെറ്റ് ചെയ്ത വയർ സ്ട്രിപ്പർ ഉപയോഗിച്ച് ഏകദേശം 25 mm ഇൻസുലേഷൻ നീക്കുക. ചെമ്പിൽ പോറൽ വീഴരുത്: പോറൽ വ്യാസം കുറയ്ക്കുകയും തെറ്റായ റീഡിംഗ് നൽകുകയും ചെയ്യും."></span></div>
+  <div><span class="ti" data-en="Clean and straighten" data-hi="साफ करें और सीधा करें" data-ml="വൃത്തിയാക്കി നേരെയാക്കുക"></span>
+  <span class="tx" data-en="Wipe the bare end with a clean cloth and rub it lightly with fine emery paper to remove oxide or enamel. Straighten the end so that it enters the slot squarely." data-hi="खुले सिरे को साफ कपड़े से पोंछें और ऑक्साइड या इनेमल हटाने के लिए बारीक एमरी पेपर से हल्का रगड़ें। सिरे को सीधा करें ताकि वह स्लॉट में सीधा जाए।" data-ml="തുറന്ന അറ്റം വൃത്തിയുള്ള തുണി കൊണ്ട് തുടയ്ക്കുക; ഓക്സൈഡ് അല്ലെങ്കിൽ ഇനാമൽ നീക്കാൻ നേർത്ത എമറി പേപ്പർ കൊണ്ട് പതുക്കെ ഉരസുക. സ്ലോട്ടിലേക്ക് നേരെ കയറാൻ അറ്റം നേരെയാക്കുക."></span></div>
+  <div><span class="ti" data-en="Know the slot and the hole" data-hi="स्लॉट और छेद पहचानें" data-ml="സ്ലോട്ടും ദ്വാരവും തിരിച്ചറിയുക"></span>
+  <span class="tx" data-en="Look at the gauge plate. Each opening has a narrow slot at the rim and a round hole behind it. Measure only in the slot; the hole is only clearance for entry." data-hi="गेज प्लेट को देखें। हर खुलाव में किनारे पर एक संकरा स्लॉट और उसके पीछे एक गोल छेद होता है। माप केवल स्लॉट में लें; छेद केवल तार डालने की निकासी है।" data-ml="ഗേജ് പ്ലേറ്റ് നോക്കുക. ഓരോ തുറപ്പിലും അരികിൽ ഒരു ഇടുങ്ങിയ സ്ലോട്ടും അതിനു പിന്നിൽ ഒരു വൃത്താകൃതിയിലുള്ള ദ്വാരവുമുണ്ട്. അളവ് സ്ലോട്ടിൽ മാത്രം എടുക്കുക; ദ്വാരം വയർ കടത്താനുള്ള ഇടം മാത്രമാണ്."></span></div>
+  <div><span class="ti" data-en="Start with a larger slot" data-hi="बड़े स्लॉट से शुरू करें" data-ml="വലിയ സ്ലോട്ടിൽ നിന്ന് തുടങ്ങുക"></span>
+  <span class="tx" data-en="Start from a slot clearly larger than the wire. Hold the wire at right angles to the plate and push it into the slot from the rim. If it moves freely sideways, the slot is too wide; go to the next smaller slot." data-hi="तार से स्पष्ट रूप से बड़े स्लॉट से शुरू करें। तार को प्लेट के लंबवत पकड़ें और किनारे से स्लॉट में धकेलें। यदि वह इधर-उधर आसानी से हिलता है, तो स्लॉट बहुत चौड़ा है; अगले छोटे स्लॉट पर जाएँ।" data-ml="വയറിനേക്കാൾ വ്യക്തമായും വലിയ സ്ലോട്ടിൽ നിന്ന് തുടങ്ങുക. വയർ പ്ലേറ്റിന് ലംബമായി പിടിച്ച് അരികിൽ നിന്ന് സ്ലോട്ടിലേക്ക് തള്ളുക. വശങ്ങളിലേക്ക് എളുപ്പത്തിൽ ഇളകുന്നുണ്ടെങ്കിൽ സ്ലോട്ട് വളരെ വീതിയുള്ളതാണ്; അടുത്ത ചെറിയ സ്ലോട്ടിലേക്ക് മാറുക."></span></div>
+  <div><span class="ti" data-en="Find the snug fit" data-hi="ठीक फिट वाला स्लॉट खोजें" data-ml="കൃത്യമായി ഫിറ്റാകുന്ന സ്ലോട്ട് കണ്ടെത്തുക"></span>
+  <span class="tx" data-en="Keep trying smaller slots. The correct slot is the smallest one the wire enters without force and without play; the next smaller slot will not accept it. Never force the wire: it widens the slot and spoils the gauge." data-hi="छोटे स्लॉट आज़माते रहें। सही स्लॉट वह सबसे छोटा स्लॉट है जिसमें तार बिना ज़ोर और बिना ढीलेपन के जाता है; उससे अगला छोटा स्लॉट तार को नहीं लेगा। तार को कभी ज़बरदस्ती न घुसाएँ: इससे स्लॉट चौड़ा होता है और गेज खराब होता है।" data-ml="ചെറിയ സ്ലോട്ടുകൾ തുടർന്നും പരീക്ഷിക്കുക. ബലം പ്രയോഗിക്കാതെയും ഇളക്കമില്ലാതെയും വയർ കയറുന്ന ഏറ്റവും ചെറിയ സ്ലോട്ടാണ് ശരിയായത്; അതിനടുത്ത ചെറിയ സ്ലോട്ടിൽ വയർ കയറില്ല. വയർ ഒരിക്കലും ബലമായി കടത്തരുത്: അത് സ്ലോട്ട് വീതികൂട്ടി ഗേജ് കേടാക്കും."></span></div>
+  <div><span class="ti" data-en="Read the gauge" data-hi="गेज पढ़ें" data-ml="ഗേജ് വായിക്കുക"></span>
+  <span class="tx" data-en="Read the number stamped beside that slot: SWG {swg}. Turn the plate over: the reverse gives the diameter, {mm} mm ({in} in)." data-hi="उस स्लॉट के पास अंकित संख्या पढ़ें: SWG {swg}। प्लेट पलटें: पीछे की ओर व्यास {mm} mm ({in} in) दिया है।" data-ml="ആ സ്ലോട്ടിനരികിൽ പതിച്ചിരിക്കുന്ന നമ്പർ വായിക്കുക: SWG {swg}. പ്ലേറ്റ് മറിക്കുക: പിൻവശത്ത് വ്യാസം {mm} mm ({in} in) എന്ന് കാണാം."></span></div>
+  <div><span class="ti" data-en="Cross-check and record" data-hi="जाँचें और दर्ज करें" data-ml="ഒത്തുനോക്കി രേഖപ്പെടുത്തുക"></span>
+  <span class="tx" data-en="Cross-check with a micrometer: a reading of {mic} mm agrees with SWG {swg} ({mm} mm). Record the sample, SWG and diameter in the observation table. Clean the gauge and return all tools." data-hi="माइक्रोमीटर से जाँच करें: {mic} mm की रीडिंग SWG {swg} ({mm} mm) से मेल खाती है। नमूना, SWG और व्यास अवलोकन तालिका में दर्ज करें। गेज साफ करें और सभी औज़ार वापस रखें।" data-ml="മൈക്രോമീറ്റർ കൊണ്ട് ഒത്തുനോക്കുക: {mic} mm റീഡിംഗ് SWG {swg} ({mm} mm) യുമായി യോജിക്കുന്നു. സാമ്പിൾ, SWG, വ്യാസം എന്നിവ നിരീക്ഷണ പട്ടികയിൽ രേഖപ്പെടുത്തുക. ഗേജ് വൃത്തിയാക്കി എല്ലാ ഉപകരണങ്ങളും തിരികെ വയ്ക്കുക."></span></div>
+</div>
+
+<!-- Stage labels (trilingual) -->
+<div id="str" hidden>
+  <span data-k="loose" data-en="Loose" data-hi="ढीला" data-ml="അയഞ്ഞത്"></span>
+  <span data-k="snug" data-en="Snug fit" data-hi="ठीक फिट" data-ml="കൃത്യം ഫിറ്റ്"></span>
+  <span data-k="tight" data-en="Will not enter" data-hi="अंदर नहीं जाता" data-ml="കയറുന്നില്ല"></span>
+  <span data-k="confirmed" data-en="Confirmed" data-hi="पुष्टि हुई" data-ml="ഉറപ്പിച്ചു"></span>
+  <span data-k="trials" data-en="Trials" data-hi="परीक्षण" data-ml="പരീക്ഷണങ്ങൾ"></span>
+  <span data-k="zoom" data-en="Zoomed view ×3" data-hi="ज़ूम दृश्य ×3" data-ml="വലുതാക്കിയ കാഴ്ച ×3"></span>
+  <span data-k="slot" data-en="Slot – measure here" data-hi="स्लॉट – यहाँ मापें" data-ml="സ്ലോട്ട് – ഇവിടെ അളക്കുക"></span>
+  <span data-k="hole" data-en="Hole – clearance only" data-hi="छेद – केवल निकासी हेतु" data-ml="ദ്വാരം – കടത്താനുള്ള ഇടം മാത്രം"></span>
+  <span data-k="front" data-en="Front: SWG number" data-hi="सामने: SWG संख्या" data-ml="മുൻവശം: SWG നമ്പർ"></span>
+  <span data-k="reverse" data-en="Reverse: diameter (mm)" data-hi="पीछे: व्यास (mm)" data-ml="പിൻവശം: വ്യാസം (mm)"></span>
+  <span data-k="conductor" data-en="PVC copper conductor" data-hi="PVC कॉपर चालक" data-ml="PVC കോപ്പർ കണ്ടക്ടർ"></span>
+  <span data-k="stripper" data-en="Wire stripper" data-hi="वायर स्ट्रिपर" data-ml="വയർ സ്ട്രിപ്പർ"></span>
+  <span data-k="emery" data-en="Emery paper" data-hi="एमरी पेपर" data-ml="എമറി പേപ്പർ"></span>
+  <span data-k="gauge" data-en="SWG wire gauge" data-hi="SWG वायर गेज" data-ml="SWG വയർ ഗേജ്"></span>
+  <span data-k="micrometer" data-en="Micrometer" data-hi="माइक्रोमीटर" data-ml="മൈക്രോമീറ്റർ"></span>
+  <span data-k="sample" data-en="Sample" data-hi="नमूना" data-ml="സാമ്പിൾ"></span>
+  <span data-k="gaugeRead" data-en="Gauge reading" data-hi="गेज रीडिंग" data-ml="ഗേജ് റീഡിംഗ്"></span>
+  <span data-k="micRead" data-en="Micrometer (mm)" data-hi="माइक्रोमीटर (mm)" data-ml="മൈക്രോമീറ്റർ (mm)"></span>
+  <span data-k="stdDia" data-en="Standard (mm)" data-hi="मानक व्यास (mm)" data-ml="സ്റ്റാൻഡേർഡ് (mm)"></span>
+  <span data-k="obs" data-en="Observation table" data-hi="अवलोकन तालिका" data-ml="നിരീക്ഷണ പട്ടിക"></span>
+  <span data-k="oxide" data-en="Oxide removed, end straight" data-hi="ऑक्साइड हटाया, सिरा सीधा" data-ml="ഓക്സൈഡ് നീക്കി, അറ്റം നേരെയാക്കി"></span>
+  <span data-k="nonick" data-en="Insulation off – no nick on copper" data-hi="इन्सुलेशन हटा – तांबे पर खरोंच नहीं" data-ml="ഇൻസുലേഷൻ നീക്കി – ചെമ്പിൽ പോറലില്ല"></span>
+  <span data-k="endview" data-en="Conductor enters the slot at right angles to the plate" data-hi="चालक प्लेट के लंबवत स्लॉट में जाता है" data-ml="കണ്ടക്ടർ പ്ലേറ്റിന് ലംബമായി സ്ലോട്ടിലേക്ക് കടക്കുന്നു"></span>
+  <span data-k="lc" data-en="Least count 0.01 mm" data-hi="अल्पतमांक 0.01 mm" data-ml="ലീസ്റ്റ് കൗണ്ട് 0.01 mm"></span>
+</div>
+
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg';
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+function set(e,attrs){for(const k in attrs)e.setAttribute(k,attrs[k]);}
+const vis=(id,on)=>{$(id).style.display=on?'':'none';};
+const op=(id,v)=>$(id).setAttribute('opacity',v);
+const store={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
+
+/* SWG table: diameter mm, inch */
+const SWG={10:[3.251,'0.128'],11:[2.946,'0.116'],12:[2.642,'0.104'],13:[2.337,'0.092'],14:[2.032,'0.080'],15:[1.829,'0.072'],16:[1.626,'0.064'],17:[1.422,'0.056'],18:[1.219,'0.048'],19:[1.016,'0.040'],20:[0.914,'0.036'],21:[0.813,'0.032'],22:[0.711,'0.028'],23:[0.610,'0.024'],24:[0.559,'0.022'],25:[0.508,'0.020'],26:[0.457,'0.018'],27:[0.417,'0.0164'],28:[0.376,'0.0148'],29:[0.345,'0.0136'],30:[0.315,'0.0124']};
+const NUMS=Object.keys(SWG).map(Number);
+const SAMPLES={A:16,B:14,C:18,D:20,E:22};
+const CX=400,CY=300,R=165,K=8,SL=30,RIM=CY-R,K2=24,K3=14,WT=-18,YA=RIM-40,YF=RIM+SL*0.55;
+
+let lang=store.get('swg-lang');if(!['en','hi','ml'].includes(lang))lang='en';
+let sampleKey=store.get('swg-sample');if(!SAMPLES[sampleKey])sampleKey='A';
+let skin=store.get('swg-skin');if(!['auto','light','dark','hc'].includes(skin))skin='auto';
+let speed=1,step=0,token=0,rot=0,curY=YA,curI=-70,tagKey='';
+let log=[],records=[];
+const ro={slot:null,fit:null,result:0};
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const N=()=>SAMPLES[sampleKey];
+const mm=s=>SWG[s][0];
+const micOf=d=>(Math.floor(d*100+1e-6)/100).toFixed(2);
+function fill(s){const n=N(),d=mm(n);return s.replace(/\{swg\}/g,n).replace(/\{mm\}/g,d.toFixed(3)).replace(/\{in\}/g,SWG[n][1]).replace(/\{mic\}/g,micOf(d));}
+function t(k){const e=document.querySelector('#str [data-k="'+k+'"]');return e?(e.dataset[lang]||e.dataset.en):k;}
+
+/* timeline */
+const ease=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+const lin=p=>p;
+const lerp=(a,b,p)=>a+(b-a)*p;
+const alive=my=>my===token;
+function tween(ms,fn,ez){ez=ez||ease;const my=token;ms=reduce?0:ms*speed;return new Promise(res=>{if(ms<=0){if(my===token)fn(1);res();return;}const t0=performance.now();function f(now){if(my!==token){res();return;}const p=Math.min(1,(now-t0)/ms);fn(ez(p));if(p<1)requestAnimationFrame(f);else res();}requestAnimationFrame(f);});}
+function sleep(ms){ms=reduce?0:ms*speed;return new Promise(r=>setTimeout(r,ms));}
+
+/* gauge plate */
+const hr=s=>mm(s)*K/2+5;
+const labelLocalY=s=>-R+SL+2*hr(s)+14;
+function buildPlate(g,labels){
+  g.innerHTML='';
+  el('circle',{r:R,class:'plateDisc'},g);
+  el('circle',{r:R-8,class:'plateRing'},g);
+  NUMS.forEach((s,j)=>{
+    const w=mm(s)*K,h=hr(s);
+    const sg=el('g',{transform:'rotate('+(j*360/NUMS.length)+')'},g);
+    el('rect',{x:-w/2,y:-R-3,width:w,height:SL+3,class:'stg'},sg);
+    el('circle',{cx:0,cy:-R+SL+h-3,r:h,class:'stg'},sg);
+    if(labels){const y=labelLocalY(s);const tx=el('text',{x:0,y:y,class:'pn','text-anchor':'middle','dominant-baseline':'middle','data-n':s,'data-y':y},sg);tx.textContent=s;}
+  });
+  el('circle',{r:16,class:'stg'},g);
+  if(labels){const c=el('text',{y:46,class:'pc','text-anchor':'middle',id:'plateCenter'},g);c.textContent='S.W.G.';}
+}
+const slotRot=s=>-NUMS.indexOf(s)*360/NUMS.length;
+function setRot(r){rot=r;$('plate').setAttribute('transform','rotate('+r+')');}
+async function rotateTo(s,ms){const target=slotRot(s);const d=((target-rot)%360+540)%360-180;const r0=rot;await tween(ms,p=>setRot(r0+d*p));setRot(target);}
+function setSx(v){$('plateWrap').setAttribute('transform','translate('+CX+','+CY+') scale('+Math.max(v,0.001)+',1)');}
+function setFace(f){
+  document.querySelectorAll('#plate .pn').forEach(tx=>{const s=+tx.dataset.n,y=tx.dataset.y;
+    if(f==='front'){tx.textContent=s;tx.classList.remove('mmf');tx.removeAttribute('transform');}
+    else{tx.textContent=mm(s).toFixed(3);tx.classList.add('mmf');tx.setAttribute('transform','rotate(-90 0 '+y+')');}});
+  $('plateCenter').textContent=f==='front'?'S.W.G.':'mm';
+  $('faceTag').dataset.face=f;$('faceTag').textContent=t(f);
+}
+function hiSlot(s,cls){const w=mm(s)*K;set($('slotHi'),{x:CX-w/2-2,y:RIM-3,width:w+4,height:SL+3,rx:2,class:'hi '+cls});vis('slotHi',true);}
+function setWalls(s){const g=mm(s)*K2;set($('wallL'),{x:-130,y:WT,width:130-g/2,height:150});set($('wallR'),{x:g/2,y:WT,width:130,height:150});}
+function setV(y,dx){curY=y;$('vwire').setAttribute('transform','translate('+(CX+(dx||0))+','+y+')');}
+function setI(cy,dx){curI=cy;set($('iWire'),{cx:dx||0,cy:cy});}
+function placeMag(x,y){set($('magC'),{cx:x,cy:y});set($('magH'),{x1:x+20,y1:y+20,x2:x+48,y2:y+48});}
+
+/* side-view wire */
+let T=16,H=32,CL=7;
+function setKink(k){const d='M 548 230 L 612 230 Q 640 230 664 '+(230+k);$('cuDull').setAttribute('d',d);$('cuBright').setAttribute('d',d);}
+function setStrip(x,c){$('stripTool').setAttribute('transform','translate('+x+',0)');const u=$('jawU'),l=$('jawL');if(u){u.setAttribute('transform','translate(0,'+(c*CL)+')');l.setAttribute('transform','translate(0,'+(-c*CL)+')');}}
+function setEm(x,o){$('emeryTool').setAttribute('transform','translate('+x+',230)');op('emeryTool',o);}
+function tagW(k){tagKey=k;$('tagWire').textContent=k?'✓ '+t(k):'';}
+
+function buildWire(){
+  const d=mm(N());
+  T=Math.round(8+d*5);H=T+16;CL=(H-T)/2-1;
+  set($('insMain'),{x:-10,y:230-H/2,width:570,height:H});
+  set($('insSlug'),{x:560,y:230-H/2,width:104,height:H});
+  $('cuDull').setAttribute('stroke-width',T);$('cuBright').setAttribute('stroke-width',T);
+  const g=$('stripTool');g.innerHTML='';
+  const u=el('g',{id:'jawU'},g),l=el('g',{id:'jawL'},g);
+  el('path',{d:'M 0 '+(230-H/2-34)+' L 72 '+(230-H/2-128),class:'hdl'},u);
+  el('rect',{x:-13,y:230-H/2-38,width:26,height:38,rx:3,class:'stl'},u);
+  el('path',{d:'M 0 '+(230+H/2+34)+' L 72 '+(230+H/2+128),class:'hdl'},l);
+  el('rect',{x:-13,y:230+H/2,width:26,height:38,rx:3,class:'stl'},l);
+  $('dimPath').setAttribute('d','M 560 '+(230-H/2-10)+' V '+(230-H/2-30)+' M 664 '+(230-H/2-10)+' V '+(230-H/2-30)+' M 560 '+(230-H/2-20)+' H 664');
+  set($('dimTxt'),{x:612,y:230-H/2-38});
+  set($('wireLbl'),{y:230+H/2+40});
+  const w=d*K*0.97;
+  set($('vCu'),{x1:0,y1:0,x2:-0.6*52,y2:-0.8*52,'stroke-width':w});
+  set($('vIns'),{x1:-0.6*50,y1:-0.8*50,x2:-0.6*440,y2:-0.8*440,'stroke-width':w+12});
+  $('vFace').setAttribute('r',w/2);
+  $('iWire').setAttribute('r',d*K2/2);
+  const wD=d*K3;set($('mWire'),{cx:wD/2,cy:0,r:wD/2});
+}
+
+/* micrometer */
+const grads=[];
+(function(){const tk=$('mTicks');el('line',{x1:206,x2:318,y1:0,y2:0,class:'tick'},tk);
+  for(let i=0;i<=20;i++){const x=210+i*5;el('line',{x1:x,x2:x,y1:0,y2:i%2?6:-7,class:'tick'},tk);}
+  const mg=$('mGrad');for(let i=0;i<6;i++)grads.push(el('line',{x1:0,x2:i%5===0?14:9,y1:0,y2:0,class:'tick'},mg));})();
+function setMic(sp){set($('mSp'),{x:sp,width:212-sp});$('mTh').setAttribute('transform','translate('+(210+sp)+',0)');
+  const off=(sp*9)%7;grads.forEach((l,i)=>{const y=-18+((i*7+off)%38);set(l,{y1:y,y2:y});});
+  $('micRead').textContent=(sp/K3).toFixed(2)+' mm';}
+
+/* log, table, readout */
+function renderLog(){const g=$('logRows');g.innerHTML='';log.forEach((e,i)=>{const y=32+i*30;
+  el('text',{x:0,y:y,class:'logN'},g).textContent='SWG '+e.s;
+  el('text',{x:70,y:y,class:'logF f-'+e.fit},g).textContent=(e.fit==='tight'?'✕ ':e.fit==='loose'?'↔ ':'✓ ')+t(e.fit);});}
+function renderTable(newKey){const g=$('table');g.innerHTML='';const cols=[0,130,300,470];
+  el('text',{x:0,y:0,class:'lblB'},g).textContent=t('obs');
+  ['sample','gaugeRead','micRead','stdDia'].forEach((k,i)=>{el('text',{x:cols[i],y:28,class:'tblH'},g).textContent=t(k);});
+  el('line',{x1:0,x2:600,y1:38,y2:38,class:'tblLine'},g);
+  const rows=records.slice(-3);
+  if(!rows.length){el('text',{x:0,y:62,class:'tblR'},g).textContent='—';return;}
+  rows.forEach((r,i)=>{const y=62+i*28,cls='tblR'+(r.k===newKey?' tblNew':'');
+    [t('sample')+' '+r.k,'SWG '+r.swg,r.mic,r.mm].forEach((v,c)=>{el('text',{x:cols[c],y:y,class:cls},g).textContent=v;});});}
+function setRO(s,fit){ro.slot=s;ro.fit=fit;renderRO();}
+function renderRO(){const n=N();
+  $('roSlot').textContent=ro.slot?'SWG '+ro.slot:'—';
+  const f=$('roFit');f.textContent=ro.fit?t(ro.fit):'—';f.className=ro.fit||'';
+  $('roWire').textContent=ro.result===0?'?':ro.result===1?'SWG '+n:'SWG '+n+' · '+mm(n).toFixed(3)+' mm';}
+
+/* trial of one slot */
+async function trySlot(s,fit,my){
+  const d=mm(N()),r=d*K2/2,g=mm(s)*K2;
+  setRO(s,null);
+  const y0=curY,i0=curI;
+  await tween(350,p=>{setV(lerp(y0,YA,p));setI(lerp(i0,-70,p));});if(!alive(my))return;
+  vis('slotHi',false);
+  await rotateTo(s,700);if(!alive(my))return;
+  setWalls(s);hiSlot(s,'hiN');
+  const yT=fit==='tight'?RIM-(d*K*0.97)/2*0.55:YF;
+  const iT=fit==='tight'?WT-Math.sqrt(Math.max(r*r-(g/2)*(g/2),0)):WT+r+10;
+  await tween(650,p=>{setV(lerp(YA,yT,p));setI(lerp(-70,iT,p));});if(!alive(my))return;
+  if(fit==='loose'){const amp=(mm(s)-d)*K/2,ampI=g/2-r;
+    for(let c=0;c<3;c++){await tween(300,p=>{const v=Math.sin(p*Math.PI*2);setV(yT,amp*v);setI(iT,ampI*v);},lin);if(!alive(my))return;}}
+  else if(fit==='tight'){for(let c=0;c<2;c++){await tween(240,p=>{const v=Math.sin(p*Math.PI)*3;setV(yT+v);setI(iT+v*2);},lin);if(!alive(my))return;}}
+  hiSlot(s,fit==='loose'?'hiWarn':fit==='tight'?'hiBad':'hiOk');
+  log.push({s:s,fit:fit});renderLog();setRO(s,fit);
+  await sleep(700);
+}
+function plateBase(){setSx(1);setFace('front');['callouts','holeHi','mag','slotHi'].forEach(id=>vis(id,false));op('mag',1);}
+
+/* scenes, one per step */
+const SC=[
+  async my=>{ro.result=0;setRO(null,null);
+    const items=[...document.querySelectorAll('#sKit .kitItem')];
+    items.forEach(it=>{it.setAttribute('opacity',0);it.setAttribute('transform','translate(0,30)');});
+    for(const it of items){tween(650,p=>{it.setAttribute('opacity',p);it.setAttribute('transform','translate(0,'+(30*(1-p))+')');});await sleep(260);if(!alive(my))return;}},
+  async my=>{ro.result=0;setRO(null,null);
+    op('slug',1);$('slug').removeAttribute('transform');setKink(24);op('cuBright',0);vis('emeryTool',false);vis('stripTool',true);setStrip(900,0);op('dim25',0);tagW('');
+    await tween(500,p=>op('dim25',p));await sleep(500);if(!alive(my))return;
+    await tween(900,p=>setStrip(lerp(900,560,p),0));if(!alive(my))return;
+    await tween(450,p=>setStrip(560,p));await tween(250,p=>op('dim25',1-p));if(!alive(my))return;
+    await tween(900,p=>{setStrip(560+110*p,1);$('slug').setAttribute('transform','translate('+(110*p)+',0)');});if(!alive(my))return;
+    await tween(450,p=>{op('slug',1-p);setStrip(670,1-p);});
+    await tween(600,p=>setStrip(lerp(670,950,p),0));if(!alive(my))return;
+    tagW('nonick');},
+  async my=>{ro.result=0;setRO(null,null);
+    vis('stripTool',false);op('slug',0);op('dim25',0);setKink(24);op('cuBright',0);vis('emeryTool',true);setEm(820,1);tagW('');
+    await tween(600,p=>setEm(lerp(820,592,p),1));if(!alive(my))return;
+    for(let c=0;c<5;c++){
+      await tween(320,p=>{setEm(592+56*p,1);op('cuBright',(c*2+p)/10);});
+      await tween(320,p=>{setEm(648-56*p,1);op('cuBright',(c*2+1+p)/10);});if(!alive(my))return;}
+    await tween(500,p=>setEm(lerp(592,820,p),1-p));
+    await tween(800,p=>setKink(24*(1-p)));if(!alive(my))return;
+    tagW('oxide');},
+  async my=>{ro.result=0;setRO(null,null);plateBase();['vwire','inset','log'].forEach(id=>vis(id,false));
+    const s=N()-4,w=mm(s)*K,h=hr(s),cy=RIM+SL+h-3;
+    setRot(slotRot(s)+70);
+    $('coSlotL').setAttribute('d','M '+(CX+w/2+4)+' '+(RIM+8)+' L 462 106');
+    $('coHoleL').setAttribute('d','M '+(CX+h+4)+' '+cy+' L 462 '+(cy+22));
+    $('coHole').setAttribute('y',cy+27);
+    set($('holeHi'),{cx:CX,cy:cy,r:h+5});
+    await rotateTo(s,1200);if(!alive(my))return;
+    vis('callouts',true);op('coSlotG',0);op('coHoleG',0);
+    hiSlot(s,'hiN');await tween(500,p=>op('coSlotG',p));await sleep(900);if(!alive(my))return;
+    vis('holeHi',true);await tween(500,p=>op('coHoleG',p));},
+  async my=>{ro.result=0;plateBase();['vwire','inset','log'].forEach(id=>vis(id,true));
+    log=[];renderLog();setRO(null,null);
+    const n=N();setRot(slotRot(n-4)+40);setWalls(n-4);setV(YA);setI(-70);
+    await trySlot(n-4,'loose',my);if(!alive(my))return;
+    await trySlot(n-2,'loose',my);},
+  async my=>{ro.result=0;plateBase();['vwire','inset','log'].forEach(id=>vis(id,true));
+    const n=N();log=[{s:n-4,fit:'loose'},{s:n-2,fit:'loose'}];renderLog();setRO(null,null);
+    setRot(slotRot(n-2));setWalls(n-2);setV(YA);setI(-70);
+    await trySlot(n-1,'loose',my);if(!alive(my))return;
+    await trySlot(n,'snug',my);if(!alive(my))return;
+    await trySlot(n+1,'tight',my);if(!alive(my))return;
+    await trySlot(n,'confirmed',my);},
+  async my=>{plateBase();const n=N();vis('inset',false);vis('log',true);vis('vwire',true);
+    log=[{s:n-4,fit:'loose'},{s:n-2,fit:'loose'},{s:n-1,fit:'loose'},{s:n,fit:'snug'},{s:n+1,fit:'tight'},{s:n,fit:'confirmed'}];renderLog();
+    ro.result=0;setRO(n,'confirmed');setRot(slotRot(n));hiSlot(n,'hiOk');setV(YF);
+    await sleep(400);await tween(700,p=>setV(lerp(YF,-60,p)));if(!alive(my))return;
+    vis('vwire',false);
+    placeMag(CX,CY+labelLocalY(n));op('mag',0);vis('mag',true);
+    await tween(500,p=>op('mag',p));ro.result=1;renderRO();await sleep(1500);if(!alive(my))return;
+    await tween(300,p=>op('mag',1-p));vis('slotHi',false);
+    await tween(450,p=>setSx(1-p),lin);if(!alive(my))return;
+    setFace('reverse');
+    await tween(450,p=>setSx(p),lin);if(!alive(my))return;
+    hiSlot(n,'hiOk');await tween(400,p=>op('mag',p));ro.result=2;renderRO();},
+  async my=>{const n=N(),d=mm(n),wD=d*K3;ro.result=2;setRO(n,'confirmed');
+    renderTable();setMic(80);await sleep(400);if(!alive(my))return;
+    await tween(1900,p=>setMic(lerp(80,wD,p)));if(!alive(my))return;
+    $('micRead').textContent=micOf(d)+' mm';
+    records=records.filter(r=>r.k!==sampleKey);records.push({k:sampleKey,swg:n,mic:micOf(d),mm:d.toFixed(3)});
+    await sleep(300);renderTable(sampleKey);}
+];
+const SCN=['sKit','sWire','sWire','sPlate','sPlate','sPlate','sPlate','sMic'];
+
+/* step UI */
+const src=[...document.querySelectorAll('#steps > div')];
+function renderStep(){const s=src[step];
+  $('stepNum').textContent=step+1;
+  $('stepTitle').textContent=fill(s.querySelector('.ti').dataset[lang]);
+  $('stepText').textContent=fill(s.querySelector('.tx').dataset[lang]);
+  $('barFill').style.width=((step+1)/8*100)+'%';
+  $('btnPrev').disabled=step===0;$('btnNext').disabled=step===7;
+  [...$('stepList').children].forEach((li,i)=>{const b=li.firstChild;b.classList.toggle('on',i===step);b.classList.toggle('done',i<step);b.setAttribute('aria-current',i===step?'step':'false');});}
+function renderList(){const ol=$('stepList');ol.innerHTML='';
+  src.forEach((s,i)=>{const li=document.createElement('li'),b=document.createElement('button');b.type='button';
+    const nb=document.createElement('span');nb.className='nb';nb.textContent=(i+1)+'.';
+    const tx=document.createElement('span');tx.textContent=s.querySelector('.ti').dataset[lang];
+    b.append(nb,tx);b.addEventListener('click',()=>go(i));li.appendChild(b);ol.appendChild(li);});}
+function play(){const my=++token;['sKit','sWire','sPlate','sMic'].forEach(id=>vis(id,id===SCN[step]));SC[step](my);}
+function go(i){step=Math.max(0,Math.min(7,i));renderStep();play();}
+
+function renderSamples(){const sel=$('selSample');sel.innerHTML='';
+  Object.keys(SAMPLES).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=t('sample')+' '+k;sel.appendChild(o);});sel.value=sampleKey;}
+function applyLang(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll('[data-en]').forEach(e=>{if(e.closest('#steps')||e.closest('#str'))return;const v=e.dataset[lang];if(v!=null)e.textContent=v;});
+  document.querySelectorAll('[data-t]').forEach(e=>{e.textContent=t(e.dataset.t);});
+  if($('faceTag').dataset.face)$('faceTag').textContent=t($('faceTag').dataset.face);
+  tagW(tagKey);renderSamples();renderList();renderStep();renderLog();renderTable();renderRO();
+}
+function applySkin(){if(skin==='auto')delete document.documentElement.dataset.skin;else document.documentElement.dataset.skin=skin;}
+
+/* controls */
+$('selLang').value=lang;$('selTheme').value=skin;
+$('selLang').addEventListener('change',e=>{lang=e.target.value;store.set('swg-lang',lang);applyLang();});
+$('selTheme').addEventListener('change',e=>{skin=e.target.value;store.set('swg-skin',skin);applySkin();});
+$('selSpeed').addEventListener('change',e=>{speed=+e.target.value;});
+$('selSample').addEventListener('change',e=>{sampleKey=e.target.value;store.set('swg-sample',sampleKey);buildWire();renderStep();play();});
+$('btnPrev').addEventListener('click',()=>go(step-1));
+$('btnNext').addEventListener('click',()=>go(step+1));
+$('btnReplay').addEventListener('click',()=>play());
+function fs(){try{if(document.fullscreenElement)document.exitFullscreen();else{const p=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();if(p&&p.catch)p.catch(()=>{});}}catch(e){}}
+$('btnFs').addEventListener('click',fs);
+document.addEventListener('keydown',e=>{
+  if(e.target.closest&&e.target.closest('select'))return;
+  if(e.target.tagName==='BUTTON'&&(e.key===' '||e.key==='Enter'))return;
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(step+1);}
+  else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(step-1);}
+  else if(e.key==='r'||e.key==='R')play();
+  else if(e.key==='f'||e.key==='F')fs();
+});
+
+/* init */
+buildPlate($('plate'),true);buildPlate($('miniPlate'),false);
+applySkin();buildWire();setKink(24);setFace('front');applyLang();go(0);
+})();
+</script>
+
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body></html>
