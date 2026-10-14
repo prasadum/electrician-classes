@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-13T08:13:42.412Z",
+  "updated": "2026-10-14T02:19:55.826Z",
   "sections": [
     {
       "name": "Electrical Machines & Control",
@@ -226,6 +226,19 @@
           "section": "Installation, Estimation & Appliances",
           "sectionOrder": 4,
           "order": 6
+        }
+      ]
+    },
+    {
+      "name": "Measurements",
+      "pages": [
+        {
+          "file": "pages/Micrometer Screw Gauge Trainer.html",
+          "title": "Micrometer Screw Gauge Trainer",
+          "description": "",
+          "section": "Measurements",
+          "sectionOrder": 999,
+          "order": 999
         }
       ]
     }
