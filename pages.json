@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-14T02:19:55.826Z",
+  "updated": "2026-10-14T02:25:08.116Z",
   "sections": [
     {
       "name": "Electrical Machines & Control",
@@ -235,6 +235,14 @@
         {
           "file": "pages/Micrometer Screw Gauge Trainer.html",
           "title": "Micrometer Screw Gauge Trainer",
+          "description": "",
+          "section": "Measurements",
+          "sectionOrder": 999,
+          "order": 999
+        },
+        {
+          "file": "pages/SWG Measurement Simulator.html",
+          "title": "SWG Measurement Simulator",
           "description": "",
           "section": "Measurements",
           "sectionOrder": 999,
