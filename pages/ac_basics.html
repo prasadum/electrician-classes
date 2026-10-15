@@ -1,0 +1,858 @@
+<title>Single-Phase AC Basics</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@600;800&family=Baloo+Chettan+2:wght@600;800&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&display=swap">
+<style>
+/* Layout: instrument-panel lesson — sticky control bar, numbered step tabs, stage (animation) left + notes column right */
+:root{
+  --bg:#F3F5F0; --panel:#FFFFFF; --stage:#FAFBF8; --fg:#17202A; --muted:#56616C;
+  --line:#CDD3CB; --grid:#E2E6DE; --chip:#EAEEE6;
+  --v:#C2362B; --i:#1C5DB5; --p:#2E7B4C; --heat:#E2701A; --accent:#1C5DB5;
+  --lw:3; --bw:1px; --fs:1;
+  --f-disp:"Baloo 2","Baloo Chettan 2","Noto Sans Devanagari","Noto Sans Malayalam",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Noto Sans Malayalam","Noto Sans Devanagari",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E161E; --panel:#15202B; --stage:#101A23; --fg:#E6ECF1; --muted:#9BA9B6;
+    --line:#2C3C4B; --grid:#1E2B38; --chip:#1B2835;
+    --v:#FF7B67; --i:#62AEFF; --p:#5ED08D; --heat:#FF9C40; --accent:#62AEFF; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E161E; --panel:#15202B; --stage:#101A23; --fg:#E6ECF1; --muted:#9BA9B6;
+  --line:#2C3C4B; --grid:#1E2B38; --chip:#1B2835;
+  --v:#FF7B67; --i:#62AEFF; --p:#5ED08D; --heat:#FF9C40; --accent:#62AEFF; color-scheme:dark;
+}
+:root[data-theme="hc"]{
+  --bg:#000000; --panel:#000000; --stage:#000000; --fg:#FFFFFF; --muted:#FFFFFF;
+  --line:#FFFFFF; --grid:#444444; --chip:#000000;
+  --v:#FFE600; --i:#00F0FF; --p:#7CFF4F; --heat:#FF8A00; --accent:#FFE600;
+  --lw:5; --bw:2px; color-scheme:dark;
+}
+html{font-size:calc(var(--fs) * clamp(15px, 1.12vw, 24px));}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:1rem;line-height:1.45;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 1.5rem;}
+[hidden]{display:none!important}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* control bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1.2rem;padding-block:.6rem;border-bottom:var(--bw) solid var(--line)}
+.brand{display:flex;flex-direction:column;min-width:0;margin-right:auto}
+.brand h1{font-family:var(--f-disp);font-weight:800;font-size:1.5rem;line-height:1.1;margin:0;text-wrap:balance}
+.brand small{color:var(--muted);font-size:.8rem;letter-spacing:.04em}
+.ctl{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem}
+.seg{display:inline-flex;border:var(--bw) solid var(--line);border-radius:.5rem;overflow:hidden}
+.seg button{background:var(--panel);border:0;border-right:var(--bw) solid var(--line);padding:.35rem .7rem;cursor:pointer;font-size:.85rem;min-height:2.2rem}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg);font-weight:700}
+.speed{display:inline-flex;align-items:center;gap:.4rem;font-size:.85rem;color:var(--muted)}
+.speed input{width:6rem;accent-color:var(--accent)}
+
+/* tabs */
+.tabs{display:flex;gap:.4rem;overflow-x:auto;padding-block:.7rem;scrollbar-width:thin}
+.tab{flex:0 0 auto;display:flex;align-items:center;gap:.45rem;background:var(--panel);border:var(--bw) solid var(--line);border-radius:2rem;padding:.3rem .9rem .3rem .35rem;cursor:pointer;font-size:.9rem}
+.tab b{font-family:var(--f-mono);display:grid;place-items:center;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--chip);font-size:.8rem}
+.tab[aria-selected="true"]{border-color:var(--fg);font-weight:700}
+.tab[aria-selected="true"] b{background:var(--accent);color:var(--bg)}
+
+/* panels */
+.panel{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:1.2rem;align-items:start}
+.panel h2{grid-column:1/-1;font-family:var(--f-disp);font-weight:800;font-size:2rem;line-height:1.15;margin:.2rem 0 0;text-wrap:balance}
+.stage{display:flex;flex-direction:column;gap:.8rem;min-width:0}
+.side{display:flex;flex-direction:column;gap:.8rem;min-width:0}
+canvas{display:block;width:100%;background:var(--stage);border:var(--bw) solid var(--line);border-radius:.6rem}
+.cv-main{height:clamp(220px,46vh,560px)}
+.cv-wave{height:clamp(170px,30vh,360px)}
+.card{background:var(--panel);border:var(--bw) solid var(--line);border-radius:.6rem;padding:.8rem 1rem}
+.card h3{margin:0 0 .3rem;font-family:var(--f-disp);font-size:1.05rem;font-weight:800;color:var(--muted);letter-spacing:.03em}
+.card p{margin:0;font-size:1.1rem}
+.big{font-size:1.25rem!important;font-weight:700}
+.hero-ex{border-width:calc(var(--bw) + 1px);border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{font-family:var(--f-mono);font-weight:700;background:var(--chip);border:var(--bw) solid var(--line);border-radius:.4rem;padding:.3rem .6rem;font-size:1.05rem}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;font-size:1rem}
+.legend span.k{display:inline-flex;align-items:center;gap:.45rem}
+.sw{width:1.6rem;height:.35rem;border-radius:.2rem;display:inline-block}
+.sw.v{background:var(--v)} .sw.i{background:var(--i)}
+.mono{font-family:var(--f-mono)}
+
+/* values panel */
+.vbtns{display:flex;flex-wrap:wrap;gap:.4rem}
+.vbtns button{background:var(--panel);border:var(--bw) solid var(--line);border-radius:.4rem;padding:.35rem .7rem;cursor:pointer;font-size:.95rem}
+.vbtns button[aria-pressed="true"]{background:var(--v);border-color:var(--v);color:var(--bg);font-weight:700}
+.readout{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1.4rem;font-family:var(--f-mono);font-size:1.3rem;font-weight:700}
+.readout input{flex:1 1 10rem;accent-color:var(--v)}
+.vcard{display:grid;gap:.35rem}
+.vcard .f{font-family:var(--f-mono);font-size:1.35rem;font-weight:700;color:var(--v)}
+.heaters{display:flex;gap:1rem;align-items:flex-end;justify-content:space-around}
+.heaters figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:.2rem;font-family:var(--f-mono);font-size:.9rem}
+.heaters svg{width:5.5rem;height:auto}
+.coil{fill:none;stroke:var(--heat);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 6px var(--heat))}
+.calc{display:grid;grid-template-columns:auto 1fr;gap:.35rem .8rem;align-items:center;font-family:var(--f-mono)}
+.calc input{width:6rem;padding:.25rem .4rem;background:var(--stage);border:var(--bw) solid var(--line);border-radius:.3rem;font-weight:700;font-size:1.1rem}
+.calc output{font-weight:700;font-size:1.15rem}
+
+/* frequency */
+.fbtns{display:flex;gap:.4rem;flex-wrap:wrap}
+.fbtns button{background:var(--panel);border:var(--bw) solid var(--line);border-radius:.4rem;padding:.3rem .7rem;cursor:pointer;font-family:var(--f-mono)}
+.fbtns button[aria-pressed="true"]{background:var(--fg);color:var(--bg);font-weight:700}
+.phase-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1rem;font-size:1.1rem}
+.phase-ctl input{flex:1 1 12rem;accent-color:var(--i)}
+.status{font-weight:700;font-size:1.25rem}
+
+/* compare */
+.civil{font-family:var(--f-mono);font-weight:700;font-size:4.2rem;letter-spacing:.25em;line-height:1;text-align:center}
+.civil .c,.civil .l{color:var(--fg)} .civil .iv{color:var(--i)} .civil .vv{color:var(--v)}
+.civil-sub{display:flex;justify-content:space-between;gap:1rem;font-family:var(--f-mono);font-weight:700;font-size:1.1rem;margin-top:.4rem}
+.tblwrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:1.05rem}
+th,td{text-align:left;padding:.5rem .6rem;border-bottom:var(--bw) solid var(--line);vertical-align:top}
+th{font-family:var(--f-disp);font-weight:800;color:var(--muted);font-size:.95rem}
+td.mono{white-space:nowrap}
+
+/* quiz */
+.quiz{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:1rem}
+.q{background:var(--panel);border:var(--bw) solid var(--line);border-radius:.6rem;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.6rem}
+.q p{margin:0;font-weight:700;font-size:1.15rem}
+.q p::before{content:attr(data-n) ". ";font-family:var(--f-mono);color:var(--muted)}
+.opts{display:flex;flex-wrap:wrap;gap:.4rem}
+.opts button{background:var(--stage);border:var(--bw) solid var(--line);border-radius:.4rem;padding:.4rem .8rem;cursor:pointer;font-size:1rem}
+.opts button.ok{background:var(--p);border-color:var(--p);color:var(--bg);font-weight:700}
+.opts button.bad{background:var(--v);border-color:var(--v);color:var(--bg);text-decoration:line-through}
+.opts button:disabled{cursor:default}
+.score{grid-column:1/-1;display:flex;align-items:center;gap:1rem;font-size:1.3rem;font-weight:700}
+.score .n{font-family:var(--f-mono)}
+.score button{background:var(--panel);border:var(--bw) solid var(--line);border-radius:.4rem;padding:.35rem .9rem;cursor:pointer;font-size:1rem}
+
+/* footer nav */
+.nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1.2rem}
+.nav button{background:var(--fg);color:var(--bg);border:0;border-radius:.5rem;padding:.55rem 1.3rem;cursor:pointer;font-weight:700;font-size:1rem}
+.nav button:disabled{opacity:.35;cursor:default}
+.nav .pg{font-family:var(--f-mono);color:var(--muted)}
+footer{margin-top:1.2rem;color:var(--muted);font-size:.8rem;letter-spacing:.03em}
+
+@media (max-width:900px){
+  .panel{grid-template-columns:minmax(0,1fr)}
+  .panel h2{font-size:1.5rem}
+  .civil{font-size:3rem}
+}
+@media (prefers-reduced-motion:reduce){ .coil{filter:none} }
+</style>
+
+<header class="bar">
+<meta name="section" content="AC Circuits">
+  <div class="brand">
+    <h1 data-en="Single-Phase AC Basics" data-ml="സിംഗിൾ ഫേസ് എസി അടിസ്ഥാനങ്ങൾ" data-hi="सिंगल फेज़ एसी की मूल बातें"></h1>
+    <small data-en="CTS Electrician · AC Circuits" data-ml="സിടിഎസ് ഇലക്ട്രീഷ്യൻ · എസി സർക്യൂട്ടുകൾ" data-hi="सीटीएस इलेक्ट्रीशियन · एसी परिपथ"></small>
+  </div>
+  <div class="ctl">
+    <div class="seg" role="group" aria-label="Language">
+      <button id="lang-en" data-lang-btn="en" aria-pressed="true">English</button>
+      <button id="lang-hi" data-lang-btn="hi" aria-pressed="false">हिन्दी</button>
+      <button id="lang-ml" data-lang-btn="ml" aria-pressed="false">മലയാളം</button>
+    </div>
+    <div class="seg" role="group" aria-label="Theme">
+      <button id="th-light" data-theme-btn="light" data-en="Light" data-ml="ലൈറ്റ്" data-hi="लाइट"></button>
+      <button id="th-dark" data-theme-btn="dark" data-en="Dark" data-ml="ഡാർക്ക്" data-hi="डार्क"></button>
+      <button id="th-hc" data-theme-btn="hc" data-en="High contrast" data-ml="ഹൈ കോൺട്രാസ്റ്റ്" data-hi="हाई कॉन्ट्रास्ट"></button>
+    </div>
+    <div class="seg" role="group" aria-label="Font size">
+      <button id="fs-down" aria-label="Smaller text">A−</button>
+      <button id="fs-up" aria-label="Larger text">A+</button>
+    </div>
+    <div class="seg">
+      <button id="play" aria-label="Play or pause animation">❚❚</button>
+      <button id="fullscr" aria-label="Full screen">⛶</button>
+    </div>
+    <label class="speed"><span data-en="Speed" data-ml="വേഗം" data-hi="गति"></span>
+      <input id="speed" type="range" min="0.25" max="2" step="0.25" value="1"></label>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Lesson steps">
+  <button class="tab" role="tab" data-go="1"><b>1</b><span data-en="AC vs DC" data-ml="എസി vs ഡിസി" data-hi="एसी बनाम डीसी"></span></button>
+  <button class="tab" role="tab" data-go="2"><b>2</b><span data-en="Values" data-ml="മൂല്യങ്ങൾ" data-hi="मान"></span></button>
+  <button class="tab" role="tab" data-go="3"><b>3</b><span data-en="Frequency &amp; Phase" data-ml="ആവൃത്തിയും ഫേസും" data-hi="आवृत्ति और फेज़"></span></button>
+  <button class="tab" role="tab" data-go="4"><b>4</b><span data-en="Resistive (R)" data-ml="റെസിസ്റ്റീവ് (R)" data-hi="प्रतिरोधी (R)"></span></button>
+  <button class="tab" role="tab" data-go="5"><b>5</b><span data-en="Inductive (L)" data-ml="ഇൻഡക്റ്റീവ് (L)" data-hi="प्रेरणिक (L)"></span></button>
+  <button class="tab" role="tab" data-go="6"><b>6</b><span data-en="Capacitive (C)" data-ml="കപ്പാസിറ്റീവ് (C)" data-hi="धारितीय (C)"></span></button>
+  <button class="tab" role="tab" data-go="7"><b>7</b><span data-en="Compare" data-ml="താരതമ്യം" data-hi="तुलना"></span></button>
+  <button class="tab" role="tab" data-go="8"><b>8</b><span data-en="Quiz" data-ml="ക്വിസ്" data-hi="प्रश्नोत्तरी"></span></button>
+</nav>
+
+<main>
+<!-- 1: AC vs DC -->
+<section class="panel" data-p="1" role="tabpanel">
+  <h2 data-en="DC flows one way. AC swings back and forth." data-ml="ഡിസി ഒരു ദിശയിൽ ഒഴുകുന്നു. എസി മുന്നോട്ടും പിന്നോട്ടും ആടുന്നു." data-hi="डीसी एक दिशा में बहती है। एसी आगे-पीछे झूलती है।"></h2>
+  <div class="stage">
+    <canvas id="cv1" class="cv-main" aria-label="Electrons in a DC wire move one way; in an AC wire they vibrate back and forth"></canvas>
+    <div class="chips"><span class="chip">230 V</span><span class="chip">50 Hz</span><span class="chip">1 Φ</span></div>
+  </div>
+  <div class="side">
+    <div class="card"><h3>DC</h3><p data-en="Battery, solar panel, mobile charger output" data-ml="ബാറ്ററി, സോളാർ പാനൽ, മൊബൈൽ ചാർജർ ഔട്ട്പുട്ട്" data-hi="बैटरी, सोलर पैनल, मोबाइल चार्जर आउटपुट"></p></div>
+    <div class="card"><h3>AC</h3><p data-en="House supply from the KSEB line" data-ml="കെഎസ്ഇബി ലൈനിൽ നിന്നുള്ള വീട്ടിലെ സപ്ലൈ" data-hi="बिजली बोर्ड की लाइन से घर की सप्लाई"></p></div>
+    <div class="card"><h3 data-en="DC is like a river" data-ml="ഡിസി ഒരു പുഴ പോലെ" data-hi="डीसी नदी जैसी"></h3><p data-en="Water flows in one direction only." data-ml="വെള്ളം ഒരു ദിശയിൽ മാത്രം ഒഴുകുന്നു." data-hi="पानी केवल एक दिशा में बहता है।"></p></div>
+    <div class="card hero-ex"><h3 data-en="AC is like a hand saw" data-ml="എസി ഒരു കൈവാൾ പോലെ" data-hi="एसी हाथ की आरी जैसी"></h3><p data-en="It only moves back and forth, yet it cuts the wood. AC electrons only vibrate, yet they deliver energy." data-ml="അത് മുന്നോട്ടും പിന്നോട്ടും മാത്രം നീങ്ങുന്നു, എന്നിട്ടും മരം മുറിക്കുന്നു. എസിയിലെ ഇലക്ട്രോണുകൾ ആടുക മാത്രം ചെയ്യുന്നു, എന്നിട്ടും ഊർജം എത്തിക്കുന്നു." data-hi="वह केवल आगे-पीछे चलती है, फिर भी लकड़ी काटती है। एसी के इलेक्ट्रॉन केवल कंपन करते हैं, फिर भी ऊर्जा पहुँचाते हैं।"></p></div>
+    <div class="card"><h3 data-en="Why AC?" data-ml="എന്തുകൊണ്ട് എസി?" data-hi="एसी क्यों?"></h3><p data-en="A transformer can step AC voltage up or down easily." data-ml="ട്രാൻസ്ഫോർമർ ഉപയോഗിച്ച് എസി വോൾട്ടേജ് എളുപ്പത്തിൽ കൂട്ടാനും കുറയ്ക്കാനും കഴിയും." data-hi="ट्रांसफ़ॉर्मर से एसी वोल्टेज आसानी से बढ़ाया या घटाया जा सकता है।"></p></div>
+  </div>
+</section>
+
+<!-- 2: Values -->
+<section class="panel" data-p="2" role="tabpanel" hidden>
+  <h2 data-en="One wave, five values" data-ml="ഒരു തരംഗം, അഞ്ച് മൂല്യങ്ങൾ" data-hi="एक तरंग, पाँच मान"></h2>
+  <div class="stage">
+    <div class="vbtns" role="group" aria-label="Highlight value">
+      <button id="vb-inst" data-mode="inst" aria-pressed="true" data-en="Instantaneous" data-ml="തൽക്ഷണ മൂല്യം" data-hi="तात्क्षणिक मान"></button>
+      <button id="vb-peak" data-mode="peak" aria-pressed="false" data-en="Peak" data-ml="പീക്ക് (ഉച്ചമൂല്യം)" data-hi="शिखर (पीक)"></button>
+      <button id="vb-pp" data-mode="pp" aria-pressed="false" data-en="Peak-to-peak" data-ml="പീക്ക്-ടു-പീക്ക്" data-hi="पीक-टू-पीक"></button>
+      <button id="vb-avg" data-mode="avg" aria-pressed="false" data-en="Average" data-ml="ശരാശരി" data-hi="औसत"></button>
+      <button id="vb-rms" data-mode="rms" aria-pressed="false" data-en="RMS" data-ml="ആർഎംഎസ്" data-hi="आरएमएस"></button>
+    </div>
+    <canvas id="cv2" class="cv-main" aria-label="Sine wave showing peak, peak to peak, average, RMS and instantaneous values"></canvas>
+    <div class="readout"><span>θ = <span id="ro-th">0</span>°</span><span>v = <span id="ro-v">0</span> V</span>
+      <input id="theta" type="range" min="0" max="360" step="1" value="0" aria-label="Angle theta"></div>
+  </div>
+  <div class="side">
+    <div class="card vcard" data-vc="inst"><h3 data-en="Instantaneous value (v)" data-ml="തൽക്ഷണ മൂല്യം (v)" data-hi="तात्क्षणिक मान (v)"></h3>
+      <div class="f">v = Vm sin θ</div>
+      <p data-en="Value at one moment. Like a photo of a moving swing." data-ml="ഒരു നിമിഷത്തെ മൂല്യം. ആടുന്ന ഊഞ്ഞാലിന്റെ ഒരു ഫോട്ടോ പോലെ." data-hi="किसी एक क्षण का मान। चलते झूले की एक फोटो जैसा।"></p></div>
+    <div class="card vcard" data-vc="peak" hidden><h3 data-en="Peak value (Vm)" data-ml="പീക്ക് മൂല്യം (Vm)" data-hi="शिखर मान (Vm)"></h3>
+      <div class="f">Vm = 1.414 × Vrms = <span class="o-vm">325</span> V</div>
+      <p data-en="The highest point. Like the top of a swing." data-ml="ഏറ്റവും ഉയർന്ന പോയിന്റ്. ഊഞ്ഞാലിന്റെ ഏറ്റവും ഉയരം പോലെ." data-hi="सबसे ऊँचा बिंदु। झूले की सबसे ऊँची स्थिति जैसा।"></p>
+      <p data-en="Insulation must withstand the peak, not just 230 V." data-ml="ഇൻസുലേഷൻ 230 V മാത്രമല്ല, പീക്ക് വോൾട്ടേജും താങ്ങണം." data-hi="इन्सुलेशन को केवल 230 V नहीं, पीक वोल्टेज सहना होता है।"></p></div>
+    <div class="card vcard" data-vc="pp" hidden><h3 data-en="Peak-to-peak (Vpp)" data-ml="പീക്ക്-ടു-പീക്ക് (Vpp)" data-hi="पीक-टू-पीक (Vpp)"></h3>
+      <div class="f">Vpp = 2 × Vm = <span class="o-vpp">650</span> V</div>
+      <p data-en="Top to bottom. Like a sea wave from crest to trough. Read on a CRO screen." data-ml="മുകളറ്റം മുതൽ താഴെയറ്റം വരെ. തിരമാലയുടെ മുകൾ മുതൽ താഴ്ച വരെ പോലെ. CRO-യിൽ അളക്കുന്നു." data-hi="ऊपर से नीचे तक। समुद्र की लहर के शिखर से गर्त तक जैसा। CRO पर पढ़ा जाता है।"></p></div>
+    <div class="card vcard" data-vc="avg" hidden><h3 data-en="Average value (Vav)" data-ml="ശരാശരി മൂല്യം (Vav)" data-hi="औसत मान (Vav)"></h3>
+      <div class="f">Vav = 0.637 × Vm = <span class="o-vav">207</span> V</div>
+      <p data-en="Average of one half cycle. Full cycle average = 0, because + and − cancel." data-ml="ഒരു അർദ്ധ സൈക്കിളിന്റെ ശരാശരി. + ഉം − ഉം റദ്ദാകുന്നതിനാൽ മുഴുവൻ സൈക്കിളിന്റെ ശരാശരി = 0." data-hi="आधे चक्र का औसत। + और − कट जाने से पूरे चक्र का औसत = 0।"></p>
+      <p data-en="Like your average speed on a bus trip." data-ml="ഒരു ബസ് യാത്രയിലെ ശരാശരി വേഗം പോലെ." data-hi="बस यात्रा की औसत गति जैसा।"></p></div>
+    <div class="card vcard" data-vc="rms" hidden><h3 data-en="RMS / effective value (Vrms)" data-ml="ആർഎംഎസ് / ഫലപ്രദ മൂല്യം (Vrms)" data-hi="आरएमएस / प्रभावी मान (Vrms)"></h3>
+      <div class="f">Vrms = 0.707 × Vm = <span class="o-vrms">230</span> V</div>
+      <p data-en="The heating value. 230 V AC heats a heater exactly like 230 V DC. Voltmeters show RMS." data-ml="ചൂടാക്കുന്ന മൂല്യം. 230 V എസി, 230 V ഡിസി പോലെ തന്നെ ഹീറ്റർ ചൂടാക്കുന്നു. വോൾട്ട്മീറ്റർ കാണിക്കുന്നത് ആർഎംഎസ്." data-hi="गरम करने वाला मान। 230 V एसी हीटर को ठीक 230 V डीसी जितना गरम करता है। वोल्टमीटर आरएमएस दिखाता है।"></p>
+      <div class="heaters" aria-hidden="true">
+        <figure><svg viewBox="0 0 100 60"><polyline class="coil" points="6,30 16,10 26,50 36,10 46,50 56,10 66,50 76,10 86,50 94,30"/></svg><figcaption>DC 230 V</figcaption></figure>
+        <figure><svg viewBox="0 0 100 60"><polyline class="coil" points="6,30 16,10 26,50 36,10 46,50 56,10 66,50 76,10 86,50 94,30"/></svg><figcaption>AC 230 V rms</figcaption></figure>
+      </div>
+      <p class="big" data-en="= Same heat" data-ml="= ഒരേ ചൂട്" data-hi="= बराबर गर्मी"></p></div>
+    <div class="card">
+      <h3 data-en="Calculator" data-ml="കാൽക്കുലേറ്റർ" data-hi="कैलकुलेटर"></h3>
+      <div class="calc">
+        <label for="calc-rms">Vrms</label><span><input id="calc-rms" type="number" min="1" max="100000" step="1" value="230"> V</span>
+        <span>Vm</span><output id="c-vm">325.3 V</output>
+        <span>Vpp</span><output id="c-vpp">650.5 V</output>
+        <span>Vav</span><output id="c-vav">207.2 V</output>
+      </div>
+    </div>
+    <div class="card"><div class="chips">
+      <span class="chip"><span data-en="Form factor" data-ml="ഫോം ഫാക്ടർ" data-hi="फ़ॉर्म फ़ैक्टर"></span> = Vrms/Vav = 1.11</span>
+      <span class="chip"><span data-en="Peak factor" data-ml="പീക്ക് ഫാക്ടർ" data-hi="पीक फ़ैक्टर"></span> = Vm/Vrms = 1.414</span>
+    </div></div>
+  </div>
+</section>
+
+<!-- 3: Frequency and phase -->
+<section class="panel" data-p="3" role="tabpanel" hidden>
+  <h2 data-en="Cycle, frequency, time period and phase" data-ml="സൈക്കിൾ, ആവൃത്തി, സമയദൈർഘ്യം, ഫേസ്" data-hi="चक्र, आवृत्ति, आवर्तकाल और फेज़"></h2>
+  <div class="stage">
+    <canvas id="cv3" class="cv-main" aria-label="Two rotating phasors A and B and their sine waves, with adjustable phase difference"></canvas>
+    <div class="phase-ctl">
+      <label for="phi" data-en="Phase angle of B" data-ml="B-യുടെ ഫേസ് കോൺ" data-hi="B का फेज़ कोण"></label>
+      <input id="phi" type="range" min="-180" max="180" step="15" value="60">
+      <span class="mono status">φ = <span id="ro-phi">60</span>°</span>
+      <span class="status" id="st-in" hidden data-en="In phase" data-ml="ഒരേ ഫേസിൽ" data-hi="समान फेज़ में"></span>
+      <span class="status" id="st-lead" data-en="B LEADS A" data-ml="B, A-യെക്കാൾ മുന്നിൽ (LEAD)" data-hi="B, A से आगे (LEAD)"></span>
+      <span class="status" id="st-lag" hidden data-en="B LAGS A" data-ml="B, A-യെക്കാൾ പിന്നിൽ (LAG)" data-hi="B, A से पीछे (LAG)"></span>
+    </div>
+    <canvas id="cv3b" class="cv-wave" aria-label="One second of AC wave: as frequency rises, more cycles fit and each cycle takes less time"></canvas>
+    <div class="phase-ctl">
+      <label for="fdemo" data-en="Cycles in 1 second (slow demo)" data-ml="1 സെക്കൻഡിലെ സൈക്കിളുകൾ (മെല്ലെയുള്ള ഡെമോ)" data-hi="1 सेकंड में चक्र (धीमा डेमो)"></label>
+      <input id="fdemo" type="range" min="1" max="10" step="1" value="4">
+      <span class="mono status">f = <span id="ro-fd">4</span> Hz → T = 1/f = <span id="ro-Td">0.25</span> s</span>
+    </div>
+  </div>
+  <div class="side">
+    <div class="card"><h3 data-en="Cycle" data-ml="സൈക്കിൾ" data-hi="चक्र"></h3><p data-en="One full rotation of the generator coil = one cycle = 360°" data-ml="ജനറേറ്റർ കോയിലിന്റെ ഒരു പൂർണ്ണ ഭ്രമണം = ഒരു സൈക്കിൾ = 360°" data-hi="जनरेटर कॉइल का एक पूरा घूर्णन = एक चक्र = 360°"></p></div>
+    <div class="card"><h3 data-en="Frequency (f) and time period (T)" data-ml="ആവൃത്തി (f), സമയദൈർഘ്യം (T)" data-hi="आवृत्ति (f) और आवर्तकाल (T)"></h3>
+      <p data-en="Cycles in one second. 50 Hz = the swing goes back and forth 50 times every second." data-ml="ഒരു സെക്കൻഡിലെ സൈക്കിളുകൾ. 50 Hz = ഊഞ്ഞാൽ സെക്കൻഡിൽ 50 തവണ മുന്നോട്ടും പിന്നോട്ടും." data-hi="एक सेकंड में चक्र। 50 Hz = झूला हर सेकंड 50 बार आगे-पीछे।"></p>
+      <div class="fbtns" role="group" aria-label="Frequency" style="margin-top:.5rem">
+        <button id="f50" data-f="50" aria-pressed="true">50 Hz · India</button>
+        <button id="f60" data-f="60" aria-pressed="false">60 Hz · USA</button>
+      </div>
+      <p style="margin-top:.5rem" data-en="Time period (T) is the time taken for one cycle." data-ml="ഒരു സൈക്കിൾ പൂർത്തിയാക്കാൻ എടുക്കുന്ന സമയമാണ് സമയദൈർഘ്യം (T)." data-hi="एक चक्र पूरा होने में लगने वाला समय आवर्तकाल (T) है।"></p>
+      <div class="chips" style="margin-top:.5rem"><span class="chip">T = 1/f</span><span class="chip">f = 1/T</span></div>
+      <p class="mono big" style="margin-top:.5rem">T = 1/<span id="ro-f">50</span> = <span id="ro-T">20.0</span> ms</p>
+      <p style="margin-top:.4rem" data-en="More cycles per second means less time for each cycle." data-ml="സെക്കൻഡിൽ സൈക്കിളുകൾ കൂടുമ്പോൾ ഓരോ സൈക്കിളിനുമുള്ള സമയം കുറയുന്നു." data-hi="प्रति सेकंड चक्र जितने अधिक, हर चक्र का समय उतना कम।"></p></div>
+    <div class="card hero-ex"><h3 data-en="Phase difference = runners on a track" data-ml="ഫേസ് വ്യത്യാസം = ട്രാക്കിലെ ഓട്ടക്കാർ" data-hi="फेज़ अंतर = ट्रैक पर धावक"></h3>
+      <p data-en="Two runners go round the same circular track at the same speed. The one ahead LEADS. The one behind LAGS. The gap in degrees is φ." data-ml="രണ്ട് ഓട്ടക്കാർ ഒരേ വേഗത്തിൽ ഒരേ വൃത്താകൃതിയിലുള്ള ട്രാക്കിൽ ഓടുന്നു. മുന്നിലുള്ളയാൾ LEAD ചെയ്യുന്നു. പിന്നിലുള്ളയാൾ LAG ചെയ്യുന്നു. ഡിഗ്രിയിലുള്ള ഇടവേളയാണ് φ." data-hi="दो धावक एक ही गोल ट्रैक पर एक ही गति से दौड़ते हैं। आगे वाला LEAD करता है। पीछे वाला LAG करता है। डिग्री में दूरी φ है।"></p></div>
+  </div>
+</section>
+
+<!-- 4: Resistive -->
+<section class="panel" data-p="4" role="tabpanel" hidden>
+  <h2 data-en="Resistive load: V and I rise and fall together" data-ml="റെസിസ്റ്റീവ് ലോഡ്: V-യും I-യും ഒരുമിച്ച് കൂടുകയും കുറയുകയും ചെയ്യുന്നു" data-hi="प्रतिरोधी लोड: V और I साथ-साथ बढ़ते-घटते हैं"></h2>
+  <div class="stage">
+    <canvas id="cvR" class="cv-main" aria-label="Tap: pressure gauge and water flow peak at the same moment; bulb glows with the current"></canvas>
+    <canvas id="cvRw" class="cv-wave" aria-label="Voltage and current waves in phase"></canvas>
+  </div>
+  <div class="side">
+    <div class="card hero-ex"><h3 data-en="Like a water tap" data-ml="ഒരു വെള്ള ടാപ്പ് പോലെ" data-hi="पानी के नल जैसा"></h3>
+      <p data-en="Pressure comes, water flows at the same instant. No delay." data-ml="മർദ്ദം വരുന്ന അതേ നിമിഷം വെള്ളം ഒഴുകുന്നു. താമസമില്ല." data-hi="दबाव आते ही उसी क्षण पानी बहता है। कोई देरी नहीं।"></p></div>
+    <div class="card legend">
+      <span class="k"><i class="sw v"></i><span data-en="Pressure = Voltage (V)" data-ml="മർദ്ദം = വോൾട്ടേജ് (V)" data-hi="दबाव = वोल्टेज (V)"></span></span>
+      <span class="k"><i class="sw i"></i><span data-en="Water flow = Current (I)" data-ml="വെള്ളത്തിന്റെ ഒഴുക്ക് = കറന്റ് (I)" data-hi="पानी का बहाव = करंट (I)"></span></span>
+    </div>
+    <div class="card"><div class="chips"><span class="chip">φ = 0°</span><span class="chip">PF = cos 0° = 1</span></div></div>
+    <div class="card"><h3 data-en="Examples" data-ml="ഉദാഹരണങ്ങൾ" data-hi="उदाहरण"></h3>
+      <p data-en="Heater, iron box, kettle, filament bulb, water heater" data-ml="ഹീറ്റർ, ഇസ്തിരിപ്പെട്ടി, കെറ്റിൽ, ഫിലമെന്റ് ബൾബ്, വാട്ടർ ഹീറ്റർ" data-hi="हीटर, इस्त्री, केतली, फिलामेंट बल्ब, वॉटर हीटर"></p></div>
+    <div class="card"><p data-en="The bulb glows twice in every cycle (100 times a second at 50 Hz)." data-ml="ഓരോ സൈക്കിളിലും ബൾബ് രണ്ടുതവണ തിളങ്ങുന്നു (50 Hz-ൽ സെക്കൻഡിൽ 100 തവണ)." data-hi="बल्ब हर चक्र में दो बार चमकता है (50 Hz पर प्रति सेकंड 100 बार)।"></p></div>
+  </div>
+</section>
+
+<!-- 5: Inductive -->
+<section class="panel" data-p="5" role="tabpanel" hidden>
+  <h2 data-en="Inductive load: current LAGS voltage by 90°" data-ml="ഇൻഡക്റ്റീവ് ലോഡ്: കറന്റ് വോൾട്ടേജിനേക്കാൾ 90° പിന്നിൽ (LAG)" data-hi="प्रेरणिक लोड: करंट वोल्टेज से 90° पीछे (LAG)"></h2>
+  <div class="stage">
+    <canvas id="cvL" class="cv-main" aria-label="A heavy handcart: the push comes first, the cart's speed comes later"></canvas>
+    <canvas id="cvLw" class="cv-wave" aria-label="Current wave lagging voltage by 90 degrees"></canvas>
+  </div>
+  <div class="side">
+    <div class="card hero-ex"><h3 data-en="Like pushing a loaded handcart" data-ml="ഭാരം നിറച്ച ഉന്തുവണ്ടി തള്ളുന്നത് പോലെ" data-hi="भरा हुआ ठेला धकेलने जैसा"></h3>
+      <p data-en="You push first. The heavy cart picks up speed later. A coil resists change of current, just like the cart's weight." data-ml="ആദ്യം തള്ളുന്നു. ഭാരമുള്ള വണ്ടിക്ക് വേഗം പിന്നീടാണ് കിട്ടുന്നത്. വണ്ടിയുടെ ഭാരം പോലെ, കോയിൽ കറന്റിന്റെ മാറ്റത്തെ എതിർക്കുന്നു." data-hi="पहले आप धक्का देते हैं। भारी ठेला बाद में रफ़्तार पकड़ता है। ठेले के वज़न की तरह कॉइल करंट के बदलाव का विरोध करती है।"></p></div>
+    <div class="card legend">
+      <span class="k"><i class="sw v"></i><span data-en="Push = Voltage (V)" data-ml="തള്ളൽ = വോൾട്ടേജ് (V)" data-hi="धक्का = वोल्टेज (V)"></span></span>
+      <span class="k"><i class="sw i"></i><span data-en="Cart speed = Current (I)" data-ml="വണ്ടിയുടെ വേഗം = കറന്റ് (I)" data-hi="ठेले की रफ़्तार = करंट (I)"></span></span>
+    </div>
+    <div class="card"><div class="chips"><span class="chip">φ = 90° lag</span><span class="chip">PF = 0 lagging</span></div></div>
+    <div class="card"><h3 data-en="Examples" data-ml="ഉദാഹരണങ്ങൾ" data-hi="उदाहरण"></h3>
+      <p data-en="Fan, motor pump, tube-light choke, transformer, mixer" data-ml="ഫാൻ, മോട്ടോർ പമ്പ്, ട്യൂബ് ലൈറ്റ് ചോക്ക്, ട്രാൻസ്ഫോർമർ, മിക്സി" data-hi="पंखा, मोटर पंप, ट्यूबलाइट चोक, ट्रांसफ़ॉर्मर, मिक्सी"></p></div>
+    <div class="card"><h3 data-en="Real motor" data-ml="യഥാർത്ഥ മോട്ടോർ" data-hi="असली मोटर"></h3>
+      <p data-en="Real coils also have resistance, so the lag is less than 90°." data-ml="യഥാർത്ഥ കോയിലിന് റെസിസ്റ്റൻസും ഉണ്ട്, അതിനാൽ lag 90°-ൽ കുറവാണ്." data-hi="असली कॉइल में प्रतिरोध भी होता है, इसलिए lag 90° से कम होता है।"></p>
+      <div class="chips" style="margin-top:.4rem"><span class="chip">φ ≈ 30–40°</span><span class="chip">PF ≈ 0.75–0.85 lag</span></div></div>
+  </div>
+</section>
+
+<!-- 6: Capacitive -->
+<section class="panel" data-p="6" role="tabpanel" hidden>
+  <h2 data-en="Capacitive load: current LEADS voltage by 90°" data-ml="കപ്പാസിറ്റീവ് ലോഡ്: കറന്റ് വോൾട്ടേജിനേക്കാൾ 90° മുന്നിൽ (LEAD)" data-hi="धारितीय लोड: करंट वोल्टेज से 90° आगे (LEAD)"></h2>
+  <div class="stage">
+    <canvas id="cvC" class="cv-main" aria-label="Pumping a football: air rushes in first, pressure builds after"></canvas>
+    <canvas id="cvCw" class="cv-wave" aria-label="Current wave leading voltage by 90 degrees"></canvas>
+  </div>
+  <div class="side">
+    <div class="card hero-ex"><h3 data-en="Like pumping a football" data-ml="ഫുട്ബോളിൽ കാറ്റടിക്കുന്നത് പോലെ" data-hi="फ़ुटबॉल में हवा भरने जैसा"></h3>
+      <p data-en="Air rushes in first. Pressure builds up after." data-ml="ആദ്യം കാറ്റ് അകത്തേക്ക് കുതിക്കുന്നു. മർദ്ദം പിന്നീട് കൂടുന്നു." data-hi="पहले हवा तेज़ी से अंदर जाती है। दबाव बाद में बनता है।"></p></div>
+    <div class="card legend">
+      <span class="k"><i class="sw i"></i><span data-en="Air flow = Current (I)" data-ml="കാറ്റിന്റെ ഒഴുക്ക് = കറന്റ് (I)" data-hi="हवा का बहाव = करंट (I)"></span></span>
+      <span class="k"><i class="sw v"></i><span data-en="Ball pressure = Voltage (V)" data-ml="ബോളിലെ മർദ്ദം = വോൾട്ടേജ് (V)" data-hi="गेंद का दबाव = वोल्टेज (V)"></span></span>
+    </div>
+    <div class="card"><p data-en="Empty ball: air flows fastest. Full ball: air almost stops." data-ml="കാലിയായ ബോൾ: കാറ്റ് ഏറ്റവും വേഗത്തിൽ കയറുന്നു. നിറഞ്ഞ ബോൾ: കാറ്റ് ഏതാണ്ട് നിൽക്കുന്നു." data-hi="खाली गेंद: हवा सबसे तेज़ जाती है। भरी गेंद: हवा लगभग रुक जाती है।"></p></div>
+    <div class="card"><div class="chips"><span class="chip">φ = 90° lead</span><span class="chip">PF = 0 leading</span></div></div>
+    <div class="card"><h3 data-en="Examples" data-ml="ഉദാഹരണങ്ങൾ" data-hi="उदाहरण"></h3>
+      <p data-en="Ceiling-fan capacitor, power-factor capacitor bank, LED driver input" data-ml="സീലിംഗ് ഫാൻ കപ്പാസിറ്റർ, പവർ ഫാക്ടർ കപ്പാസിറ്റർ ബാങ്ക്, എൽഇഡി ഡ്രൈവർ ഇൻപുട്ട്" data-hi="छत पंखे का कैपेसिटर, पावर फ़ैक्टर कैपेसिटर बैंक, एलईडी ड्राइवर इनपुट"></p></div>
+  </div>
+</section>
+
+<!-- 7: Compare -->
+<section class="panel" data-p="7" role="tabpanel" hidden>
+  <h2 data-en="Remember it with CIVIL" data-ml="CIVIL ഉപയോഗിച്ച് ഓർത്തുവെക്കാം" data-hi="CIVIL से याद रखें"></h2>
+  <div class="stage">
+    <canvas id="cv7" class="cv-main" aria-label="Phasor diagrams for R, L and C loads rotating together"></canvas>
+    <div class="card">
+      <div class="civil"><span class="c">C</span><span class="iv">I</span><span class="vv">V</span><span class="iv">I</span><span class="l">L</span></div>
+      <div class="civil-sub"><span>C : I → V</span><span>L : V → I</span></div>
+    </div>
+  </div>
+  <div class="side">
+    <div class="card"><p class="big" data-en="In C, I comes before V. In L, V comes before I." data-ml="C-യിൽ I ആദ്യം, V പിന്നെ. L-ൽ V ആദ്യം, I പിന്നെ." data-hi="C में पहले I, फिर V। L में पहले V, फिर I।"></p></div>
+    <div class="card tblwrap"><table>
+      <thead><tr><th data-en="Load" data-ml="ലോഡ്" data-hi="लोड"></th><th data-en="Current" data-ml="കറന്റ്" data-hi="करंट"></th><th>PF</th><th data-en="Like" data-ml="ഉദാഹരണം" data-hi="जैसे"></th></tr></thead>
+      <tbody>
+        <tr><td>R</td><td class="mono">0°</td><td class="mono">1</td><td data-en="Water tap" data-ml="വെള്ള ടാപ്പ്" data-hi="पानी का नल"></td></tr>
+        <tr><td>L</td><td class="mono">90° lag</td><td class="mono">0 lag</td><td data-en="Heavy handcart" data-ml="ഭാരമുള്ള ഉന്തുവണ്ടി" data-hi="भारी ठेला"></td></tr>
+        <tr><td>C</td><td class="mono">90° lead</td><td class="mono">0 lead</td><td data-en="Football pump" data-ml="ഫുട്ബോൾ പമ്പ്" data-hi="फ़ुटबॉल पंप"></td></tr>
+      </tbody></table></div>
+    <div class="card hero-ex"><h3 data-en="In the field" data-ml="പ്രായോഗികമായി" data-hi="फ़ील्ड में"></h3>
+      <p data-en="Factories run many motors, so their PF is lagging. A capacitor bank adds leading current and brings PF closer to 1." data-ml="ഫാക്ടറികളിൽ ധാരാളം മോട്ടോറുകൾ ഉള്ളതിനാൽ PF lagging ആണ്. കപ്പാസിറ്റർ ബാങ്ക് leading കറന്റ് നൽകി PF 1-ലേക്ക് അടുപ്പിക്കുന്നു." data-hi="कारखानों में बहुत मोटरें चलती हैं, इसलिए PF lagging होता है। कैपेसिटर बैंक leading करंट देकर PF को 1 के पास लाता है।"></p></div>
+  </div>
+</section>
+
+<!-- 8: Quiz -->
+<section class="panel" data-p="8" role="tabpanel" hidden>
+  <h2 data-en="Quick check" data-ml="ചെറിയ പരീക്ഷ" data-hi="त्वरित जाँच"></h2>
+  <div class="quiz" id="quiz">
+    <div class="q" data-ans="1"><p data-n="1" data-en="The 230 V of your house supply is which value?" data-ml="വീട്ടിലെ സപ്ലൈയിലെ 230 V ഏത് മൂല്യമാണ്?" data-hi="घर की सप्लाई का 230 V कौन सा मान है?"></p>
+      <div class="opts"><button data-en="Peak" data-ml="പീക്ക്" data-hi="पीक"></button><button>RMS</button><button data-en="Average" data-ml="ശരാശരി" data-hi="औसत"></button><button data-en="Peak-to-peak" data-ml="പീക്ക്-ടു-പീക്ക്" data-hi="पीक-टू-पीक"></button></div></div>
+    <div class="q" data-ans="1"><p data-n="2" data-en="Peak value of a 230 V supply?" data-ml="230 V സപ്ലൈയുടെ പീക്ക് മൂല്യം?" data-hi="230 V सप्लाई का पीक मान?"></p>
+      <div class="opts"><button>230 V</button><button>325 V</button><button>207 V</button><button>650 V</button></div></div>
+    <div class="q" data-ans="1"><p data-n="3" data-en="Time period at 50 Hz?" data-ml="50 Hz-ൽ സമയദൈർഘ്യം?" data-hi="50 Hz पर आवर्तकाल?"></p>
+      <div class="opts"><button>2 ms</button><button>20 ms</button><button>50 ms</button><button>0.5 s</button></div></div>
+    <div class="q" data-ans="0"><p data-n="4" data-en="In an iron box, current and voltage are…" data-ml="ഇസ്തിരിപ്പെട്ടിയിൽ കറന്റും വോൾട്ടേജും…" data-hi="इस्त्री में करंट और वोल्टेज…"></p>
+      <div class="opts"><button data-en="In phase" data-ml="ഒരേ ഫേസിൽ" data-hi="समान फेज़ में"></button><button>90° lag</button><button>90° lead</button></div></div>
+    <div class="q" data-ans="2"><p data-n="5" data-en="Football pump: air goes in first, pressure comes later. Which load?" data-ml="ഫുട്ബോൾ പമ്പ്: ആദ്യം കാറ്റ്, മർദ്ദം പിന്നീട്. ഏത് ലോഡ്?" data-hi="फ़ुटबॉल पंप: पहले हवा, दबाव बाद में। कौन सा लोड?"></p>
+      <div class="opts"><button data-en="Resistive" data-ml="റെസിസ്റ്റീവ്" data-hi="प्रतिरोधी"></button><button data-en="Inductive" data-ml="ഇൻഡക്റ്റീവ്" data-hi="प्रेरणिक"></button><button data-en="Capacitive" data-ml="കപ്പാസിറ്റീവ്" data-hi="धारितीय"></button></div></div>
+    <div class="q" data-ans="1"><p data-n="6" data-en="In a pure inductor (fan coil, choke), current…" data-ml="ശുദ്ധമായ ഇൻഡക്ടറിൽ (ഫാൻ കോയിൽ, ചോക്ക്) കറന്റ്…" data-hi="शुद्ध प्रेरक (पंखे की कॉइल, चोक) में करंट…"></p>
+      <div class="opts"><button>leads 90°</button><button>lags 90°</button><button data-en="In phase" data-ml="ഒരേ ഫേസിൽ" data-hi="समान फेज़ में"></button></div></div>
+    <div class="q" data-ans="0"><p data-n="7" data-en="Average value over one full cycle?" data-ml="ഒരു മുഴുവൻ സൈക്കിളിന്റെ ശരാശരി മൂല്യം?" data-hi="एक पूरे चक्र का औसत मान?"></p>
+      <div class="opts"><button>0</button><button>0.637 Vm</button><button>0.707 Vm</button><button>Vm</button></div></div>
+    <div class="q" data-ans="2"><p data-n="8" data-en="Power factor of a pure resistive load?" data-ml="ശുദ്ധമായ റെസിസ്റ്റീവ് ലോഡിന്റെ പവർ ഫാക്ടർ?" data-hi="शुद्ध प्रतिरोधी लोड का पावर फ़ैक्टर?"></p>
+      <div class="opts"><button>0</button><button>0.5</button><button>1</button></div></div>
+    <div class="score"><span data-en="Score" data-ml="സ്കോർ" data-hi="अंक"></span><span class="n" id="score">0 / 8</span>
+      <button id="qreset" data-en="Try again" data-ml="വീണ്ടും ശ്രമിക്കുക" data-hi="फिर से प्रयास करें"></button></div>
+  </div>
+</section>
+
+<div class="nav">
+  <button id="prev">◀ <span data-en="Back" data-ml="പിന്നോട്ട്" data-hi="पीछे"></span></button>
+  <span class="pg" id="pg">1 / 8</span>
+  <button id="next"><span data-en="Next" data-ml="അടുത്തത്" data-hi="आगे"></span> ▶</button>
+</div>
+</main>
+<footer>NSTI Calicut · PRASAD UM, VI · CTS Electrician (NSQF) · Single-phase AC circuits · ← → keys / clicker to move, Space to pause</footer>
+
+<script>
+(function(){
+"use strict";
+var root=document.documentElement;
+function $(s){return document.querySelector(s)}
+function $$(s){return Array.prototype.slice.call(document.querySelectorAll(s))}
+var store={get:function(k){try{return localStorage.getItem("acb_"+k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem("acb_"+k,v)}catch(e){}}};
+
+/* ---------- language ---------- */
+var LANG="en";
+function setLang(l){
+  LANG=l; root.lang=l;
+  $$("[data-en]").forEach(function(el){var t=el.getAttribute("data-"+l)||el.getAttribute("data-en");el.textContent=t;});
+  $$("[data-lang-btn]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-lang-btn")===l))});
+  store.set("lang",l);
+}
+$$("[data-lang-btn]").forEach(function(b){b.addEventListener("click",function(){setLang(b.getAttribute("data-lang-btn"))})});
+
+/* ---------- theme ---------- */
+function setTheme(t,save){
+  if(t){root.setAttribute("data-theme",t)}else{root.removeAttribute("data-theme")}
+  var eff=t||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+  $$("[data-theme-btn]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-theme-btn")===eff))});
+  if(save)store.set("theme",t);
+}
+$$("[data-theme-btn]").forEach(function(b){b.addEventListener("click",function(){setTheme(b.getAttribute("data-theme-btn"),true)})});
+
+/* ---------- font size ---------- */
+var FS=parseFloat(store.get("fs"))||1;
+function setFS(v){FS=Math.max(0.7,Math.min(1.8,Math.round(v*10)/10));root.style.setProperty("--fs",FS);store.set("fs",FS)}
+$("#fs-up").addEventListener("click",function(){setFS(FS+0.1)});
+$("#fs-down").addEventListener("click",function(){setFS(FS-0.1)});
+
+/* ---------- play / speed / fullscreen ---------- */
+var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+var playing=!reduce, speed=1, T=0;
+function setPlay(p){playing=p;$("#play").textContent=p?"❚❚":"▶"}
+$("#play").addEventListener("click",function(){setPlay(!playing)});
+$("#speed").addEventListener("input",function(e){speed=parseFloat(e.target.value)});
+$("#fullscr").addEventListener("click",function(){
+  try{ if(document.fullscreenElement){document.exitFullscreen()} else if(root.requestFullscreen){var p=root.requestFullscreen(); if(p&&p.catch)p.catch(function(){});} }catch(e){}
+});
+
+/* ---------- tabs ---------- */
+var TAB=1, NT=8;
+function showTab(n){
+  TAB=Math.max(1,Math.min(NT,n));
+  $$(".panel").forEach(function(p){p.hidden=(+p.getAttribute("data-p")!==TAB)});
+  $$(".tab").forEach(function(b){var on=+b.getAttribute("data-go")===TAB;b.setAttribute("aria-selected",String(on));if(on&&b.scrollIntoView)b.scrollIntoView({block:"nearest",inline:"nearest"})});
+  $("#pg").textContent=TAB+" / "+NT;
+  $("#prev").disabled=TAB===1; $("#next").disabled=TAB===NT;
+  store.set("tab",TAB);
+  try{history.replaceState(null,"","#p"+TAB)}catch(e){}
+}
+$$(".tab").forEach(function(b){b.addEventListener("click",function(){showTab(+b.getAttribute("data-go"))})});
+$("#prev").addEventListener("click",function(){showTab(TAB-1)});
+$("#next").addEventListener("click",function(){showTab(TAB+1)});
+document.addEventListener("keydown",function(e){
+  var tg=e.target&&e.target.tagName;
+  if(tg==="INPUT")return;
+  if(e.key==="ArrowRight"||e.key==="PageDown"){showTab(TAB+1);e.preventDefault()}
+  else if(e.key==="ArrowLeft"||e.key==="PageUp"){showTab(TAB-1);e.preventDefault()}
+  else if(e.key===" "&&tg!=="BUTTON"){setPlay(!playing);e.preventDefault()}
+  else if(/^[1-8]$/.test(e.key)){showTab(+e.key)}
+});
+
+/* ---------- values panel controls ---------- */
+var MODE="inst";
+$$(".vbtns button").forEach(function(b){b.addEventListener("click",function(){
+  MODE=b.getAttribute("data-mode");
+  $$(".vbtns button").forEach(function(o){o.setAttribute("aria-pressed",String(o===b))});
+  $$("[data-vc]").forEach(function(c){c.hidden=c.getAttribute("data-vc")!==MODE});
+})});
+var RMS=230;
+function calc(){
+  var r=parseFloat($("#calc-rms").value); if(!(r>0))return; RMS=r;
+  var vm=r*Math.SQRT2;
+  $("#c-vm").textContent=vm.toFixed(1)+" V"; $("#c-vpp").textContent=(2*vm).toFixed(1)+" V"; $("#c-vav").textContent=(vm*2/Math.PI).toFixed(1)+" V";
+  $$(".o-vm").forEach(function(e){e.textContent=Math.round(vm)}); $$(".o-vpp").forEach(function(e){e.textContent=Math.round(2*vm)});
+  $$(".o-vav").forEach(function(e){e.textContent=Math.round(vm*2/Math.PI)}); $$(".o-vrms").forEach(function(e){e.textContent=Math.round(r)});
+}
+$("#calc-rms").addEventListener("input",calc);
+var manualUntil=0;
+$("#theta").addEventListener("input",function(){manualUntil=performance.now()+5000});
+
+/* ---------- phase panel controls ---------- */
+var PHI=60;
+function phiUI(){
+  PHI=+$("#phi").value; $("#ro-phi").textContent=(PHI>0?"+":"")+PHI;
+  $("#st-in").hidden=PHI!==0; $("#st-lead").hidden=!(PHI>0); $("#st-lag").hidden=!(PHI<0);
+}
+$("#phi").addEventListener("input",phiUI);
+$$(".fbtns button").forEach(function(b){b.addEventListener("click",function(){
+  $$(".fbtns button").forEach(function(o){o.setAttribute("aria-pressed",String(o===b))});
+  $("#ro-T").textContent=(1000/+b.getAttribute("data-f")).toFixed(1);
+  $("#ro-f").textContent=b.getAttribute("data-f");
+})});
+var FD=4;
+function fdUI(){FD=+$("#fdemo").value;$("#ro-fd").textContent=FD;$("#ro-Td").textContent=+(1/FD).toFixed(3)}
+$("#fdemo").addEventListener("input",fdUI);
+
+/* ---------- quiz ---------- */
+function quizInit(){
+  $$("#quiz .q").forEach(function(q){
+    var ans=+q.getAttribute("data-ans");
+    var bs=Array.prototype.slice.call(q.querySelectorAll(".opts button"));
+    bs.forEach(function(b,i){b.disabled=false;b.classList.remove("ok","bad");b.onclick=function(){
+      bs.forEach(function(o){o.disabled=true});
+      bs[ans].classList.add("ok"); if(i!==ans)b.classList.add("bad");
+      q.setAttribute("data-done",i===ans?"1":"0"); score();
+    }});
+    q.removeAttribute("data-done");
+  });
+  score();
+}
+function score(){var n=$$('#quiz .q[data-done="1"]').length;$("#score").textContent=n+" / 8"}
+$("#qreset").addEventListener("click",quizInit);
+
+/* ---------- canvas helpers ---------- */
+var PI=Math.PI, TAU=2*PI;
+function cols(){
+  var cs=getComputedStyle(root);
+  function g(n){return cs.getPropertyValue(n).trim()}
+  return {fg:g("--fg"),muted:g("--muted"),grid:g("--grid"),line:g("--line"),v:g("--v"),i:g("--i"),p:g("--p"),heat:g("--heat"),panel:g("--panel"),stage:g("--stage"),
+    lw:parseFloat(g("--lw"))||3, fs:parseFloat(cs.fontSize)||18, hc:root.getAttribute("data-theme")==="hc"};
+}
+function fit(id){
+  var cv=document.getElementById(id), r=cv.getBoundingClientRect(), d=window.devicePixelRatio||1;
+  var W=Math.max(1,Math.round(r.width*d)), H=Math.max(1,Math.round(r.height*d));
+  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
+  var x=cv.getContext("2d"); x.setTransform(d,0,0,d,0,0); x.clearRect(0,0,r.width,r.height);
+  x.lineCap="round"; x.lineJoin="round";
+  return {x:x,w:r.width,h:r.height};
+}
+function ln(x,a,b,c,d,col,lw,dash){x.beginPath();x.strokeStyle=col;x.lineWidth=lw;x.setLineDash(dash||[]);x.moveTo(a,b);x.lineTo(c,d);x.stroke();x.setLineDash([])}
+function arrow(x,x0,y0,x1,y1,col,lw){
+  var dx=x1-x0, dy=y1-y0, L=Math.hypot(dx,dy); if(L<2)return;
+  var hd=Math.min(L*0.6,lw*3+8), a=Math.atan2(dy,dx);
+  ln(x,x0,y0,x1-hd*0.6*Math.cos(a),y1-hd*0.6*Math.sin(a),col,lw);
+  x.beginPath();x.fillStyle=col;x.moveTo(x1,y1);
+  x.lineTo(x1-hd*Math.cos(a-0.45),y1-hd*Math.sin(a-0.45));
+  x.lineTo(x1-hd*Math.cos(a+0.45),y1-hd*Math.sin(a+0.45));x.closePath();x.fill();
+}
+function txt(x,s,X,Y,col,size,al,bl,wt){x.fillStyle=col;x.font=(wt||700)+" "+Math.round(size)+'px "JetBrains Mono",ui-monospace,monospace';x.textAlign=al||"center";x.textBaseline=bl||"middle";x.fillText(s,X,Y)}
+function circ(x,cx,cy,r,fill,stroke,lw){x.beginPath();x.arc(cx,cy,Math.max(0.5,r),0,TAU);if(fill){x.fillStyle=fill;x.fill()}if(stroke){x.strokeStyle=stroke;x.lineWidth=lw||2;x.stroke()}}
+function gauge(x,C,gx,gy,r,val,col,lab){
+  circ(x,gx,gy,r,C.panel,C.fg,Math.max(2,C.lw*0.7));
+  for(var k=0;k<=8;k++){var a=(225-270*k/8)*PI/180;ln(x,gx+r*0.78*Math.cos(a),gy-r*0.78*Math.sin(a),gx+r*0.92*Math.cos(a),gy-r*0.92*Math.sin(a),C.muted,1.5)}
+  var an=(225-270*val)*PI/180; ln(x,gx,gy,gx+r*0.75*Math.cos(an),gy-r*0.75*Math.sin(an),col,C.lw); circ(x,gx,gy,r*0.1,col);
+  if(lab)txt(x,lab,gx,gy+r*0.5,col,r*0.45);
+}
+function TH(){return TAU*T}
+function wrapA(a){a%=TAU;return a<0?a+TAU:a}
+
+/* waves (0..360°) + phasor circle, aligned projections */
+function phasorWave(id,C,list,showArc,arcLab){
+  var o=fit(id), x=o.x, w=o.w, h=o.h, fs=C.fs*0.8;
+  var R=Math.min(h*0.36,w*0.16), cx=R+fs*1.6, cy=h*0.46;
+  var X=cx+R+fs*2.2, W=w-X-fs*1.2, al=wrapA(TH());
+  /* grid */
+  for(var k=0;k<=4;k++){var gx=X+W*k/4;ln(x,gx,cy-R*1.1,gx,cy+R*1.1,C.grid,1);txt(x,(90*k)+"°",gx,cy+R*1.1+fs*0.9,C.muted,fs*0.85,"center","middle",500)}
+  ln(x,X,cy,X+W,cy,C.muted,1.5);
+  /* phasor circle */
+  circ(x,cx,cy,R,null,C.grid,1.5); ln(x,cx-R*1.1,cy,cx+R*1.1,cy,C.grid,1); ln(x,cx,cy-R*1.1,cx,cy+R*1.1,C.grid,1);
+  var th=TH(), cxW=X+W*al/TAU;
+  list.forEach(function(s){
+    x.beginPath();
+    for(var j=0;j<=180;j++){var a=TAU*j/180, px=X+W*j/180, py=cy-R*s.amp*Math.sin(a+s.ph); if(j)x.lineTo(px,py);else x.moveTo(px,py)}
+    x.strokeStyle=s.col;x.lineWidth=C.lw;x.stroke();
+  });
+  ln(x,cxW,cy-R*1.15,cxW,cy+R*1.15,C.fg,1.5,[5,5]);
+  list.forEach(function(s){
+    var a=th+s.ph, r=R*s.amp, tx=cx+r*Math.cos(a), ty=cy-r*Math.sin(a);
+    ln(x,tx,ty,cxW,ty,s.col,1.2,[3,5]);
+    arrow(x,cx,cy,tx,ty,s.col,C.lw+0.5);
+    circ(x,cxW,ty,C.lw*1.6+2,s.col);
+    txt(x,s.lab,cx+(r+fs*1.05)*Math.cos(a),cy-(r+fs*1.05)*Math.sin(a),s.col,fs*1.15);
+  });
+  if(showArc&&list.length>1){
+    var ph=list[1].ph; if(Math.abs(ph)>0.01){
+      x.beginPath();x.strokeStyle=C.fg;x.lineWidth=2;x.arc(cx,cy,R*0.32,-th,-(th+ph),ph>0);x.stroke();
+      var m=th+ph/2; txt(x,arcLab||"",cx+R*0.52*Math.cos(m),cy-R*0.52*Math.sin(m),C.fg,fs*0.8);
+    }
+  }
+}
+
+/* ---------- scene 1: AC vs DC ---------- */
+function s1(C){
+  var o=fit("cv1"), x=o.x, w=o.w, h=o.h, th=TH(), fs=C.fs;
+  var wx0=w*0.13, wx1=w*0.56, gx0=w*0.63, gx1=w-fs, L=wx1-wx0, tk=Math.max(16,h*0.075), N=10, sp=L/N;
+  ln(x,0,h/2,w,h/2,C.grid,1);
+  [{y:h*0.26,k:"DC"},{y:h*0.74,k:"AC"}].forEach(function(r,ri){
+    txt(x,r.k,wx0/2,r.y,ri?C.v:C.fg,fs*1.5);
+    ln(x,wx0,r.y,wx1,r.y,C.line,tk);
+    for(var k=0;k<N;k++){
+      var px= ri===0 ? wx0+((k*sp+T*L*0.5)%L) : wx0+sp/2+k*sp+sp*0.42*Math.sin(th);
+      circ(x,px,r.y,tk*0.3,C.i);
+    }
+    var ay=r.y-tk*1.7, mx=(wx0+wx1)/2;
+    if(ri===0)arrow(x,mx-L*0.14,ay,mx+L*0.14,ay,C.i,C.lw); else arrow(x,mx,ay,mx+L*0.2*Math.sin(th),ay,C.i,C.lw);
+    /* graph */
+    var gh=h*0.17, gw=gx1-gx0;
+    ln(x,gx0,r.y,gx1,r.y,C.muted,1.5); ln(x,gx0,r.y-gh*1.1,gx0,r.y+gh*1.1,C.muted,1.5);
+    txt(x,"t",gx1,r.y+fs*0.8,C.muted,fs*0.8);
+    var al=wrapA(th), cxg=gx0+gw*al/TAU;
+    x.beginPath();
+    for(var j=0;j<=120;j++){var a=TAU*j/120, px2=gx0+gw*j/120, py=ri===0? r.y-gh*0.75 : r.y-gh*Math.sin(a); if(j)x.lineTo(px2,py);else x.moveTo(px2,py)}
+    x.strokeStyle=C.v;x.lineWidth=C.lw;x.stroke();
+    var cy=ri===0? r.y-gh*0.75 : r.y-gh*Math.sin(al);
+    ln(x,cxg,r.y-gh*1.1,cxg,r.y+gh*1.1,C.fg,1,[4,4]); circ(x,cxg,cy,C.lw*1.6+2,C.v);
+    txt(x,"+",gx0-fs*0.6,r.y-gh,C.muted,fs*0.9); txt(x,"−",gx0-fs*0.6,r.y+gh,C.muted,fs*0.9);
+  });
+}
+
+/* ---------- scene 2: values ---------- */
+function s2(C){
+  var o=fit("cv2"), x=o.x, w=o.w, h=o.h, fs=C.fs*0.82;
+  var X=fs*4.6, W=w-X-fs*5.2, Y=fs*1.0, H=h-fs*3.0, mid=Y+H/2, A=H*0.46;
+  var vm=RMS*Math.SQRT2, vav=vm*2/PI;
+  for(var k=0;k<=4;k++){var gx=X+W*k/4;ln(x,gx,Y,gx,Y+H,C.grid,1);txt(x,(90*k)+"°",gx,Y+H+fs*1.0,C.muted,fs*0.9,"center","middle",500)}
+  ln(x,X,mid,X+W,mid,C.muted,1.5); ln(x,X,Y,X,Y+H,C.muted,1.5);
+  txt(x,"0",X-fs*0.5,mid,C.muted,fs,"right");
+  function on(m){return MODE===m}
+  function fade(m){x.globalAlpha=on(m)?1:0.28}
+  /* avg shading */
+  if(on("avg")){x.beginPath();x.moveTo(X,mid);for(var j=0;j<=90;j++){var a=PI*j/90;x.lineTo(X+W*a/TAU,mid-A*Math.sin(a))}x.lineTo(X+W/2,mid);x.closePath();x.fillStyle=C.v;x.globalAlpha=0.16;x.fill();x.globalAlpha=1}
+  /* wave */
+  x.beginPath();for(j=0;j<=200;j++){a=TAU*j/200;var px=X+W*j/200,py=mid-A*Math.sin(a);if(j)x.lineTo(px,py);else x.moveTo(px,py)}
+  x.strokeStyle=C.v;x.lineWidth=C.lw+1;x.stroke();
+  var hl=C.fg, lwA=C.lw;
+  /* peak */
+  fade("peak"); ln(x,X,mid-A,X+W,mid-A,hl,on("peak")?lwA:1.5,[8,6]); ln(x,X,mid+A,X+W,mid+A,hl,1.2,[8,6]);
+  txt(x,"Vm",X+W+fs*0.5,mid-A,hl,fs*1.05,"left"); txt(x,Math.round(vm)+"",X-fs*0.5,mid-A,hl,fs,"right");
+  txt(x,"−"+Math.round(vm),X-fs*0.5,mid+A,hl,fs*0.9,"right");
+  /* rms */
+  fade("rms"); var yr=mid-A*Math.SQRT1_2; ln(x,X,yr,X+W,yr,C.i,on("rms")?lwA:1.5,[8,6]);
+  txt(x,"Vrms",X+W+fs*0.5,yr+fs*0.3,C.i,fs*1.05,"left"); txt(x,Math.round(RMS)+"",X-fs*0.5,yr+fs*0.3,C.i,fs,"right");
+  /* avg */
+  fade("avg"); var ya=mid-A*2/PI; ln(x,X,ya,X+W/2,ya,C.p,on("avg")?lwA:1.5,[8,6]);
+  txt(x,"Vav "+Math.round(vav),X+W/2+fs*0.4,ya,C.p,fs,"left");
+  /* peak to peak */
+  fade("pp"); var xp=X+W*0.5; arrow(x,xp,mid,xp,mid-A,hl,on("pp")?lwA:1.5); arrow(x,xp,mid,xp,mid+A,hl,on("pp")?lwA:1.5);
+  txt(x,"Vpp "+Math.round(2*vm),xp+fs*0.5,mid+A*0.55,hl,fs,"left");
+  x.globalAlpha=1;
+  /* instantaneous cursor */
+  var deg; var auto=performance.now()>manualUntil;
+  if(auto){deg=Math.round(wrapA(TH())*180/PI)%360;$("#theta").value=deg}else{deg=+$("#theta").value}
+  var al=deg*PI/180, cx=X+W*al/TAU, v=vm*Math.sin(al), cy=mid-A*Math.sin(al);
+  fade("inst");
+  ln(x,cx,Y,cx,Y+H,C.fg,on("inst")?2.5:1.2,[4,4]);
+  ln(x,X,cy,cx,cy,C.fg,1.2,[3,5]);
+  x.globalAlpha=1; circ(x,cx,cy,C.lw*2+3,C.v,C.panel,2);
+  txt(x,"v",cx+fs*0.9,cy-fs*0.9,C.fg,fs*1.1);
+  $("#ro-th").textContent=deg; $("#ro-v").textContent=Math.round(v);
+}
+
+/* ---------- scene 3: phase ---------- */
+function s3(C){
+  phasorWave("cv3",C,[{ph:0,amp:1,col:C.v,lab:"A"},{ph:PHI*PI/180,amp:0.8,col:C.i,lab:"B"}],true,"φ");
+  /* time-period bracket */
+  var cv=document.getElementById("cv3"); var x=cv.getContext("2d"); var r=cv.getBoundingClientRect(); var w=r.width,h=r.height,fs=C.fs*0.8;
+  var R=Math.min(h*0.36,w*0.16), cx=R+fs*1.6, X=cx+R+fs*2.2, W=w-X-fs*1.2, y=h-fs*1.1;
+  arrow(x,X+W/2,y,X,y,C.fg,2); arrow(x,X+W/2,y,X+W,y,C.fg,2);
+  x.fillStyle=C.stage; var tw=fs*8; x.fillRect(X+W/2-tw/2,y-fs*0.7,tw,fs*1.4);
+  txt(x,"T · 360°",X+W/2,y,C.fg,fs*0.95);
+}
+
+/* one-second window: f cycles, T bracket, sweeping cursor with cycle counter */
+function s3b(C){
+  var o=fit("cv3b"), x=o.x, w=o.w, h=o.h, fs=C.fs*0.85;
+  var X=fs*1.5, W=w-X*2, mid=h*0.5, A=h*0.24, n=FD;
+  var u=(T*0.35)%1, cx=X+W*u, done=Math.floor(u*n);
+  /* completed cycles shaded */
+  x.globalAlpha=0.12; x.fillStyle=C.v; x.fillRect(X,mid-A*1.15,W*done/n,A*2.3); x.globalAlpha=1;
+  for(var k=0;k<=n;k++){var gx=X+W*k/n; ln(x,gx,mid-A*1.15,gx,mid+A*1.15,C.grid,1)}
+  ln(x,X,mid,X+W,mid,C.muted,1.5);
+  x.beginPath();
+  for(var j=0;j<=400;j++){var px=X+W*j/400, py=mid-A*Math.sin(TAU*n*j/400); if(j)x.lineTo(px,py);else x.moveTo(px,py)}
+  x.strokeStyle=C.v; x.lineWidth=C.lw; x.stroke();
+  for(k=0;k<n;k++)txt(x,String(k+1),X+W*(k+0.5)/n,mid-A*1.15-fs*0.6,k<done?C.fg:C.muted,fs*0.95);
+  /* T bracket over first cycle */
+  var by=mid+A*1.15+fs*0.9, x1=X+W/n;
+  ln(x,X,by-fs*0.4,X,by+fs*0.4,C.i,2); ln(x,x1,by-fs*0.4,x1,by+fs*0.4,C.i,2); ln(x,X,by,x1,by,C.i,C.lw);
+  txt(x,"T",(X+x1)/2,by+fs*0.95,C.i,fs*1.1);
+  /* one-second axis */
+  var ay=h-fs*0.8; ln(x,X,ay,X+W,ay,C.muted,1.5);
+  txt(x,"0 s",X,ay-fs*0.7,C.muted,fs*0.85,"left"); txt(x,"1 s",X+W,ay-fs*0.7,C.muted,fs*0.85,"right");
+  /* sweep cursor + counter */
+  ln(x,cx,mid-A*1.3,cx,mid+A*1.3,C.fg,2,[4,4]);
+  circ(x,cx,mid-A*Math.sin(TAU*n*u),C.lw*1.6+2,C.v);
+  txt(x,done+" / "+n,X+W,fs*0.9,C.fg,fs*1.2,"right");
+}
+
+/* ---------- scene 4: resistive ---------- */
+function s4a(C){
+  var o=fit("cvR"), x=o.x, w=o.w, h=o.h, th=TH(), fs=C.fs;
+  var P=0.5+0.5*Math.sin(th);
+  ln(x,w*0.53,h*0.06,w*0.53,h*0.94,C.grid,1.5);
+  /* pipe and tap */
+  var py=h*0.32, pt=Math.max(12,h*0.07), px1=w*0.33, sx=px1+w*0.04;
+  ln(x,0,py,px1,py,C.line,pt); ln(x,px1,py,sx,py,C.line,pt); ln(x,sx,py,sx,py+h*0.12,C.line,pt*0.8);
+  /* handle */
+  var hx=px1-w*0.01, hy=py-pt*0.9, ang=-0.2-1.0*P;
+  ln(x,hx,py-pt*0.5,hx,hy,C.fg,C.lw); ln(x,hx-w*0.05*Math.cos(ang),hy+w*0.05*Math.sin(ang)*0.3,hx+w*0.05*Math.cos(ang),hy-w*0.05*Math.sin(ang)*0.3,C.fg,C.lw+2);
+  /* gauge */
+  var gx=w*0.13, gr=Math.min(h*0.11,w*0.06), gy=py-pt/2-gr*1.6;
+  ln(x,gx,py-pt/2,gx,gy+gr,C.fg,3); gauge(x,C,gx,gy,gr,P,C.v,"V");
+  /* stream */
+  var y0=py+h*0.12+pt*0.4, by=h*0.86, sw=pt*0.75*P+1;
+  x.globalAlpha=0.85; x.fillStyle=C.i; x.fillRect(sx-sw/2,y0,sw,by-h*0.12-y0); x.globalAlpha=1;
+  for(var k=0;k<6;k++){var f=(k/6+T*1.6)%1; circ(x,sx+(k%2?3:-3),y0+f*(by-h*0.12-y0),2+3*P,C.i)}
+  txt(x,"I",sx+pt*1.4,(y0+by)/2-h*0.05,C.i,fs*1.3);
+  /* bucket */
+  var bw=w*0.11, bt=by-h*0.12;
+  x.beginPath();x.moveTo(sx-bw/2,bt);x.lineTo(sx-bw*0.4,by);x.lineTo(sx+bw*0.4,by);x.lineTo(sx+bw/2,bt);x.strokeStyle=C.fg;x.lineWidth=C.lw;x.stroke();
+  /* bulb */
+  var bx=w*0.77, byy=h*0.4, br=Math.min(h*0.2,w*0.1), g=Math.pow(Math.sin(th),2);
+  var gr2=x.createRadialGradient(bx,byy,br*0.2,bx,byy,br*2.4); gr2.addColorStop(0,C.heat); gr2.addColorStop(1,"rgba(0,0,0,0)");
+  x.globalAlpha=g*0.85; x.fillStyle=gr2; x.beginPath(); x.arc(bx,byy,br*2.4,0,TAU); x.fill(); x.globalAlpha=1;
+  circ(x,bx,byy,br,null,C.fg,C.lw);
+  x.fillStyle=C.muted; x.fillRect(bx-br*0.4,byy+br*0.9,br*0.8,br*0.55);
+  for(k=1;k<4;k++)ln(x,bx-br*0.4,byy+br*0.9+k*br*0.13,bx+br*0.4,byy+br*0.9+k*br*0.13,C.stage,1.5);
+  x.beginPath();x.moveTo(bx-br*0.3,byy+br*0.9);x.lineTo(bx-br*0.3,byy);
+  for(k=0;k<=6;k++)x.lineTo(bx-br*0.3+k*br*0.1,byy-(k%2?br*0.18:0));
+  x.lineTo(bx+br*0.3,byy+br*0.9); x.strokeStyle=g>0.3?C.heat:C.muted; x.lineWidth=2.5; x.stroke();
+  txt(x,"i² →",bx,byy+br*1.9,C.muted,fs*0.95);
+}
+function s4w(C){phasorWave("cvRw",C,[{ph:0,amp:1,col:C.v,lab:"V"},{ph:0,amp:0.7,col:C.i,lab:"I"}],false)}
+
+/* ---------- scene 5: inductive ---------- */
+function s5a(C){
+  var o=fit("cvL"), x=o.x, w=o.w, h=o.h, th=TH(), fs=C.fs;
+  var F=Math.sin(th), S=-Math.cos(th);
+  var gy=h*0.8; ln(x,0,gy,w,gy,C.muted,2.5);
+  for(var k=0;k<w;k+=w/30)ln(x,k,gy+2,k-8,gy+12,C.grid,1.5);
+  var cw=w*0.24, ch=h*0.19, wr=h*0.075, cx=w*0.58-w*0.13*Math.sin(th);
+  var top=gy-wr*1.7-ch;
+  /* load sacks */
+  for(k=0;k<3;k++){x.fillStyle=C.muted;x.globalAlpha=0.55;x.beginPath();x.ellipse(cx-cw*0.3+k*cw*0.3,top-ch*0.25,cw*0.15,ch*0.32,0,0,TAU);x.fill();x.globalAlpha=1}
+  x.fillStyle=C.panel;x.strokeStyle=C.fg;x.lineWidth=C.lw;x.beginPath();x.rect(cx-cw/2,top,cw,ch);x.fill();x.stroke();
+  [cx-cw*0.3,cx+cw*0.3].forEach(function(wx){
+    circ(x,wx,gy-wr,wr,C.panel,C.fg,C.lw);
+    var rot=cx/wr; for(var s=0;s<3;s++){var a=rot+s*PI/3;ln(x,wx-wr*Math.cos(a),gy-wr-wr*Math.sin(a),wx+wr*Math.cos(a),gy-wr+wr*Math.sin(a),C.fg,1.5)}
+  });
+  /* handle and person */
+  var h0x=cx-cw/2, h0y=top+ch*0.35, hx=h0x-w*0.07, hy=top-ch*0.15;
+  ln(x,h0x,h0y,hx,hy,C.fg,C.lw);
+  var sh={x:hx-w*0.06,y:hy-h*0.03}, hip={x:sh.x-w*0.02,y:gy-h*0.2}, hr=h*0.05;
+  circ(x,sh.x-w*0.005,sh.y-hr*1.5,hr,null,C.fg,C.lw);
+  ln(x,sh.x,sh.y-hr*0.5,hip.x,hip.y,C.fg,C.lw); ln(x,sh.x,sh.y,hx,hy,C.fg,C.lw-0.5);
+  var st=Math.sin(cx*0.06)*w*0.025;
+  ln(x,hip.x,hip.y,hip.x-w*0.03+st,gy,C.fg,C.lw); ln(x,hip.x,hip.y,hip.x+w*0.02-st,gy,C.fg,C.lw);
+  /* arrows */
+  var ay=h*0.13, L=w*0.15;
+  ln(x,cx,ay-fs*0.4,cx,ay+fs*0.4,C.muted,1.5);
+  arrow(x,cx,ay,cx+F*L,ay,C.v,C.lw+2); txt(x,"V",cx-(F>=0?1:-1)*fs*1.1,ay,C.v,fs*1.3);
+  var vy=gy+h*0.11;
+  ln(x,cx,vy-fs*0.4,cx,vy+fs*0.4,C.muted,1.5);
+  arrow(x,cx,vy,cx+S*L,vy,C.i,C.lw+2); txt(x,"I",cx-(S>=0?1:-1)*fs*1.1,vy,C.i,fs*1.3);
+}
+function s5w(C){phasorWave("cvLw",C,[{ph:0,amp:1,col:C.v,lab:"V"},{ph:-PI/2,amp:0.7,col:C.i,lab:"I"}],true,"90°")}
+
+/* ---------- scene 6: capacitive ---------- */
+function polyAt(pts,f){
+  var segs=[],tot=0,i;for(i=1;i<pts.length;i++){var d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);segs.push(d);tot+=d}
+  var t=f*tot;for(i=0;i<segs.length;i++){if(t<=segs[i]){var u=t/segs[i];return[pts[i][0]+(pts[i+1][0]-pts[i][0])*u,pts[i][1]+(pts[i+1][1]-pts[i][1])*u]}t-=segs[i]}
+  return pts[pts.length-1];
+}
+function s6a(C){
+  var o=fit("cvC"), x=o.x, w=o.w, h=o.h, th=TH(), fs=C.fs;
+  var P=0.5+0.5*Math.sin(th), F=Math.cos(th);
+  var pX=w*0.14, pW=Math.max(24,w*0.06), pTop=h*0.36, pBot=h*0.86;
+  /* pump */
+  var pl=pTop+h*0.04+P*h*0.34, hy=pl-h*0.3;
+  ln(x,pX,hy,pX,pl,C.fg,C.lw); ln(x,pX-pW*1.3,hy,pX+pW*1.3,hy,C.fg,C.lw+4);
+  x.fillStyle=C.panel;x.strokeStyle=C.fg;x.lineWidth=C.lw;x.beginPath();x.rect(pX-pW/2,pTop,pW,pBot-pTop);x.fill();x.stroke();
+  x.globalAlpha=0.25;x.fillStyle=C.i;x.fillRect(pX-pW/2+2,pl,pW-4,pBot-pl-2);x.globalAlpha=1;
+  ln(x,pX-pW/2+3,pl,pX+pW/2-3,pl,C.fg,C.lw+1);
+  ln(x,pX-pW*1.2,pBot,pX+pW*1.2,pBot,C.fg,C.lw+2);
+  /* ball */
+  var bx=w*0.68, by=h*0.52, r=Math.min(h*(0.13+0.18*P),w*0.17);
+  var ex=pX+pW/2, ey=pBot-h*0.05;
+  var pts=[[ex,ey],[w*0.42,ey],[bx-r*0.8,by+r*0.6]];
+  x.beginPath();x.moveTo(pts[0][0],pts[0][1]);x.lineTo(pts[1][0],pts[1][1]);x.lineTo(pts[2][0],pts[2][1]);x.strokeStyle=C.line;x.lineWidth=Math.max(10,h*0.04);x.stroke();
+  circ(x,bx,by,r,C.panel,C.fg,C.lw);
+  var k,a;
+  for(k=0;k<5;k++){a=-PI/2+k*TAU/5;ln(x,bx+r*0.3*Math.cos(a),by+r*0.3*Math.sin(a),bx+r*0.98*Math.cos(a),by+r*0.98*Math.sin(a),C.muted,1.5)}
+  x.beginPath();for(k=0;k<5;k++){a=-PI/2+k*TAU/5;var px=bx+r*0.3*Math.cos(a),py=by+r*0.3*Math.sin(a);if(k)x.lineTo(px,py);else x.moveTo(px,py)}
+  x.closePath();x.fillStyle=C.fg;x.fill();
+  /* air particles */
+  for(k=0;k<16;k++){var f=((k/16+0.3*Math.sin(th))%1+1)%1;var p=polyAt(pts,f);circ(x,p[0],p[1],Math.max(2.5,h*0.012),C.i)}
+  /* flow arrow */
+  var ay=ey-h*0.1, mx=(ex+w*0.42)/2;
+  ln(x,mx,ay-fs*0.4,mx,ay+fs*0.4,C.muted,1.5);
+  arrow(x,mx,ay,mx+F*w*0.1,ay,C.i,C.lw+2); txt(x,"I",mx-(F>=0?1:-1)*fs*1.1,ay,C.i,fs*1.3);
+  /* gauge */
+  var gr=Math.min(h*0.1,w*0.055), gx=w*0.91, gy=h*0.18;
+  ln(x,bx,by-r,bx+r*0.2,gy,C.line,4); ln(x,bx+r*0.2,gy,gx-gr,gy,C.line,4);
+  gauge(x,C,gx,gy,gr,P,C.v,"V");
+}
+function s6w(C){phasorWave("cvCw",C,[{ph:0,amp:1,col:C.v,lab:"V"},{ph:PI/2,amp:0.7,col:C.i,lab:"I"}],true,"90°")}
+
+/* ---------- scene 7: compare ---------- */
+function s7(C){
+  var o=fit("cv7"), x=o.x, w=o.w, h=o.h, th=TH(), fs=C.fs;
+  var R=Math.min(h*0.32,w*0.13), cy=h*0.52;
+  [["R",0,"0°"],["L",-PI/2,"90° lag"],["C",PI/2,"90° lead"]].forEach(function(d,k){
+    var cx=w*(1+2*k)/6;
+    txt(x,d[0],cx,cy-R-fs*1.4,C.fg,fs*1.7);
+    circ(x,cx,cy,R,null,C.grid,1.5); ln(x,cx-R,cy,cx+R,cy,C.grid,1); ln(x,cx,cy-R,cx,cy+R,C.grid,1);
+    var av=th, ai=th+d[1];
+    arrow(x,cx,cy,cx+R*Math.cos(av),cy-R*Math.sin(av),C.v,C.lw+0.5);
+    arrow(x,cx,cy,cx+R*0.7*Math.cos(ai),cy-R*0.7*Math.sin(ai),C.i,C.lw+0.5);
+    txt(x,"V",cx+(R+fs*0.9)*Math.cos(av),cy-(R+fs*0.9)*Math.sin(av),C.v,fs*1.05);
+    txt(x,"I",cx+(R*0.7+fs*0.9)*Math.cos(ai),cy-(R*0.7+fs*0.9)*Math.sin(ai),C.i,fs*1.05);
+    txt(x,d[2],cx,cy+R+fs*1.4,C.muted,fs*0.95);
+  });
+}
+
+var SCENES={1:[s1],2:[s2],3:[s3,s3b],4:[s4a,s4w],5:[s5a,s5w],6:[s6a,s6w],7:[s7],8:[]};
+var last=performance.now();
+function frame(now){
+  var dt=Math.min(0.05,(now-last)/1000); last=now;
+  if(playing)T+=dt*0.28*speed;
+  var C=cols();
+  (SCENES[TAB]||[]).forEach(function(f){try{f(C)}catch(e){}});
+  requestAnimationFrame(frame);
+}
+
+/* ---------- init ---------- */
+var sl=store.get("lang"); setLang(sl==="ml"||sl==="hi"?sl:"en");
+var st=store.get("theme"); setTheme(st==="light"||st==="dark"||st==="hc"?st:null,false);
+try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){if(!root.getAttribute("data-theme"))setTheme(null,false)})}catch(e){}
+setFS(FS); setPlay(playing); calc(); phiUI(); fdUI(); quizInit();
+var hm=/^#p([1-8])$/.exec(location.hash||""); showTab(hm?+hm[1]:(+store.get("tab")||1));
+T=0.12;
+requestAnimationFrame(frame);
+})();
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
