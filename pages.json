@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-15T03:41:10.190Z",
+  "updated": "2026-10-15T08:56:15.708Z",
   "sections": [
     {
       "name": "Electrical Machines & Control",
@@ -243,6 +243,14 @@
         {
           "file": "pages/ac_basics.html",
           "title": "Single-Phase AC Basics",
+          "description": "",
+          "section": "AC Circuits",
+          "sectionOrder": 999,
+          "order": 999
+        },
+        {
+          "file": "pages/Power Factor Lab.html",
+          "title": "Power Factor Lab",
           "description": "",
           "section": "AC Circuits",
           "sectionOrder": 999,
