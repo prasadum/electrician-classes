@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="section" content="AC Circuits">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3-Phase &amp; Polyphase AC</title>
+<style>
+:root{--fs:1.15}
+body[data-theme=light]{--bg:#eef1f7;--panel:#ffffff;--fg:#151a28;--mut:#566079;--line:#cfd5e3;--acc:#0b63c4;--btnfg:#fff;--r:#d42020;--y:#b98a00;--b:#1d58cf;--ok:#16853a;--bad:#c62828;--bw:1px;--lw:2.6}
+body[data-theme=dark]{--bg:#0d1220;--panel:#161e31;--fg:#e9edf7;--mut:#9ba6bf;--line:#2a3550;--acc:#4ea8ff;--btnfg:#07101f;--r:#ff5d5d;--y:#ffd23f;--b:#5c9dff;--ok:#3ddc84;--bad:#ff6b6b;--bw:1px;--lw:2.6}
+body[data-theme=hc]{--bg:#000;--panel:#000;--fg:#fff;--mut:#ffff66;--line:#fff;--acc:#00ffff;--btnfg:#000;--r:#ff3b3b;--y:#ffff00;--b:#3fa9ff;--ok:#00ff66;--bad:#ff4040;--bw:3px;--lw:4}
+html{font-size:calc(16px * var(--fs))}
+*{box-sizing:border-box}
+body{margin:0;height:100vh;display:flex;flex-direction:column;background:var(--bg);color:var(--fg);font-family:"Segoe UI","Noto Sans","Noto Sans Malayalam","Noto Sans Devanagari","Nirmala UI","Kartika","Mangal",system-ui,sans-serif;overflow:hidden;line-height:1.4}
+header{display:flex;align-items:center;gap:.4rem;padding:.35rem .8rem;background:var(--panel);border-bottom:var(--bw) solid var(--line);flex-wrap:wrap}
+.brand{font-weight:800;font-size:1.05rem;margin-right:auto;display:flex;align-items:center;gap:.5rem}
+.brand .dot{width:.7rem;height:.7rem;border-radius:50%;display:inline-block}
+.grp{display:flex;gap:.2rem;align-items:center;border:var(--bw) solid var(--line);border-radius:10px;padding:.15rem}
+.grp button{background:transparent;color:var(--fg);border:0;border-radius:7px;padding:.25rem .55rem;font:inherit;font-size:.85rem;font-weight:700;cursor:pointer}
+.grp button.on{background:var(--acc);color:var(--btnfg)}
+.tabs{display:flex;gap:.25rem;overflow-x:auto;padding:.3rem .8rem;background:var(--panel);border-bottom:var(--bw) solid var(--line);scrollbar-width:thin}
+.tab{flex:0 0 auto;background:transparent;color:var(--mut);border:var(--bw) solid transparent;border-radius:999px;padding:.2rem .7rem;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.tab.on{color:var(--btnfg);background:var(--acc)}
+main{flex:1;overflow:auto;position:relative}
+.slide{display:none;padding:.9rem 1.4rem 1.2rem;min-height:100%}
+.slide.on{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h1{font-size:2.5rem;margin:.3rem 0;line-height:1.15}
+h2{font-size:1.65rem;margin:.1rem 0 .7rem;line-height:1.2}
+h3{font-size:1.1rem;margin:.1rem 0 .4rem}
+.grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:1rem;align-items:start}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+@media(max-width:900px){.grid,.grid3,.grid2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:var(--bw) solid var(--line);border-radius:14px;padding:.75rem 1rem}
+.card+.card{margin-top:.75rem}
+.ana{border-left:6px solid var(--acc)}
+.warn{border-left:6px solid var(--bad)}
+canvas.big{width:100%;height:min(62vh,540px);display:block;background:var(--panel);border:var(--bw) solid var(--line);border-radius:14px}
+canvas.mid{height:min(46vh,420px)}
+svg.dia{width:100%;height:auto;max-height:62vh;display:block;background:var(--panel);border:var(--bw) solid var(--line);border-radius:14px}
+.f{font-family:"Cambria Math","Cambria","Times New Roman",serif;font-size:1.2rem}
+.bigf{font-family:"Cambria Math","Cambria","Times New Roman",serif;font-size:2rem;font-weight:700;color:var(--acc);line-height:1.25}
+.r{color:var(--r)}.y{color:var(--y)}.b{color:var(--b)}.ok{color:var(--ok)}.bad{color:var(--bad)}.mut{color:var(--mut)}
+ul.ic{list-style:none;padding:0;margin:0}
+ul.ic li{display:flex;gap:.6rem;align-items:flex-start;padding:.3rem 0;border-bottom:var(--bw) dashed var(--line)}
+ul.ic li:last-child{border-bottom:0}
+ul.ic .i{font-size:1.4rem;line-height:1.2;width:1.8rem;text-align:center;flex:0 0 auto}
+.row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin:.4rem 0}
+label.lab{font-weight:700;font-size:.9rem;color:var(--mut)}
+input[type=range]{width:100%;accent-color:var(--acc);height:1.6rem}
+input[type=number],input[type=text],select{font:inherit;font-size:.95rem;background:var(--bg);color:var(--fg);border:var(--bw) solid var(--line);border-radius:8px;padding:.25rem .45rem;width:6.5rem}
+input[type=text]{width:8rem}
+.btn{font:inherit;font-weight:700;background:var(--acc);color:var(--btnfg);border:0;border-radius:10px;padding:.42rem .9rem;cursor:pointer}
+.btn.gh{background:transparent;color:var(--fg);border:var(--bw) solid var(--line)}
+.btn:active{transform:scale(.97)}
+.chip{display:inline-block;border:var(--bw) solid var(--line);border-radius:999px;padding:.25rem .75rem;margin:.2rem;font-weight:700;background:var(--panel)}
+table.t{border-collapse:collapse;width:100%;font-size:1.05rem}
+table.t th,table.t td{border:var(--bw) solid var(--line);padding:.45rem .6rem;text-align:center}
+table.t th{background:var(--bg)}
+.out{font-family:"Cambria Math","Cambria",serif;font-size:1.3rem;font-weight:700}
+.kv{display:flex;justify-content:space-between;padding:.25rem 0;border-bottom:var(--bw) dashed var(--line);font-size:1.1rem}
+.kv b{font-family:"Cambria Math","Cambria",serif}
+.bar{height:1.3rem;border-radius:6px;background:var(--acc);transition:width .4s}
+.bars .lbl{font-size:.85rem;font-weight:700;color:var(--mut);margin-top:.3rem}
+.x3{display:inline-block;background:var(--bad);color:#fff;border-radius:12px;padding:.2rem .8rem;font-size:1.8rem;font-weight:900}
+body[data-theme=hc] .x3{color:#000}
+.bulbs .glass{fill:var(--y);opacity:var(--o,.3);filter:drop-shadow(0 0 calc(var(--o,.3) * 16px) var(--y));transition:opacity .4s}
+.bulbs .base{fill:var(--mut)}
+.flow{stroke-dasharray:9 11;animation:dash 0.9s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-20}}
+.fstep{opacity:.15;transition:opacity .4s}
+.fstep.on{opacity:1}
+footer{display:flex;align-items:center;gap:.6rem;padding:.3rem .8rem;background:var(--panel);border-top:var(--bw) solid var(--line);font-size:.82rem}
+footer .sp{margin-left:auto;color:var(--mut)}
+/* quiz */
+.qwrap{display:grid;grid-template-columns:minmax(0,1fr) 15rem;gap:1rem;align-items:start}
+@media(max-width:900px){.qwrap{grid-template-columns:1fr}}
+.qtext{font-size:1.75rem;font-weight:700;margin:.4rem 0 .9rem;min-height:2.4em}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+@media(max-width:700px){.opts{grid-template-columns:1fr}}
+.opt{font:inherit;font-size:1.35rem;font-weight:700;text-align:left;background:var(--panel);color:var(--fg);border:calc(var(--bw) + 1px) solid var(--line);border-radius:14px;padding:.75rem 1rem;cursor:pointer;display:flex;gap:.7rem;align-items:center}
+.opt .k{display:inline-grid;place-items:center;width:2rem;height:2rem;border-radius:50%;background:var(--acc);color:var(--btnfg);flex:0 0 auto;font-size:1rem}
+.opt.ok{background:var(--ok);color:#000;border-color:var(--ok)}
+.opt.bad{background:var(--bad);color:#fff;border-color:var(--bad)}
+.opt.dim{opacity:.45}
+.timer{position:relative;width:9rem;height:9rem;margin:0 auto}
+.timer svg{width:100%;height:100%;transform:rotate(-90deg)}
+.timer .num{position:absolute;inset:0;display:grid;place-items:center;font-size:2.6rem;font-weight:900}
+.timer.low .num{color:var(--bad);animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.12)}}
+.scoreboard{display:flex;flex-direction:column;gap:.4rem}
+.team{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:var(--bw) solid var(--line);border-radius:10px;padding:.35rem .7rem;font-weight:700}
+.team b{font-size:1.4rem}
+.team.turn{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.msg{font-size:1.4rem;font-weight:800;min-height:1.8rem;margin:.6rem 0}
+details.set{background:var(--panel);border:var(--bw) solid var(--line);border-radius:12px;padding:.5rem .8rem;margin-bottom:.7rem}
+details.set summary{font-weight:800;cursor:pointer}
+.setg{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.5rem .9rem;margin-top:.5rem}
+.setg>div{display:flex;flex-direction:column;gap:.15rem}
+.tfbtn{font:inherit;font-size:2rem;font-weight:900;border:0;border-radius:18px;padding:1rem;cursor:pointer;color:#fff}
+.tfbtn.t{background:var(--ok);color:#000}.tfbtn.fl{background:var(--bad)}
+.rbar{height:1.1rem;background:var(--bg);border:var(--bw) solid var(--line);border-radius:999px;overflow:hidden}
+.rbar div{height:100%;background:var(--acc);transition:width .1s linear}
+.flash-ok{animation:fok .45s}.flash-bad{animation:fbad .45s}
+@keyframes fok{0%{background:var(--ok)}}@keyframes fbad{0%{background:var(--bad)}}
+.rq-text{font-size:2rem;font-weight:800;text-align:center;margin:1rem 0;min-height:3em;display:grid;place-items:center;border-radius:14px;padding:.5rem}
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:1.2rem;align-items:center}
+@media(max-width:900px){.hero{grid-template-columns:1fr}}
+.sub{color:var(--mut);font-weight:700}
+</style>
+</head>
+<body data-theme="dark">
+
+<header>
+  <div class="brand"><span class="dot" style="background:var(--r)"></span><span class="dot" style="background:var(--y)"></span><span class="dot" style="background:var(--b)"></span>
+    <span data-en="3-Phase &amp; Polyphase AC" data-hi="3-फेज़ एवं पॉलीफेज़ AC" data-ml="3-ഫേസ് &amp; പോളിഫേസ് AC"></span></div>
+  <div class="grp" title="Font size"><button id="fMinus">A−</button><span id="fVal" style="font-size:.8rem;min-width:2.6rem;text-align:center">115%</span><button id="fPlus">A+</button></div>
+  <div class="grp" id="themeGrp"><button data-th="light" title="Light">☀</button><button data-th="dark" title="Dark">☾</button><button data-th="hc" title="High contrast (projector)">◐ HC</button></div>
+  <div class="grp" id="langGrp"><button data-lg="en">EN</button><button data-lg="hi">हिं</button><button data-lg="ml">മല</button></div>
+  <div class="grp"><button id="fsBtn" title="Fullscreen">⛶</button></div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab" data-go="0" data-en="1 Start" data-hi="1 आरंभ" data-ml="1 ആരംഭം"></button>
+  <button class="tab" data-go="1" data-en="2 Why 3φ?" data-hi="2 3φ क्यों?" data-ml="2 എന്തിന് 3φ?"></button>
+  <button class="tab" data-go="2" data-en="3 Generation" data-hi="3 उत्पादन" data-ml="3 ഉൽപാദനം"></button>
+  <button class="tab" data-go="3" data-en="4 Neutral" data-hi="4 न्यूट्रल" data-ml="4 ന്യൂട്രൽ"></button>
+  <button class="tab" data-go="4" data-en="5 √2 & √3" data-hi="5 √2 और √3" data-ml="5 √2, √3"></button>
+  <button class="tab" data-go="5" data-en="6 Geometry" data-hi="6 ज्यामिति" data-ml="6 ജ്യാമിതി"></button>
+  <button class="tab" data-go="6" data-en="7 Derivation" data-hi="7 व्युत्पत्ति" data-ml="7 ഡെറിവേഷൻ"></button>
+  <button class="tab" data-go="7" data-en="8 Star" data-hi="8 स्टार" data-ml="8 സ്റ്റാർ"></button>
+  <button class="tab" data-go="8" data-en="9 Delta" data-hi="9 डेल्टा" data-ml="9 ഡെൽറ്റ"></button>
+  <button class="tab" data-go="9" data-en="10 Power" data-hi="10 पावर" data-ml="10 പവർ"></button>
+  <button class="tab" data-go="10" data-en="11 Star vs Δ" data-hi="11 स्टार बनाम Δ" data-ml="11 സ്റ്റാർ vs Δ"></button>
+  <button class="tab" data-go="11" data-en="12 Summary" data-hi="12 सारांश" data-ml="12 സംഗ്രഹം"></button>
+  <button class="tab" data-go="12" data-en="13 Quiz" data-hi="13 क्विज़" data-ml="13 ക്വിസ്"></button>
+  <button class="tab" data-go="13" data-en="14 Rapid" data-hi="14 रैपिड" data-ml="14 റാപ്പിഡ്"></button>
+</nav>
+
+<main id="main">
+
+<!-- 1 TITLE -->
+<section class="slide" data-anim="title">
+  <div class="hero">
+    <div>
+      <div class="sub">CTS Electrician · NSQF (Revised 2022) · Related Theory Ex. 1.5.52–56</div>
+      <h1 data-en="Three-Phase &amp; Polyphase AC Circuits" data-hi="थ्री-फेज़ एवं पॉलीफेज़ AC सर्किट" data-ml="ത്രീ-ഫേസ് &amp; പോളിഫേസ് AC സർക്യൂട്ടുകൾ"></h1>
+      <div style="margin:.8rem 0">
+        <span class="chip" data-en="Why polyphase" data-hi="पॉलीफेज़ क्यों" data-ml="പോളിഫേസ് എന്തിന്"></span>
+        <span class="chip" data-en="Where √2 &amp; √3 come from" data-hi="√2 और √3 कहाँ से" data-ml="√2, √3 എവിടെ നിന്ന്"></span>
+        <span class="chip" data-en="Star &amp; Delta" data-hi="स्टार और डेल्टा" data-ml="സ്റ്റാറും ഡെൽറ്റയും"></span>
+        <span class="chip" data-en="3-phase power" data-hi="3-फेज़ पावर" data-ml="3-ഫേസ് പവർ"></span>
+        <span class="chip" data-en="Star vs Delta: same load" data-hi="स्टार बनाम डेल्टा: वही लोड" data-ml="സ്റ്റാർ vs ഡെൽറ്റ: ഒരേ ലോഡ്"></span>
+      </div>
+      <div class="bigf"><span class="r">R</span> → <span class="y">Y</span> → <span class="b">B</span> &nbsp;·&nbsp; 120°</div>
+      <div class="f mut" style="margin-top:.4rem">V<sub>L</sub> = √3 V<sub>P</sub> &nbsp;|&nbsp; I<sub>L</sub> = √3 I<sub>P</sub> &nbsp;|&nbsp; P = √3 V<sub>L</sub> I<sub>L</sub> cos φ</div>
+    </div>
+    <canvas id="cvTitle" class="big mid"></canvas>
+  </div>
+</section>
+
+<!-- 2 WHY POLYPHASE -->
+<section class="slide" data-anim="why">
+  <h2 data-en="Why polyphase? One pusher vs three" data-hi="पॉलीफेज़ क्यों? एक धक्का बनाम तीन" data-ml="പോളിഫേസ് എന്തിന്? ഒരാൾ vs മൂന്നുപേർ"></h2>
+  <div class="grid">
+    <canvas id="cvWhy" class="big"></canvas>
+    <div>
+      <div class="card ana"><b>🏍</b> <span data-en="Single-cylinder bike: thump-thump. 3-cylinder engine: smooth hum. Motors behave the same way." data-hi="सिंगल-सिलेंडर बाइक: धक-धक। 3-सिलेंडर इंजन: सुचारु। मोटर भी ऐसे ही।" data-ml="സിംഗിൾ-സിലിണ്ടർ ബൈക്ക്: ധക്-ധക്. 3-സിലിണ്ടർ എഞ്ചിൻ: സുഗമം. മോട്ടോറുകളും ഇതുപോലെ."></span></div>
+      <div class="card">
+        <ul class="ic">
+          <li><span class="i">⚙</span><span data-en="Uniform torque" data-hi="एकसमान टॉर्क" data-ml="ഏകീകൃത ടോർക്ക്"></span></li>
+          <li><span class="i">▶</span><span data-en="Self-starting motors" data-hi="स्वयं-स्टार्ट मोटर" data-ml="സ്വയം സ്റ്റാർട്ട് ആകുന്ന മോട്ടോർ"></span></li>
+          <li><span class="i">🧵</span><span data-en="Less copper for same power" data-hi="समान पावर में कम तांबा" data-ml="ഒരേ പവറിന് കുറഞ്ഞ ചെമ്പ്"></span></li>
+          <li><span class="i">📦</span><span data-en="More output per machine size" data-hi="समान आकार में अधिक आउटपुट" data-ml="ഒരേ വലിപ്പത്തിൽ കൂടുതൽ ഔട്ട്പുട്ട്"></span></li>
+          <li><span class="i">🌀</span><span data-en="Rotating magnetic field" data-hi="घूमता चुंबकीय क्षेत्र" data-ml="കറങ്ങുന്ന കാന്തികക്ഷേത്രം"></span></li>
+        </ul>
+      </div>
+      <div class="card"><span data-en="Polyphase = 2 or more phases. 2-phase: 90° apart. 3-phase: 120° apart (standard)." data-hi="पॉलीफेज़ = 2 या अधिक फेज़। 2-फेज़: 90° अंतर। 3-फेज़: 120° अंतर (मानक)।" data-ml="പോളിഫേസ് = 2-ഓ അതിലധികമോ ഫേസ്. 2-ഫേസ്: 90° അകലം. 3-ഫേസ്: 120° അകലം (സ്റ്റാൻഡേർഡ്)."></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 GENERATION -->
+<section class="slide" data-anim="gen">
+  <h2 data-en="Three coils 120° apart, one rotating magnet" data-hi="तीन कुंडलियाँ 120° दूरी पर, एक घूमता चुंबक" data-ml="120° അകലത്തിൽ മൂന്ന് കോയിൽ, ഒരു കറങ്ങുന്ന കാന്തം"></h2>
+  <div class="grid">
+    <div>
+      <canvas id="cvGen" class="big"></canvas>
+      <div class="row"><button class="btn" id="genPlay">⏸</button><label class="lab" data-en="Speed" data-hi="गति" data-ml="വേഗത"></label><input type="range" id="genSpd" min="0.1" max="2" step="0.05" value="0.7" style="max-width:16rem"></div>
+    </div>
+    <div>
+      <div class="card"><h3 data-en="Sum at every instant" data-hi="हर क्षण का योग" data-ml="ഓരോ നിമിഷത്തെയും തുക"></h3>
+        <div class="out"><span class="r" id="eU">0</span> + <span class="y" id="eV">0</span> + <span class="b" id="eW">0</span> = <span class="ok" id="eS">0</span></div></div>
+      <div class="card ana"><b>🏟</b> <span data-en="Like a stadium Mexican wave: each block rises 1/3 cycle after the previous one. Order R → Y → B is the phase sequence." data-hi="स्टेडियम की 'मेक्सिकन वेव' जैसा: हर ब्लॉक पिछले से 1/3 चक्र बाद उठता है। R → Y → B क्रम = फेज़ क्रम।" data-ml="സ്റ്റേഡിയത്തിലെ 'മെക്സിക്കൻ വേവ്' പോലെ: ഓരോ ബ്ലോക്കും മുമ്പത്തേതിന് 1/3 സൈക്കിൾ ശേഷം എഴുന്നേൽക്കുന്നു. R → Y → B ക്രമം = ഫേസ് സീക്വൻസ്."></span></div>
+      <div class="card warn"><b>🔁</b> <span data-en="Swap any two phases → 3-phase motor reverses." data-hi="कोई भी दो फेज़ बदलें → 3-फेज़ मोटर उलटी घूमेगी।" data-ml="ഏതെങ്കിലും രണ്ട് ഫേസ് മാറ്റിയാൽ → 3-ഫേസ് മോട്ടോർ എതിർദിശയിൽ."></span></div>
+      <div class="card"><span data-en="Same frequency, same peak, 120° apart." data-hi="समान आवृत्ति, समान पीक, 120° अंतर।" data-ml="ഒരേ ഫ്രീക്വൻസി, ഒരേ പീക്ക്, 120° അകലം."></span><div class="f" style="margin-top:.3rem">120° = T/3 = 6.67 ms @ 50 Hz</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 NEUTRAL TUG -->
+<section class="slide" data-anim="tug">
+  <h2 data-en="Balanced load → neutral current = 0" data-hi="संतुलित लोड → न्यूट्रल धारा = 0" data-ml="ബാലൻസ്ഡ് ലോഡ് → ന്യൂട്രൽ കറന്റ് = 0"></h2>
+  <div class="grid">
+    <canvas id="cvTug" class="big"></canvas>
+    <div>
+      <div class="card ana"><b>🪢</b> <span data-en="Three equal pulls at 120° → ring stays at centre. Pull unequally → ring moves. That shift is the neutral current." data-hi="120° पर तीन बराबर खिंचाव → रिंग केंद्र में। असमान खिंचाव → रिंग खिसकती है। यही खिसकाव न्यूट्रल धारा है।" data-ml="120°-ൽ മൂന്ന് തുല്യ വലി → വളയം നടുവിൽ. അസമമായ വലി → വളയം നീങ്ങും. ആ നീക്കമാണ് ന്യൂട്രൽ കറന്റ്."></span></div>
+      <div class="card">
+        <label class="lab r">I<sub>R</sub> = <span id="iRv">10</span> A</label><input type="range" id="iR" min="0" max="20" value="10">
+        <label class="lab y">I<sub>Y</sub> = <span id="iYv">10</span> A</label><input type="range" id="iY" min="0" max="20" value="10">
+        <label class="lab b">I<sub>B</sub> = <span id="iBv">10</span> A</label><input type="range" id="iB" min="0" max="20" value="10">
+        <div class="row"><button class="btn" id="balBtn" data-en="Balance" data-hi="संतुलित करें" data-ml="ബാലൻസ് ചെയ്യുക"></button><span class="out">I<sub>N</sub> = <span id="inVal">0.00</span> A</span></div>
+      </div>
+      <div class="card warn"><b>🏘</b> <span data-en="Street LT line: houses shared on R, Y, B. Uneven evening use → neutral carries current. Loose neutral → dangerous over-voltage in homes." data-hi="गली की LT लाइन: घर R, Y, B पर बँटे। शाम का असमान उपयोग → न्यूट्रल में धारा। ढीला न्यूट्रल → घरों में खतरनाक अधिक वोल्टेज।" data-ml="തെരുവിലെ LT ലൈൻ: വീടുകൾ R, Y, B-യിൽ പങ്കിട്ടിരിക്കുന്നു. വൈകുന്നേരത്തെ അസമ ഉപയോഗം → ന്യൂട്രലിൽ കറന്റ്. അയഞ്ഞ ന്യൂട്രൽ → വീടുകളിൽ അപകടകരമായ ഓവർ-വോൾട്ടേജ്."></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 ROOT EXPLORER -->
+<section class="slide" data-anim="root">
+  <h2><span data-en="The angle decides the multiplier" data-hi="कोण ही गुणक तय करता है" data-ml="കോൺ ആണ് ഗുണകം നിശ്ചയിക്കുന്നത്"></span> · <span class="f" style="font-size:1.4rem">V<sub>L</sub> = 2 · V<sub>P</sub> · sin(θ/2)</span></h2>
+  <div class="grid">
+    <div>
+      <canvas id="cvRoot" class="big"></canvas>
+      <div class="row">
+        <button class="btn gh" data-a="90" data-en="2-phase 90°" data-hi="2-फेज़ 90°" data-ml="2-ഫേസ് 90°"></button>
+        <button class="btn gh" data-a="120" data-en="3-phase 120°" data-hi="3-फेज़ 120°" data-ml="3-ഫേസ് 120°"></button>
+        <button class="btn gh" data-a="180" data-en="Split 180°" data-hi="स्प्लिट 180°" data-ml="സ്പ്ലിറ്റ് 180°"></button>
+        <label class="lab">V<sub>P</sub> (V)</label><input type="number" id="vpIn" value="240" min="1" max="11000">
+      </div>
+      <label class="lab">θ = <span id="angV">120</span>°</label><input type="range" id="ang" min="30" max="180" value="120">
+    </div>
+    <div>
+      <div class="card"><div class="out" id="rootOut"></div></div>
+      <div class="card ana"><b>🚶🚶</b> <span data-en="Two friends walk 240 m each from the same gate (N). The gap between them = line voltage. Wider angle → bigger gap." data-hi="दो दोस्त एक ही गेट (N) से 240 m चलते हैं। उनके बीच की दूरी = लाइन वोल्टेज। कोण बड़ा → दूरी बड़ी।" data-ml="രണ്ട് സുഹൃത്തുക്കൾ ഒരേ ഗേറ്റിൽ (N) നിന്ന് 240 m വീതം നടക്കുന്നു. അവർ തമ്മിലുള്ള ദൂരം = ലൈൻ വോൾട്ടേജ്. കോൺ കൂടിയാൽ → ദൂരം കൂടും."></span></div>
+      <div class="card">
+        <table class="t">
+          <tr><th data-en="Angle" data-hi="कोण" data-ml="കോൺ"></th><th data-en="Multiplier" data-hi="गुणक" data-ml="ഗുണകം"></th><th>V<sub>P</sub>=240 V</th></tr>
+          <tr><td>90°</td><td class="f">√2 = 1.414</td><td>339 V</td></tr>
+          <tr><td>120°</td><td class="f">√3 = 1.732</td><td>415.7 V</td></tr>
+          <tr><td>180°</td><td class="f">2</td><td>480 V</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 GEOMETRY -->
+<section class="slide" data-anim="">
+  <h2 data-en="Where do √2 and √3 come from?" data-hi="√2 और √3 कहाँ से आते हैं?" data-ml="√2-ഉം √3-ഉം എവിടെ നിന്ന് വരുന്നു?"></h2>
+  <div class="grid3">
+    <div class="card">
+      <svg viewBox="0 0 260 220" class="dia" style="border:0">
+        <rect x="50" y="30" width="150" height="150" fill="none" stroke="var(--fg)" stroke-width="3"/>
+        <line x1="50" y1="180" x2="200" y2="30" stroke="var(--acc)" stroke-width="6"/>
+        <polyline points="50,165 65,165 65,180" fill="none" stroke="var(--mut)" stroke-width="2"/>
+        <line x1="50" y1="180" x2="200" y2="180" stroke="var(--r)" stroke-width="6"/>
+        <line x1="200" y1="180" x2="200" y2="30" stroke="var(--y)" stroke-width="6"/>
+        <text x="125" y="205" text-anchor="middle" fill="var(--r)" font-size="20" font-weight="700">1</text>
+        <text x="218" y="110" fill="var(--y)" font-size="20" font-weight="700">1</text>
+        <text x="100" y="95" fill="var(--acc)" font-size="22" font-weight="800" transform="rotate(-45 115 100)">√2</text>
+        <text x="72" y="160" fill="var(--mut)" font-size="14">90°</text>
+      </svg>
+      <div class="bigf" style="font-size:1.5rem">√(1² + 1²) = √2 = 1.414</div>
+      <div data-en="Square of side 1. Two phases 90° apart form this right angle → 2-phase." data-hi="भुजा 1 का वर्ग। 90° दूरी के दो फेज़ यही समकोण बनाते हैं → 2-फेज़।" data-ml="വശം 1 ഉള്ള സമചതുരം. 90° അകലത്തിലുള്ള രണ്ട് ഫേസുകൾ ഈ മട്ടകോൺ ഉണ്ടാക്കുന്നു → 2-ഫേസ്."></div>
+    </div>
+    <div class="card">
+      <svg viewBox="0 0 260 220" class="dia" style="border:0">
+        <polygon points="30,190 230,190 130,17" fill="none" stroke="var(--fg)" stroke-width="3"/>
+        <line x1="130" y1="17" x2="130" y2="190" stroke="var(--acc)" stroke-width="6"/>
+        <line x1="130" y1="190" x2="230" y2="190" stroke="var(--r)" stroke-width="6"/>
+        <line x1="130" y1="17" x2="230" y2="190" stroke="var(--y)" stroke-width="6"/>
+        <polyline points="130,175 145,175 145,190" fill="none" stroke="var(--mut)" stroke-width="2"/>
+        <text x="180" y="212" text-anchor="middle" fill="var(--r)" font-size="20" font-weight="700">1</text>
+        <text x="190" y="95" fill="var(--y)" font-size="20" font-weight="700">2</text>
+        <text x="96" y="115" fill="var(--acc)" font-size="22" font-weight="800">√3</text>
+        <text x="122" y="52" fill="var(--mut)" font-size="14" text-anchor="end">30°</text>
+        <text x="38" y="182" fill="var(--mut)" font-size="14">60°</text>
+      </svg>
+      <div class="bigf" style="font-size:1.5rem">√(2² − 1²) = √3 → cos 30° = √3/2</div>
+      <div data-en="Equilateral triangle of side 2, cut in half. Phases 120° apart give the 30° split → 3-phase." data-hi="भुजा 2 का समबाहु त्रिभुज, आधा कटा। 120° दूरी के फेज़ 30° विभाजन देते हैं → 3-फेज़।" data-ml="വശം 2 ഉള്ള സമഭുജ ത്രികോണം പകുതിയായി മുറിച്ചത്. 120° അകലത്തിലുള്ള ഫേസുകൾ 30° വിഭജനം നൽകുന്നു → 3-ഫേസ്."></div>
+    </div>
+    <div class="card">
+      <svg viewBox="0 0 260 220" class="dia" style="border:0">
+        <line x1="10" y1="110" x2="250" y2="110" stroke="var(--mut)" stroke-width="2"/>
+        <path d="M10 110 C 40 0, 90 0, 120 110 S 200 220, 230 110" fill="none" stroke="var(--r)" stroke-width="5"/>
+        <line x1="10" y1="27" x2="250" y2="27" stroke="var(--fg)" stroke-dasharray="6 5" stroke-width="2"/>
+        <line x1="10" y1="51" x2="250" y2="51" stroke="var(--acc)" stroke-width="4"/>
+        <text x="250" y="22" text-anchor="end" fill="var(--fg)" font-size="16" font-weight="700">Vm = 339 V</text>
+        <text x="250" y="70" text-anchor="end" fill="var(--acc)" font-size="16" font-weight="700">Vrms = 240 V</text>
+      </svg>
+      <div class="bigf" style="font-size:1.5rem">V<sub>m</sub> = √2 · V<sub>rms</sub> ; V<sub>rms</sub> = 0.707 V<sub>m</sub></div>
+      <div data-en="Another √2: peak vs RMS. 240 V RMS = 339 V peak. Insulation and capacitors must withstand the peak." data-hi="एक और √2: पीक बनाम RMS। 240 V RMS = 339 V पीक। इन्सुलेशन व कैपेसिटर को पीक सहना होता है।" data-ml="മറ്റൊരു √2: പീക്ക് vs RMS. 240 V RMS = 339 V പീക്ക്. ഇൻസുലേഷനും കപ്പാസിറ്ററും പീക്ക് താങ്ങണം."></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 DERIVATION -->
+<section class="slide" data-anim="der">
+  <h2 data-en="Star: proving VL = √3 VP (phasor method)" data-hi="स्टार: VL = √3 VP का प्रमाण (फेज़र विधि)" data-ml="സ്റ്റാർ: VL = √3 VP തെളിയിക്കൽ (ഫേസർ രീതി)"></h2>
+  <div class="grid">
+    <div>
+      <canvas id="cvDer" class="big"></canvas>
+      <div class="row"><button class="btn gh" id="derPrev">◀</button><button class="btn" id="derNext">▶</button><button class="btn gh" id="derAuto">▶▶</button><button class="btn gh" id="derReset">⟲</button><span class="chip" id="derNum">0/5</span></div>
+    </div>
+    <div>
+      <div class="card"><div class="msg" id="derCap" style="font-size:1.25rem"></div></div>
+      <div class="card f" style="font-size:1.3rem;line-height:2">
+        <div class="fstep" data-s="2">V<sub>UV</sub> = V<sub>UN</sub> + (−V<sub>VN</sub>)</div>
+        <div class="fstep" data-s="4">V<sub>L</sub> = 2 · V<sub>P</sub> · cos 30°</div>
+        <div class="fstep" data-s="4">cos 30° = √3 / 2 = 0.866</div>
+        <div class="fstep" data-s="5"><b class="ok">V<sub>L</sub> = √3 · V<sub>P</sub> ≈ 1.732 V<sub>P</sub></b></div>
+        <div class="fstep" data-s="5">1.732 × 240 V = 415.7 V ≈ 415 V</div>
+      </div>
+      <div class="card ana"><span data-en="Delta line current uses the same 120° geometry: IL = IUV − IWU → IL = √3 IP." data-hi="डेल्टा लाइन धारा में यही 120° ज्यामिति: IL = IUV − IWU → IL = √3 IP।" data-ml="ഡെൽറ്റ ലൈൻ കറന്റിലും ഇതേ 120° ജ്യാമിതി: IL = IUV − IWU → IL = √3 IP."></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 STAR -->
+<section class="slide" data-anim="">
+  <h2 data-en="Star (Y) connection" data-hi="स्टार (Y) संयोजन" data-ml="സ്റ്റാർ (Y) കണക്ഷൻ"></h2>
+  <div class="grid">
+    <svg class="dia" viewBox="0 0 600 420">
+      <g font-size="16" font-weight="700">
+        <line x1="20" y1="40" x2="580" y2="40" stroke="var(--r)" stroke-width="4"/>
+        <line x1="20" y1="80" x2="580" y2="80" stroke="var(--y)" stroke-width="4"/>
+        <line x1="20" y1="120" x2="580" y2="120" stroke="var(--b)" stroke-width="4"/>
+        <line x1="20" y1="390" x2="580" y2="390" stroke="var(--mut)" stroke-width="4"/>
+        <text x="585" y="45" fill="var(--r)">L1</text><text x="585" y="85" fill="var(--y)">L2</text><text x="585" y="125" fill="var(--b)">L3</text><text x="585" y="395" fill="var(--mut)">N</text>
+        <path class="flow" d="M300 40 V200 L400 310" stroke="var(--r)" stroke-width="4" fill="none"/>
+        <path class="flow" d="M400 80 V310" stroke="var(--y)" stroke-width="4" fill="none" style="animation-delay:-.3s"/>
+        <path class="flow" d="M500 120 V200 L400 310" stroke="var(--b)" stroke-width="4" fill="none" style="animation-delay:-.6s"/>
+        <line x1="400" y1="310" x2="400" y2="390" stroke="var(--mut)" stroke-width="4" stroke-dasharray="4 6"/>
+        <rect x="325" y="246" width="50" height="18" rx="4" fill="var(--panel)" stroke="var(--fg)" stroke-width="3" transform="rotate(47.7 350 255)"/>
+        <rect x="375" y="236" width="50" height="18" rx="4" fill="var(--panel)" stroke="var(--fg)" stroke-width="3" transform="rotate(90 400 245)"/>
+        <rect x="425" y="246" width="50" height="18" rx="4" fill="var(--panel)" stroke="var(--fg)" stroke-width="3" transform="rotate(-47.7 450 255)"/>
+        <circle cx="400" cy="310" r="7" fill="var(--fg)"/>
+        <circle cx="300" cy="40" r="5" fill="var(--r)"/><circle cx="400" cy="80" r="5" fill="var(--y)"/><circle cx="500" cy="120" r="5" fill="var(--b)"/>
+        <text x="410" y="335" fill="var(--fg)" data-en="Star point" data-hi="स्टार बिंदु" data-ml="സ്റ്റാർ പോയിന്റ്">Star point</text>
+        <!-- VL -->
+        <line x1="70" y1="44" x2="70" y2="76" stroke="var(--acc)" stroke-width="3" marker-start="url(#ah)" marker-end="url(#ah)"/>
+        <text x="80" y="66" fill="var(--acc)">VL = 415 V</text>
+        <!-- VP -->
+        <line x1="190" y1="44" x2="190" y2="386" stroke="var(--ok)" stroke-width="3" marker-start="url(#ah2)" marker-end="url(#ah2)"/>
+        <text x="200" y="230" fill="var(--ok)">VP = 240 V</text>
+        <text x="245" y="175" fill="var(--r)">IL</text><text x="306" y="290" fill="var(--r)">IP</text>
+        <text x="20" y="160" fill="var(--fg)" font-size="22">IL = IP</text>
+      </g>
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="var(--acc)"/></marker>
+        <marker id="ah2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="var(--ok)"/></marker>
+      </defs>
+    </svg>
+    <div>
+      <div class="card"><div class="bigf">V<sub>L</sub> = √3 V<sub>P</sub><br>I<sub>L</sub> = I<sub>P</sub></div></div>
+      <div class="card"><ul class="ic">
+        <li><span class="i">⭐</span><span data-en="One end of each winding joined → star point → neutral." data-hi="हर वाइंडिंग का एक सिरा जुड़ा → स्टार बिंदु → न्यूट्रल।" data-ml="ഓരോ വൈൻഡിങ്ങിന്റെയും ഒരറ്റം ചേർക്കുന്നു → സ്റ്റാർ പോയിന്റ് → ന്യൂട്രൽ."></span></li>
+        <li><span class="i">⚡</span><span data-en="Two voltages: 415 V line–line, 240 V line–neutral." data-hi="दो वोल्टेज: 415 V लाइन–लाइन, 240 V लाइन–न्यूट्रल।" data-ml="രണ്ട് വോൾട്ടേജ്: 415 V ലൈൻ–ലൈൻ, 240 V ലൈൻ–ന്യൂട്രൽ."></span></li>
+      </ul></div>
+      <div class="card ana"><b>🏘</b> <span data-en="Distribution transformer LV side is star: one line feeds 3-phase workshops (415 V) and 1-phase homes (240 V)." data-hi="वितरण ट्रांसफार्मर की LV साइड स्टार: एक ही लाइन से 3-फेज़ वर्कशॉप (415 V) और 1-फेज़ घर (240 V)।" data-ml="ഡിസ്ട്രിബ്യൂഷൻ ട്രാൻസ്ഫോർമറിന്റെ LV വശം സ്റ്റാർ: ഒരേ ലൈൻ 3-ഫേസ് വർക്ക്ഷോപ്പിനും (415 V) 1-ഫേസ് വീടിനും (240 V)."></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 DELTA -->
+<section class="slide" data-anim="">
+  <h2 data-en="Delta (Δ) connection" data-hi="डेल्टा (Δ) संयोजन" data-ml="ഡെൽറ്റ (Δ) കണക്ഷൻ"></h2>
+  <div class="grid">
+    <svg class="dia" viewBox="0 0 640 430">
+      <g font-size="16" font-weight="700">
+        <line x1="20" y1="40" x2="600" y2="40" stroke="var(--r)" stroke-width="4"/>
+        <line x1="20" y1="80" x2="600" y2="80" stroke="var(--y)" stroke-width="4"/>
+        <line x1="20" y1="120" x2="600" y2="120" stroke="var(--b)" stroke-width="4"/>
+        <text x="605" y="45" fill="var(--r)">L1</text><text x="605" y="85" fill="var(--y)">L2</text><text x="605" y="125" fill="var(--b)">L3</text>
+        <path class="flow" d="M300 40 V200" stroke="var(--r)" stroke-width="4" fill="none"/>
+        <path class="flow" d="M500 80 V200" stroke="var(--y)" stroke-width="4" fill="none" style="animation-delay:-.3s"/>
+        <path class="flow" d="M560 120 V400 H400 V370" stroke="var(--b)" stroke-width="4" fill="none" style="animation-delay:-.6s"/>
+        <polygon points="300,200 500,200 400,370" fill="none" stroke="var(--fg)" stroke-width="3"/>
+        <rect x="370" y="191" width="60" height="18" rx="4" fill="var(--panel)" stroke="var(--fg)" stroke-width="3"/>
+        <rect x="420" y="276" width="60" height="18" rx="4" fill="var(--panel)" stroke="var(--fg)" stroke-width="3" transform="rotate(-59.5 450 285)"/>
+        <rect x="320" y="276" width="60" height="18" rx="4" fill="var(--panel)" stroke="var(--fg)" stroke-width="3" transform="rotate(59.5 350 285)"/>
+        <circle cx="300" cy="200" r="6" fill="var(--r)"/><circle cx="500" cy="200" r="6" fill="var(--y)"/><circle cx="400" cy="370" r="6" fill="var(--b)"/>
+        <circle cx="300" cy="40" r="5" fill="var(--r)"/><circle cx="500" cy="80" r="5" fill="var(--y)"/><circle cx="560" cy="120" r="5" fill="var(--b)"/>
+        <line x1="70" y1="44" x2="70" y2="76" stroke="var(--acc)" stroke-width="3" marker-start="url(#ah3)" marker-end="url(#ah3)"/>
+        <text x="80" y="66" fill="var(--acc)">VL = VP = 415 V</text>
+        <text x="255" y="160" fill="var(--r)">IL</text>
+        <text x="390" y="183" fill="var(--fg)">IP</text>
+        <text x="20" y="250" fill="var(--fg)" font-size="22">IL = √3 IP</text>
+        <text x="20" y="280" fill="var(--mut)">IP = 10 A → IL = 17.32 A</text>
+        <text x="20" y="330" fill="var(--bad)" data-en="No neutral" data-hi="न्यूट्रल नहीं" data-ml="ന്യൂട്രൽ ഇല്ല">No neutral</text>
+      </g>
+      <defs><marker id="ah3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="var(--acc)"/></marker></defs>
+    </svg>
+    <div>
+      <div class="card"><div class="bigf">V<sub>L</sub> = V<sub>P</sub><br>I<sub>L</sub> = √3 I<sub>P</sub></div></div>
+      <div class="card"><ul class="ic">
+        <li><span class="i">🔺</span><span data-en="Windings joined end-to-end in a closed loop. No neutral." data-hi="वाइंडिंग सिरे-से-सिरे बंद लूप में। न्यूट्रल नहीं।" data-ml="വൈൻഡിങ്ങുകൾ അറ്റത്തോടറ്റം ചേർത്ത് അടഞ്ഞ ലൂപ്പ്. ന്യൂട്രൽ ഇല്ല."></span></li>
+        <li><span class="i">➕</span><span data-en="Each line current = phasor difference of two phase currents 120° apart → √3." data-hi="हर लाइन धारा = 120° दूरी वाली दो फेज़ धाराओं का फेज़र अंतर → √3।" data-ml="ഓരോ ലൈൻ കറന്റും = 120° അകലത്തിലുള്ള രണ്ട് ഫേസ് കറന്റുകളുടെ ഫേസർ വ്യത്യാസം → √3."></span></li>
+      </ul></div>
+      <div class="card ana"><b>🌊</b> <span data-en="Two rivers meeting at an angle: combined flow is less than the simple sum (√3 = 1.732, not 2)." data-hi="कोण पर मिलती दो नदियाँ: संयुक्त प्रवाह साधारण योग से कम (√3 = 1.732, 2 नहीं)।" data-ml="കോണിൽ ചേരുന്ന രണ്ട് പുഴകൾ: ആകെ ഒഴുക്ക് സാധാരണ തുകയേക്കാൾ കുറവ് (√3 = 1.732, 2 അല്ല)."></span></div>
+      <div class="card"><b>🏭</b> <span data-en="11 kV side of distribution transformer; motor running winding." data-hi="वितरण ट्रांसफार्मर की 11 kV साइड; मोटर की रनिंग वाइंडिंग।" data-ml="ഡിസ്ട്രിബ്യൂഷൻ ട്രാൻസ്ഫോർമറിന്റെ 11 kV വശം; മോട്ടോറിന്റെ റണ്ണിങ് വൈൻഡിങ്."></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 POWER -->
+<section class="slide" data-anim="pow">
+  <h2 data-en="Power in a 3-phase circuit" data-hi="3-फेज़ सर्किट में पावर" data-ml="3-ഫേസ് സർക്യൂട്ടിലെ പവർ"></h2>
+  <div class="grid">
+    <div>
+      <canvas id="cvPow" class="big"></canvas>
+      <label class="lab">φ = <span id="phiV">37</span>° · cos φ = <span id="pfV">0.80</span></label><input type="range" id="phi" min="0" max="90" value="37">
+    </div>
+    <div>
+      <div class="card f" style="font-size:1.2rem;line-height:1.9">
+        <div>P = 3 · V<sub>P</sub> · I<sub>P</sub> · cos φ</div>
+        <div><b data-en="Star:" data-hi="स्टार:" data-ml="സ്റ്റാർ:"></b> V<sub>P</sub>=V<sub>L</sub>/√3, I<sub>P</sub>=I<sub>L</sub></div>
+        <div><b data-en="Delta:" data-hi="डेल्टा:" data-ml="ഡെൽറ്റ:"></b> V<sub>P</sub>=V<sub>L</sub>, I<sub>P</sub>=I<sub>L</sub>/√3</div>
+        <div class="mut">3 / √3 = √3</div>
+        <div class="ok" style="font-size:1.45rem"><b>P = √3 V<sub>L</sub> I<sub>L</sub> cos φ</b> (W)</div>
+        <div>Q = √3 V<sub>L</sub> I<sub>L</sub> sin φ (VAR)</div>
+        <div>S = √3 V<sub>L</sub> I<sub>L</sub> (VA)</div>
+      </div>
+      <div class="card">
+        <div class="row"><label class="lab">V<sub>L</sub></label><input type="number" id="pVL" value="415"><label class="lab">I<sub>L</sub></label><input type="number" id="pIL" value="20"></div>
+        <div class="out" id="powOut"></div>
+      </div>
+      <div class="card ana"><b>🐂</b> <span data-en="Top view: a bullock on the bank pulls a rail trolley by rope. Only the pull along the rail moves it (P = cos φ part). The sideways part does no work (Q)." data-hi="ऊपर से दृश्य: किनारे पर बैल रस्सी से ट्रॉली खींचता है। केवल पटरी की दिशा का खिंचाव ही उसे चलाता है (P = cos φ भाग)। बगल वाला भाग कोई कार्य नहीं करता (Q)।" data-ml="മുകളിൽ നിന്നുള്ള കാഴ്ച: കരയിലെ കാള കയറുകൊണ്ട് ട്രോളി വലിക്കുന്നു. പാളത്തിന്റെ ദിശയിലുള്ള വലി മാത്രം അതിനെ നീക്കും (P = cos φ ഭാഗം). വശത്തേക്കുള്ള ഭാഗം ജോലി ചെയ്യില്ല (Q)."></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 STAR vs DELTA -->
+<section class="slide" data-anim="">
+  <h2 data-en="Same load: Star vs Delta" data-hi="वही लोड: स्टार बनाम डेल्टा" data-ml="ഒരേ ലോഡ്: സ്റ്റാർ vs ഡെൽറ്റ"></h2>
+  <div class="card row" style="gap:1rem">
+    <label class="lab">V<sub>L</sub> (V)</label><input type="number" id="sdVL" value="415">
+    <label class="lab">Z / phase = <span id="sdZv">40 Ω</span></label><input type="range" id="sdZ" min="10" max="200" value="40" style="max-width:14rem">
+    <label class="lab">cos φ = <span id="sdPFv">1.00</span></label><input type="range" id="sdPF" min="0.5" max="1" step="0.01" value="1" style="max-width:12rem">
+  </div>
+  <div class="grid3" style="margin-top:.75rem">
+    <div class="card" id="sdS">
+      <h3>⭐ <span data-en="Star" data-hi="स्टार" data-ml="സ്റ്റാർ"></span></h3>
+      <svg class="bulbs" viewBox="0 0 300 100"><g><circle class="glass" cx="50" cy="40" r="28"/><rect class="base" x="38" y="70" width="24" height="18" rx="3"/></g><g><circle class="glass" cx="150" cy="40" r="28"/><rect class="base" x="138" y="70" width="24" height="18" rx="3"/></g><g><circle class="glass" cx="250" cy="40" r="28"/><rect class="base" x="238" y="70" width="24" height="18" rx="3"/></g></svg>
+      <div class="kv"><span>V<sub>P</sub></span><b data-v="Vp"></b></div>
+      <div class="kv"><span>I<sub>P</sub></span><b data-v="Ip"></b></div>
+      <div class="kv"><span>I<sub>L</sub></span><b data-v="IL"></b></div>
+      <div class="kv"><span>P</span><b data-v="P" class="ok"></b></div>
+    </div>
+    <div class="card" id="sdD">
+      <h3>🔺 <span data-en="Delta" data-hi="डेल्टा" data-ml="ഡെൽറ്റ"></span></h3>
+      <svg class="bulbs" viewBox="0 0 300 100"><g><circle class="glass" cx="50" cy="40" r="28"/><rect class="base" x="38" y="70" width="24" height="18" rx="3"/></g><g><circle class="glass" cx="150" cy="40" r="28"/><rect class="base" x="138" y="70" width="24" height="18" rx="3"/></g><g><circle class="glass" cx="250" cy="40" r="28"/><rect class="base" x="238" y="70" width="24" height="18" rx="3"/></g></svg>
+      <div class="kv"><span>V<sub>P</sub></span><b data-v="Vp"></b></div>
+      <div class="kv"><span>I<sub>P</sub></span><b data-v="Ip"></b></div>
+      <div class="kv"><span>I<sub>L</sub></span><b data-v="IL"></b></div>
+      <div class="kv"><span>P</span><b data-v="P" class="ok"></b></div>
+    </div>
+    <div class="card">
+      <div style="text-align:center"><span class="x3">P<sub>Δ</sub> = 3 × P<sub>Y</sub></span></div>
+      <div class="bars">
+        <div class="lbl">P · ⭐</div><div class="bar" id="barPS"></div>
+        <div class="lbl">P · 🔺</div><div class="bar" id="barPD"></div>
+        <div class="lbl">I<sub>L</sub> · ⭐</div><div class="bar" id="barIS" style="background:var(--y)"></div>
+        <div class="lbl">I<sub>L</sub> · 🔺</div><div class="bar" id="barID" style="background:var(--y)"></div>
+      </div>
+      <div style="margin-top:.6rem;font-weight:700" data-en="Delta: phase voltage ×√3 → phase current ×√3 → power ×(√3)² = ×3" data-hi="डेल्टा: फेज़ वोल्टेज ×√3 → फेज़ धारा ×√3 → पावर ×(√3)² = ×3" data-ml="ഡെൽറ്റ: ഫേസ് വോൾട്ടേജ് ×√3 → ഫേസ് കറന്റ് ×√3 → പവർ ×(√3)² = ×3"></div>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:.75rem">
+    <div class="card ana"><b>🏍</b> <span data-en="Star-delta starter: start in star (⅓ current &amp; torque), run in delta — like starting a bike in 1st gear." data-hi="स्टार-डेल्टा स्टार्टर: स्टार में शुरू (⅓ धारा व टॉर्क), डेल्टा में चलाएँ — जैसे बाइक पहले गियर में शुरू करना।" data-ml="സ്റ്റാർ-ഡെൽറ്റ സ്റ്റാർട്ടർ: സ്റ്റാറിൽ തുടങ്ങും (⅓ കറന്റ്, ടോർക്ക്), ഡെൽറ്റയിൽ ഓടും — ബൈക്ക് ഒന്നാം ഗിയറിൽ തുടങ്ങുന്നതുപോലെ."></span></div>
+    <div class="card ana"><b>🔥</b> <span data-en="3-phase heater / oven: star = LOW heat, delta = HIGH heat (3×)." data-hi="3-फेज़ हीटर / ओवन: स्टार = कम ताप, डेल्टा = अधिक ताप (3×)।" data-ml="3-ഫേസ് ഹീറ്റർ / ഓവൻ: സ്റ്റാർ = കുറഞ്ഞ ചൂട്, ഡെൽറ്റ = കൂടിയ ചൂട് (3×)."></span></div>
+    <div class="card warn"><b>⚠</b> <span data-en="Load designed for star, wrongly connected in delta → 3× power → burns out." data-hi="स्टार हेतु बना लोड गलती से डेल्टा में → 3× पावर → जल जाएगा।" data-ml="സ്റ്റാറിനായി നിർമ്മിച്ച ലോഡ് തെറ്റായി ഡെൽറ്റയിൽ → 3× പവർ → കത്തിപ്പോകും."></span></div>
+  </div>
+</section>
+
+<!-- 12 SUMMARY -->
+<section class="slide" data-anim="">
+  <h2 data-en="Summary" data-hi="सारांश" data-ml="സംഗ്രഹം"></h2>
+  <div class="grid">
+    <div class="card">
+      <table class="t">
+        <tr><th data-en="Quantity" data-hi="राशि" data-ml="അളവ്"></th><th>⭐ <span data-en="Star" data-hi="स्टार" data-ml="സ്റ്റാർ"></span></th><th>🔺 <span data-en="Delta" data-hi="डेल्टा" data-ml="ഡെൽറ്റ"></span></th></tr>
+        <tr><td class="f">V<sub>L</sub></td><td class="f">√3 V<sub>P</sub></td><td class="f">V<sub>P</sub></td></tr>
+        <tr><td class="f">I<sub>L</sub></td><td class="f">I<sub>P</sub></td><td class="f">√3 I<sub>P</sub></td></tr>
+        <tr><td data-en="Neutral" data-hi="न्यूट्रल" data-ml="ന്യൂട്രൽ"></td><td data-en="Yes" data-hi="हाँ" data-ml="ഉണ്ട്"></td><td data-en="No" data-hi="नहीं" data-ml="ഇല്ല"></td></tr>
+        <tr><td>P</td><td class="f" colspan="2">√3 V<sub>L</sub> I<sub>L</sub> cos φ</td></tr>
+        <tr><td data-en="Same load power" data-hi="वही लोड, पावर" data-ml="ഒരേ ലോഡ്, പവർ"></td><td class="f">1×</td><td class="f bad"><b>3×</b></td></tr>
+        <tr><td data-en="Typical use" data-hi="सामान्य उपयोग" data-ml="സാധാരണ ഉപയോഗം"></td><td data-en="LV distribution, motor starting" data-hi="LV वितरण, मोटर स्टार्टिंग" data-ml="LV വിതരണം, മോട്ടോർ സ്റ്റാർട്ടിങ്"></td><td data-en="HV side, motor running" data-hi="HV साइड, मोटर रनिंग" data-ml="HV വശം, മോട്ടോർ റണ്ണിങ്"></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="card" style="text-align:center">
+        <span class="chip f">√2 = 1.414</span><span class="chip f">√3 = 1.732</span><span class="chip f">1/√2 = 0.707</span><span class="chip f">1/√3 = 0.577</span><span class="chip f">cos 30° = 0.866</span>
+      </div>
+      <div class="card f" style="font-size:1.2rem;line-height:1.8">
+        <div>V<sub>L</sub> = 2 V<sub>P</sub> sin(θ/2)</div>
+        <div>90° → √2 · 120° → √3 · 180° → 2</div>
+        <div>V<sub>U</sub> + V<sub>V</sub> + V<sub>W</sub> = 0</div>
+      </div>
+      <div class="card mut" style="font-size:.85rem">Ref: NIMI Power – Electrician (NSQF Revised 2022), Related Theory Ex. 1.5.52–56</div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 QUIZ -->
+<section class="slide" data-anim="">
+  <h2 data-en="Quiz Challenge" data-hi="क्विज़ चैलेंज" data-ml="ക്വിസ് ചലഞ്ച്"></h2>
+  <details class="set" id="setBox" open>
+    <summary data-en="⚙ Instructor settings" data-hi="⚙ प्रशिक्षक सेटिंग" data-ml="⚙ ഇൻസ്ട്രക്ടർ സെറ്റിങ്സ്"></summary>
+    <div class="setg">
+      <div><label class="lab" data-en="Teams" data-hi="टीमें" data-ml="ടീമുകൾ"></label><select id="setTeams"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
+      <div><label class="lab">A</label><input type="text" class="tn" value="Team A"></div>
+      <div><label class="lab">B</label><input type="text" class="tn" value="Team B"></div>
+      <div><label class="lab">C</label><input type="text" class="tn" value="Team C"></div>
+      <div><label class="lab">D</label><input type="text" class="tn" value="Team D"></div>
+      <div><label class="lab" data-en="Seconds / question" data-hi="सेकंड / प्रश्न" data-ml="സെക്കൻഡ് / ചോദ്യം"></label><input type="number" id="setSec" value="30" min="5" max="300"></div>
+      <div><label class="lab" data-en="Questions" data-hi="प्रश्न" data-ml="ചോദ്യങ്ങൾ"></label><input type="number" id="setN" value="10" min="1" max="16"></div>
+      <div><label class="lab" data-en="Points / correct" data-hi="अंक / सही" data-ml="പോയിന്റ് / ശരി"></label><input type="number" id="setPts" value="10" min="1" max="100"></div>
+      <div><label class="lab" data-en="Shuffle" data-hi="फेरबदल" data-ml="ഷഫിൾ"></label><input type="checkbox" id="setShuf" checked style="width:1.4rem;height:1.4rem"></div>
+      <div><label class="lab" data-en="Sound" data-hi="ध्वनि" data-ml="ശബ്ദം"></label><input type="checkbox" id="setSnd" checked style="width:1.4rem;height:1.4rem"></div>
+      <div><label class="lab">&nbsp;</label><button class="btn gh" id="resetSc" data-en="Reset scores" data-hi="अंक रीसेट" data-ml="സ്കോർ റീസെറ്റ്"></button></div>
+    </div>
+  </details>
+  <div class="qwrap">
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><span class="chip" id="qMeta">—</span><span class="chip" id="qTurn">—</span></div>
+      <div class="qtext" id="qText"></div>
+      <div class="opts" id="qOpts"></div>
+      <div class="msg" id="qMsg"></div>
+      <div class="row">
+        <button class="btn" id="qStart" data-en="▶ Start" data-hi="▶ शुरू" data-ml="▶ ആരംഭിക്കുക"></button>
+        <button class="btn gh" id="qPause" title="Pause / Resume (Space)">⏸</button>
+        <button class="btn gh" id="qMinus">−10s</button>
+        <button class="btn gh" id="qPlus">+10s</button>
+        <button class="btn gh" id="qReveal" data-en="Reveal" data-hi="उत्तर दिखाएँ" data-ml="ഉത്തരം കാണിക്കുക"></button>
+        <button class="btn" id="qNext" data-en="Next ▶" data-hi="अगला ▶" data-ml="അടുത്തത് ▶"></button>
+        <button class="btn gh" id="qStop" title="Stop">■</button>
+      </div>
+    </div>
+    <div>
+      <div class="card"><div class="timer" id="qTimer"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="10"/><circle id="qRing" cx="60" cy="60" r="52" fill="none" stroke="var(--acc)" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="0"/></svg><div class="num" id="qSec">30</div></div></div>
+      <div class="card"><div class="scoreboard"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 RAPID -->
+<section class="slide" data-anim="">
+  <h2 data-en="Rapid Round — True or False?" data-hi="रैपिड राउंड — सही या गलत?" data-ml="റാപ്പിഡ് റൗണ്ട് — ശരിയോ തെറ്റോ?"></h2>
+  <div class="qwrap">
+    <div class="card">
+      <div class="row">
+        <label class="lab" data-en="Playing team" data-hi="खेलने वाली टीम" data-ml="കളിക്കുന്ന ടീം"></label><select id="rapTeam" style="width:auto"></select>
+        <label class="lab" data-en="Time (s)" data-hi="समय (s)" data-ml="സമയം (s)"></label><input type="number" id="setRap" value="60" min="10" max="600">
+        <label class="lab" data-en="Points / correct" data-hi="अंक / सही" data-ml="പോയിന്റ് / ശരി"></label><input type="number" id="setRPts" value="5" min="1" max="50">
+      </div>
+      <div class="rbar"><div id="rBar" style="width:100%"></div></div>
+      <div class="row" style="justify-content:space-between"><span class="chip" id="rTime">60 s</span><span class="chip" id="rStat">✓ 0 / 0</span></div>
+      <div class="rq-text" id="rText"></div>
+      <div class="grid2">
+        <button class="tfbtn t" id="rTrue"><span data-en="✓ True" data-hi="✓ सही" data-ml="✓ ശരി"></span> <small>[1]</small></button>
+        <button class="tfbtn fl" id="rFalse"><span data-en="✗ False" data-hi="✗ गलत" data-ml="✗ തെറ്റ്"></span> <small>[2]</small></button>
+      </div>
+      <div class="msg" id="rMsg"></div>
+      <div class="row">
+        <button class="btn" id="rStart" data-en="▶ Start" data-hi="▶ शुरू" data-ml="▶ ആരംഭിക്കുക"></button>
+        <button class="btn gh" id="rPause" title="Pause / Resume (Space)">⏸</button>
+        <button class="btn gh" id="rMinus">−10s</button>
+        <button class="btn gh" id="rPlus">+10s</button>
+        <button class="btn gh" id="rStop" title="Stop">■</button>
+      </div>
+    </div>
+    <div><div class="card"><div class="scoreboard"></div></div></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <button class="btn gh" id="prev">◀</button><span id="cnt">1 / 14</span><button class="btn gh" id="next">▶</button>
+  <span class="sp">NSTI Calicut · PRASAD UM, VI · ← → / PgUp PgDn · Space = pause</span>
+</footer>
+
+<!-- MESSAGES (all non-English text lives only in data attributes) -->
+<div id="msgs" hidden>
+  <i data-k="one" data-en="1-phase: one pusher → jerky" data-hi="1-फेज़: एक धक्का → झटके" data-ml="1-ഫേസ്: ഒരാൾ → ഞെട്ടൽ"></i>
+  <i data-k="three" data-en="3-phase: three pushers → smooth" data-hi="3-फेज़: तीन धक्के → सुचारु" data-ml="3-ഫേസ്: മൂന്നുപേർ → സുഗമം"></i>
+  <i data-k="pulse" data-en="Power: pulsating" data-hi="पावर: स्पंदित" data-ml="പവർ: സ്പന്ദിക്കുന്നു"></i>
+  <i data-k="const" data-en="Power: constant" data-hi="पावर: स्थिर" data-ml="പവർ: സ്ഥിരം"></i>
+  <i data-k="gate" data-en="Gate N" data-hi="गेट N" data-ml="ഗേറ്റ് N"></i>
+  <i data-k="useful" data-en="Useful pull" data-hi="उपयोगी खिंचाव" data-ml="ഉപയോഗപ്രദമായ വലി"></i>
+  <i data-k="side" data-en="Sideways (no work)" data-hi="बगल में (कोई कार्य नहीं)" data-ml="വശത്തേക്ക് (ജോലിയില്ല)"></i>
+  <i data-k="rail" data-en="Rail" data-hi="पटरी" data-ml="പാളം"></i>
+  <i data-k="sys2" data-en="2-phase" data-hi="2-फेज़" data-ml="2-ഫേസ്"></i>
+  <i data-k="sys3" data-en="3-phase" data-hi="3-फेज़" data-ml="3-ഫേസ്"></i>
+  <i data-k="syss" data-en="Split-phase" data-hi="स्प्लिट-फेज़" data-ml="സ്പ്ലിറ്റ്-ഫേസ്"></i>
+  <i data-k="bal" data-en="Balanced" data-hi="संतुलित" data-ml="ബാലൻസ്ഡ്"></i>
+  <i data-k="unbal" data-en="Unbalanced" data-hi="असंतुलित" data-ml="അൺബാലൻസ്ഡ്"></i>
+  <i data-k="st0" data-en="Press ▶ to begin" data-hi="शुरू करने हेतु ▶ दबाएँ" data-ml="തുടങ്ങാൻ ▶ അമർത്തുക"></i>
+  <i data-k="st1" data-en="1. Draw VUN and VVN, 120° apart." data-hi="1. VUN और VVN खींचें, 120° दूरी पर।" data-ml="1. VUN, VVN 120° അകലത്തിൽ വരയ്ക്കുക."></i>
+  <i data-k="st2" data-en="2. VUV = VUN − VVN → reverse VVN." data-hi="2. VUV = VUN − VVN → VVN को उलटें।" data-ml="2. VUV = VUN − VVN → VVN തിരിച്ചിടുക."></i>
+  <i data-k="st3" data-en="3. Complete the parallelogram. Diagonal = VUV = VL." data-hi="3. समांतर चतुर्भुज पूरा करें। विकर्ण = VUV = VL।" data-ml="3. സമാന്തരികം പൂർത്തിയാക്കുക. വികർണം = VUV = VL."></i>
+  <i data-k="st4" data-en="4. Diagonal splits 60° into 30° + 30°. Each half = VP cos 30°." data-hi="4. विकर्ण 60° को 30° + 30° में बाँटता है। हर आधा = VP cos 30°।" data-ml="4. വികർണം 60°-നെ 30° + 30° ആയി വിഭജിക്കുന്നു. ഓരോ പകുതിയും = VP cos 30°."></i>
+  <i data-k="st5" data-en="5. VL = 2 VP cos 30° = √3 VP ✔" data-hi="5. VL = 2 VP cos 30° = √3 VP ✔" data-ml="5. VL = 2 VP cos 30° = √3 VP ✔"></i>
+  <i data-k="correct" data-en="✔ Correct!" data-hi="✔ सही!" data-ml="✔ ശരി!"></i>
+  <i data-k="wrong" data-en="✘ Wrong" data-hi="✘ गलत" data-ml="✘ തെറ്റ്"></i>
+  <i data-k="timeup" data-en="⏰ Time up!" data-hi="⏰ समय समाप्त!" data-ml="⏰ സമയം കഴിഞ്ഞു!"></i>
+  <i data-k="ans" data-en="Answer" data-hi="उत्तर" data-ml="ഉത്തരം"></i>
+  <i data-k="winner" data-en="🏆 Winner" data-hi="🏆 विजेता" data-ml="🏆 വിജയി"></i>
+  <i data-k="tie" data-en="🤝 Tie" data-hi="🤝 बराबरी" data-ml="🤝 സമനില"></i>
+  <i data-k="done" data-en="Round over" data-hi="राउंड समाप्त" data-ml="റൗണ്ട് കഴിഞ്ഞു"></i>
+  <i data-k="turn" data-en="Turn" data-hi="बारी" data-ml="ഊഴം"></i>
+  <i data-k="q" data-en="Question" data-hi="प्रश्न" data-ml="ചോദ്യം"></i>
+  <i data-k="paused" data-en="⏸ Paused" data-hi="⏸ रुका हुआ" data-ml="⏸ നിർത്തിവച്ചു"></i>
+  <i data-k="ready" data-en="Set options, then press ▶ Start" data-hi="सेटिंग करें, फिर ▶ शुरू दबाएँ" data-ml="സെറ്റിങ്സ് ചെയ്ത് ▶ ആരംഭിക്കുക അമർത്തുക"></i>
+  <i data-k="pts" data-en="points" data-hi="अंक" data-ml="പോയിന്റ്"></i>
+</div>
+
+<!-- QUIZ BANK -->
+<div id="qbank" hidden>
+  <div class="q" data-a="1" data-en="Phase displacement in a 3-phase supply?" data-hi="3-फेज़ सप्लाई में फेज़ों के बीच कोण?" data-ml="3-ഫേസ് സപ്ലൈയിൽ ഫേസുകൾ തമ്മിലുള്ള കോൺ?" data-oen="90°|120°|180°|60°"></div>
+  <div class="q" data-a="2" data-en="In star connection, VL = ?" data-hi="स्टार संयोजन में VL = ?" data-ml="സ്റ്റാർ കണക്ഷനിൽ VL = ?" data-oen="VP|√2 VP|√3 VP|3 VP"></div>
+  <div class="q" data-a="1" data-en="In delta connection, IL = ?" data-hi="डेल्टा संयोजन में IL = ?" data-ml="ഡെൽറ്റ കണക്ഷനിൽ IL = ?" data-oen="IP|√3 IP|IP / √3|3 IP"></div>
+  <div class="q" data-a="1" data-en="Star, VL = 415 V. Phase voltage?" data-hi="स्टार, VL = 415 V। फेज़ वोल्टेज?" data-ml="സ്റ്റാർ, VL = 415 V. ഫേസ് വോൾട്ടേജ്?" data-oen="415 V|240 V|720 V|138 V"></div>
+  <div class="q" data-a="0" data-en="2-phase (90° apart): line voltage multiplier?" data-hi="2-फेज़ (90° दूरी): लाइन वोल्टेज गुणक?" data-ml="2-ഫേസ് (90° അകലം): ലൈൻ വോൾട്ടേജ് ഗുണകം?" data-oen="√2|√3|2|1"></div>
+  <div class="q" data-a="0" data-en="Balanced star load: neutral current?" data-hi="संतुलित स्टार लोड: न्यूट्रल धारा?" data-ml="ബാലൻസ്ഡ് സ്റ്റാർ ലോഡ്: ന്യൂട്രൽ കറന്റ്?" data-oen="Zero|Maximum|Equal to line current|Double" data-ohi="शून्य|अधिकतम|लाइन धारा के बराबर|दोगुनी" data-oml="പൂജ്യം|പരമാവധി|ലൈൻ കറന്റിന് തുല്യം|ഇരട്ടി"></div>
+  <div class="q" data-a="2" data-en="3-phase active power?" data-hi="3-फेज़ सक्रिय पावर?" data-ml="3-ഫേസ് ആക്ടീവ് പവർ?" data-oen="VL IL cos φ|3 VL IL|√3 VL IL cos φ|√2 VL IL cos φ"></div>
+  <div class="q" data-a="2" data-en="Same load moved from star to delta: power becomes?" data-hi="वही लोड स्टार से डेल्टा में: पावर हो जाती है?" data-ml="ഒരേ ലോഡ് സ്റ്റാറിൽ നിന്ന് ഡെൽറ്റയിലേക്ക്: പവർ?" data-oen="Same|√3 times|3 times|One-third" data-ohi="समान|√3 गुना|3 गुना|एक-तिहाई" data-oml="അതേ|√3 മടങ്ങ്|3 മടങ്ങ്|മൂന്നിലൊന്ന്"></div>
+  <div class="q" data-a="1" data-en="√3 in a star system comes from?" data-hi="स्टार प्रणाली में √3 कहाँ से आता है?" data-ml="സ്റ്റാർ സിസ്റ്റത്തിലെ √3 എവിടെ നിന്ന്?" data-oen="2 × sin 30°|2 × cos 30°|√(1² + 1²)|3 ÷ 2"></div>
+  <div class="q" data-a="1" data-en="A star-delta starter starts the motor in?" data-hi="स्टार-डेल्टा स्टार्टर मोटर को किसमें स्टार्ट करता है?" data-ml="സ്റ്റാർ-ഡെൽറ്റ സ്റ്റാർട്ടർ മോട്ടോർ ആദ്യം ഏതിൽ?" data-oen="Delta|Star|Series|Parallel" data-ohi="डेल्टा|स्टार|श्रेणी|समानांतर" data-oml="ഡെൽറ്റ|സ്റ്റാർ|സീരീസ്|പാരലൽ"></div>
+  <div class="q" data-a="2" data-en="Swap two supply phases of a 3-phase motor:" data-hi="3-फेज़ मोटर के दो सप्लाई फेज़ बदलने पर:" data-ml="3-ഫേസ് മോട്ടോറിന്റെ രണ്ട് സപ്ലൈ ഫേസ് മാറ്റിയാൽ:" data-oen="Stops|Runs faster|Reverses direction|Burns at once" data-ohi="रुक जाती है|तेज़ चलती है|दिशा उलट जाती है|तुरंत जल जाती है" data-oml="നിൽക്കും|വേഗം കൂടും|ദിശ തിരിയും|ഉടൻ കത്തും"></div>
+  <div class="q" data-a="1" data-en="Peak value of 240 V RMS?" data-hi="240 V RMS का पीक मान?" data-ml="240 V RMS-ന്റെ പീക്ക് മൂല്യം?" data-oen="240 V|339 V|415 V|170 V"></div>
+  <div class="q" data-a="2" data-en="Unit of reactive power?" data-hi="रिएक्टिव पावर की इकाई?" data-ml="റിയാക്ടീവ് പവറിന്റെ യൂണിറ്റ്?" data-oen="W|VA|VAR|kWh"></div>
+  <div class="q" data-a="0" data-en="Instantaneous sum of three balanced phase voltages?" data-hi="तीन संतुलित फेज़ वोल्टेज का तात्क्षणिक योग?" data-ml="ബാലൻസ്ഡ് മൂന്ന് ഫേസ് വോൾട്ടേജുകളുടെ തൽക്ഷണ തുക?" data-oen="Zero|√3 VP|3 VP|VP" data-ohi="शून्य|√3 VP|3 VP|VP" data-oml="പൂജ്യം|√3 VP|3 VP|VP"></div>
+  <div class="q" data-a="1" data-en="LV side of a distribution transformer is usually:" data-hi="वितरण ट्रांसफार्मर की LV साइड सामान्यतः:" data-ml="ഡിസ്ട്രിബ്യൂഷൻ ട്രാൻസ്ഫോർമറിന്റെ LV വശം സാധാരണയായി:" data-oen="Delta, no neutral|Star with neutral|Open delta|Single-phase" data-ohi="डेल्टा, बिना न्यूट्रल|न्यूट्रल सहित स्टार|ओपन डेल्टा|सिंगल-फेज़" data-oml="ന്യൂട്രൽ ഇല്ലാത്ത ഡെൽറ്റ|ന്യൂട്രലോടു കൂടിയ സ്റ്റാർ|ഓപ്പൺ ഡെൽറ്റ|സിംഗിൾ-ഫേസ്"></div>
+  <div class="q" data-a="0" data-en="In delta, VL and VP:" data-hi="डेल्टा में VL और VP:" data-ml="ഡെൽറ്റയിൽ VL-ഉം VP-യും:" data-oen="VL = VP|VL = √3 VP|VL = VP / √3|VL = 3 VP"></div>
+</div>
+
+<!-- RAPID BANK: data-a 1 = True, 0 = False -->
+<div id="rbank" hidden>
+  <div class="rq" data-a="1" data-en="3-phase induction motors are self-starting." data-hi="3-फेज़ इंडक्शन मोटर स्वयं स्टार्ट होती हैं।" data-ml="3-ഫേസ് ഇൻഡക്ഷൻ മോട്ടോറുകൾ സ്വയം സ്റ്റാർട്ട് ആകും."></div>
+  <div class="rq" data-a="0" data-en="Single-phase motor torque is uniform." data-hi="सिंगल-फेज़ मोटर का टॉर्क एकसमान होता है।" data-ml="സിംഗിൾ-ഫേസ് മോട്ടോറിന്റെ ടോർക്ക് ഏകീകൃതമാണ്."></div>
+  <div class="rq" data-a="1" data-en="In star, line current = phase current." data-hi="स्टार में लाइन धारा = फेज़ धारा।" data-ml="സ്റ്റാറിൽ ലൈൻ കറന്റ് = ഫേസ് കറന്റ്."></div>
+  <div class="rq" data-a="0" data-en="Delta connection has a neutral point." data-hi="डेल्टा संयोजन में न्यूट्रल बिंदु होता है।" data-ml="ഡെൽറ്റ കണക്ഷനിൽ ന്യൂട്രൽ പോയിന്റ് ഉണ്ട്."></div>
+  <div class="rq" data-a="1" data-en="√3 ≈ 1.732" data-hi="√3 ≈ 1.732" data-ml="√3 ≈ 1.732"></div>
+  <div class="rq" data-a="1" data-en="√2 ≈ 1.414" data-hi="√2 ≈ 1.414" data-ml="√2 ≈ 1.414"></div>
+  <div class="rq" data-a="1" data-en="1/√2 = 0.707" data-hi="1/√2 = 0.707" data-ml="1/√2 = 0.707"></div>
+  <div class="rq" data-a="1" data-en="Same load in delta takes 3× the power of star." data-hi="वही लोड डेल्टा में स्टार से 3 गुना पावर लेता है।" data-ml="ഒരേ ലോഡ് ഡെൽറ്റയിൽ സ്റ്റാറിനേക്കാൾ 3 മടങ്ങ് പവർ എടുക്കും."></div>
+  <div class="rq" data-a="0" data-en="Power factor can be more than 1." data-hi="पावर फैक्टर 1 से अधिक हो सकता है।" data-ml="പവർ ഫാക്ടർ 1-ൽ കൂടുതലാകാം."></div>
+  <div class="rq" data-a="1" data-en="Neutral carries current when load is unbalanced." data-hi="असंतुलित लोड में न्यूट्रल में धारा बहती है।" data-ml="അൺബാലൻസ്ഡ് ലോഡിൽ ന്യൂട്രലിലൂടെ കറന്റ് ഒഴുകും."></div>
+  <div class="rq" data-a="0" data-en="3-phase needs more copper than 1-phase for the same power." data-hi="समान पावर के लिए 3-फेज़ में 1-फेज़ से अधिक तांबा लगता है।" data-ml="ഒരേ പവറിന് 3-ഫേസിന് 1-ഫേസിനേക്കാൾ കൂടുതൽ ചെമ്പ് വേണം."></div>
+  <div class="rq" data-a="1" data-en="Swapping any two phases reverses a 3-phase motor." data-hi="कोई भी दो फेज़ बदलने से 3-फेज़ मोटर उलटी घूमती है।" data-ml="ഏതെങ്കിലും രണ്ട് ഫേസ് മാറ്റിയാൽ 3-ഫേസ് മോട്ടോർ എതിർദിശയിൽ കറങ്ങും."></div>
+  <div class="rq" data-a="0" data-en="In delta, VL = √3 VP." data-hi="डेल्टा में VL = √3 VP।" data-ml="ഡെൽറ്റയിൽ VL = √3 VP."></div>
+  <div class="rq" data-a="1" data-en="Phase colour code is Red, Yellow, Blue." data-hi="फेज़ रंग कोड लाल, पीला, नीला है।" data-ml="ഫേസ് കളർ കോഡ് ചുവപ്പ്, മഞ്ഞ, നീല."></div>
+  <div class="rq" data-a="1" data-en="P = √3 VL IL cos φ holds for both star and delta." data-hi="P = √3 VL IL cos φ स्टार और डेल्टा दोनों पर लागू है।" data-ml="P = √3 VL IL cos φ സ്റ്റാറിനും ഡെൽറ്റയ്ക്കും ബാധകം."></div>
+  <div class="rq" data-a="1" data-en="415 V = √3 × 240 V" data-hi="415 V = √3 × 240 V" data-ml="415 V = √3 × 240 V"></div>
+  <div class="rq" data-a="1" data-en="Star with neutral gives two voltages: 415 V and 240 V." data-hi="न्यूट्रल सहित स्टार दो वोल्टेज देता है: 415 V और 240 V।" data-ml="ന്യൂട്രലോടു കൂടിയ സ്റ്റാർ രണ്ട് വോൾട്ടേജ് നൽകുന്നു: 415 V, 240 V."></div>
+  <div class="rq" data-a="0" data-en="Reactive power does useful work." data-hi="रिएक्टिव पावर उपयोगी कार्य करती है।" data-ml="റിയാക്ടീവ് പവർ ഉപയോഗപ്രദമായ ജോലി ചെയ്യുന്നു."></div>
+  <div class="rq" data-a="1" data-en="2-phase (90°) line voltage = √2 × VP." data-hi="2-फेज़ (90°) लाइन वोल्टेज = √2 × VP।" data-ml="2-ഫേസ് (90°) ലൈൻ വോൾട്ടേജ് = √2 × VP."></div>
+  <div class="rq" data-a="0" data-en="Supply frequency in India is 60 Hz." data-hi="भारत में सप्लाई आवृत्ति 60 Hz है।" data-ml="ഇന്ത്യയിലെ സപ്ലൈ ഫ്രീക്വൻസി 60 Hz ആണ്."></div>
+</div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const TAU=Math.PI*2, R3=Math.sqrt(3);
+let LANG='en', FS=1.15, THEME='dark', PAL={}, cur=0;
+const SL=$$('.slide');
+function store(k,v){try{localStorage.setItem('p3ph_'+k,v);}catch(e){}}
+function load(k){try{return localStorage.getItem('p3ph_'+k);}catch(e){return null;}}
+function t(k){const e=document.querySelector('#msgs [data-k="'+k+'"]');return e?(e.getAttribute('data-'+LANG)||e.getAttribute('data-en')):k;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ---------- language / theme / font ---------- */
+function applyLang(){
+  $$('[data-en]').forEach(el=>{
+    if(el.closest('#msgs')||el.closest('#qbank')||el.closest('#rbank'))return;
+    el.textContent=el.getAttribute('data-'+LANG)||el.getAttribute('data-en');
+  });
+  document.documentElement.lang=LANG;
+  $$('#langGrp button').forEach(b=>b.classList.toggle('on',b.dataset.lg===LANG));
+  refreshDynamic();
+}
+function setLang(l){LANG=l;store('lang',l);applyLang();}
+function pal(){const s=getComputedStyle(document.body);const g=k=>s.getPropertyValue('--'+k).trim();
+  PAL={bg:g('bg'),panel:g('panel'),fg:g('fg'),mut:g('mut'),line:g('line'),acc:g('acc'),r:g('r'),y:g('y'),b:g('b'),ok:g('ok'),bad:g('bad'),btnfg:g('btnfg'),lw:parseFloat(g('lw'))||2.5};}
+function setTheme(th){THEME=th;document.body.dataset.theme=th;store('theme',th);$$('#themeGrp button').forEach(b=>b.classList.toggle('on',b.dataset.th===th));pal();redrawStatic();}
+function setFS(v){FS=Math.max(.7,Math.min(2.2,Math.round(v*100)/100));document.documentElement.style.setProperty('--fs',FS);$('#fVal').textContent=Math.round(FS*100)+'%';store('fs',FS);redrawStatic();}
+$('#fMinus').onclick=()=>setFS(FS-.1);$('#fPlus').onclick=()=>setFS(FS+.1);
+$$('#themeGrp button').forEach(b=>b.onclick=()=>setTheme(b.dataset.th));
+$$('#langGrp button').forEach(b=>b.onclick=()=>setLang(b.dataset.lg));
+$('#fsBtn').onclick=()=>{try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}};
+
+/* ---------- navigation ---------- */
+function go(i){cur=Math.max(0,Math.min(SL.length-1,i));SL.forEach((s,k)=>s.classList.toggle('on',k===cur));
+  $$('.tab').forEach(b=>b.classList.toggle('on',+b.dataset.go===cur));
+  const tb=document.querySelector('.tab.on');if(tb)tb.scrollIntoView({block:'nearest',inline:'center'});
+  $('#cnt').textContent=(cur+1)+' / '+SL.length;$('#main').scrollTop=0;store('slide',cur);redrawStatic();}
+$$('.tab').forEach(b=>b.onclick=()=>go(+b.dataset.go));
+$('#prev').onclick=()=>go(cur-1);$('#next').onclick=()=>go(cur+1);
+
+/* ---------- canvas helpers ---------- */
+function FONT(n,w){return (w||'600')+' '+Math.round(n*FS)+'px "Segoe UI","Noto Sans","Noto Sans Malayalam","Noto Sans Devanagari","Nirmala UI",system-ui,sans-serif';}
+function fit(c){const r=c.getBoundingClientRect(),d=window.devicePixelRatio||1;const w=Math.max(10,r.width),h=Math.max(10,r.height);
+  const W=Math.round(w*d),H=Math.round(h*d);if(c.width!==W||c.height!==H){c.width=W;c.height=H;}
+  const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);x.lineCap='round';x.lineJoin='round';return {x,w,h};}
+function arrow(x,x1,y1,x2,y2,col,lw,dash){x.save();x.strokeStyle=col;x.fillStyle=col;x.lineWidth=lw;if(dash)x.setLineDash(dash);
+  const a=Math.atan2(y2-y1,x2-x1),hs=8+lw*2,len=Math.hypot(x2-x1,y2-y1);if(len<1){x.restore();return;}
+  const ex=x2-Math.cos(a)*hs*.7,ey=y2-Math.sin(a)*hs*.7;
+  x.beginPath();x.moveTo(x1,y1);x.lineTo(ex,ey);x.stroke();x.setLineDash([]);
+  x.beginPath();x.moveTo(x2,y2);x.lineTo(x2-hs*Math.cos(a-.42),y2-hs*Math.sin(a-.42));x.lineTo(x2-hs*Math.cos(a+.42),y2-hs*Math.sin(a+.42));x.closePath();x.fill();x.restore();}
+function txt(x,s,X,Y,col,size,align,w){x.save();x.fillStyle=col;x.font=FONT(size||15,w);x.textAlign=align||'left';x.textBaseline='middle';x.fillText(s,X,Y);x.restore();}
+function sub(x,base,sb,X,Y,col,size,align){x.save();x.font=FONT(size,'700');const w1=x.measureText(base).width;x.font=FONT(size*.68,'700');const w2=x.measureText(sb).width;
+  let sx=X;if(align==='center')sx=X-(w1+w2)/2;else if(align==='right')sx=X-(w1+w2);
+  x.fillStyle=col;x.textBaseline='middle';x.textAlign='left';x.font=FONT(size,'700');x.fillText(base,sx,Y);x.font=FONT(size*.68,'700');x.fillText(sb,sx+w1,Y+size*.3);x.restore();}
+function line(x,x1,y1,x2,y2,col,lw,dash){x.save();x.strokeStyle=col;x.lineWidth=lw;if(dash)x.setLineDash(dash);x.beginPath();x.moveTo(x1,y1);x.lineTo(x2,y2);x.stroke();x.restore();}
+function alpha(col,a){x0.fillStyle=col;const c=x0.fillStyle;if(c[0]==='#'){const n=parseInt(c.slice(1),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')';}return c.replace('rgb(','rgba(').replace(')',','+a+')');}
+const x0=document.createElement('canvas').getContext('2d');
+const ease=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+const PH=()=>[PAL.r,PAL.y,PAL.b];
+
+/* ---------- animations ---------- */
+const ANIM={};
+let T=0;
+ANIM.title=dt=>{const {x,w,h}=fit($('#cvTitle'));const c=PH(),mid=h/2,A=h*.32;
+  line(x,0,mid,w,mid,PAL.line,1.5);
+  for(let k=0;k<3;k++){x.strokeStyle=c[k];x.lineWidth=PAL.lw*1.6;x.beginPath();
+    for(let px=0;px<=w;px+=3){const th=px/w*2.2*TAU-T*2.4-k*TAU/3;const y=mid-A*Math.sin(th);px?x.lineTo(px,y):x.moveTo(px,y);}x.stroke();}
+  ['R','Y','B'].forEach((s,k)=>txt(x,s,12+k*30,22,c[k],22,'left','800'));
+  txt(x,'120°',w-14,22,PAL.mut,18,'right','700');};
+
+let whyTh=0,angL=0,angR=0;
+function wheel(x,cx,cy,r,ang,pushers){x.save();x.strokeStyle=PAL.fg;x.lineWidth=PAL.lw*1.2;x.beginPath();x.arc(cx,cy,r,0,TAU);x.stroke();
+  for(let i=0;i<6;i++){const a=ang+i*TAU/6;line(x,cx,cy,cx+r*Math.cos(a),cy+r*Math.sin(a),PAL.mut,PAL.lw);}
+  x.fillStyle=PAL.acc;x.beginPath();x.arc(cx,cy,r*.12,0,TAU);x.fill();
+  pushers.forEach(p=>{const px=cx+(r+6)*Math.cos(p.a),py=cy+(r+6)*Math.sin(p.a),tx=-Math.sin(p.a),ty=Math.cos(p.a),L=r*.7;
+    x.globalAlpha=.15+.85*p.k;arrow(x,px-tx*L,py-ty*L,px,py,p.col,PAL.lw*1.6);
+    x.fillStyle=p.col;x.beginPath();x.arc(px-tx*L-tx*8,py-ty*L-ty*8,7,0,TAU);x.fill();x.globalAlpha=1;});x.restore();}
+ANIM.why=dt=>{whyTh+=dt*2.2;const pL=Math.sin(whyTh)**2;angL+=dt*(0.25+2.0*pL);angR+=dt*(0.25+1.0);
+  const {x,w,h}=fit($('#cvWhy'));const half=w/2,wr=Math.min(half*.24,h*.17),c=PH();
+  line(x,half,10,half,h-10,PAL.line,1.5,[6,6]);
+  txt(x,t('one'),half*.5,18,PAL.fg,16,'center','800');txt(x,t('three'),half*1.5,18,PAL.fg,16,'center','800');
+  wheel(x,half*.5,h*.3,wr,angL,[{a:Math.PI,k:pL,col:c[0]}]);
+  wheel(x,half*1.5,h*.3,wr,angR,[0,1,2].map(i=>({a:Math.PI+i*TAU/3,k:Math.sin(whyTh-i*TAU/3)**2,col:c[i]})));
+  const gy0=h*.94,gH=h*.32,sc=v=>gy0-v/2*gH;
+  [[0,half],[half,w]].forEach(([a,b],side)=>{const x1=a+half*.08,x2=b-half*.08;line(x,x1,gy0,x2,gy0,PAL.mut,1.5);line(x,x1,sc(1),x2,sc(1),PAL.line,1,[4,5]);
+    const span=3*Math.PI;
+    if(side===0){x.beginPath();for(let px=x1;px<=x2;px+=2){const th=whyTh-span+(px-x1)/(x2-x1)*span;const y=sc(2*Math.sin(th)**2);px===x1?x.moveTo(px,y):x.lineTo(px,y);}
+      x.lineTo(x2,gy0);x.lineTo(x1,gy0);x.closePath();x.fillStyle=alpha(c[0],.25);x.fill();
+      x.beginPath();for(let px=x1;px<=x2;px+=2){const th=whyTh-span+(px-x1)/(x2-x1)*span;const y=sc(2*Math.sin(th)**2);px===x1?x.moveTo(px,y):x.lineTo(px,y);}x.strokeStyle=c[0];x.lineWidth=PAL.lw*1.3;x.stroke();
+      txt(x,t('pulse'),x1,gy0-gH-12,PAL.bad,14,'left','800');}
+    else{for(let k=0;k<3;k++){x.beginPath();for(let px=x1;px<=x2;px+=2){const th=whyTh-span+(px-x1)/(x2-x1)*span-k*TAU/3;const y=sc(2/3*Math.sin(th)**2);px===x1?x.moveTo(px,y):x.lineTo(px,y);}x.strokeStyle=c[k];x.lineWidth=PAL.lw*.8;x.stroke();}
+      line(x,x1,sc(1),x2,sc(1),PAL.ok,PAL.lw*1.8);txt(x,t('const'),x1,gy0-gH-12,PAL.ok,14,'left','800');txt(x,'Σ',x2+4,sc(1),PAL.ok,16,'left','800');}
+  });};
+
+let genTh=0,genRun=true;
+$('#genPlay').onclick=()=>{genRun=!genRun;$('#genPlay').textContent=genRun?'⏸':'▶';};
+ANIM.gen=dt=>{if(genRun)genTh+=dt*(+$('#genSpd').value)*2;
+  const {x,w,h}=fit($('#cvGen'));const c=PH(),nar=w<620;let mx,my,mr,gx,gy,gw,gh;
+  if(!nar){mr=Math.min(w*.17,h*.3);mx=w*.22;my=h*.5;gx=w*.47;gw=w*.49;gy=h*.12;gh=h*.76;}else{mr=Math.min(w*.24,h*.17);mx=w/2;my=h*.27;gx=w*.08;gw=w*.86;gy=h*.55;gh=h*.4;}
+  x.strokeStyle=PAL.line;x.lineWidth=PAL.lw*3;x.beginPath();x.arc(mx,my,mr*1.18,0,TAU);x.stroke();
+  const e=[0,1,2].map(k=>Math.sin(genTh-k*TAU/3));
+  for(let k=0;k<3;k++){const a=-Math.PI/2+k*TAU/3,cx=mx+mr*1.18*Math.cos(a),cy=my+mr*1.18*Math.sin(a);
+    x.save();x.translate(cx,cy);x.rotate(a+Math.PI/2);x.fillStyle=alpha(c[k],.12+.75*Math.abs(e[k]));x.strokeStyle=c[k];x.lineWidth=PAL.lw*1.2;
+    const bw=mr*.62,bh=mr*.28;x.beginPath();x.rect(-bw/2,-bh/2,bw,bh);x.fill();x.stroke();
+    for(let i=1;i<5;i++){line(x,-bw/2+i*bw/5,-bh/2,-bw/2+i*bw/5,bh/2,c[k],1.5);}x.restore();
+    txt(x,['U','V','W'][k]+' ('+['R','Y','B'][k]+')',mx+mr*1.6*Math.cos(a),my+mr*1.6*Math.sin(a),c[k],15,'center','800');
+    txt(x,e[k]>=0?'+':'−',cx,cy,PAL.fg,16,'center','900');}
+  const ph=-Math.PI/2+genTh,dx=Math.cos(ph),dy=Math.sin(ph),L=mr*.78;
+  x.save();x.lineWidth=mr*.26;x.lineCap='butt';x.strokeStyle=PAL.acc;x.beginPath();x.moveTo(mx,my);x.lineTo(mx+dx*L,my+dy*L);x.stroke();
+  x.strokeStyle=PAL.mut;x.beginPath();x.moveTo(mx,my);x.lineTo(mx-dx*L,my-dy*L);x.stroke();x.restore();
+  txt(x,'N',mx+dx*L*.68,my+dy*L*.68,PAL.btnfg||'#000',15,'center','900');txt(x,'S',mx-dx*L*.68,my-dy*L*.68,PAL.bg,15,'center','900');
+  x.fillStyle=PAL.fg;x.beginPath();x.arc(mx,my,5,0,TAU);x.fill();
+  const mid=gy+gh/2,A=gh*.42,X=a=>gx+a/TAU*gw;line(x,gx,mid,gx+gw,mid,PAL.mut,1.5);
+  [0,120,240,360].forEach(d=>{line(x,X(d/360*TAU),gy,X(d/360*TAU),gy+gh,PAL.line,1,[4,5]);txt(x,d+'°',X(d/360*TAU),gy+gh+12,PAL.mut,12,'center');});
+  for(let k=0;k<3;k++){x.beginPath();for(let px=0;px<=gw;px+=2){const a=px/gw*TAU;const y=mid-A*Math.sin(a-k*TAU/3);px?x.lineTo(gx+px,y):x.moveTo(gx+px,y);}x.strokeStyle=c[k];x.lineWidth=PAL.lw*1.2;x.stroke();}
+  const am=((genTh%TAU)+TAU)%TAU;line(x,X(am),gy,X(am),gy+gh,PAL.fg,2);
+  for(let k=0;k<3;k++){x.fillStyle=c[k];x.beginPath();x.arc(X(am),mid-A*Math.sin(am-k*TAU/3),7,0,TAU);x.fill();}
+  const f=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(2);$('#eU').textContent=f(e[0]);$('#eV').textContent=f(e[1]);$('#eW').textContent=f(e[2]);
+  $('#eS').textContent=Math.abs(e[0]+e[1]+e[2]).toFixed(2);};
+
+ANIM.tug=()=>{const m=[+$('#iR').value,+$('#iY').value,+$('#iB').value];$('#iRv').textContent=m[0];$('#iYv').textContent=m[1];$('#iBv').textContent=m[2];
+  const dirs=[-Math.PI/2,-Math.PI/2+TAU/3,-Math.PI/2+2*TAU/3];let sx=0,sy=0;m.forEach((v,k)=>{sx+=v*Math.cos(dirs[k]);sy+=v*Math.sin(dirs[k]);});
+  const In=Math.hypot(sx,sy);$('#inVal').textContent=In.toFixed(2);
+  const {x,w,h}=fit($('#cvTug'));const cx=w/2,cy=h*.53,Ra=Math.min(w,h)*.4,c=PH(),k2=Ra*.45/20;
+  const rx=cx+sx*k2,ry=cy+sy*k2;
+  x.strokeStyle=PAL.line;x.lineWidth=1.5;x.setLineDash([5,6]);x.beginPath();x.arc(cx,cy,Ra*.45,0,TAU);x.stroke();x.setLineDash([]);
+  line(x,cx-10,cy,cx+10,cy,PAL.mut,2);line(x,cx,cy-10,cx,cy+10,PAL.mut,2);
+  m.forEach((v,k)=>{const ax=cx+Ra*Math.cos(dirs[k]),ay=cy+Ra*Math.sin(dirs[k]);
+    line(x,rx,ry,ax,ay,c[k],2+v*.45);
+    x.fillStyle=c[k];x.beginPath();x.arc(ax+12*Math.cos(dirs[k]),ay+12*Math.sin(dirs[k]),13,0,TAU);x.fill();
+    const ox=ax+34*Math.cos(dirs[k]),oy=ay+34*Math.sin(dirs[k]);
+    txt(x,['R','Y','B'][k]+' '+v+'A',ox,oy,c[k],15,'center','800');
+    x.globalAlpha=.35;arrow(x,cx,cy,cx+v*k2*Math.cos(dirs[k]),cy+v*k2*Math.sin(dirs[k]),c[k],PAL.lw);x.globalAlpha=1;});
+  if(In>.05)arrow(x,cx,cy,rx,ry,PAL.acc,PAL.lw*1.5,[6,5]);
+  x.strokeStyle=PAL.fg;x.lineWidth=PAL.lw*2;x.beginPath();x.arc(rx,ry,14,0,TAU);x.stroke();
+  txt(x,(In<.05?t('bal'):t('unbal')),16,22,In<.05?PAL.ok:PAL.bad,18,'left','800');
+  sub(x,'I','N',16,50,PAL.acc,20);txt(x,'= '+In.toFixed(2)+' A',48,50,PAL.acc,20,'left','800');};
+$('#balBtn').onclick=()=>{const v=+$('#iR').value;$('#iY').value=v;$('#iB').value=v;};
+
+ANIM.root=()=>{const th=+$('#ang').value,thr=th*Math.PI/180,vp=Math.abs(+$('#vpIn').value)||240,k=2*Math.sin(thr/2);
+  $('#angV').textContent=th;
+  const exact={60:' = 1',90:' = √2',120:' = √3',180:' = 2'}[th]||'';
+  const sys={90:t('sys2'),120:t('sys3'),180:t('syss')}[th];
+  $('#rootOut').innerHTML='k = 2 × sin('+(th/2)+'°) = '+k.toFixed(3)+esc(exact)+'<br>V<sub>L</sub> = '+k.toFixed(3)+' × '+vp+' = <span class="ok">'+(k*vp).toFixed(1)+' V</span>'+(sys?'<br><span class="mut">'+esc(sys)+'</span>':'');
+  const {x,w,h}=fit($('#cvRoot'));const N={x:w/2,y:h*.84},L=Math.min(w*.4,h*.68),c=PH();
+  const d1=-Math.PI/2-thr/2,d2=-Math.PI/2+thr/2,P1={x:N.x+L*Math.cos(d1),y:N.y+L*Math.sin(d1)},P2={x:N.x+L*Math.cos(d2),y:N.y+L*Math.sin(d2)},M={x:(P1.x+P2.x)/2,y:(P1.y+P2.y)/2};
+  x.strokeStyle=PAL.mut;x.lineWidth=2;x.beginPath();x.arc(N.x,N.y,L*.22,d1,d2);x.stroke();
+  txt(x,'θ = '+th+'°',N.x,N.y-L*.3,PAL.fg,16,'center','800');
+  line(x,N.x,N.y,M.x,M.y,PAL.mut,1.5,[5,6]);
+  x.save();x.translate(M.x,M.y);x.rotate(Math.atan2(P2.y-P1.y,P2.x-P1.x));x.strokeStyle=PAL.mut;x.lineWidth=1.5;x.strokeRect(0,0,12,12);x.restore();
+  arrow(x,N.x,N.y,P1.x,P1.y,c[0],PAL.lw*1.6);arrow(x,N.x,N.y,P2.x,P2.y,c[1],PAL.lw*1.6);
+  sub(x,'V','P',(N.x+P1.x)/2-14,(N.y+P1.y)/2,c[0],17,'right');sub(x,'V','P',(N.x+P2.x)/2+14,(N.y+P2.y)/2,c[1],17,'left');
+  x.save();x.setLineDash([10,6]);x.lineDashOffset=-T*20;line(x,P1.x,P1.y,P2.x,P2.y,PAL.acc,PAL.lw*2.2);x.restore();
+  const ny=M.y-26;sub(x,'V','L',M.x-6,ny,PAL.acc,20,'right');txt(x,'= '+(k*vp).toFixed(1)+' V',M.x-2,ny,PAL.acc,20,'left','800');
+  [P1,P2].forEach((p,i)=>{const bob=Math.sin(T*6+i*2)*2;x.strokeStyle=PAL.fg;x.lineWidth=2.5;x.fillStyle=c[i];
+    x.beginPath();x.arc(p.x,p.y-30+bob,6,0,TAU);x.fill();line(x,p.x,p.y-24+bob,p.x,p.y-10,PAL.fg,2.5);line(x,p.x,p.y-10,p.x-5,p.y-2,PAL.fg,2.5);line(x,p.x,p.y-10,p.x+5,p.y-2,PAL.fg,2.5);line(x,p.x-7,p.y-20+bob,p.x+7,p.y-20+bob,PAL.fg,2.5);});
+  x.strokeStyle=PAL.fg;x.lineWidth=3;x.beginPath();x.arc(N.x,N.y,14,Math.PI,0);x.stroke();line(x,N.x-14,N.y,N.x-14,N.y+12,PAL.fg,3);line(x,N.x+14,N.y,N.x+14,N.y+12,PAL.fg,3);
+  txt(x,t('gate'),N.x,N.y+26,PAL.mut,14,'center','700');
+  txt(x,'VL = 2 · VP · sin(θ/2)',14,22,PAL.mut,15,'left','700');};
+
+let derStep=0,derP=1,derAuto=false,derT=0;
+function setDer(s){derStep=Math.max(0,Math.min(5,s));derP=0;$('#derNum').textContent=derStep+'/5';$('#derCap').textContent=t('st'+derStep);
+  $$('.fstep').forEach(e=>e.classList.toggle('on',+e.dataset.s<=derStep));}
+$('#derNext').onclick=()=>setDer(derStep+1);$('#derPrev').onclick=()=>setDer(derStep-1);
+$('#derReset').onclick=()=>{derAuto=false;setDer(0);};$('#derAuto').onclick=()=>{derAuto=!derAuto;derT=0;if(derAuto&&derStep>=5)setDer(0);};
+ANIM.der=dt=>{if(derP<1)derP=Math.min(1,derP+dt*1.1);if(derAuto){derT+=dt;if(derT>3){derT=0;if(derStep<5)setDer(derStep+1);else derAuto=false;}}
+  const {x,w,h}=fit($('#cvDer'));const L=Math.min(w*.3,h*.38),N={x:w*.3,y:h*.6},c=PH();
+  const P=(v,s)=>({x:N.x+L*v[0]*(s==null?1:s),y:N.y-L*v[1]*(s==null?1:s)});
+  const U=[1,0],V=[-.5,-.866],W=[-.5,.866],nV=[.5,.866],D=[1.5,.866];
+  const pr=k=>derStep>k?1:(derStep===k?ease(derP):0);
+  const lw=PAL.lw*1.5;
+  if(derStep===0){x.globalAlpha=.25;}
+  // step1
+  const p1=derStep===0?1:pr(1);
+  if(p1>0){x.save();x.globalAlpha*=.35;const pw=P(W,p1);arrow(x,N.x,N.y,pw.x,pw.y,c[2],lw);x.restore();
+    const pu=P(U,p1),pv=P(V,p1);arrow(x,N.x,N.y,pu.x,pu.y,c[0],lw);arrow(x,N.x,N.y,pv.x,pv.y,c[1],lw);
+    if(p1>.6){sub(x,'V','UN',pu.x+8,pu.y+18,c[0],17,'left');sub(x,'V','VN',pv.x-8,pv.y+16,c[1],17,'right');sub(x,'V','WN',P(W).x-8,P(W).y-12,alpha(c[2],.6),15,'right');
+      x.strokeStyle=PAL.mut;x.lineWidth=2;x.beginPath();x.arc(N.x,N.y,L*.2,0,TAU/3*p1);x.stroke();txt(x,'120°',N.x+L*.28*Math.cos(1.05),N.y+L*.28*Math.sin(1.05),PAL.fg,15,'left','800');}
+    x.fillStyle=PAL.fg;x.beginPath();x.arc(N.x,N.y,5,0,TAU);x.fill();txt(x,'N',N.x-10,N.y-12,PAL.fg,15,'right','800');}
+  x.globalAlpha=1;
+  const p2=pr(2);if(p2>0){const q=P(nV,p2);arrow(x,N.x,N.y,q.x,q.y,c[1],lw,[8,6]);if(p2>.6)sub(x,'−V','VN',q.x-6,q.y-14,c[1],17,'right');}
+  const p3=pr(3);if(p3>0){const a=P(U),b=P(nV),d=P(D);
+    line(x,a.x,a.y,a.x+(d.x-a.x)*p3,a.y+(d.y-a.y)*p3,PAL.mut,2,[6,6]);line(x,b.x,b.y,b.x+(d.x-b.x)*p3,b.y+(d.y-b.y)*p3,PAL.mut,2,[6,6]);
+    const dd=P(D,p3);arrow(x,N.x,N.y,dd.x,dd.y,PAL.acc,lw*1.3);if(p3>.7){sub(x,'V','UV',d.x+8,d.y-6,PAL.acc,19,'left');txt(x,'= VL',d.x+50,d.y-6,PAL.acc,17,'left','800');}}
+  const p4=pr(4);if(p4>0){x.save();x.globalAlpha=p4;x.strokeStyle=PAL.ok;x.lineWidth=2.5;
+    x.beginPath();x.arc(N.x,N.y,L*.42,-Math.PI/6,0);x.stroke();x.beginPath();x.arc(N.x,N.y,L*.5,-Math.PI/3,-Math.PI/6);x.stroke();
+    txt(x,'30°',N.x+L*.5*Math.cos(-.26),N.y+L*.5*Math.sin(-.26),PAL.ok,14,'left','800');txt(x,'30°',N.x+L*.58*Math.cos(-.78),N.y+L*.58*Math.sin(-.78),PAL.ok,14,'left','800');
+    const M=P(D,.5),a=P(U);line(x,a.x,a.y,M.x,M.y,PAL.ok,2,[4,4]);
+    x.save();x.translate(M.x,M.y);x.rotate(-Math.PI/6);x.strokeStyle=PAL.ok;x.lineWidth=1.5;x.strokeRect(0,0,10,10);x.restore();
+    const nx=-Math.sin(-Math.PI/6),ny=Math.cos(-Math.PI/6);const q1=P(D,.25),q2=P(D,.75);
+    txt(x,'VP cos30°',q1.x+nx*30+20,q1.y+ny*30,PAL.ok,14,'center','800');txt(x,'VP cos30°',q2.x-nx*26,q2.y-ny*26,PAL.ok,14,'center','800');
+    x.fillStyle=PAL.ok;x.beginPath();x.arc(M.x,M.y,5,0,TAU);x.fill();x.restore();}
+  const p5=pr(5);if(p5>0){x.save();x.globalAlpha=p5;const bx=w*.97,by=h*.14;
+    txt(x,'VL = √3 · VP',bx,by,PAL.acc,30,'right','900');txt(x,'1.732 × 240 = 415.7 V',bx,by+40,PAL.ok,20,'right','800');x.restore();}};
+
+let trolley=0;
+ANIM.pow=dt=>{const ph=+$('#phi').value,r=ph*Math.PI/180,pf=Math.cos(r);$('#phiV').textContent=ph;$('#pfV').textContent=pf.toFixed(2);powCalc();
+  const {x,w,h}=fit($('#cvPow'));const nar=w<620;const sw=nar?w:w*.6,ry=nar?h*.28:h*.55;
+  trolley=(trolley+dt*90*pf)%(sw*.6);
+  line(x,10,ry-14,sw-10,ry-14,PAL.mut,3);line(x,10,ry+14,sw-10,ry+14,PAL.mut,3);
+  for(let s=20;s<sw-10;s+=26)line(x,s,ry-20,s,ry+20,PAL.line,4);
+  txt(x,t('rail'),14,ry+34,PAL.mut,13,'left','700');
+  const tx=sw*.12+trolley,ty=ry;x.fillStyle=PAL.acc;x.strokeStyle=PAL.fg;x.lineWidth=2;x.fillRect(tx-34,ty-22,68,44);x.strokeRect(tx-34,ty-22,68,44);
+  const F=Math.min(sw*.32,h*.3),fx=tx+34,fy=ty,bx=fx+F*Math.cos(r),by=fy-F*Math.sin(r);
+  line(x,fx,fy,bx,by,PAL.fg,2.5);
+  x.fillStyle=PAL.mut;x.beginPath();x.ellipse(bx+10*Math.cos(r),by-10*Math.sin(r),22,13,-r,0,TAU);x.fill();
+  txt(x,'🐂',bx+10*Math.cos(r),by-10*Math.sin(r),PAL.fg,22,'center');
+  const Fa=F*.75;arrow(x,fx,fy,fx+Fa*Math.cos(r),fy-Fa*Math.sin(r),PAL.fg,PAL.lw*1.4);
+  arrow(x,fx,fy,fx+Fa*pf,fy,PAL.ok,PAL.lw*1.8);arrow(x,fx+Fa*pf,fy,fx+Fa*pf,fy-Fa*Math.sin(r),PAL.bad,PAL.lw*1.5,[6,5]);
+  txt(x,t('useful')+' = F cos φ',fx,fy+(ph>70?44:30),PAL.ok,14,'left','800');
+  if(ph>5)txt(x,t('side')+' = F sin φ',fx+Fa*pf+8,fy-Fa*Math.sin(r)/2,PAL.bad,14,'left','800');
+  x.strokeStyle=PAL.fg;x.lineWidth=1.5;x.beginPath();x.arc(fx,fy,30,-r,0);x.stroke();txt(x,'φ',fx+36,fy-10,PAL.fg,16,'left','800');
+  let ox,oy,S;if(nar){ox=w*.12;oy=h*.62;S=Math.min(w*.6,h*.32);}else{ox=w*.66;oy=h*.22;S=Math.min(w*.28,h*.55);}
+  const Px=S*pf,Qy=S*Math.sin(r);
+  arrow(x,ox,oy,ox+Px,oy,PAL.ok,PAL.lw*1.6);arrow(x,ox+Px,oy,ox+Px,oy+Qy,PAL.bad,PAL.lw*1.6);arrow(x,ox,oy,ox+Px,oy+Qy,PAL.acc,PAL.lw*1.6);
+  txt(x,'P (W)',ox+Px/2,oy-14,PAL.ok,15,'center','800');txt(x,'Q (VAR)',ox+Px+8,oy+Qy/2,PAL.bad,15,'left','800');
+  txt(x,'S (VA)',ox+Px/2-12,oy+Qy/2+16,PAL.acc,15,'right','800');
+  x.strokeStyle=PAL.fg;x.lineWidth=1.5;x.beginPath();x.arc(ox,oy,26,0,r);x.stroke();txt(x,'φ',ox+32,oy+12,PAL.fg,15,'left','800');
+  txt(x,'cos φ = P/S = '+pf.toFixed(2),ox,oy+Math.max(Qy,20)+36,PAL.fg,16,'left','800');};
+function powCalc(){const VL=+$('#pVL').value||0,IL=+$('#pIL').value||0,r=+$('#phi').value*Math.PI/180,S=R3*VL*IL;
+  $('#powOut').innerHTML='S = '+(S/1000).toFixed(2)+' kVA<br><span class="ok">P = '+(S*Math.cos(r)/1000).toFixed(2)+' kW</span><br><span class="bad">Q = '+(S*Math.sin(r)/1000).toFixed(2)+' kVAR</span>';}
+
+/* ---------- star vs delta ---------- */
+function fmtP(p){return p>=1000?(p/1000).toFixed(2)+' kW':p.toFixed(0)+' W';}
+function svd(){const VL=Math.abs(+$('#sdVL').value)||415,Z=+$('#sdZ').value,pf=+$('#sdPF').value;$('#sdZv').textContent=Z+' Ω';$('#sdPFv').textContent=pf.toFixed(2);
+  const s={Vp:VL/R3};s.Ip=s.Vp/Z;s.IL=s.Ip;s.P=3*s.Vp*s.Ip*pf;
+  const d={Vp:VL};d.Ip=VL/Z;d.IL=R3*d.Ip;d.P=3*d.Vp*d.Ip*pf;
+  [['#sdS',s],['#sdD',d]].forEach(([id,o])=>{const el=$(id);el.querySelector('[data-v=Vp]').textContent=o.Vp.toFixed(1)+' V';el.querySelector('[data-v=Ip]').textContent=o.Ip.toFixed(2)+' A';
+    el.querySelector('[data-v=IL]').textContent=o.IL.toFixed(2)+' A';el.querySelector('[data-v=P]').textContent=fmtP(o.P);});
+  $('#sdS .bulbs').style.setProperty('--o',(.08+.92*pf/3).toFixed(3));$('#sdD .bulbs').style.setProperty('--o',(.08+.92*pf).toFixed(3));
+  $('#barPS').style.width=(100/3)+'%';$('#barPD').style.width='100%';$('#barIS').style.width=(100/3)+'%';$('#barID').style.width='100%';}
+['#sdVL','#sdZ','#sdPF'].forEach(id=>$(id).addEventListener('input',svd));
+$('#pVL').addEventListener('input',powCalc);$('#pIL').addEventListener('input',powCalc);
+$$('[data-a]').forEach(b=>{if(b.tagName==='BUTTON')b.onclick=()=>{$('#ang').value=b.dataset.a;};});
+
+/* ---------- sound ---------- */
+let AC=null;
+function beep(f,d,vol){if(!$('#setSnd').checked)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);
+  g.gain.setValueAtTime(vol||.15,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+(d||.15));o.start();o.stop(AC.currentTime+(d||.15));}catch(e){}}
+
+/* ---------- teams & scores ---------- */
+const QB=$$('#qbank .q'),RB=$$('#rbank .rq');
+let teams=[],scores=[0,0,0,0];
+function readTeams(){const n=+$('#setTeams').value;const ins=$$('.tn');ins.forEach((el,i)=>{el.parentElement.style.display=i<n?'':'none';});
+  teams=ins.slice(0,n).map((el,i)=>el.value.trim()||('Team '+'ABCD'[i]));
+  const rs=$('#rapTeam'),sel=+rs.value||0;rs.innerHTML=teams.map((n2,i)=>'<option value="'+i+'">'+esc(n2)+'</option>').join('');rs.value=Math.min(sel,n-1);renderScores();}
+function renderScores(){$$('.scoreboard').forEach(sb=>{sb.innerHTML=teams.map((n,i)=>'<div class="team'+((Q.active&&Q.turn===i)||(R.active&&R.team===i)?' turn':'')+'"><span>'+esc(n)+'</span><b>'+scores[i]+'</b></div>').join('');});}
+$('#setTeams').onchange=readTeams;$$('.tn').forEach(el=>el.addEventListener('input',readTeams));
+$('#resetSc').onclick=()=>{scores=[0,0,0,0];renderScores();};
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ---------- quiz ---------- */
+const Q={list:[],i:0,turn:0,left:30,dur:30,active:false,paused:false,answered:false,chosen:-1,timedOut:false,lastWhole:-1};
+const RC=326.7;
+function qOpts(el){return (el.getAttribute('data-o'+LANG)||el.getAttribute('data-oen')).split('|');}
+function renderQ(){if(!Q.active&&!Q.list.length){$('#qText').textContent=t('ready');$('#qOpts').innerHTML='';$('#qMeta').textContent='—';$('#qTurn').textContent='—';return;}
+  if(!Q.active){return;}
+  const el=QB[Q.list[Q.i]],a=+el.dataset.a;
+  $('#qMeta').textContent=t('q')+' '+(Q.i+1)+' / '+Q.list.length;$('#qTurn').textContent=t('turn')+': '+teams[Q.turn];
+  $('#qText').textContent=el.getAttribute('data-'+LANG)||el.getAttribute('data-en');
+  $('#qOpts').innerHTML=qOpts(el).map((o,i)=>'<button class="opt" data-i="'+i+'"><span class="k">'+(i+1)+'</span><span>'+esc(o)+'</span></button>').join('');
+  $$('#qOpts .opt').forEach(b=>b.onclick=()=>qAnswer(+b.dataset.i));
+  if(Q.answered){$$('#qOpts .opt').forEach((b,i)=>{if(i===a)b.classList.add('ok');else if(i===Q.chosen)b.classList.add('bad');else b.classList.add('dim');});}
+  qMsgUpdate();renderScores();}
+function qMsgUpdate(){const el=Q.active?QB[Q.list[Q.i]]:null;let m='';
+  if(Q.active&&Q.answered){const a=+el.dataset.a;if(Q.timedOut)m=t('timeup');else if(Q.chosen<0)m=t('ans');else m=(Q.chosen===a?t('correct')+' +'+Q.pts+' '+t('pts'):t('wrong'));m+=' — '+t('ans')+': '+qOpts(el)[a];}
+  else if(Q.active&&Q.paused)m=t('paused');
+  if(Q.endMsg)m=Q.endMsg;$('#qMsg').textContent=m;}
+function qStart(){readTeams();Q.dur=Math.max(5,+$('#setSec').value||30);Q.pts=Math.max(1,+$('#setPts').value||10);
+  const n=Math.max(1,Math.min(QB.length,+$('#setN').value||10));let idx=QB.map((_,i)=>i);if($('#setShuf').checked)shuffle(idx);
+  Q.list=idx.slice(0,n);Q.i=0;Q.turn=0;Q.active=true;Q.endMsg='';$('#setBox').open=false;qShow();}
+function qShow(){Q.answered=false;Q.chosen=-1;Q.timedOut=false;Q.paused=false;Q.left=Q.dur;Q.lastWhole=-1;$('#qPause').textContent='⏸';renderQ();qTimerDraw();}
+function qAnswer(i){if(!Q.active||Q.answered||Q.paused)return;const a=+QB[Q.list[Q.i]].dataset.a;Q.answered=true;Q.chosen=i;
+  if(i===a){scores[Q.turn]+=Q.pts;beep(880,.12);setTimeout(()=>beep(1320,.18),120);}else beep(200,.35,.2);renderQ();}
+function qReveal(){if(!Q.active||Q.answered)return;Q.answered=true;Q.chosen=-1;renderQ();}
+function qNext(){if(!Q.active)return;if(Q.i+1>=Q.list.length){qEnd();return;}Q.i++;Q.turn=(Q.turn+1)%teams.length;qShow();}
+function qEnd(){Q.active=false;const best=Math.max(...scores.slice(0,teams.length));const w=teams.filter((_,i)=>scores[i]===best);
+  Q.endMsg=t('done')+' · '+(w.length>1?t('tie')+': '+w.join(', '):t('winner')+': '+w[0])+' ('+best+')';
+  $('#qText').textContent=Q.endMsg;$('#qOpts').innerHTML='';$('#qMsg').textContent='';$('#qTurn').textContent='—';beep(660,.15);setTimeout(()=>beep(990,.3),160);renderScores();}
+function qStop(){Q.active=false;Q.list=[];Q.endMsg='';renderQ();$('#qMsg').textContent='';Q.left=Q.dur;qTimerDraw();renderScores();}
+function qTimerDraw(){const f=Math.max(0,Q.left)/Q.dur;$('#qRing').setAttribute('stroke-dashoffset',(RC*(1-f)).toFixed(1));
+  $('#qRing').setAttribute('stroke',f<.25?PAL.bad:PAL.acc);$('#qSec').textContent=Math.ceil(Math.max(0,Q.left));$('#qTimer').classList.toggle('low',Q.active&&!Q.answered&&f<.25);}
+$('#qStart').onclick=qStart;$('#qNext').onclick=qNext;$('#qReveal').onclick=qReveal;$('#qStop').onclick=qStop;
+$('#qPause').onclick=()=>{if(!Q.active||Q.answered)return;Q.paused=!Q.paused;$('#qPause').textContent=Q.paused?'▶':'⏸';qMsgUpdate();};
+$('#qPlus').onclick=()=>{if(Q.active&&!Q.answered){Q.left+=10;Q.dur=Math.max(Q.dur,Q.left);qTimerDraw();}};
+$('#qMinus').onclick=()=>{if(Q.active&&!Q.answered){Q.left=Math.max(1,Q.left-10);qTimerDraw();}};
+
+/* ---------- rapid ---------- */
+const R={list:[],i:0,left:60,dur:60,active:false,paused:false,ok:0,tot:0,team:0,lock:false,lastWhole:-1,msg:''};
+function renderR(){if(!R.active){$('#rText').textContent=R.msg||t('ready');}else{const el=RB[R.list[R.i]];$('#rText').textContent=el.getAttribute('data-'+LANG)||el.getAttribute('data-en');}
+  $('#rStat').textContent='✓ '+R.ok+' / '+R.tot;$('#rMsg').textContent=R.active&&R.paused?t('paused'):'';rTimerDraw();renderScores();}
+function rTimerDraw(){const f=Math.max(0,R.left)/R.dur;$('#rBar').style.width=(f*100).toFixed(1)+'%';$('#rBar').style.background=f<.25?PAL.bad:PAL.acc;$('#rTime').textContent=Math.ceil(Math.max(0,R.left))+' s';}
+function rStart(){readTeams();R.dur=Math.max(10,+$('#setRap').value||60);R.left=R.dur;R.team=+$('#rapTeam').value||0;R.pts=Math.max(1,+$('#setRPts').value||5);
+  R.list=shuffle(RB.map((_,i)=>i));R.i=0;R.ok=0;R.tot=0;R.active=true;R.paused=false;R.lock=false;R.msg='';R.lastWhole=-1;$('#rPause').textContent='⏸';renderR();}
+function rAnswer(v){if(!R.active||R.paused||R.lock)return;const a=+RB[R.list[R.i]].dataset.a;R.tot++;const box=$('#rText');box.classList.remove('flash-ok','flash-bad');void box.offsetWidth;
+  if(v===a){R.ok++;box.classList.add('flash-ok');beep(990,.08);}else{box.classList.add('flash-bad');beep(220,.18,.18);}
+  R.lock=true;$('#rStat').textContent='✓ '+R.ok+' / '+R.tot;
+  setTimeout(()=>{R.lock=false;if(!R.active)return;R.i++;if(R.i>=R.list.length){R.list=shuffle(R.list);R.i=0;}renderR();},380);}
+function rEnd(){if(!R.active)return;R.active=false;scores[R.team]+=R.ok*R.pts;R.msg=t('done')+' · '+teams[R.team]+': ✓ '+R.ok+' / '+R.tot+'  (+'+(R.ok*R.pts)+' '+t('pts')+')';beep(440,.5,.2);renderR();}
+$('#rStart').onclick=rStart;$('#rStop').onclick=rEnd;$('#rTrue').onclick=()=>rAnswer(1);$('#rFalse').onclick=()=>rAnswer(0);
+$('#rPause').onclick=()=>{if(!R.active)return;R.paused=!R.paused;$('#rPause').textContent=R.paused?'▶':'⏸';renderR();};
+$('#rPlus').onclick=()=>{if(R.active){R.left+=10;R.dur=Math.max(R.dur,R.left);rTimerDraw();}};
+$('#rMinus').onclick=()=>{if(R.active){R.left=Math.max(1,R.left-10);rTimerDraw();}};
+
+/* ---------- clock ---------- */
+let lastTick=performance.now();
+setInterval(()=>{const now=performance.now(),dt=(now-lastTick)/1000;lastTick=now;
+  if(Q.active&&!Q.paused&&!Q.answered){Q.left-=dt;const wh=Math.ceil(Q.left);if(wh!==Q.lastWhole){Q.lastWhole=wh;if(wh<=5&&wh>0)beep(660,.05,.1);}
+    if(Q.left<=0){Q.left=0;Q.answered=true;Q.timedOut=true;beep(330,.5,.2);renderQ();}qTimerDraw();}
+  if(R.active&&!R.paused){R.left-=dt;const wh=Math.ceil(R.left);if(wh!==R.lastWhole){R.lastWhole=wh;if(wh<=5&&wh>0)beep(660,.05,.1);}if(R.left<=0){R.left=0;rEnd();}rTimerDraw();}
+},100);
+
+/* ---------- keyboard ---------- */
+document.addEventListener('keydown',e=>{const tag=(e.target.tagName||'').toLowerCase();if(tag==='input'||tag==='select'||tag==='textarea')return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'){go(cur+1);e.preventDefault();}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){go(cur-1);e.preventDefault();}
+  else if(e.key==='+'||e.key==='='){setFS(FS+.1);}else if(e.key==='-'){setFS(FS-.1);}
+  else if(e.key===' '){if(cur===12){$('#qPause').click();e.preventDefault();}else if(cur===13){$('#rPause').click();e.preventDefault();}}
+  else if(cur===12&&/^[1-4]$/.test(e.key)){qAnswer(+e.key-1);}
+  else if(cur===13&&(e.key==='1'||e.key==='2')){rAnswer(e.key==='1'?1:0);}});
+
+/* ---------- refresh / loop ---------- */
+function refreshDynamic(){$('#derCap').textContent=t('st'+derStep);renderQ();if(!Q.active&&Q.endMsg){$('#qText').textContent=Q.endMsg;}renderR();}
+function redrawStatic(){svd();powCalc();}
+let last=performance.now();
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;const f=ANIM[SL[cur].dataset.anim];if(f){try{f(dt);}catch(err){console.error(err);}}requestAnimationFrame(loop);}
+
+/* ---------- init ---------- */
+(function init(){const th=load('theme');const fs=parseFloat(load('fs'));const lg=load('lang');const sl=parseInt(load('slide'),10);
+  setTheme(th==='light'||th==='hc'||th==='dark'?th:'dark');setFS(isFinite(fs)?fs:1.15);LANG=(lg==='hi'||lg==='ml')?lg:'en';
+  readTeams();setDer(0);applyLang();go(isFinite(sl)?sl:0);requestAnimationFrame(loop);})();
+</script>
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body>
+</html>
