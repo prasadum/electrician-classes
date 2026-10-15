@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-15T03:40:41.683Z",
+  "updated": "2026-10-15T03:40:55.535Z",
   "sections": [
     {
       "name": "Electrical Machines & Control",
@@ -232,6 +232,14 @@
     {
       "name": "AC Circuits",
       "pages": [
+        {
+          "file": "pages/3Phase_Polyphase_AC.html",
+          "title": "3-Phase & Polyphase AC",
+          "description": "",
+          "section": "AC Circuits",
+          "sectionOrder": 999,
+          "order": 999
+        },
         {
           "file": "pages/ac_basics.html",
           "title": "Single-Phase AC Basics",
