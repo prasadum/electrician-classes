@@ -1,0 +1,1326 @@
+<!doctype html><html><head>
+<meta name="section" content="AC Circuits"><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Power Factor Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Semi+Condensed:wght@500;700&family=Noto+Sans:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: sticky control bar + tab strip; each tab = big animated visual (left) + key-idea rail (right) + challenge quiz below */
+:root{
+  --bg:#eef1f6; --panel:#ffffff; --line:#cdd5e2; --fg:#14202e; --mute:#566377;
+  --accent:#1f5fbf; --v:#d23a52; --i:#1b78c9; --p:#1f9a55; --q:#c98a0c; --s:#7a55e0;
+  --ok:#1f9a55; --bad:#d23a52; --heat:#e8501f;
+  --f-disp:"Saira Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Noto Sans","Noto Sans Devanagari","Noto Sans Malayalam",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --scale:1;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d131c; --panel:#151e2b; --line:#2a374a; --fg:#e8eef7; --mute:#93a2b8;
+  --accent:#5aa2ff; --v:#ff6b80; --i:#4fb3ff; --p:#3fd17f; --q:#ffc23d; --s:#a88bff;
+  --ok:#3fd17f; --bad:#ff6b80; --heat:#ff7a3d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d131c; --panel:#151e2b; --line:#2a374a; --fg:#e8eef7; --mute:#93a2b8;
+  --accent:#5aa2ff; --v:#ff6b80; --i:#4fb3ff; --p:#3fd17f; --q:#ffc23d; --s:#a88bff;
+  --ok:#3fd17f; --bad:#ff6b80; --heat:#ff7a3d; color-scheme:dark}
+/* user skins (projector) override host theme */
+:root[data-skin="light"]{
+  --bg:#eef1f6; --panel:#ffffff; --line:#cdd5e2; --fg:#14202e; --mute:#566377;
+  --accent:#1f5fbf; --v:#d23a52; --i:#1b78c9; --p:#1f9a55; --q:#c98a0c; --s:#7a55e0;
+  --ok:#1f9a55; --bad:#d23a52; --heat:#e8501f; color-scheme:light}
+:root[data-skin="dark"]{
+  --bg:#0d131c; --panel:#151e2b; --line:#2a374a; --fg:#e8eef7; --mute:#93a2b8;
+  --accent:#5aa2ff; --v:#ff6b80; --i:#4fb3ff; --p:#3fd17f; --q:#ffc23d; --s:#a88bff;
+  --ok:#3fd17f; --bad:#ff6b80; --heat:#ff7a3d; color-scheme:dark}
+:root[data-skin="hc"]{
+  --bg:#000000; --panel:#000000; --line:#ffffff; --fg:#ffffff; --mute:#ffff66;
+  --accent:#ffff00; --v:#ff4d6d; --i:#00e5ff; --p:#00ff66; --q:#ffcc00; --s:#ff66ff;
+  --ok:#00ff66; --bad:#ff4d6d; --heat:#ff6600; color-scheme:dark}
+
+html{font-size:calc(var(--scale) * 100%)}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:1.05rem;line-height:1.45;margin:0}
+*{box-sizing:border-box}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1500px;margin:0 auto}
+
+/* header */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:2px solid var(--line)}
+.hbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding-block:10px}
+.brand{display:flex;align-items:baseline;gap:12px;flex:1 1 320px;min-width:0}
+.brand h1{font-family:var(--f-disp);font-weight:700;font-size:2rem;margin:0;letter-spacing:.01em;line-height:1}
+.brand h1 b{color:var(--accent)}
+.brand small{color:var(--mute);font-size:.9rem}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{background:transparent;border:0;padding:6px 11px;cursor:pointer;font-weight:600;font-size:.95rem}
+.seg button+button{border-left:2px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:0;scrollbar-width:thin}
+.tabs button{flex:0 0 auto;background:transparent;border:0;border-bottom:4px solid transparent;padding:10px 14px 8px;cursor:pointer;font-family:var(--f-disp);font-weight:700;font-size:1.15rem;color:var(--mute);display:flex;gap:8px;align-items:center}
+.tabs button .n{font-family:var(--f-mono);font-size:.8rem;border:2px solid currentColor;border-radius:50%;width:1.6em;height:1.6em;display:inline-grid;place-items:center}
+.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+
+main{padding-block:18px 40px}
+section.tab{display:grid;gap:18px}
+.grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:980px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.card h2{font-family:var(--f-disp);font-size:1.45rem;margin:0 0 10px;text-wrap:balance}
+.card h3{font-family:var(--f-disp);font-size:1.15rem;margin:0 0 6px}
+.lbl{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);font-weight:600}
+canvas,svg{display:block;max-width:100%}
+.cv{width:100%;height:auto;aspect-ratio:16/9}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.sl{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin:8px 0}
+.sl label{font-weight:600}
+.sl output{font-family:var(--f-mono);font-weight:700;min-width:5.5ch;text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px}
+.btn{background:transparent;border:2px solid var(--line);border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+.btn.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.big{font-family:var(--f-mono);font-weight:700;font-size:3.2rem;line-height:1}
+.mid{font-family:var(--f-mono);font-weight:700;font-size:1.7rem;line-height:1.1}
+.mono{font-family:var(--f-mono)}
+.read{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.read>div{border:2px solid var(--line);border-radius:10px;padding:10px 12px}
+.key{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.key li{display:grid;grid-template-columns:1.6rem 1fr;gap:10px;align-items:start;font-size:1.08rem}
+.dot{width:1.1rem;height:1.1rem;border-radius:4px;margin-top:.25rem}
+.eq{font-family:var(--f-mono);font-size:1.5rem;font-weight:700;padding:12px;border:2px dashed var(--line);border-radius:10px;text-align:center;overflow-x:auto}
+.cV{color:var(--v)}.cI{color:var(--i)}.cP{color:var(--p)}.cQ{color:var(--q)}.cS{color:var(--s)}.cA{color:var(--accent)}.cBad{color:var(--bad)}.cOk{color:var(--ok)}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:700;font-size:.9rem;border:2px solid currentColor}
+
+/* quiz */
+.quiz{border:2px solid var(--accent);border-radius:12px;padding:16px;background:var(--panel)}
+.quiz header{position:static;background:none;border:0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.quiz h2{font-family:var(--f-disp);margin:0;font-size:1.4rem}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.q{border:2px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:10px;align-content:start}
+.q p{margin:0;font-weight:600;font-size:1.1rem}
+.opts{display:grid;gap:8px}
+.opts button{text-align:left;background:transparent;border:2px solid var(--line);border-radius:8px;padding:9px 12px;cursor:pointer;font-size:1.05rem;display:flex;gap:10px;align-items:center}
+.opts button:hover:not(:disabled){border-color:var(--accent)}
+.opts button .k{font-family:var(--f-mono);font-weight:700;color:var(--mute)}
+.opts button.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,transparent)}
+.opts button.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 18%,transparent);animation:shake .35s}
+.opts button:disabled{cursor:default}
+.fb{font-weight:700;min-height:1.4em}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .35s ease-out}
+
+/* tab-specific */
+.vt3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) ;gap:10px;align-items:center}
+@media (max-width:700px){.vt3{grid-template-columns:1fr}}
+.tri{border:2px solid var(--line);border-radius:10px;padding:8px;text-align:center}
+.cards5{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.bar{height:22px;border-radius:6px;background:color-mix(in srgb,var(--fg) 10%,transparent);position:relative;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;border-radius:6px;transition:width .25s}
+.bar>em{position:absolute;top:-3px;bottom:-3px;width:3px;background:var(--fg)}
+.causes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.causes>div{display:flex;gap:12px;align-items:center;border:2px solid var(--line);border-radius:10px;padding:10px}
+.causes svg{flex:0 0 52px}
+table{border-collapse:collapse;width:100%;font-family:var(--f-mono);font-size:1.05rem}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
+th{font-family:var(--f-body);font-size:.85rem;color:var(--mute);text-transform:uppercase;letter-spacing:.06em}
+tr.hit td{background:color-mix(in srgb,var(--accent) 22%,transparent);font-weight:700}
+.tw{overflow-x:auto}
+
+/* rapid quiz */
+.rq{max-width:900px;margin:0 auto;display:grid;gap:16px}
+.timer{height:14px;border-radius:7px;background:color-mix(in srgb,var(--fg) 12%,transparent);overflow:hidden}
+.timer>i{display:block;height:100%;background:var(--accent);width:100%}
+.rqq{font-size:1.9rem;font-weight:700;font-family:var(--f-body);text-align:center;min-height:2.5em;display:grid;place-items:center}
+.rq .opts{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.rq .opts button{font-size:1.4rem;justify-content:center;padding:16px}
+.stat{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--f-mono);font-weight:700;font-size:1.2rem}
+.tip{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;border:2px solid var(--q);border-left-width:10px;border-radius:10px;padding:12px 14px;background:color-mix(in srgb,var(--q) 9%,var(--panel));font-size:1.08rem}
+.tip b.tt{font-family:var(--f-disp);color:var(--q);text-transform:uppercase;letter-spacing:.06em;font-size:.95rem;white-space:nowrap}
+.tip ul{margin:0;padding-left:1.1em;display:grid;gap:6px}
+.methods{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.methods>div{border:2px solid var(--line);border-radius:10px;padding:12px;display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:start}
+.methods svg{width:52px;height:52px}
+.methods h3{margin:0 0 4px}
+.methods p{margin:0;color:var(--mute)}
+.tf{display:grid;gap:4px;margin:0;padding:0;list-style:none;font-family:var(--f-mono);font-size:1rem}
+footer{color:var(--mute);font-size:.85rem;padding-block:16px 30px;border-top:2px solid var(--line)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header>
+  <div class="wrap">
+    <div class="hbar">
+      <div class="brand">
+        <h1><b>cos φ</b> <span data-i="app">Power Factor</span></h1>
+        <small data-i="sub">angle between V and I</small>
+      </div>
+      <div class="ctrls">
+        <div class="seg" role="group" aria-label="Language">
+          <button id="lg-en" data-lang="en" aria-pressed="true">EN</button>
+          <button id="lg-hi" data-lang="hi" aria-pressed="false">हिं</button>
+          <button id="lg-ml" data-lang="ml" aria-pressed="false">മല</button>
+        </div>
+        <div class="seg" role="group" aria-label="Font size">
+          <button id="fs-dn" title="Smaller text">A−</button>
+          <button id="fs-rs" title="Reset text size">A</button>
+          <button id="fs-up" title="Larger text">A+</button>
+        </div>
+        <div class="seg" role="group" aria-label="Theme">
+          <button id="sk-dark" data-skin="dark" aria-pressed="false" data-i="dark">Dark</button>
+          <button id="sk-light" data-skin="light" aria-pressed="false" data-i="light">Light</button>
+          <button id="sk-hc" data-skin="hc" aria-pressed="false" data-i="hc">High contrast</button>
+        </div>
+        <button class="btn" id="fullBtn" title="Full screen">⛶</button>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist" id="tabs"></nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- TAB 1: phase angle -->
+<section class="tab" id="tab0">
+  <div class="grid">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h2 data-i="t1h">V and I: the angle φ</h2>
+        <div class="row">
+          <button class="btn" id="playBtn" data-i="pause">Pause</button>
+          <button class="btn" id="sweep1" data-i="sweep">Auto sweep</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:10px">
+        <canvas id="cPh" class="cv" style="aspect-ratio:1/1"></canvas>
+        <canvas id="cWv" class="cv" style="aspect-ratio:1.7/1"></canvas>
+      </div>
+      <div class="sl"><label for="phi1">φ</label><input type="range" id="phi1" min="0" max="90" step="1"><output id="phi1o">37°</output></div>
+      <div class="row">
+        <button class="btn" id="mR" data-i="unity">Resistive</button>
+        <button class="btn" id="mL" data-i="lag">Lagging (Inductive)</button>
+        <button class="btn" id="mC" data-i="lead">Leading (Capacitive)</button>
+      </div>
+    </div>
+    <div class="card" style="display:grid;gap:14px">
+      <div class="read">
+        <div><div class="lbl">φ</div><div class="big cA" id="r1phi">37°</div></div>
+        <div><div class="lbl">PF = cos φ</div><div class="big cP" id="r1pf">0.80</div></div>
+      </div>
+      <div class="chip cQ" id="r1type" style="justify-self:start">Lagging</div>
+      <ul class="key">
+        <li><span class="dot" style="background:var(--v)"></span><span><b class="cV">V</b> — <span data-i="volt">Voltage</span></span></li>
+        <li><span class="dot" style="background:var(--i)"></span><span><b class="cI">I</b> — <span data-i="curr">Current</span></span></li>
+        <li><span class="dot" style="background:var(--p)"></span><span data-i="k3">Green area = useful power</span></li>
+        <li><span class="dot" style="background:var(--bad)"></span><span data-i="k2">Red area = power returned to source</span></li>
+      </ul>
+      <div class="eq">PF = cos φ</div>
+      <p style="margin:0;font-size:1.1rem" data-i="k1">φ ↑ → PF ↓ → more red area</p>
+    </div>
+  </div>
+  <div class="tip" data-tips="ft0"></div>
+  <div class="quiz" data-set="t1"></div>
+</section>
+
+<!-- TAB 2: power triangle -->
+<section class="tab" id="tab1" hidden>
+  <div class="grid">
+    <div class="card">
+      <h2 data-i="t2h">Power triangle</h2>
+      <div style="display:grid;grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);gap:12px;align-items:center">
+        <svg id="sTri" viewBox="0 0 460 320" role="img" aria-label="Power triangle"></svg>
+        <svg id="sMug" viewBox="0 0 200 300" role="img" aria-label="Tea glass analogy"></svg>
+      </div>
+      <div class="sl"><label for="phi2">φ</label><input type="range" id="phi2" min="0" max="85" step="1"><output id="phi2o">37°</output></div>
+      <div class="sl"><label for="s2">S</label><input type="range" id="s2" min="1" max="100" step="1" value="10"><output id="s2o">10 kVA</output></div>
+      <p style="margin:6px 0 0" class="lbl" data-i="mug">Tea glass: tea = P, froth = Q, full glass = S</p>
+    </div>
+    <div class="card" style="display:grid;gap:12px">
+      <div class="read" style="grid-template-columns:1fr">
+        <div><div class="lbl" data-i="pA">Active power P</div><div class="mid cP" id="r2P">8.0 kW</div><small data-i="pAd">does real work</small></div>
+        <div><div class="lbl" data-i="pR">Reactive power Q</div><div class="mid cQ" id="r2Q">6.0 kVAR</div><small data-i="pRd">builds magnetic field</small></div>
+        <div><div class="lbl" data-i="pS">Apparent power S</div><div class="mid cS" id="r2S">10 kVA</div><small data-i="pSd">supply must deliver this</small></div>
+      </div>
+      <div class="eq"><span class="cP">P</span> = <span class="cS">S</span>·cos φ<br><span class="cQ">Q</span> = <span class="cS">S</span>·sin φ<br><span class="cS">S</span>² = <span class="cP">P</span>² + <span class="cQ">Q</span>²<br>PF = <span class="cP">P</span>/<span class="cS">S</span> = <b id="r2pf">0.80</b></div>
+    </div>
+  </div>
+  <div class="tip" data-tips="ft1"></div>
+  <div class="quiz" data-set="t2"></div>
+</section>
+
+<!-- TAB 3: impedance triangle -->
+<section class="tab" id="tab2" hidden>
+  <div class="grid">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h2 id="t3title">R / Z — impedance triangle</h2>
+        <div class="seg"><button id="cSer" aria-pressed="true" data-i="ser">Series</button><button id="cPar" aria-pressed="false" data-i="par">Parallel</button></div>
+      </div>
+      <div class="vt3">
+        <div class="tri"><div class="lbl" id="lz">Impedance</div><svg id="tz" viewBox="0 0 220 170"></svg></div>
+        <div class="tri"><div class="lbl" id="lv">Voltage (× I)</div><svg id="tv" viewBox="0 0 220 170"></svg></div>
+        <div class="tri"><div class="lbl" id="ls">Power (× I²)</div><svg id="ts" viewBox="0 0 220 170"></svg></div>
+      </div>
+      <svg id="ckt" viewBox="0 0 600 130" style="margin-top:8px" aria-label="R-L circuit"></svg>
+      <div class="sl"><label for="rR">R</label><input type="range" id="rR" min="0" max="20" step="0.5" value="6"><output id="rRo">6 Ω</output></div>
+      <div class="sl"><label for="rX">X</label><input type="range" id="rX" min="0" max="20" step="0.5" value="8"><output id="rXo">8 Ω</output></div>
+      <div class="sl" id="rIrow"><label for="rI">I</label><input type="range" id="rI" min="1" max="10" step="0.5" value="5"><output id="rIo">5 A</output></div>
+      <div class="sl" id="rVrow" hidden><label for="rV">V</label><input type="range" id="rV" min="10" max="240" step="10" value="120"><output id="rVo">120 V</output></div>
+    </div>
+    <div class="card" style="display:grid;gap:12px">
+      <div class="read">
+        <div><div class="lbl">Z = √(R²+X²)</div><div class="mid cS" id="r3Z">10 Ω</div></div>
+        <div><div class="lbl">φ</div><div class="mid cA" id="r3phi">53°</div></div>
+      </div>
+      <div class="eq" id="r3eq">cos φ = R/Z</div>
+      <div><div class="lbl">PF</div><div class="big cP" id="r3pf">0.60</div></div>
+      <p style="margin:0;font-size:1.1rem" data-i="same">Same angle φ in all three triangles</p>
+      <div class="tw"><table>
+        <tr><th></th><th data-i="ser">Series</th><th data-i="par">Parallel</th></tr>
+        <tr><td style="text-align:left" class="lbl">Z</td><td>√(R²+X²)</td><td>RX / √(R²+X²)</td></tr>
+        <tr><td style="text-align:left" class="lbl">cos φ</td><td class="cP"><b>R / Z</b></td><td class="cS"><b>Z / R</b></td></tr>
+        <tr><td style="text-align:left" class="lbl" data-i="common">common</td><td>I</td><td>V</td></tr>
+        <tr><td style="text-align:left" class="lbl">=</td><td>V<sub>R</sub> / V</td><td>I<sub>R</sub> / I</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="tip" data-tips="ft2"></div>
+  <div class="quiz" data-set="t3"></div>
+</section>
+
+<!-- TAB 4: current vs PF -->
+<section class="tab" id="tab3" hidden>
+  <div class="grid">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h2 data-i="t4h">Same power, same voltage — watch the current</h2>
+        <button class="btn" id="sweep4" data-i="sweep">Auto sweep</button>
+      </div>
+      <canvas id="cCab" class="cv" style="aspect-ratio:5/1.3"></canvas>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:12px;align-items:center;margin-top:8px">
+        <svg id="gauge" viewBox="0 0 240 160" aria-label="Ammeter"></svg>
+        <svg id="curve" viewBox="0 0 420 260" aria-label="Current versus power factor"></svg>
+      </div>
+      <div class="sl"><label for="pf4">PF</label><input type="range" id="pf4" min="0.2" max="1" step="0.01"><output id="pf4o">0.80</output></div>
+      <div class="sl"><label for="p4">P</label><input type="range" id="p4" min="0.5" max="20" step="0.1" value="2.3"><output id="p4o">2.3 kW</output></div>
+      <div class="row">
+        <span class="lbl" data-i="sys">Supply</span>
+        <div class="seg"><button id="ph1" aria-pressed="true">1φ 230 V</button><button id="ph3" aria-pressed="false">3φ 415 V</button></div>
+        <span class="lbl" data-i="constPV">P and V constant</span>
+      </div>
+    </div>
+    <div class="card" style="display:grid;gap:12px">
+      <div><div class="lbl" data-i="lineI">Line current</div><div class="big cI" id="r4I">12.5 A</div></div>
+      <div class="read">
+        <div><div class="lbl" data-i="xI">× current</div><div class="mid cI" id="r4x">1.25×</div></div>
+        <div><div class="lbl" data-i="xL">× copper loss</div><div class="mid cBad" id="r4l">1.56×</div></div>
+      </div>
+      <div class="eq" id="r4eq">I = P / (V·cos φ)</div>
+      <p style="margin:0;font-size:1.15rem;font-weight:700" data-i="k4">PF ↓ → I ↑ for the same work</p>
+      <div class="tw"><table id="t4"></table></div>
+    </div>
+  </div>
+  <div class="tip" data-tips="ft3"></div>
+  <div class="quiz" data-set="t4"></div>
+</section>
+
+<!-- TAB 5: why -->
+<section class="tab" id="tab4" hidden>
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <h2 data-i="t5h">Why power factor matters</h2>
+      <div class="row" style="flex:1 1 320px;max-width:560px">
+        <div class="sl" style="flex:1;margin:0"><label for="pf5">PF</label><input type="range" id="pf5" min="0.3" max="1" step="0.01"><output id="pf5o">0.80</output></div>
+      </div>
+    </div>
+    <div class="cards5" id="why"></div>
+  </div>
+  <div class="grid">
+    <div class="card" style="display:grid;gap:12px">
+      <h2 data-i="tf">KSEB tariff: PF incentive / penalty (HT & EHT)</h2>
+      <svg id="sTf" viewBox="0 0 460 250" aria-label="PF incentive and penalty curve"></svg>
+      <div class="sl"><label for="pfT">PF</label><input type="range" id="pfT" min="0.80" max="1" step="0.01" value="0.86"><output id="pfTo">0.86</output></div>
+      <div class="sl"><label for="eT" data-i="eCh">Energy ₹</label><input type="range" id="eT" min="10000" max="1000000" step="10000" value="200000"><output id="eTo">₹2,00,000</output></div>
+    </div>
+    <div class="card" style="display:grid;gap:12px;align-content:start">
+      <div class="read" style="grid-template-columns:1fr">
+        <div><div class="lbl" data-i="adj">Adjustment on energy charge</div><div class="big" id="rTf">−6.5%</div><div class="mid" id="rTfR">−₹13,000</div></div>
+        <div><div class="lbl" data-i="kvaD">kVA demand for 500 kW load</div><div class="mid cS" id="rKva">581 kVA</div></div>
+      </div>
+      <ul class="tf">
+        <li class="cOk">PF &gt; 0.95 → +0.5% / 0.01 <span data-i="inc">incentive</span></li>
+        <li class="cQ">0.90 – 0.95 → −0.5% / 0.01</li>
+        <li class="cBad">PF &lt; 0.90 → −1% / 0.01 (+2.5%)</li>
+        <li class="cS" data-i="tfLead">Leading PF: no penalty, no incentive</li>
+      </ul>
+      <p style="margin:0;color:var(--mute);font-size:.9rem" data-i="tfLT">LT consumers with motor/welding loads: capacitors of prescribed kVAR are compulsory; non-compliance attracts a low-PF surcharge as per the tariff order.</p>
+      <p style="margin:0;color:var(--mute);font-size:.85rem" data-i="tfSrc">Source: KSEB HT-I(A) tariff page. Verify with the current KSERC order before billing calculations.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h2 data-i="cz">Causes of low PF</h2>
+    <div class="causes" id="causes"></div>
+  </div>
+  <div class="tip" data-tips="ft4"></div>
+  <div class="quiz" data-set="t5"></div>
+</section>
+
+<!-- TAB 6: improve PF -->
+<section class="tab" id="tab5" hidden>
+  <div class="card">
+    <h2 data-i="mh">Methods to improve power factor</h2>
+    <div class="methods" id="methods"></div>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h2 data-i="fix">Correction: capacitor bank</h2>
+      <svg id="sCap" viewBox="0 0 420 260" aria-label="Capacitor correction"></svg>
+      <div class="sl"><label for="cP" data-i="loadP">Load P</label><input type="range" id="cP" min="5" max="200" step="5" value="50"><output id="cPo">50 kW</output></div>
+      <div class="sl"><label for="c1" data-i="pfNow">PF now</label><input type="range" id="c1" min="0.5" max="0.95" step="0.01" value="0.7"><output id="c1o">0.70</output></div>
+      <div class="sl"><label for="c2" data-i="pfTgt">Target PF</label><input type="range" id="c2" min="0.8" max="1" step="0.01" value="0.95"><output id="c2o">0.95</output></div>
+      <div class="row" style="justify-content:space-between">
+        <button class="btn" id="capBtn" data-i="capOn">Switch ON capacitor</button>
+        <div><span class="lbl" data-i="capNeed">Capacitor needed</span> <span class="mid cQ" id="rQc">35 kVAR</span></div>
+      </div>
+      <div class="eq" style="font-size:1.15rem">Qc = P (tan φ₁ − tan φ₂)</div>
+    </div>
+    <div class="card" style="display:grid;gap:12px;align-content:start">
+      <h2 data-i="where">Where to connect capacitors</h2>
+      <svg id="sWhere" viewBox="0 0 420 230" aria-label="Individual, group and central compensation"></svg>
+      <ul class="key">
+        <li><span class="dot" style="background:var(--p)"></span><span data-i="w_ind">Individual — at each motor: best loss reduction</span></li>
+        <li><span class="dot" style="background:var(--q)"></span><span data-i="w_grp">Group — at a sub-distribution board</span></li>
+        <li><span class="dot" style="background:var(--s)"></span><span data-i="w_cen">Central APFC — at main LT panel: lowest cost per kVAR</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="tip" data-tips="ft5"></div>
+  <div class="quiz" data-set="t6"></div>
+</section>
+
+<!-- TAB 7: reactive power & solar -->
+<section class="tab" id="tab6" hidden>
+  <div class="grid">
+    <div class="card">
+      <h2 data-i="rh">Why is reactive power needed?</h2>
+      <canvas id="cRe" class="cv" style="aspect-ratio:16/8"></canvas>
+      <div class="row" style="margin-top:8px">
+        <span class="chip cP" data-i="legP">P → one way, does work</span>
+        <span class="chip cQ" data-i="legQ">Q ⇄ back and forth, builds field</span>
+      </div>
+    </div>
+    <div class="card" style="display:grid;gap:10px;align-content:start">
+      <ul class="key">
+        <li><span class="dot" style="background:var(--q)"></span><span data-i="r1">Motors, transformers, chokes need a magnetic field. Q builds it.</span></li>
+        <li><span class="dot" style="background:var(--q)"></span><span data-i="r2">Q does no net work: stored in the coil, returned every half cycle.</span></li>
+        <li><span class="dot" style="background:var(--v)"></span><span data-i="r3">Q holds up voltage. Grid operators control voltage with Q.</span></li>
+        <li><span class="dot" style="background:var(--bad)"></span><span data-i="r4">Too little Q → low voltage, motors stall. Too much Q → overvoltage.</span></li>
+      </ul>
+      <div class="eq" style="font-size:1.25rem">ΔV ≈ (P·R + Q·X) / V</div>
+      <p style="margin:0;font-size:1.05rem;font-weight:700" data-i="r5">So: Q is needed — but supply it locally (capacitor / inverter), not from the far-away grid.</p>
+    </div>
+  </div>
+  <div class="card" style="display:grid;gap:16px">
+    <h2 data-i="srcH" style="font-size:1.7rem">Source side: how is Q controlled?</h2>
+    <!-- step 1 -->
+    <div class="grid" style="grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)">
+      <div>
+        <h3 data-i="srcS1">Step 1 · Load decides how much Q. Sources share it.</h3>
+        <svg id="sShare" viewBox="0 0 520 200" aria-label="Sharing of reactive power"></svg>
+        <div class="sl"><label for="shC" data-i="shareC">Q from capacitor</label><input type="range" id="shC" min="0" max="80" step="5" value="0"><output id="shCo">0</output></div>
+        <div class="sl"><label for="shI" data-i="shareI">Q from inverter</label><input type="range" id="shI" min="0" max="80" step="5" value="0"><output id="shIo">0</output></div>
+      </div>
+      <div style="display:grid;gap:10px;align-content:start">
+        <div class="eq" style="font-size:1.2rem">Q<sub>load</sub> = Q<sub>grid</sub> + Q<sub>inv</sub> + Q<sub>cap</sub></div>
+        <div class="read">
+          <div><div class="lbl" data-i="share">Q from grid</div><div class="mid cQ" id="rShG">60 kVAR</div></div>
+          <div><div class="lbl" data-i="pfA">Grid PF</div><div class="mid" id="rShPf">0.80</div></div>
+        </div>
+        <p style="margin:0;font-size:1.05rem" data-i="sh1n">Motor: 80 kW, 60 kVAR — fixed. Only the supplier of Q changes.</p>
+      </div>
+    </div>
+    <!-- step 2 -->
+    <div class="grid" style="grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)">
+      <div>
+        <h3 data-i="srcS2">Step 2 · Generator: field (excitation) current controls Q</h3>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
+          <svg id="sGen" viewBox="0 0 260 220" aria-label="Generator phasors"></svg>
+          <svg id="sVc" viewBox="0 0 260 220" aria-label="V-curve"></svg>
+        </div>
+        <div class="sl"><label for="gE" data-i="exc">Excitation</label><input type="range" id="gE" min="0.6" max="1.6" step="0.02" value="1.3"><output id="gEo">1.30</output></div>
+      </div>
+      <div style="display:grid;gap:10px;align-content:start">
+        <div class="chip" id="rGst" style="justify-self:start">—</div>
+        <div class="read">
+          <div><div class="lbl">Q</div><div class="mid cQ" id="rGq">+0.4</div></div>
+          <div><div class="lbl">PF</div><div class="mid cP" id="rGpf">0.85</div></div>
+        </div>
+        <ul class="key">
+          <li><span class="dot" style="background:var(--s)"></span><span data-i="under">Under-excited → absorbs Q</span></li>
+          <li><span class="dot" style="background:var(--p)"></span><span data-i="normal">Normal → unity PF</span></li>
+          <li><span class="dot" style="background:var(--q)"></span><span data-i="over">Over-excited → supplies Q</span></li>
+        </ul>
+        <p style="margin:0;color:var(--mute)" data-i="gnote">P is set by the turbine (fixed here). The field knob changes only Q — the V-curve.</p>
+      </div>
+    </div>
+    <!-- step 3 -->
+    <div class="grid" style="grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)">
+      <div>
+        <h3 data-i="srcS3">Step 3 · Solar inverter: timing of the current controls Q</h3>
+        <canvas id="cInv" class="cv" style="aspect-ratio:16/7"></canvas>
+        <div class="sl"><label for="vSun" data-i="sun">Sun (MPPT) → P</label><input type="range" id="vSun" min="0" max="100" step="1" value="70"><output id="vSuno">70 kW</output></div>
+        <div class="sl"><label for="vQ" data-i="qset">Q setting</label><input type="range" id="vQ" min="-70" max="70" step="1" value="40"><output id="vQo">+40 kVAR</output></div>
+      </div>
+      <div style="display:grid;gap:10px;align-content:start">
+        <div class="read">
+          <div><div class="lbl">P</div><div class="mid cP" id="rVp">70 kW</div></div>
+          <div><div class="lbl">Q</div><div class="mid cQ" id="rVq">+40</div></div>
+          <div><div class="lbl">PF</div><div class="mid" id="rVpf">0.87</div></div>
+          <div><div class="lbl">S</div><div class="mid cS" id="rVs">81 kVA</div></div>
+        </div>
+        <div class="chip" id="rVst" style="justify-self:start">—</div>
+        <ul class="key">
+          <li><span class="dot" style="background:var(--p)"></span><span data-i="inv1">MPPT fixes the in-phase part of current (Id) → P from the sun.</span></li>
+          <li><span class="dot" style="background:var(--q)"></span><span data-i="inv2">Controller adds a 90° part (Iq) → Q. No sun needed — works at night too.</span></li>
+          <li><span class="dot" style="background:var(--v)"></span><span data-i="inv3">Grid sets the voltage. Inverter only chooses its current: size and timing.</span></li>
+        </ul>
+      </div>
+    </div>
+    <!-- summary -->
+    <div>
+      <h3 data-i="sumH">Same lagging current — two meanings</h3>
+      <div class="tw"><table id="tSum"></table></div>
+      <p style="margin:8px 0 0;font-size:1.1rem;font-weight:700"><span class="cQ" data-i="sumL">At a load (motor): current lags V → takes Q</span><br><span class="cP" data-i="sumS">At a source (generator / inverter): current lags V → gives Q</span></p>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h2 data-i="sh">Solar inverter: capability circle</h2>
+      <svg id="sInv" viewBox="0 0 440 340" aria-label="Inverter P-Q capability"></svg>
+      <div class="sl"><label for="iP">P</label><input type="range" id="iP" min="0" max="100" step="1" value="80"><output id="iPo">80 kW</output></div>
+      <div class="sl"><label for="iQ">Q</label><input type="range" id="iQ" min="-100" max="100" step="1" value="0"><output id="iQo">0 kVAR</output></div>
+    </div>
+    <div class="card" style="display:grid;gap:12px;align-content:start">
+      <div class="read">
+        <div><div class="lbl" data-i="sQa">Q available</div><div class="mid cQ" id="rQa">60 kVAR</div></div>
+        <div><div class="lbl" data-i="sPF">Inverter PF</div><div class="mid cP" id="rIpf">1.00</div></div>
+      </div>
+      <div class="chip" id="rIband" style="justify-self:start">OK</div>
+      <ul class="key">
+        <li><span class="dot" style="background:var(--s)"></span><span data-i="sr1">Rating is kVA: S² = P² + Q². Q uses up capacity.</span></li>
+        <li><span class="dot" style="background:var(--accent)"></span><span data-i="sr2">Modes: fixed PF · Q(U) volt-var · Q(P) · Q at night</span></li>
+        <li><span class="dot" style="background:var(--q)"></span><span data-i="sr3">Shaded wedge: PF 0.95 lag – 0.95 lead band typically asked for larger plants (check CEA rules and DISCOM agreement).</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <h2 data-i="nmh">Why PF at the meter falls after rooftop solar</h2>
+    <div class="grid" style="grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)">
+      <div>
+        <div class="sl"><label for="nL" data-i="nLk">Load kW</label><input type="range" id="nL" min="10" max="200" step="5" value="100"><output id="nLo">100 kW</output></div>
+        <div class="sl"><label for="nQ" data-i="nLq">Load kVAR</label><input type="range" id="nQ" min="0" max="150" step="5" value="45"><output id="nQo">45 kVAR</output></div>
+        <div class="sl"><label for="nS" data-i="nSk">Solar kW</label><input type="range" id="nS" min="0" max="200" step="5" value="60"><output id="nSo">60 kW</output></div>
+        <div class="sl"><label for="nI" data-i="nIq">Inverter kVAR</label><input type="range" id="nI" min="0" max="150" step="5" value="0"><output id="nIo">0 kVAR</output></div>
+        <svg id="sNm" viewBox="0 0 460 150" aria-label="Grid supply before and after solar"></svg>
+      </div>
+      <div style="display:grid;gap:10px;align-content:start">
+        <div class="read">
+          <div><div class="lbl" data-i="pfB">Grid PF before solar</div><div class="mid cP" id="rNb">0.91</div></div>
+          <div><div class="lbl" data-i="pfA">Grid PF with solar</div><div class="mid" id="rNa">0.67</div></div>
+        </div>
+        <p style="margin:0;font-size:1.05rem" data-i="nm1">Solar supplies kW; the grid still supplies all kVAR. Grid kW falls, kVAR stays → PF at the meter falls.</p>
+        <p style="margin:0;font-size:1.05rem;font-weight:700" data-i="nm2">Fix: keep APFC working, or let the inverter supply kVAR (slide "Inverter kVAR").</p>
+      </div>
+    </div>
+  </div>
+  <div class="tip" data-tips="ft6"></div>
+  <div class="quiz" data-set="t7"></div>
+</section>
+
+<!-- TAB 8: rapid quiz -->
+<section class="tab" id="tab7" hidden>
+  <div class="card rq" id="rq"></div>
+</section>
+</main>
+
+<footer class="wrap">NSTI Calicut · PRASAD UM, VI · CTS Electrician — Power Factor · <span data-i="keys">Keys: ← → tabs, + − text size</span></footer>
+
+<script>
+/* ---------------- i18n ---------------- */
+const L={
+en:{app:"Power Factor",sub:"angle between V and I",dark:"Dark",light:"Light",hc:"High contrast",
+tab0:"Angle φ",tab1:"Power triangle",tab2:"R / Z",tab3:"Current vs PF",tab4:"Why PF?",tab5:"Rapid quiz",
+t1h:"V and I: the angle φ",pause:"Pause",play:"Play",sweep:"Auto sweep",unity:"Resistive",lag:"Lagging (Inductive)",lead:"Leading (Capacitive)",
+lagS:"Lagging",leadS:"Leading",unityS:"Unity",volt:"Voltage",curr:"Current",k3:"Green area = useful power delivered",k2:"Red area = power returned to source",k1:"φ ↑ → PF ↓ → more red area",
+phasor:"Phasor",wave:"Waveforms",avgP:"average P",
+t2h:"Power triangle",mug:"Tea glass: tea = P, froth = Q, full glass = S",pA:"Active power P",pAd:"does real work (heat, light, motion)",pR:"Reactive power Q",pRd:"builds magnetic field, no real work",pS:"Apparent power S",pSd:"what the supply must deliver",tea:"tea",froth:"froth",
+t3h:"R / Z — impedance triangle",zt:"Impedance",vt:"Voltage (× I)",st:"Power (× I²)",same:"Same angle φ in all three triangles",rOnly:"R only → PF = 1",xOnly:"X only → PF = 0",
+t4h:"Same power, same voltage — watch the current",sys:"Supply",constPV:"P and V constant",lineI:"Line current",xI:"× current (vs PF 1)",xL:"× copper loss",k4:"PF ↓ → I ↑ for the same work",heat:"heat",
+t5h:"Why power factor matters",w1:"More current",w2:"More heat loss",w3:"More voltage drop",w4:"Transformer gives less kW",w5:"Penalty in bill",
+w1d:"I = P / (V cos φ)",w2d:"Loss = I²R",w3d:"Drop = I × R",w4d:"100 kVA × PF = usable kW",w5d:"Utility penalty below PF 0.9",
+ok:"OK",pen:"Penalty",cz:"Causes of low PF",c1:"Induction motors (light load)",c2:"Transformers on no-load",c3:"Chokes / ballasts",c4:"Welding sets, arc furnaces",
+fix:"Correction: capacitor bank",loadP:"Load P",pfNow:"PF now",pfTgt:"Target PF",capOn:"Switch ON capacitor",capOff:"Switch OFF capacitor",capNeed:"Capacitor needed",before:"before",after:"after",
+chal:"Challenge",right:"Correct!",wrong:"Not quite — think again",score:"Score",
+rqTitle:"Rapid quiz",rqInfo:"10 questions · 15 s each · beat the clock",start:"Start",next:"Next",again:"Play again",time:"Time up!",streak:"Streak",g1:"Excellent! PF expert.",g2:"Good — revise one tab.",g3:"Go back through the tabs and try again.",
+keys:"Keys: ← → tabs, + − text size"},
+hi:{app:"शक्ति गुणांक",sub:"V और I के बीच का कोण",dark:"डार्क",light:"लाइट",hc:"हाई कॉन्ट्रास्ट",
+tab0:"कोण φ",tab1:"शक्ति त्रिभुज",tab2:"R / Z",tab3:"धारा बनाम PF",tab4:"PF क्यों?",tab5:"रैपिड क्विज़",
+t1h:"V और I: कोण φ",pause:"रोकें",play:"चलाएँ",sweep:"ऑटो स्वीप",unity:"प्रतिरोधी",lag:"पश्चगामी (प्रेरकीय)",lead:"अग्रगामी (धारितीय)",
+lagS:"पश्चगामी",leadS:"अग्रगामी",unityS:"इकाई",volt:"वोल्टेज",curr:"धारा",k3:"हरा भाग = उपयोगी शक्ति",k2:"लाल भाग = स्रोत को लौटती शक्ति",k1:"φ ↑ → PF ↓ → अधिक लाल भाग",
+phasor:"फेज़र",wave:"तरंगरूप",avgP:"औसत P",
+t2h:"शक्ति त्रिभुज",mug:"चाय का गिलास: चाय = P, झाग = Q, पूरा गिलास = S",pA:"सक्रिय शक्ति P",pAd:"वास्तविक कार्य करती है (ऊष्मा, प्रकाश, गति)",pR:"प्रतिघाती शक्ति Q",pRd:"चुंबकीय क्षेत्र बनाती है, वास्तविक कार्य नहीं",pS:"आभासी शक्ति S",pSd:"जो आपूर्ति को देनी पड़ती है",tea:"चाय",froth:"झाग",
+t3h:"R / Z — प्रतिबाधा त्रिभुज",zt:"प्रतिबाधा",vt:"वोल्टेज (× I)",st:"शक्ति (× I²)",same:"तीनों त्रिभुजों में एक ही कोण φ",rOnly:"केवल R → PF = 1",xOnly:"केवल X → PF = 0",
+t4h:"समान शक्ति, समान वोल्टेज — धारा देखें",sys:"आपूर्ति",constPV:"P और V स्थिर",lineI:"लाइन धारा",xI:"× धारा (PF 1 की तुलना)",xL:"× ताम्र हानि",k4:"PF ↓ → उसी काम के लिए I ↑",heat:"ऊष्मा",
+t5h:"शक्ति गुणांक क्यों महत्वपूर्ण है",w1:"अधिक धारा",w2:"अधिक ऊष्मा हानि",w3:"अधिक वोल्टेज पात",w4:"ट्रांसफार्मर कम kW देता है",w5:"बिल में जुर्माना",
+w1d:"I = P / (V cos φ)",w2d:"हानि = I²R",w3d:"पात = I × R",w4d:"100 kVA × PF = उपयोगी kW",w5d:"PF 0.9 से कम पर जुर्माना",
+ok:"ठीक",pen:"जुर्माना",cz:"कम PF के कारण",c1:"प्रेरण मोटर (हल्का भार)",c2:"बिना भार ट्रांसफार्मर",c3:"चोक / बैलास्ट",c4:"वेल्डिंग सेट, आर्क भट्टी",
+fix:"सुधार: संधारित्र बैंक",loadP:"भार P",pfNow:"वर्तमान PF",pfTgt:"लक्ष्य PF",capOn:"संधारित्र चालू करें",capOff:"संधारित्र बंद करें",capNeed:"आवश्यक संधारित्र",before:"पहले",after:"बाद में",
+chal:"चुनौती",right:"सही!",wrong:"नहीं — फिर से सोचें",score:"अंक",
+rqTitle:"रैपिड क्विज़",rqInfo:"10 प्रश्न · प्रत्येक 15 सेकंड · समय से तेज़ बनें",start:"शुरू करें",next:"अगला",again:"फिर से खेलें",time:"समय समाप्त!",streak:"लगातार",g1:"उत्कृष्ट! PF विशेषज्ञ।",g2:"अच्छा — एक टैब दोहराएँ।",g3:"टैब फिर से देखें और दोबारा प्रयास करें।",
+keys:"कुंजियाँ: ← → टैब, + − अक्षर आकार"},
+ml:{app:"പവർ ഫാക്ടർ",sub:"V യും I യും തമ്മിലുള്ള കോൺ",dark:"ഡാർക്ക്",light:"ലൈറ്റ്",hc:"ഹൈ കോൺട്രാസ്റ്റ്",
+tab0:"കോൺ φ",tab1:"പവർ ത്രികോണം",tab2:"R / Z",tab3:"കറന്റ് vs PF",tab4:"PF എന്തിന്?",tab5:"റാപ്പിഡ് ക്വിസ്",
+t1h:"V യും I യും: കോൺ φ",pause:"നിർത്തുക",play:"പ്ലേ",sweep:"ഓട്ടോ സ്വീപ്പ്",unity:"റെസിസ്റ്റീവ്",lag:"ലാഗിങ് (ഇൻഡക്ടീവ്)",lead:"ലീഡിങ് (കപ്പാസിറ്റീവ്)",
+lagS:"ലാഗിങ്",leadS:"ലീഡിങ്",unityS:"യൂണിറ്റി",volt:"വോൾട്ടേജ്",curr:"കറന്റ്",k3:"പച്ച ഭാഗം = ഉപയോഗപ്രദമായ പവർ",k2:"ചുവപ്പ് ഭാഗം = സ്രോതസ്സിലേക്ക് തിരികെ പോകുന്ന പവർ",k1:"φ ↑ → PF ↓ → ചുവപ്പ് ഭാഗം കൂടുന്നു",
+phasor:"ഫേസർ",wave:"തരംഗരൂപങ്ങൾ",avgP:"ശരാശരി P",
+t2h:"പവർ ത്രികോണം",mug:"ചായ ഗ്ലാസ്: ചായ = P, പത = Q, നിറഞ്ഞ ഗ്ലാസ് = S",pA:"ആക്ടീവ് പവർ P",pAd:"യഥാർത്ഥ ജോലി ചെയ്യുന്നു (ചൂട്, വെളിച്ചം, ചലനം)",pR:"റിയാക്ടീവ് പവർ Q",pRd:"കാന്തിക മണ്ഡലം സൃഷ്ടിക്കുന്നു, ജോലി ചെയ്യുന്നില്ല",pS:"അപ്പാരന്റ് പവർ S",pSd:"സപ്ലൈ നൽകേണ്ട ആകെ പവർ",tea:"ചായ",froth:"പത",
+t3h:"R / Z — ഇംപീഡൻസ് ത്രികോണം",zt:"ഇംപീഡൻസ്",vt:"വോൾട്ടേജ് (× I)",st:"പവർ (× I²)",same:"മൂന്ന് ത്രികോണങ്ങളിലും ഒരേ കോൺ φ",rOnly:"R മാത്രം → PF = 1",xOnly:"X മാത്രം → PF = 0",
+t4h:"അതേ പവർ, അതേ വോൾട്ടേജ് — കറന്റ് നോക്കൂ",sys:"സപ്ലൈ",constPV:"P, V സ്ഥിരം",lineI:"ലൈൻ കറന്റ്",xI:"× കറന്റ് (PF 1-നെ അപേക്ഷിച്ച്)",xL:"× കോപ്പർ നഷ്ടം",k4:"PF ↓ → അതേ ജോലിക്ക് I ↑",heat:"ചൂട്",
+t5h:"പവർ ഫാക്ടർ എന്തുകൊണ്ട് പ്രധാനം",w1:"കൂടുതൽ കറന്റ്",w2:"കൂടുതൽ താപ നഷ്ടം",w3:"കൂടുതൽ വോൾട്ടേജ് ഡ്രോപ്പ്",w4:"ട്രാൻസ്ഫോർമർ കുറച്ച് kW മാത്രം",w5:"ബില്ലിൽ പിഴ",
+w1d:"I = P / (V cos φ)",w2d:"നഷ്ടം = I²R",w3d:"ഡ്രോപ്പ് = I × R",w4d:"100 kVA × PF = ഉപയോഗിക്കാവുന്ന kW",w5d:"PF 0.9-ൽ താഴെയെങ്കിൽ പിഴ",
+ok:"ശരി",pen:"പിഴ",cz:"PF കുറയാനുള്ള കാരണങ്ങൾ",c1:"ഇൻഡക്ഷൻ മോട്ടോർ (കുറഞ്ഞ ലോഡ്)",c2:"നോ-ലോഡ് ട്രാൻസ്ഫോർമർ",c3:"ചോക്ക് / ബാലസ്റ്റ്",c4:"വെൽഡിങ് സെറ്റ്, ആർക്ക് ഫർണസ്",
+fix:"പരിഹാരം: കപ്പാസിറ്റർ ബാങ്ക്",loadP:"ലോഡ് P",pfNow:"ഇപ്പോഴത്തെ PF",pfTgt:"ലക്ഷ്യ PF",capOn:"കപ്പാസിറ്റർ ഓൺ ചെയ്യുക",capOff:"കപ്പാസിറ്റർ ഓഫ് ചെയ്യുക",capNeed:"ആവശ്യമായ കപ്പാസിറ്റർ",before:"മുൻപ്",after:"ശേഷം",
+chal:"വെല്ലുവിളി",right:"ശരി!",wrong:"അല്ല — വീണ്ടും ചിന്തിക്കൂ",score:"സ്കോർ",
+rqTitle:"റാപ്പിഡ് ക്വിസ്",rqInfo:"10 ചോദ്യങ്ങൾ · ഓരോന്നിനും 15 സെക്കൻഡ്",start:"തുടങ്ങുക",next:"അടുത്തത്",again:"വീണ്ടും കളിക്കുക",time:"സമയം കഴിഞ്ഞു!",streak:"തുടർച്ച",g1:"മികച്ചത്! PF വിദഗ്ധൻ.",g2:"നല്ലത് — ഒരു ടാബ് വീണ്ടും നോക്കൂ.",g3:"ടാബുകൾ വീണ്ടും പഠിച്ച് ശ്രമിക്കൂ.",
+keys:"കീകൾ: ← → ടാബുകൾ, + − അക്ഷര വലുപ്പം"}
+};
+const L2={
+en:{tab5:"Improve PF",tab6:"Reactive & solar",tab7:"Rapid quiz",ser:"Series",par:"Parallel",common:"common",yt:"Admittance (Y)",it:"Current (× V)",st2:"Power (× V²)",t3hS:"R / Z — series circuit",t3hP:"Z / R — parallel circuit",ftT:"Field tip",
+tp0a:"Multifunction meter (MFM) shows cos φ with 'Lag' or 'Lead' — always note which.",tp0b:"Analog PF meter: 1 at top centre, lag on one side, lead on the other.",
+tp1a:"Quick check without a PF meter: PF ≈ kW ÷ (V × I) for 1φ, kW ÷ (√3 × V × I) for 3φ.",tp1b:"Transformer, DG, UPS and inverter nameplates are in kVA — that is S, not P.",
+tp2a:"Circuit type not given → assume series: PF = R/Z.",tp2b:"Parallel R–L: PF = Z/R = I_R / I. Measure branch currents with a clamp meter to find PF.",
+tp3a:"High current but modest kW? Check PF before upsizing cable or MCB.",tp3b:"Lightly loaded induction motor: PF can drop to 0.2–0.3 at no load.",
+tp4a:"KSEB HT bill shows average PF and demand in kVA — low PF raises both the penalty and the kVA demand charge.",tp4b:"Check APFC relay display and capacitor step currents every month; one failed step can push PF below 0.9.",
+f1:"Discharge capacitors before touching: wait ≥ 1 min, then short terminals to earth.",f2:"Motor capacitor: keep kVAR below the motor's no-load kVAR — avoids self-excitation overvoltage at switch-off.",f3:"Capacitor current ≈ 1.4 A per kVAR at 415 V, 3φ. Cable and fuse ≥ 1.5 × this.",f4:"Bulged or leaking can, or harmonics from VFDs/UPS? Use detuned (7%) reactor banks.",f5:"Don't over-correct: leading PF raises voltage. APFC switches steps to hold about 0.98.",f6:"Switch off fixed capacitor banks when the plant is idle (night, holidays).",
+s1:"Rooftop solar at unity PF supplies only kW; kVAR still comes from the grid → PF at the KSEB meter falls.",s2:"Set inverter mode (fixed PF / Q(U)) only as approved by the DISCOM; record it in the commissioning report.",s3:"Inverter Q uses kVA headroom: at full kW little Q is left — oversize the inverter ~10% if Q support is needed.",
+tf:"KSEB tariff: PF incentive / penalty (HT & EHT)",eCh:"Energy ₹",adj:"Adjustment on energy charge",kvaD:"kVA demand for 500 kW load",inc:"incentive",tfLead:"Leading PF: no penalty, no incentive",tfLT:"LT consumers with motor/welding loads: capacitors of prescribed kVAR are compulsory; non-compliance attracts a low-PF surcharge as per the tariff order.",tfSrc:"Source: KSEB HT-I(A) tariff page. Verify with the current KSERC order before billing calculations.",tfInc:"Incentive",tfPen:"Penalty",tfNone:"No adjustment",
+mh:"Methods to improve power factor",m1t:"Static capacitors",m1d:"Shunt capacitor bank across the load — cheapest, no moving parts",m2t:"APFC panel",m2d:"Relay switches capacitor steps automatically to hold target PF",m3t:"Synchronous condenser",m3d:"Over-excited synchronous motor on no-load — supplies Q, smooth control",m4t:"Phase advancer",m4d:"Supplies excitation to the rotor of slip-ring induction motors",m5t:"Right-size motors",m5d:"Avoid lightly loaded motors and idle running; light load = low PF",m6t:"STATCOM / SVG",m6d:"Power-electronic Q source — fast, for fluctuating loads (solar inverters too)",
+where:"Where to connect capacitors",w_ind:"Individual — at each motor: best loss reduction",w_grp:"Group — at a sub-distribution board",w_cen:"Central APFC — at main LT panel: lowest cost per kVAR",
+rh:"Why is reactive power needed?",legP:"P → one way, does work",legQ:"Q ⇄ back and forth, builds field",r1:"Motors, transformers, chokes need a magnetic field. Q builds it.",r2:"Q does no net work: stored in the coil, returned every half cycle.",r3:"Q holds up voltage. Grid operators control voltage with Q.",r4:"Too little Q → low voltage, motors stall. Too much Q → overvoltage.",r5:"So Q is needed — but supply it locally (capacitor / inverter), not from the far-away grid.",src:"Source",ldR:"Heater (R)",ldL:"Motor coil (L)",stored:"Stored energy",
+sh:"Solar inverter: capability circle",sQa:"Q available",sPF:"Inverter PF",sr1:"Rating is kVA: S² = P² + Q². Q uses up capacity.",sr2:"Modes: fixed PF · Q(U) volt-var · Q(P) · Q at night",sr3:"Shaded wedge: 0.95 lag – 0.95 lead, typically asked for larger plants (check CEA rules and DISCOM agreement).",inBand:"Within 0.95 band",outBand:"Outside 0.95 band",over:"Beyond rating!",
+nmh:"Why PF at the meter falls after rooftop solar",nLk:"Load kW",nLq:"Load kVAR",nSk:"Solar kW",nIq:"Inverter kVAR",pfB:"Grid PF before solar",pfA:"Grid PF with solar",nm1:"Solar supplies kW; the grid still supplies all kVAR. Grid kW falls, kVAR stays → PF at the meter falls.",nm2:"Fix: keep APFC working, or let the inverter supply kVAR (slide 'Inverter kVAR').",grid:"Grid",export:"export"},
+hi:{tab5:"PF सुधार",tab6:"प्रतिघाती शक्ति व सोलर",tab7:"रैपिड क्विज़",ser:"श्रेणी",par:"समानांतर",common:"उभयनिष्ठ",yt:"प्रवेश्यता (Y)",it:"धारा (× V)",st2:"शक्ति (× V²)",t3hS:"R / Z — श्रेणी परिपथ",t3hP:"Z / R — समानांतर परिपथ",ftT:"फील्ड टिप",
+tp0a:"मल्टीफंक्शन मीटर (MFM) cos φ के साथ 'Lag' या 'Lead' दिखाता है — हमेशा नोट करें।",tp0b:"एनालॉग PF मीटर: 1 ऊपर बीच में; एक ओर lag, दूसरी ओर lead।",
+tp1a:"PF मीटर के बिना जाँच: 1φ में PF ≈ kW ÷ (V × I), 3φ में kW ÷ (√3 × V × I)।",tp1b:"ट्रांसफार्मर, DG, UPS, इन्वर्टर की नेमप्लेट kVA में — यह S है, P नहीं।",
+tp2a:"परिपथ प्रकार न दिया हो → श्रेणी मानें: PF = R/Z।",tp2b:"समानांतर R–L: PF = Z/R = I_R / I। क्लैंप मीटर से शाखा धाराएँ मापकर PF निकालें।",
+tp3a:"धारा अधिक पर kW कम? केबल या MCB बड़ा करने से पहले PF जाँचें।",tp3b:"हल्के भार पर प्रेरण मोटर: बिना भार PF 0.2–0.3 तक गिर सकता है।",
+tp4a:"KSEB HT बिल में औसत PF और kVA में मांग — कम PF से जुर्माना और kVA मांग शुल्क दोनों बढ़ते हैं।",tp4b:"हर महीने APFC रिले डिस्प्ले और संधारित्र स्टेप धारा जाँचें; एक खराब स्टेप PF को 0.9 से नीचे ला सकता है।",
+f1:"छूने से पहले संधारित्र डिस्चार्ज करें: ≥ 1 मिनट रुकें, फिर टर्मिनल को अर्थ से शॉर्ट करें।",f2:"मोटर संधारित्र: kVAR मोटर के नो-लोड kVAR से कम रखें — बंद करते समय स्व-उत्तेजना ओवरवोल्टेज से बचाव।",f3:"संधारित्र धारा ≈ 1.4 A प्रति kVAR (415 V, 3φ)। केबल व फ्यूज ≥ 1.5 × इससे।",f4:"फूला/लीक संधारित्र या VFD/UPS हार्मोनिक्स? डीट्यून्ड (7%) रिएक्टर बैंक लगाएँ।",f5:"अधिक सुधार न करें: अग्रगामी PF वोल्टेज बढ़ाता है। APFC स्टेप बदलकर लगभग 0.98 रखता है।",f6:"प्लांट बंद होने पर (रात, छुट्टी) स्थिर संधारित्र बैंक बंद करें।",
+s1:"रूफटॉप सोलर इकाई PF पर केवल kW देता है; kVAR अब भी ग्रिड से → KSEB मीटर पर PF गिरता है।",s2:"इन्वर्टर मोड (fixed PF / Q(U)) केवल DISCOM की स्वीकृति अनुसार सेट करें; कमीशनिंग रिपोर्ट में लिखें।",s3:"इन्वर्टर का Q kVA क्षमता घेरता है: पूरे kW पर Q कम बचता है — Q सहायता चाहिए तो इन्वर्टर ~10% बड़ा लें।",
+tf:"KSEB टैरिफ: PF प्रोत्साहन / जुर्माना (HT व EHT)",eCh:"ऊर्जा ₹",adj:"ऊर्जा शुल्क पर समायोजन",kvaD:"500 kW भार की kVA मांग",inc:"प्रोत्साहन",tfLead:"अग्रगामी PF: न जुर्माना, न प्रोत्साहन",tfLT:"मोटर/वेल्डिंग भार वाले LT उपभोक्ता: निर्धारित kVAR संधारित्र अनिवार्य; न लगाने पर टैरिफ आदेश अनुसार कम-PF अधिभार।",tfSrc:"स्रोत: KSEB HT-I(A) टैरिफ पृष्ठ। बिल गणना से पहले वर्तमान KSERC आदेश से मिलान करें।",tfInc:"प्रोत्साहन",tfPen:"जुर्माना",tfNone:"कोई समायोजन नहीं",
+mh:"शक्ति गुणांक सुधार की विधियाँ",m1t:"स्थैतिक संधारित्र",m1d:"भार के समानांतर संधारित्र बैंक — सस्ता, कोई गतिशील भाग नहीं",m2t:"APFC पैनल",m2d:"रिले लक्ष्य PF बनाए रखने हेतु संधारित्र स्टेप स्वतः बदलता है",m3t:"तुल्यकालिक संघनित्र",m3d:"बिना भार अति-उत्तेजित तुल्यकालिक मोटर — Q देता है, सुचारु नियंत्रण",m4t:"फेज़ एडवांसर",m4d:"स्लिप-रिंग प्रेरण मोटर के रोटर को उत्तेजन देता है",m5t:"सही आकार की मोटर",m5d:"हल्के भार और खाली चलाने से बचें; हल्का भार = कम PF",m6t:"STATCOM / SVG",m6d:"पावर इलेक्ट्रॉनिक Q स्रोत — तेज़, बदलते भार हेतु (सोलर इन्वर्टर भी)",
+where:"संधारित्र कहाँ जोड़ें",w_ind:"व्यक्तिगत — हर मोटर पर: सबसे अधिक हानि कमी",w_grp:"समूह — उप-वितरण बोर्ड पर",w_cen:"केंद्रीय APFC — मुख्य LT पैनल पर: प्रति kVAR सबसे सस्ता",
+rh:"प्रतिघाती शक्ति क्यों आवश्यक है?",legP:"P → एक दिशा, कार्य करती है",legQ:"Q ⇄ आना-जाना, क्षेत्र बनाती है",r1:"मोटर, ट्रांसफार्मर, चोक को चुंबकीय क्षेत्र चाहिए। Q उसे बनाती है।",r2:"Q कोई शुद्ध कार्य नहीं करती: कुंडली में संचित, हर आधे चक्र में लौटती है।",r3:"Q वोल्टेज बनाए रखती है। ग्रिड ऑपरेटर Q से वोल्टेज नियंत्रित करते हैं।",r4:"कम Q → कम वोल्टेज, मोटर रुकती है। अधिक Q → ओवरवोल्टेज।",r5:"अतः Q आवश्यक है — पर इसे स्थानीय रूप से दें (संधारित्र / इन्वर्टर), दूर के ग्रिड से नहीं।",src:"स्रोत",ldR:"हीटर (R)",ldL:"मोटर कुंडली (L)",stored:"संचित ऊर्जा",
+sh:"सोलर इन्वर्टर: क्षमता वृत्त",sQa:"उपलब्ध Q",sPF:"इन्वर्टर PF",sr1:"रेटिंग kVA में: S² = P² + Q²। Q क्षमता घेरती है।",sr2:"मोड: fixed PF · Q(U) वोल्ट-वार · Q(P) · रात में Q",sr3:"छायांकित भाग: 0.95 lag – 0.95 lead — बड़े संयंत्रों हेतु सामान्य माँग (CEA नियम व DISCOM अनुबंध देखें)।",inBand:"0.95 सीमा के भीतर",outBand:"0.95 सीमा से बाहर",over:"रेटिंग से अधिक!",
+nmh:"रूफटॉप सोलर के बाद मीटर पर PF क्यों गिरता है",nLk:"भार kW",nLq:"भार kVAR",nSk:"सोलर kW",nIq:"इन्वर्टर kVAR",pfB:"सोलर से पहले ग्रिड PF",pfA:"सोलर के साथ ग्रिड PF",nm1:"सोलर kW देता है; सारा kVAR अब भी ग्रिड देता है। ग्रिड kW घटता है, kVAR वही → मीटर पर PF गिरता है।",nm2:"उपाय: APFC चालू रखें, या इन्वर्टर से kVAR दें ('इन्वर्टर kVAR' खिसकाएँ)।",grid:"ग्रिड",export:"निर्यात"},
+ml:{tab5:"PF മെച്ചപ്പെടുത്തൽ",tab6:"റിയാക്ടീവ് & സോളാർ",tab7:"റാപ്പിഡ് ക്വിസ്",ser:"സീരീസ്",par:"പാരലൽ",common:"പൊതുവായത്",yt:"അഡ്മിറ്റൻസ് (Y)",it:"കറന്റ് (× V)",st2:"പവർ (× V²)",t3hS:"R / Z — സീരീസ് സർക്യൂട്ട്",t3hP:"Z / R — പാരലൽ സർക്യൂട്ട്",ftT:"ഫീൽഡ് ടിപ്പ്",
+tp0a:"മൾട്ടിഫംഗ്ഷൻ മീറ്റർ (MFM) cos φ-യോടൊപ്പം 'Lag' അല്ലെങ്കിൽ 'Lead' കാണിക്കും — എപ്പോഴും രേഖപ്പെടുത്തുക.",tp0b:"അനലോഗ് PF മീറ്റർ: 1 മുകളിൽ നടുവിൽ; ഒരു വശത്ത് lag, മറുവശത്ത് lead.",
+tp1a:"PF മീറ്റർ ഇല്ലാതെ: 1φ-ൽ PF ≈ kW ÷ (V × I), 3φ-ൽ kW ÷ (√3 × V × I).",tp1b:"ട്രാൻസ്ഫോർമർ, DG, UPS, ഇൻവെർട്ടർ നെയിംപ്ലേറ്റ് kVA-യിൽ — അത് S ആണ്, P അല്ല.",
+tp2a:"സർക്യൂട്ട് തരം പറഞ്ഞിട്ടില്ലെങ്കിൽ → സീരീസ് എന്ന് കരുതുക: PF = R/Z.",tp2b:"പാരലൽ R–L: PF = Z/R = I_R / I. ക്ലാമ്പ് മീറ്റർ കൊണ്ട് ബ്രാഞ്ച് കറന്റുകൾ അളന്ന് PF കണ്ടെത്താം.",
+tp3a:"കറന്റ് കൂടുതൽ, kW കുറവ്? കേബിളോ MCB-യോ വലുതാക്കും മുമ്പ് PF പരിശോധിക്കുക.",tp3b:"കുറഞ്ഞ ലോഡിലെ ഇൻഡക്ഷൻ മോട്ടോർ: നോ-ലോഡിൽ PF 0.2–0.3 വരെ താഴാം.",
+tp4a:"KSEB HT ബില്ലിൽ ശരാശരി PF-ഉം kVA ഡിമാൻഡും — PF കുറഞ്ഞാൽ പിഴയും kVA ഡിമാൻഡ് ചാർജും കൂടും.",tp4b:"മാസംതോറും APFC റിലേ ഡിസ്പ്ലേയും കപ്പാസിറ്റർ സ്റ്റെപ്പ് കറന്റും പരിശോധിക്കുക; ഒരു സ്റ്റെപ്പ് തകരാറിലായാൽ PF 0.9-ൽ താഴെയാകാം.",
+f1:"തൊടുന്നതിന് മുമ്പ് കപ്പാസിറ്റർ ഡിസ്ചാർജ് ചെയ്യുക: ≥ 1 മിനിറ്റ് കാത്തിരിക്കുക, ശേഷം ടെർമിനലുകൾ എർത്തിലേക്ക് ഷോർട്ട് ചെയ്യുക.",f2:"മോട്ടോർ കപ്പാസിറ്റർ: kVAR മോട്ടോറിന്റെ നോ-ലോഡ് kVAR-നെക്കാൾ കുറവ് — ഓഫ് ചെയ്യുമ്പോൾ സെൽഫ്-എക്സൈറ്റേഷൻ ഓവർവോൾട്ടേജ് ഒഴിവാക്കാം.",f3:"കപ്പാസിറ്റർ കറന്റ് ≈ 1.4 A / kVAR (415 V, 3φ). കേബിളും ഫ്യൂസും ≥ 1.5 × ഇത്.",f4:"വീർത്തതോ ചോരുന്നതോ ആയ കപ്പാസിറ്റർ, അല്ലെങ്കിൽ VFD/UPS ഹാർമോണിക്സ്? ഡീട്യൂൺഡ് (7%) റിയാക്ടർ ബാങ്ക് ഉപയോഗിക്കുക.",f5:"അമിത തിരുത്തൽ വേണ്ട: ലീഡിങ് PF വോൾട്ടേജ് കൂട്ടും. APFC സ്റ്റെപ്പുകൾ മാറ്റി ഏകദേശം 0.98 നിലനിർത്തുന്നു.",f6:"പ്ലാന്റ് പ്രവർത്തിക്കാത്തപ്പോൾ (രാത്രി, അവധി) ഫിക്സഡ് കപ്പാസിറ്റർ ബാങ്ക് ഓഫ് ചെയ്യുക.",
+s1:"റൂഫ്ടോപ്പ് സോളാർ യൂണിറ്റി PF-ൽ kW മാത്രം നൽകുന്നു; kVAR ഇപ്പോഴും ഗ്രിഡിൽ നിന്ന് → KSEB മീറ്ററിൽ PF കുറയുന്നു.",s2:"ഇൻവെർട്ടർ മോഡ് (fixed PF / Q(U)) DISCOM അംഗീകരിച്ചത് മാത്രം സെറ്റ് ചെയ്യുക; കമ്മീഷനിങ് റിപ്പോർട്ടിൽ രേഖപ്പെടുത്തുക.",s3:"ഇൻവെർട്ടറിന്റെ Q, kVA ശേഷി ഉപയോഗിക്കുന്നു: മുഴുവൻ kW-ൽ Q കുറവ് — Q സപ്പോർട്ട് വേണമെങ്കിൽ ഇൻവെർട്ടർ ~10% വലുതാക്കുക.",
+tf:"KSEB താരിഫ്: PF ഇൻസെന്റീവ് / പിഴ (HT & EHT)",eCh:"എനർജി ₹",adj:"എനർജി ചാർജിലെ ക്രമീകരണം",kvaD:"500 kW ലോഡിന്റെ kVA ഡിമാൻഡ്",inc:"ഇൻസെന്റീവ്",tfLead:"ലീഡിങ് PF: പിഴയുമില്ല, ഇൻസെന്റീവുമില്ല",tfLT:"മോട്ടോർ/വെൽഡിങ് ലോഡുള്ള LT ഉപഭോക്താക്കൾ: നിശ്ചിത kVAR കപ്പാസിറ്റർ നിർബന്ധം; ഇല്ലെങ്കിൽ താരിഫ് ഉത്തരവ് പ്രകാരം ലോ-PF സർചാർജ്.",tfSrc:"ഉറവിടം: KSEB HT-I(A) താരിഫ് പേജ്. ബിൽ കണക്കുകൂട്ടലിന് മുമ്പ് നിലവിലെ KSERC ഉത്തരവ് പരിശോധിക്കുക.",tfInc:"ഇൻസെന്റീവ്",tfPen:"പിഴ",tfNone:"ക്രമീകരണമില്ല",
+mh:"പവർ ഫാക്ടർ മെച്ചപ്പെടുത്താനുള്ള മാർഗങ്ങൾ",m1t:"സ്റ്റാറ്റിക് കപ്പാസിറ്റർ",m1d:"ലോഡിന് സമാന്തരമായി കപ്പാസിറ്റർ ബാങ്ക് — ചെലവ് കുറവ്, ചലിക്കുന്ന ഭാഗങ്ങളില്ല",m2t:"APFC പാനൽ",m2d:"ലക്ഷ്യ PF നിലനിർത്താൻ റിലേ കപ്പാസിറ്റർ സ്റ്റെപ്പുകൾ സ്വയം മാറ്റുന്നു",m3t:"സിൻക്രണസ് കണ്ടൻസർ",m3d:"നോ-ലോഡിൽ ഓവർ-എക്സൈറ്റഡ് സിൻക്രണസ് മോട്ടോർ — Q നൽകുന്നു, സുഗമ നിയന്ത്രണം",m4t:"ഫേസ് അഡ്വാൻസർ",m4d:"സ്ലിപ്-റിങ് ഇൻഡക്ഷൻ മോട്ടോറിന്റെ റോട്ടറിന് എക്സൈറ്റേഷൻ നൽകുന്നു",m5t:"ശരിയായ വലുപ്പമുള്ള മോട്ടോർ",m5d:"കുറഞ്ഞ ലോഡും വെറുതെ ഓടിക്കലും ഒഴിവാക്കുക; കുറഞ്ഞ ലോഡ് = കുറഞ്ഞ PF",m6t:"STATCOM / SVG",m6d:"പവർ ഇലക്ട്രോണിക് Q സ്രോതസ്സ് — വേഗം, മാറുന്ന ലോഡുകൾക്ക് (സോളാർ ഇൻവെർട്ടറും)",
+where:"കപ്പാസിറ്റർ എവിടെ ഘടിപ്പിക്കണം",w_ind:"വ്യക്തിഗതം — ഓരോ മോട്ടോറിലും: നഷ്ടം ഏറ്റവും കുറയും",w_grp:"ഗ്രൂപ്പ് — സബ്-ഡിസ്ട്രിബ്യൂഷൻ ബോർഡിൽ",w_cen:"സെൻട്രൽ APFC — മെയിൻ LT പാനലിൽ: ഓരോ kVAR-നും ചെലവ് കുറവ്",
+rh:"റിയാക്ടീവ് പവർ എന്തിന് ആവശ്യം?",legP:"P → ഒരു ദിശ, ജോലി ചെയ്യുന്നു",legQ:"Q ⇄ പോക്കുവരവ്, മണ്ഡലം സൃഷ്ടിക്കുന്നു",r1:"മോട്ടോർ, ട്രാൻസ്ഫോർമർ, ചോക്ക് എന്നിവയ്ക്ക് കാന്തിക മണ്ഡലം വേണം. Q അത് സൃഷ്ടിക്കുന്നു.",r2:"Q ആകെ ജോലി ചെയ്യുന്നില്ല: കോയിലിൽ സംഭരിച്ച്, ഓരോ അർധ സൈക്കിളിലും തിരികെ നൽകുന്നു.",r3:"Q വോൾട്ടേജ് നിലനിർത്തുന്നു. ഗ്രിഡ് ഓപ്പറേറ്റർമാർ Q ഉപയോഗിച്ച് വോൾട്ടേജ് നിയന്ത്രിക്കുന്നു.",r4:"Q കുറഞ്ഞാൽ → വോൾട്ടേജ് കുറയും, മോട്ടോർ നിൽക്കും. Q കൂടിയാൽ → ഓവർവോൾട്ടേജ്.",r5:"അതിനാൽ Q ആവശ്യമാണ് — പക്ഷേ അത് പ്രാദേശികമായി (കപ്പാസിറ്റർ / ഇൻവെർട്ടർ) നൽകുക, ദൂരെയുള്ള ഗ്രിഡിൽ നിന്നല്ല.",src:"സ്രോതസ്സ്",ldR:"ഹീറ്റർ (R)",ldL:"മോട്ടോർ കോയിൽ (L)",stored:"സംഭരിച്ച ഊർജം",
+sh:"സോളാർ ഇൻവെർട്ടർ: കപ്പാബിലിറ്റി വൃത്തം",sQa:"ലഭ്യമായ Q",sPF:"ഇൻവെർട്ടർ PF",sr1:"റേറ്റിങ് kVA-യിൽ: S² = P² + Q². Q ശേഷി ഉപയോഗിക്കുന്നു.",sr2:"മോഡുകൾ: fixed PF · Q(U) വോൾട്ട്-വാർ · Q(P) · രാത്രി Q",sr3:"ഷേഡ് ചെയ്ത ഭാഗം: 0.95 lag – 0.95 lead — വലിയ പ്ലാന്റുകൾക്ക് സാധാരണ ആവശ്യം (CEA ചട്ടങ്ങളും DISCOM കരാറും നോക്കുക).",inBand:"0.95 പരിധിക്കുള്ളിൽ",outBand:"0.95 പരിധിക്ക് പുറത്ത്",over:"റേറ്റിങ്ങിന് മുകളിൽ!",
+nmh:"റൂഫ്ടോപ്പ് സോളാറിന് ശേഷം മീറ്ററിൽ PF കുറയുന്നത് എന്തുകൊണ്ട്",nLk:"ലോഡ് kW",nLq:"ലോഡ് kVAR",nSk:"സോളാർ kW",nIq:"ഇൻവെർട്ടർ kVAR",pfB:"സോളാറിന് മുമ്പ് ഗ്രിഡ് PF",pfA:"സോളാറിനൊപ്പം ഗ്രിഡ് PF",nm1:"സോളാർ kW നൽകുന്നു; മുഴുവൻ kVAR-ഉം ഇപ്പോഴും ഗ്രിഡ് നൽകുന്നു. ഗ്രിഡ് kW കുറയുന്നു, kVAR മാറുന്നില്ല → മീറ്ററിൽ PF കുറയുന്നു.",nm2:"പരിഹാരം: APFC പ്രവർത്തനക്ഷമമാക്കുക, അല്ലെങ്കിൽ ഇൻവെർട്ടറിൽ നിന്ന് kVAR നൽകുക ('ഇൻവെർട്ടർ kVAR' നീക്കുക).",grid:"ഗ്രിഡ്",export:"എക്സ്പോർട്ട്"}
+};
+for(const k in L2)Object.assign(L[k],L2[k]);
+const L3={
+en:{srcH:"Source side: how is Q controlled?",srcS1:"Step 1 · Load decides how much Q. Sources share it.",srcS2:"Step 2 · Generator: field (excitation) current controls Q",srcS3:"Step 3 · Solar inverter: timing of the current controls Q",
+exc:"Excitation",under:"Under-excited → absorbs Q",normal:"Normal → unity PF",over:"Over-excited → supplies Q",gnote:"P is set by the turbine (fixed here). The field knob changes only Q — the V-curve.",
+sun:"Sun (MPPT) → P",qset:"Q setting",inv1:"MPPT fixes the in-phase part of current (Id) → P from the sun.",inv2:"Controller adds a 90° part (Iq) → Q. No sun needed — works at night too.",inv3:"Grid sets the voltage. Inverter only chooses its current: size and timing.",
+sumH:"Same lagging current — two meanings",sumL:"At a load (motor): current lags V → takes Q",sumS:"At a source (generator / inverter): current lags V → gives Q",
+dev:"Device",motor:"Motor",capacitor:"Capacitor",genOver:"Generator, over-excited",genUnder:"Generator, under-excited",invQ:"Inverter, Q set",takes:"takes Q",gives:"gives Q",either:"gives or takes (setting)",curr2:"Current vs V",
+share:"Q from grid",shareI:"Q from inverter",shareC:"Q from capacitor",loadQ:"Motor Q demand",sh1n:"Motor: 80 kW, 60 kVAR — fixed. Only the supplier of Q changes.",overC:"Over-corrected: Q pushed into grid",
+s4:"Inverter menus say 'over-excited / under-excited' or '+/− PF' — sign conventions differ by brand; confirm in the manual before setting.",
+lagsT:"lags",leadsT:"leads",inph:"in phase"},
+hi:{srcH:"स्रोत पक्ष: Q कैसे नियंत्रित होती है?",srcS1:"चरण 1 · भार तय करता है कितनी Q चाहिए। स्रोत उसे बाँटते हैं।",srcS2:"चरण 2 · जनित्र: क्षेत्र (उत्तेजन) धारा Q नियंत्रित करती है",srcS3:"चरण 3 · सोलर इन्वर्टर: धारा का समय (कला) Q नियंत्रित करता है",
+exc:"उत्तेजन",under:"अल्प-उत्तेजित → Q लेता है",normal:"सामान्य → इकाई PF",over:"अति-उत्तेजित → Q देता है",gnote:"P टर्बाइन तय करती है (यहाँ स्थिर)। क्षेत्र नॉब केवल Q बदलता है — V-वक्र।",
+sun:"सूर्य (MPPT) → P",qset:"Q सेटिंग",inv1:"MPPT धारा का समान-कला भाग (Id) तय करता है → सूर्य से P।",inv2:"नियंत्रक 90° भाग (Iq) जोड़ता है → Q। सूर्य आवश्यक नहीं — रात में भी।",inv3:"वोल्टेज ग्रिड तय करता है। इन्वर्टर केवल अपनी धारा चुनता है: आकार और समय।",
+sumH:"एक ही पश्चगामी धारा — दो अर्थ",sumL:"भार पर (मोटर): धारा V से पीछे → Q लेता है",sumS:"स्रोत पर (जनित्र / इन्वर्टर): धारा V से पीछे → Q देता है",
+dev:"उपकरण",motor:"मोटर",capacitor:"संधारित्र",genOver:"जनित्र, अति-उत्तेजित",genUnder:"जनित्र, अल्प-उत्तेजित",invQ:"इन्वर्टर, Q सेट",takes:"Q लेता है",gives:"Q देता है",either:"देता या लेता (सेटिंग)",curr2:"धारा बनाम V",
+share:"ग्रिड से Q",shareI:"इन्वर्टर से Q",shareC:"संधारित्र से Q",loadQ:"मोटर की Q माँग",sh1n:"मोटर: 80 kW, 60 kVAR — स्थिर। केवल Q देने वाला बदलता है।",overC:"अधिक सुधार: Q ग्रिड में धकेली गई",
+s4:"इन्वर्टर मेनू में 'over-excited / under-excited' या '+/− PF' — ब्रांड अनुसार चिह्न अलग; सेट करने से पहले मैनुअल देखें।",
+lagsT:"पीछे",leadsT:"आगे",inph:"समान कला"},
+ml:{srcH:"സ്രോതസ്സ് വശം: Q എങ്ങനെ നിയന്ത്രിക്കുന്നു?",srcS1:"ഘട്ടം 1 · എത്ര Q വേണമെന്ന് ലോഡ് തീരുമാനിക്കുന്നു. സ്രോതസ്സുകൾ അത് പങ്കിടുന്നു.",srcS2:"ഘട്ടം 2 · ജനറേറ്റർ: ഫീൽഡ് (എക്സൈറ്റേഷൻ) കറന്റ് Q നിയന്ത്രിക്കുന്നു",srcS3:"ഘട്ടം 3 · സോളാർ ഇൻവെർട്ടർ: കറന്റിന്റെ സമയം (ഫേസ്) Q നിയന്ത്രിക്കുന്നു",
+exc:"എക്സൈറ്റേഷൻ",under:"അണ്ടർ-എക്സൈറ്റഡ് → Q എടുക്കുന്നു",normal:"സാധാരണ → യൂണിറ്റി PF",over:"ഓവർ-എക്സൈറ്റഡ് → Q നൽകുന്നു",gnote:"P ടർബൈൻ നിശ്ചയിക്കുന്നു (ഇവിടെ സ്ഥിരം). ഫീൽഡ് നോബ് Q മാത്രം മാറ്റുന്നു — V-കർവ്.",
+sun:"സൂര്യൻ (MPPT) → P",qset:"Q സെറ്റിങ്",inv1:"MPPT കറന്റിന്റെ ഒരേ-ഫേസ് ഭാഗം (Id) നിശ്ചയിക്കുന്നു → സൂര്യനിൽ നിന്ന് P.",inv2:"കൺട്രോളർ 90° ഭാഗം (Iq) ചേർക്കുന്നു → Q. സൂര്യൻ വേണ്ട — രാത്രിയിലും സാധ്യം.",inv3:"വോൾട്ടേജ് ഗ്രിഡ് നിശ്ചയിക്കുന്നു. ഇൻവെർട്ടർ സ്വന്തം കറന്റ് മാത്രം തിരഞ്ഞെടുക്കുന്നു: വലുപ്പവും സമയവും.",
+sumH:"ഒരേ ലാഗിങ് കറന്റ് — രണ്ട് അർഥം",sumL:"ലോഡിൽ (മോട്ടോർ): കറന്റ് V-യെക്കാൾ പിന്നിൽ → Q എടുക്കുന്നു",sumS:"സ്രോതസ്സിൽ (ജനറേറ്റർ / ഇൻവെർട്ടർ): കറന്റ് V-യെക്കാൾ പിന്നിൽ → Q നൽകുന്നു",
+dev:"ഉപകരണം",motor:"മോട്ടോർ",capacitor:"കപ്പാസിറ്റർ",genOver:"ജനറേറ്റർ, ഓവർ-എക്സൈറ്റഡ്",genUnder:"ജനറേറ്റർ, അണ്ടർ-എക്സൈറ്റഡ്",invQ:"ഇൻവെർട്ടർ, Q സെറ്റ്",takes:"Q എടുക്കുന്നു",gives:"Q നൽകുന്നു",either:"നൽകുകയോ എടുക്കുകയോ (സെറ്റിങ്)",curr2:"കറന്റ് vs V",
+share:"ഗ്രിഡിൽ നിന്ന് Q",shareI:"ഇൻവെർട്ടറിൽ നിന്ന് Q",shareC:"കപ്പാസിറ്ററിൽ നിന്ന് Q",loadQ:"മോട്ടോറിന്റെ Q ആവശ്യം",sh1n:"മോട്ടോർ: 80 kW, 60 kVAR — സ്ഥിരം. Q നൽകുന്നയാൾ മാത്രം മാറുന്നു.",overC:"അമിത തിരുത്തൽ: Q ഗ്രിഡിലേക്ക് തള്ളുന്നു",
+s4:"ഇൻവെർട്ടർ മെനുവിൽ 'over-excited / under-excited' അല്ലെങ്കിൽ '+/− PF' — ബ്രാൻഡ് അനുസരിച്ച് ചിഹ്നം മാറും; സെറ്റ് ചെയ്യും മുമ്പ് മാനുവൽ നോക്കുക.",
+lagsT:"പിന്നിൽ",leadsT:"മുന്നിൽ",inph:"ഒരേ ഫേസ്"}
+};
+for(const k in L3)Object.assign(L[k],L3[k]);
+const TIPS={ft0:["tp0a","tp0b"],ft1:["tp1a","tp1b"],ft2:["tp2a","tp2b"],ft3:["tp3a","tp3b"],ft4:["tp4a","tp4b"],ft5:["f1","f2","f3","f4","f5","f6"],ft6:["s1","s4","s2","s3"]};
+const NT=8;
+const st={lang:"en",phi:36.87,lead:false,play:true,tab:0,three:false,cap:false,par:false};
+const t=k=>(L[st.lang]&&L[st.lang][k])||L.en[k]||k;
+const tx=v=>typeof v==="string"?v:(v[st.lang]||v.en);
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+/* ---------------- quizzes ---------------- */
+const Y=(en,hi,ml)=>({en,hi,ml});
+const QZ={
+t1:[
+ {q:Y("Pure resistor: angle between V and I?","शुद्ध प्रतिरोधक: V और I के बीच कोण?","ശുദ്ധ റെസിസ്റ്റർ: V യും I യും തമ്മിലുള്ള കോൺ?"),o:["0°","45°","90°"],a:0},
+ {q:Y("Inductive load: current ___ voltage","प्रेरकीय भार: धारा, वोल्टेज से ___","ഇൻഡക്ടീവ് ലോഡ്: കറന്റ് വോൾട്ടേജിനെക്കാൾ ___"),o:[Y("lags","पीछे","പിന്നിൽ (ലാഗ്)"),Y("leads","आगे","മുന്നിൽ (ലീഡ്)"),Y("in phase","समान कला में","ഒരേ ഫേസിൽ")],a:0},
+ {q:Y("φ = 60°. PF = ?","φ = 60°. PF = ?","φ = 60°. PF = ?"),o:["0.5","0.866","1"],a:0}],
+t2:[
+ {q:"P = 8 kW, S = 10 kVA → PF = ?",o:["0.6","0.8","1.25"],a:1},
+ {q:Y("Unit of reactive power Q?","प्रतिघाती शक्ति Q की इकाई?","റിയാക്ടീവ് പവർ Q-ന്റെ യൂണിറ്റ്?"),o:["kW","kVA","kVAR"],a:2},
+ {q:"P = 6 kW, Q = 8 kVAR → S = ?",o:["14 kVA","10 kVA","2 kVA"],a:1}],
+t3:[
+ {q:"R = 6 Ω, X = 8 Ω → Z = ?",o:["14 Ω","10 Ω","2 Ω"],a:1},
+ {q:"R = 6 Ω, Z = 10 Ω → PF = ?",o:["0.6","0.8","1.67"],a:0},
+ {q:Y("Pure inductor (R = 0): PF = ?","शुद्ध प्रेरक (R = 0): PF = ?","ശുദ്ധ ഇൻഡക്ടർ (R = 0): PF = ?"),o:["0","0.5","1"],a:0}],
+t4:[
+ {q:Y("Same P and V. PF 1 → 0.5. Current?","समान P और V. PF 1 → 0.5. धारा?","P, V മാറാതെ PF 1 → 0.5. കറന്റ്?"),o:[Y("half","आधी","പകുതി"),Y("double","दोगुनी","ഇരട്ടി"),Y("same","समान","മാറില്ല")],a:1},
+ {q:"P = 2300 W, V = 230 V, PF = 0.5 → I = ?",o:["5 A","10 A","20 A"],a:2},
+ {q:Y("Current doubles → copper loss?","धारा दोगुनी → ताम्र हानि?","കറന്റ് ഇരട്ടി → കോപ്പർ നഷ്ടം?"),o:["2×","4×","1×"],a:1}],
+t5:[
+ {q:Y("Lagging PF is corrected using a?","पश्चगामी PF किससे सुधारा जाता है?","ലാഗിങ് PF ശരിയാക്കാൻ ഉപയോഗിക്കുന്നത്?"),o:[Y("Capacitor","संधारित्र","കപ്പാസിറ്റർ"),Y("Inductor","प्रेरक","ഇൻഡക്ടർ"),Y("Resistor","प्रतिरोधक","റെസിസ്റ്റർ")],a:0},
+ {q:Y("100 kVA transformer at PF 0.7 can supply?","100 kVA ट्रांसफार्मर, PF 0.7 पर?","100 kVA ട്രാൻസ്ഫോർമർ PF 0.7-ൽ നൽകുന്നത്?"),o:["100 kW","70 kW","143 kW"],a:1},
+ {q:Y("Main cause of low PF in factories?","कारखानों में कम PF का मुख्य कारण?","ഫാക്ടറികളിൽ PF കുറയാൻ പ്രധാന കാരണം?"),o:[Y("Induction motors","प्रेरण मोटर","ഇൻഡക്ഷൻ മോട്ടോറുകൾ"),Y("Heaters","हीटर","ഹീറ്ററുകൾ"),Y("Filament lamps","तापदीप्त बल्ब","ഫിലമെന്റ് ബൾബുകൾ")],a:0}]
+};
+const RP=[
+ {q:"cos φ = ?",o:["P / S","Q / S","P / Q"],a:0},
+ {q:"R, X, Z → cos φ = ?",o:["R / Z","X / Z","X / R"],a:0},
+ {q:Y("Maximum possible PF?","अधिकतम संभव PF?","പരമാവധി സാധ്യമായ PF?"),o:["0.9","1","∞"],a:1},
+ {q:Y("Electric heater PF ≈ ?","इलेक्ट्रिक हीटर का PF ≈ ?","ഇലക്ട്രിക് ഹീറ്ററിന്റെ PF ≈ ?"),o:["0","0.5","1"],a:2},
+ {q:"S = 50 kVA, PF = 0.8 → P = ?",o:["40 kW","30 kW","62.5 kW"],a:0},
+ {q:Y("Capacitor: current ___ voltage by 90°","संधारित्र: धारा वोल्टेज से 90° ___","കപ്പാസിറ്റർ: കറന്റ് വോൾട്ടേജിനെക്കാൾ 90° ___"),o:[Y("leads","आगे","മുന്നിൽ"),Y("lags","पीछे","പിന്നിൽ"),Y("in phase","समान","ഒരേ ഫേസിൽ")],a:0},
+ {q:Y("A wattmeter reads?","वाटमीटर क्या मापता है?","വാട്ട്മീറ്റർ അളക്കുന്നത്?"),o:["P (kW)","Q (kVAR)","S (kVA)"],a:0},
+ {q:Y("Same P: PF 0.8 → 1.0. Current?","समान P: PF 0.8 → 1.0. धारा?","അതേ P: PF 0.8 → 1.0. കറന്റ്?"),o:[Y("decreases","घटती है","കുറയും"),Y("increases","बढ़ती है","കൂടും"),Y("same","समान","മാറില്ല")],a:0},
+ {q:"S² = ?",o:["P² + Q²","P + Q","P² − Q²"],a:0},
+ {q:Y("Utilities penalise PF below ≈ ?","PF किससे कम होने पर जुर्माना ≈ ?","PF ഏതിൽ താഴെയായാൽ പിഴ ≈ ?"),o:["0.9","0.5","0.2"],a:0},
+ {q:"3φ: I = ?",o:["P / (√3·V·cos φ)","P / (V·cos φ)","P·cos φ / V"],a:0},
+ {q:"φ = 0° → PF = ?",o:["0","0.5","1"],a:2}
+];
+QZ.t3.push(
+ {q:Y("Circuit type not stated: PF = ?","परिपथ प्रकार नहीं दिया: PF = ?","സർക്യൂട്ട് തരം പറഞ്ഞിട്ടില്ല: PF = ?"),o:["R / Z","Z / R","X / Z"],a:0},
+ {q:Y("Parallel R = 10 Ω, X = 10 Ω: PF = ?","समानांतर R = 10 Ω, X = 10 Ω: PF = ?","പാരലൽ R = 10 Ω, X = 10 Ω: PF = ?"),o:["0.5","0.707","1"],a:1});
+QZ.t5.push(
+ {q:Y("KSEB HT consumer at PF 0.98 gets?","KSEB HT उपभोक्ता, PF 0.98 पर?","KSEB HT ഉപഭോക്താവ് PF 0.98-ൽ?"),o:[Y("1.5% incentive","1.5% प्रोत्साहन","1.5% ഇൻസെന്റീവ്"),Y("1.5% penalty","1.5% जुर्माना","1.5% പിഴ"),Y("Nothing","कुछ नहीं","ഒന്നുമില്ല")],a:0});
+QZ.t6=[
+ {q:Y("Which panel switches capacitor steps automatically?","कौन सा पैनल संधारित्र स्टेप स्वतः बदलता है?","കപ്പാസിറ്റർ സ്റ്റെപ്പുകൾ സ്വയം മാറ്റുന്ന പാനൽ?"),o:["APFC","MCB","ELCB"],a:0},
+ {q:Y("Over-excited synchronous motor on no-load is a?","बिना भार अति-उत्तेजित तुल्यकालिक मोटर कहलाती है?","നോ-ലോഡിൽ ഓവർ-എക്സൈറ്റഡ് സിൻക്രണസ് മോട്ടോർ?"),o:[Y("Synchronous condenser","तुल्यकालिक संघनित्र","സിൻക്രണസ് കണ്ടൻസർ"),Y("Phase advancer","फेज़ एडवांसर","ഫേസ് അഡ്വാൻസർ"),Y("Induction generator","प्रेरण जनित्र","ഇൻഡക്ഷൻ ജനറേറ്റർ")],a:0},
+ {q:"10 kVAR, 415 V, 3φ → I ≈ ?",o:["4 A","14 A","24 A"],a:1}];
+QZ.t7=[
+ {q:Y("Reactive power is needed to?","प्रतिघाती शक्ति किसलिए आवश्यक?","റിയാക്ടീവ് പവർ എന്തിന്?"),o:[Y("build magnetic field","चुंबकीय क्षेत्र बनाने","കാന്തിക മണ്ഡലം സൃഷ്ടിക്കാൻ"),Y("heat the load","भार गर्म करने","ലോഡ് ചൂടാക്കാൻ"),Y("reduce voltage","वोल्टेज घटाने","വോൾട്ടേജ് കുറയ്ക്കാൻ")],a:0},
+ {q:Y("Solar inverter at unity PF supplies?","इकाई PF पर सोलर इन्वर्टर देता है?","യൂണിറ്റി PF-ൽ സോളാർ ഇൻവെർട്ടർ നൽകുന്നത്?"),o:[Y("only kW","केवल kW","kW മാത്രം"),Y("only kVAR","केवल kVAR","kVAR മാത്രം"),Y("both","दोनों","രണ്ടും")],a:0},
+ {q:"100 kVA inverter, 80 kW → Q max = ?",o:["20 kVAR","60 kVAR","100 kVAR"],a:1}];
+RP.push(
+ {q:Y("Parallel R–X: cos φ = ?","समानांतर R–X: cos φ = ?","പാരലൽ R–X: cos φ = ?"),o:["Z / R","R / Z","X / Z"],a:0},
+ {q:Y("KSEB HT: incentive starts above PF?","KSEB HT: प्रोत्साहन किस PF से ऊपर?","KSEB HT: ഇൻസെന്റീവ് ഏത് PF-ന് മുകളിൽ?"),o:["0.85","0.90","0.95"],a:2},
+ {q:Y("Solar added, load same: PF at meter?","सोलर जोड़ा, भार समान: मीटर पर PF?","സോളാർ ചേർത്തു, ലോഡ് അതേ: മീറ്ററിൽ PF?"),o:[Y("falls","गिरता है","കുറയും"),Y("rises","बढ़ता है","കൂടും"),Y("same","समान","മാറില്ല")],a:0},
+ {q:Y("Before touching a capacitor?","संधारित्र छूने से पहले?","കപ്പാസിറ്റർ തൊടുന്നതിന് മുമ്പ്?"),o:[Y("discharge it","डिस्चार्ज करें","ഡിസ്ചാർജ് ചെയ്യുക"),Y("charge it","चार्ज करें","ചാർജ് ചെയ്യുക"),Y("nothing","कुछ नहीं","ഒന്നും വേണ്ട")],a:0});
+QZ.t7.push(
+ {q:Y("Generator Q is controlled by?","जनित्र की Q किससे नियंत्रित होती है?","ജനറേറ്ററിന്റെ Q നിയന്ത്രിക്കുന്നത്?"),o:[Y("Field (excitation) current","क्षेत्र (उत्तेजन) धारा","ഫീൽഡ് (എക്സൈറ്റേഷൻ) കറന്റ്"),Y("Turbine speed","टर्बाइन गति","ടർബൈൻ വേഗം"),Y("Load resistance","भार प्रतिरोध","ലോഡ് റെസിസ്റ്റൻസ്")],a:0},
+ {q:Y("Inverter output current lags grid V. Inverter is?","इन्वर्टर धारा ग्रिड V से पीछे। इन्वर्टर?","ഇൻവെർട്ടർ കറന്റ് ഗ്രിഡ് V-യെക്കാൾ പിന്നിൽ. ഇൻവെർട്ടർ?"),o:[Y("giving Q","Q दे रहा","Q നൽകുന്നു"),Y("taking Q","Q ले रहा","Q എടുക്കുന്നു"),Y("giving only P","केवल P दे रहा","P മാത്രം നൽകുന്നു")],a:0});
+RP.push({q:Y("Over-excited generator:","अति-उत्तेजित जनित्र:","ഓവർ-എക്സൈറ്റഡ് ജനറേറ്റർ:"),o:[Y("gives Q","Q देता है","Q നൽകുന്നു"),Y("takes Q","Q लेता है","Q എടുക്കുന്നു"),Y("gives no P","P नहीं देता","P നൽകുന്നില്ല")],a:0});
+const qState={};
+function renderTips(){document.querySelectorAll("[data-tips]").forEach(b=>{
+  b.innerHTML=`<b class="tt">🔧 ${t("ftT")}</b><ul>${TIPS[b.dataset.tips].map(k=>`<li>${t(k)}</li>`).join("")}</ul>`})}
+function renderQuizzes(){
+  document.querySelectorAll(".quiz").forEach(box=>{
+    const set=box.dataset.set, qs=QZ[set];
+    qState[set]=qState[set]||{};
+    const s=qState[set];
+    const got=Object.values(s).filter(v=>v.ok).length;
+    box.innerHTML=`<header><h2>🎯 ${t("chal")}</h2><span class="chip cA">${t("score")} ${got} / ${qs.length}</span></header><div class="qgrid"></div>`;
+    const g=box.querySelector(".qgrid");
+    qs.forEach((q,qi)=>{
+      const d=document.createElement("div");d.className="q";
+      d.innerHTML=`<p>Q${qi+1}. ${tx(q.q)}</p><div class="opts"></div><div class="fb"></div>`;
+      const ob=d.querySelector(".opts"), fb=d.querySelector(".fb");
+      const rec=s[qi];
+      q.o.forEach((o,oi)=>{
+        const b=document.createElement("button");
+        b.innerHTML=`<span class="k">${"ABC"[oi]}</span><span>${tx(o)}</span>`;
+        if(rec){ if(rec.tries.includes(oi)) b.classList.add(oi===q.a?"right":"wrong"); if(rec.ok) b.disabled=true;
+          else if(rec.tries.includes(oi)) b.disabled=true; }
+        b.onclick=()=>{
+          const r=s[qi]=s[qi]||{tries:[],ok:false};
+          r.tries.push(oi);
+          if(oi===q.a){r.ok=r.tries.length===1;r.done=true;}
+          renderQuizzes();
+          const nb=box.querySelectorAll(".q")[qi].querySelector(".fb");nb.classList.add("pop");
+        };
+        ob.appendChild(b);
+      });
+      if(rec){
+        const solved=rec.tries.includes(q.a);
+        if(solved){q.o.forEach((_,oi)=>ob.children[oi].disabled=true);fb.innerHTML=`<span class="cOk">✔ ${t("right")}</span>`}
+        else fb.innerHTML=`<span class="cBad">✘ ${t("wrong")}</span>`;
+      }
+      g.appendChild(d);
+    });
+  });
+}
+
+/* ---------------- colors / canvas helpers ---------------- */
+let C={};
+function readColors(){const cs=getComputedStyle(document.documentElement);
+  ["bg","panel","line","fg","mute","accent","v","i","p","q","s","ok","bad","heat"].forEach(k=>C[k]=cs.getPropertyValue("--"+k).trim());}
+function fit(cv){const r=cv.getBoundingClientRect(),d=window.devicePixelRatio||1;
+  const w=Math.max(10,Math.round(r.width*d)),h=Math.max(10,Math.round(r.height*d));
+  if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}
+  const x=cv.getContext("2d");x.setTransform(d,0,0,d,0,0);return {x,w:r.width,h:r.height};}
+function arrow(x,x0,y0,x1,y1,col,lw){x.strokeStyle=col;x.fillStyle=col;x.lineWidth=lw;x.beginPath();x.moveTo(x0,y0);x.lineTo(x1,y1);x.stroke();
+  const a=Math.atan2(y1-y0,x1-x0),h=lw*4;x.beginPath();x.moveTo(x1,y1);x.lineTo(x1-h*Math.cos(a-0.4),y1-h*Math.sin(a-0.4));x.lineTo(x1-h*Math.cos(a+0.4),y1-h*Math.sin(a+0.4));x.closePath();x.fill();}
+const fontPx=()=>parseFloat(getComputedStyle(document.documentElement).fontSize)||16;
+const deg=d=>d*Math.PI/180;
+const pf=()=>Math.cos(deg(st.phi));
+const fmt=(v,n=2)=>(Math.round(v*10**n)/10**n).toFixed(n);
+
+/* ---------------- tab 1: phasor + waves ---------------- */
+let theta=0,last=performance.now();
+function drawPhasor(){
+  const cv=$("cPh"),{x,w,h}=fit(cv),fp=fontPx();
+  x.clearRect(0,0,w,h);
+  const cx=w/2,cy=h/2+fp*.4,R=Math.min(w,h)*.38;
+  x.strokeStyle=C.line;x.lineWidth=1.5;x.beginPath();x.arc(cx,cy,R,0,7);x.stroke();
+  x.beginPath();x.moveTo(cx-R-10,cy);x.lineTo(cx+R+10,cy);x.moveTo(cx,cy-R-10);x.lineTo(cx,cy+R+10);x.stroke();
+  const sgn=st.lead?1:-1, aV=theta, aI=theta+sgn*deg(st.phi);
+  // angle arc
+  x.strokeStyle=C.accent;x.lineWidth=3;x.beginPath();
+  const a0=-aV,a1=-aI; x.arc(cx,cy,R*.32,Math.min(a0,a1),Math.max(a0,a1));x.stroke();
+  const am=-(aV+aI)/2;x.fillStyle=C.accent;x.font=`700 ${fp*1.1}px ${getComputedStyle(document.body).fontFamily}`;
+  x.textAlign="center";x.textBaseline="middle";if(st.phi>4)x.fillText("φ",cx+R*.48*Math.cos(am),cy+R*.48*Math.sin(am));
+  // projections
+  x.setLineDash([4,4]);x.lineWidth=1;x.strokeStyle=C.v;x.beginPath();x.moveTo(cx+R*Math.cos(aV),cy-R*Math.sin(aV));x.lineTo(w,cy-R*Math.sin(aV));x.stroke();x.setLineDash([]);
+  arrow(x,cx,cy,cx+R*Math.cos(aV),cy-R*Math.sin(aV),C.v,4);
+  arrow(x,cx,cy,cx+R*.72*Math.cos(aI),cy-R*.72*Math.sin(aI),C.i,4);
+  x.font=`700 ${fp*1.2}px sans-serif`;
+  x.fillStyle=C.v;x.fillText("V",cx+(R+16)*Math.cos(aV),cy-(R+16)*Math.sin(aV));
+  x.fillStyle=C.i;x.fillText("I",cx+(R*.72+16)*Math.cos(aI),cy-(R*.72+16)*Math.sin(aI));
+  x.fillStyle=C.mute;x.font=`600 ${fp*.8}px sans-serif`;x.textAlign="left";x.fillText(t("phasor"),6,fp*.8);
+}
+function drawWaves(){
+  const cv=$("cWv"),{x,w,h}=fit(cv),fp=fontPx();
+  x.clearRect(0,0,w,h);
+  const m=fp*1.6,y0=h/2,A=(h/2-m)*.95,cyc=2,sgn=st.lead?1:-1,ph=sgn*deg(st.phi);
+  // p(t) fill
+  for(let px=0;px<w;px+=2){
+    const a=theta-2*Math.PI*cyc*px/w, v=Math.sin(a), i=.72*Math.sin(a+ph), p=v*i;
+    x.fillStyle=p>=0?C.p:C.bad;x.globalAlpha=.35;x.fillRect(px,y0,2,-p*A*1.25);
+  }
+  x.globalAlpha=1;
+  x.strokeStyle=C.line;x.lineWidth=1;x.beginPath();x.moveTo(0,y0);x.lineTo(w,y0);x.stroke();
+  const avg=.72*Math.cos(deg(st.phi))/2;
+  x.setLineDash([8,6]);x.strokeStyle=C.p;x.lineWidth=2;x.beginPath();x.moveTo(0,y0-avg*A*1.25);x.lineTo(w,y0-avg*A*1.25);x.stroke();x.setLineDash([]);
+  const line=(f,col,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.beginPath();for(let px=0;px<=w;px+=2){const a=theta-2*Math.PI*cyc*px/w,y=y0-f(a)*A;px?x.lineTo(px,y):x.moveTo(px,y)}x.stroke()};
+  line(a=>Math.sin(a),C.v,3.5);line(a=>.72*Math.sin(a+ph),C.i,3.5);
+  x.font=`700 ${fp*.85}px sans-serif`;x.textAlign="left";x.textBaseline="top";
+  x.fillStyle=C.v;x.fillText("v",8,6);x.fillStyle=C.i;x.fillText("i",28,6);x.fillStyle=C.p;x.fillText("p = v·i",46,6);
+  x.textAlign="right";x.fillStyle=C.p;x.fillText(t("avgP"),w-6,y0-avg*A*1.25-fp*1.1);
+  x.fillStyle=C.mute;x.textBaseline="bottom";x.fillText(t("wave"),w-6,h-4);
+}
+function upd1(){
+  $("phi1").value=Math.round(st.phi);$("phi1o").textContent=Math.round(st.phi)+"°";
+  $("r1phi").textContent=Math.round(st.phi)+"°";$("r1pf").textContent=fmt(pf());
+  const ty=$("r1type");
+  if(st.phi<1){ty.textContent=t("unityS");ty.className="chip cP"}
+  else if(st.lead){ty.textContent=t("leadS");ty.className="chip cS"}
+  else{ty.textContent=t("lagS");ty.className="chip cQ"}
+  $("mR").classList.toggle("on",st.phi<1);$("mL").classList.toggle("on",st.phi>=1&&!st.lead);$("mC").classList.toggle("on",st.phi>=1&&st.lead);
+  $("playBtn").textContent=st.play?t("pause"):t("play");
+}
+
+/* ---------------- tab 2: power triangle + tea ---------------- */
+function svgEl(tag,attrs,parent){const e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function triSVG(svg,a,b,labels,cols,vals,opt={}){
+  // a = base, b = height (both in px space), right-angled at base end
+  svg.innerHTML="";const H=+(svg.getAttribute("viewBox")||"0 0 300 300").split(/\s+/)[3];
+  const ox=opt.ox??30, oy=opt.down?(opt.oy??30):(opt.oy??H-34);
+  const bx=ox+a, by=oy, tx_=bx, ty=opt.down?oy+b:oy-b;
+  svgEl("polygon",{points:`${ox},${oy} ${bx},${by} ${tx_},${ty}`,fill:cols[2],"fill-opacity":.12,stroke:"none"},svg);
+  const ln=(x1,y1,x2,y2,c)=>svgEl("line",{x1,y1,x2,y2,stroke:c,"stroke-width":opt.lw||6,"stroke-linecap":"round"},svg);
+  ln(ox,oy,bx,by,cols[0]);ln(bx,by,tx_,ty,cols[1]);ln(ox,oy,tx_,ty,cols[2]);
+  // angle arc
+  const ang=Math.atan2(Math.abs(ty-oy),a),r=Math.min(46,a*.5+10),dir=opt.down?1:-1;
+  if(ang>0.03)svgEl("path",{d:`M${ox+r},${oy} A${r},${r} 0 0 ${opt.down?1:0} ${ox+r*Math.cos(ang)},${oy+dir*r*Math.sin(ang)}`,fill:"none",stroke:"var(--accent)","stroke-width":3},svg);
+  const fs=opt.fs||18;
+  const tt=(x,y,s,c,anc="middle")=>{const e=svgEl("text",{x,y,fill:c,"font-size":fs,"font-weight":700,"text-anchor":anc,"font-family":"var(--f-mono)"},svg);e.textContent=s;return e};
+  if(ang>0.03)tt(ox+r+14,oy+dir*8+(opt.down?10:0),"φ","var(--accent)","start");
+  tt(ox+a/2,oy+(opt.down?-10:26),labels[0]+(vals?" "+vals[0]:""),cols[0]);
+  if(b>14)tt(bx+8,(by+ty)/2+6,labels[1]+(vals?" "+vals[1]:""),cols[1],"start");
+  const mx=(ox+tx_)/2,my=(oy+ty)/2;tt(mx-10,my+(opt.down?18:-10),labels[2]+(vals?" "+vals[2]:""),cols[2],"end");
+}
+function upd2(){
+  const S=+$("s2").value,c=pf(),s=Math.sin(deg(st.phi));
+  $("phi2").value=Math.round(st.phi);$("phi2o").textContent=Math.round(st.phi)+"°";$("s2o").textContent=S+" kVA";
+  const L0=300;
+  triSVG($("sTri"),L0*c,L0*s*.9,["P","Q","S"],["var(--p)","var(--q)","var(--s)"],[fmt(S*c,1)+" kW",fmt(S*s,1)+" kVAR",S+" kVA"],{down:st.lead,ox:40,oy:st.lead?40:290,fs:17});
+  $("r2P").textContent=fmt(S*c,1)+" kW";$("r2Q").textContent=fmt(S*s,1)+" kVAR";$("r2S").textContent=S+" kVA";$("r2pf").textContent=fmt(c);
+  // tea glass
+  const g=$("sMug");g.innerHTML="";
+  const top=30,bot=270,hh=bot-top,teaH=hh*c;
+  const clip=svgEl("clipPath",{id:"gl"},svgEl("defs",{},g));svgEl("polygon",{points:"40,30 160,30 145,270 55,270"},clip);
+  const gr=svgEl("g",{"clip-path":"url(#gl)"},g);
+  svgEl("rect",{x:0,y:bot-teaH,width:200,height:teaH,fill:"var(--p)","fill-opacity":.85},gr);
+  svgEl("rect",{x:0,y:top,width:200,height:hh-teaH,fill:"var(--q)","fill-opacity":.45},gr);
+  for(let k=0;k<14;k++){svgEl("circle",{cx:48+((k*37)%104),cy:top+8+((k*23)%Math.max(8,hh-teaH-10)),r:4+(k%3)*2,fill:"var(--q)","fill-opacity":.7},gr)}
+  svgEl("polygon",{points:"40,30 160,30 145,270 55,270",fill:"none",stroke:"var(--fg)","stroke-width":4},g);
+  const tt=(y,s,c)=>{const e=svgEl("text",{x:100,y,fill:c,"font-size":17,"font-weight":700,"text-anchor":"middle"},g);e.textContent=s};
+  if(teaH>40)tt(bot-teaH/2+6,"P · "+t("tea"),"var(--bg)");
+  if(hh-teaH>34)tt(top+(hh-teaH)/2+6,"Q · "+t("froth"),"var(--fg)");
+  tt(20,"S","var(--s)");
+}
+
+/* ---------------- tab 3: R/Z ---------------- */
+function upd3(){
+  const par=st.par;
+  if(par){$("rR").min=0.5;$("rX").min=0.5}else{$("rR").min=0;$("rX").min=0}
+  const R=+$("rR").value,X=+$("rX").value,I=+$("rI").value,V=+$("rV").value;
+  $("rRo").textContent=R+" Ω";$("rXo").textContent=X+" Ω";$("rIo").textContent=I+" A";$("rVo").textContent=V+" V";
+  $("rIrow").hidden=par;$("rVrow").hidden=!par;
+  $("cSer").setAttribute("aria-pressed",!par);$("cPar").setAttribute("aria-pressed",par);
+  $("t3title").textContent=t(par?"t3hP":"t3hS");
+  $("lz").textContent=par?t("yt"):t("zt");$("lv").textContent=par?t("it"):t("vt");$("ls").textContent=par?t("st2"):t("st");
+  const cols=["var(--p)","var(--q)","var(--s)"];
+  let Z,c,ph,a,b;
+  if(!par){
+    Z=Math.hypot(R,X)||0.0001;c=(R===0&&X===0)?1:R/Z;ph=Math.atan2(X,R)*180/Math.PI;
+    const f=Math.min(170/Math.max(R,.01),120/Math.max(X,.01));a=R*f;b=X*f;
+    triSVG($("tz"),a,b,["R","X","Z"],cols,null,{ox:20,oy:150,fs:18,lw:5});
+    triSVG($("tv"),a,b,["IR","IX","V"],cols,null,{ox:20,oy:150,fs:16,lw:5});
+    triSVG($("ts"),a,b,["P","Q","S"],cols,null,{ox:20,oy:150,fs:18,lw:5});
+    $("r3eq").innerHTML=`cos φ = <span class="cP">R</span>/<span class="cS">Z</span> = ${R}/${fmt(Z,1)} = <b>${fmt(c)}</b><br><span style="font-size:.8em">= <span class="cP">V<sub>R</sub></span>/<span class="cS">V</span> = <span class="cP">P</span>/<span class="cS">S</span></span>`;
+  }else{
+    const G=1/R,B=1/X,Y=Math.hypot(G,B);Z=1/Y;c=G/Y;ph=Math.atan2(B,G)*180/Math.PI;
+    const f=Math.min(170/G,120/B);a=G*f;b=B*f;
+    triSVG($("tz"),a,b,["G","B","Y"],cols,null,{ox:20,oy:150,fs:18,lw:5});
+    triSVG($("tv"),a,b,["I_R","I_X","I"],cols,null,{ox:20,oy:150,fs:16,lw:5});
+    triSVG($("ts"),a,b,["P","Q","S"],cols,null,{ox:20,oy:150,fs:18,lw:5});
+    $("r3eq").innerHTML=`cos φ = <span class="cS">Z</span>/<span class="cP">R</span> = ${fmt(Z,2)}/${R} = <b>${fmt(c)}</b><br><span style="font-size:.8em">= <span class="cP">G</span>/<span class="cS">Y</span> = <span class="cP">I<sub>R</sub></span>/<span class="cS">I</span> = <span class="cP">P</span>/<span class="cS">S</span></span>`;
+  }
+  $("r3Z").textContent=fmt(Z,par?2:1)+" Ω";$("r3phi").textContent=Math.round(ph)+"°";$("r3pf").textContent=fmt(c);
+  const add=(id,s)=>{const e=svgEl("text",{x:110,y:18,"text-anchor":"middle","font-size":14,fill:"var(--mute)","font-family":"var(--f-mono)","font-weight":700},$(id));e.textContent=s};
+  if(!par){
+    add("tz",`${R}Ω · ${X}Ω · ${fmt(Z,1)}Ω`);
+    add("tv",`${fmt(I*R,0)}V · ${fmt(I*X,0)}V · ${fmt(I*Z,0)}V`);
+    add("ts",`${fmt(I*I*R,0)}W · ${fmt(I*I*X,0)}VAR · ${fmt(I*I*Z,0)}VA`);
+  }else{
+    add("tz",`${fmt(1/R,3)} · ${fmt(1/X,3)} · ${fmt(1/Z,3)} S`);
+    add("tv",`${fmt(V/R,1)}A · ${fmt(V/X,1)}A · ${fmt(V/Z,1)}A`);
+    add("ts",`${fmt(V*V/R,0)}W · ${fmt(V*V/X,0)}VAR · ${fmt(V*V/Z,0)}VA`);
+  }
+  // circuit
+  const g=$("ckt");g.innerHTML="";
+  const w=(d,c)=>svgEl("path",{d,fill:"none",stroke:c,"stroke-width":4,"stroke-linecap":"round","stroke-linejoin":"round"},g);
+  const tl=(x,y,s,c)=>{const e=svgEl("text",{x,y,"text-anchor":"middle","font-size":18,"font-weight":700,fill:c,"font-family":"var(--f-mono)"},g);e.textContent=s};
+  const res=(x,y)=>w(`M${x},${y} l10,-12 l20,24 l20,-24 l20,24 l20,-24 l20,24 l10,-12`,"var(--p)");
+  const coil=(x,y)=>w(`M${x},${y} a15,15 0 0 1 30,0 a15,15 0 0 1 30,0 a15,15 0 0 1 30,0 a15,15 0 0 1 30,0`,"var(--q)");
+  if(!par){
+    w("M20,55 H150","var(--fg)");res(150,55);w("M270,55 H310","var(--fg)");coil(310,55);w("M430,55 H580","var(--fg)");
+    tl(210,95,"R = "+R+" Ω","var(--p)");tl(370,95,"X = "+X+" Ω","var(--q)");tl(80,40,"I →","var(--i)");tl(510,40,"Z = "+fmt(Z,1)+" Ω","var(--s)");
+  }else{
+    w("M20,65 H170 M170,30 V100 M170,30 H240 M360,30 H430 M170,100 H240 M360,100 H430 M430,30 V100 M430,65 H580","var(--fg)");
+    res(240,30);coil(240,100);
+    tl(300,62,"R = "+R+" Ω","var(--p)");tl(300,128,"X = "+X+" Ω","var(--q)");tl(90,50,"I →","var(--i)");tl(505,50,"V = "+V+" V","var(--v)");
+    tl(205,22,"I_R","var(--p)");tl(205,92,"I_X","var(--q)");
+  }
+}
+
+/* ---------------- tab 4: current vs PF ---------------- */
+let flow=0;
+function sysV(){return st.three?415:230}
+function Icalc(p){const P=+$("p4").value*1000;return st.three?P/(Math.sqrt(3)*415*p):P/(230*p)}
+function drawCable(dt){
+  const cv=$("cCab"),{x,w,h}=fit(cv),fp=fontPx();x.clearRect(0,0,w,h);
+  const ratio=1/pf(),cy=h*.58,th=Math.min(h*.36,10+ratio*10);
+  // heat glow
+  const heat=Math.min(1,(ratio*ratio-1)/6);
+  x.fillStyle=C.heat;x.globalAlpha=heat*.35;x.fillRect(fp*3,cy-th*1.6,w-fp*6,th*3.2);x.globalAlpha=1;
+  // heat waves
+  if(heat>0.05){x.strokeStyle=C.heat;x.lineWidth=2;x.globalAlpha=heat;
+    for(let k=0;k<8;k++){const bx=fp*4+k*(w-fp*8)/7;x.beginPath();for(let j=0;j<20;j++){const yy=cy-th/2-6-j*2.2,xx=bx+Math.sin(j*.6+flow*.05+k)*5;j?x.lineTo(xx,yy):x.moveTo(xx,yy)}x.stroke()}x.globalAlpha=1}
+  x.fillStyle=C.line;x.fillRect(fp*3,cy-th/2-4,w-fp*6,th+8);
+  x.fillStyle=C.panel;x.fillRect(fp*3,cy-th/2,w-fp*6,th);
+  const sp=36;flow+=dt*70*ratio;
+  x.fillStyle=C.i;for(let px=fp*3+((flow)%sp);px<w-fp*3;px+=sp){for(let r=-1;r<=1;r++){if(th<26&&r!==0)continue;x.beginPath();x.arc(px+r*8,cy+r*th*.28,Math.min(5,th*.22),0,7);x.fill()}}
+  // source / load boxes
+  x.fillStyle=C.v;x.fillRect(0,cy-fp*1.4,fp*3,fp*2.8);x.fillStyle=C.p;x.fillRect(w-fp*3,cy-fp*1.4,fp*3,fp*2.8);
+  x.fillStyle=C.bg;x.font=`700 ${fp*.8}px sans-serif`;x.textAlign="center";x.textBaseline="middle";x.fillText(sysV()+"V",fp*1.5,cy);x.fillText($("p4").value+"kW",w-fp*1.5,cy);
+  x.fillStyle=C.fg;x.textBaseline="top";x.font=`700 ${fp*1}px sans-serif`;x.fillText("I = "+fmt(Icalc(pf()),1)+" A   ·   PF "+fmt(pf()),w/2,4);
+}
+function upd4(){
+  const p=pf(),I=Icalc(p),I1=Icalc(1),Imax=Icalc(0.2);
+  $("pf4").value=fmt(p);$("pf4o").textContent=fmt(p);$("p4o").textContent=$("p4").value+" kW";
+  $("r4I").textContent=fmt(I,1)+" A";$("r4x").textContent=fmt(I/I1)+"×";$("r4l").textContent=fmt((I/I1)**2)+"×";
+  $("r4eq").innerHTML=st.three?`I = P / (√3·V·cos φ)<br><span style="font-size:.75em">= ${$("p4").value*1000} / (1.732 × 415 × ${fmt(p)})</span>`:`I = P / (V·cos φ)<br><span style="font-size:.75em">= ${$("p4").value*1000} / (230 × ${fmt(p)})</span>`;
+  $("ph1").setAttribute("aria-pressed",!st.three);$("ph3").setAttribute("aria-pressed",st.three);
+  // gauge
+  const g=$("gauge");g.innerHTML="";
+  const cx=120,cy=130,r=100;
+  svgEl("path",{d:`M${cx-r},${cy} A${r},${r} 0 0 1 ${cx+r},${cy}`,fill:"none",stroke:"var(--line)","stroke-width":16},g);
+  const fr=Math.min(1,I/Imax),a=Math.PI*(1-fr);
+  svgEl("path",{d:`M${cx-r},${cy} A${r},${r} 0 0 1 ${cx+r*Math.cos(a)},${cy-r*Math.sin(a)}`,fill:"none",stroke:fr>.5?"var(--bad)":"var(--i)","stroke-width":16},g);
+  svgEl("line",{x1:cx,y1:cy,x2:cx+(r-20)*Math.cos(a),y2:cy-(r-20)*Math.sin(a),stroke:"var(--fg)","stroke-width":5,"stroke-linecap":"round"},g);
+  svgEl("circle",{cx,cy,r:8,fill:"var(--fg)"},g);
+  const tt=(x,y,s,sz,c,anc="middle")=>{const e=svgEl("text",{x,y,"font-size":sz,"font-weight":700,fill:c,"text-anchor":anc,"font-family":"var(--f-mono)"},g);e.textContent=s};
+  tt(cx,cy-36,"A",22,"var(--i)");tt(cx-r,cy+22,"0",14,"var(--mute)");tt(cx+r,cy+22,fmt(Imax,0),14,"var(--mute)");
+  // curve
+  const s=$("curve");s.innerHTML="";const X0=56,Y0=220,Wd=340,Ht=190;
+  const xp=v=>X0+(v-0.2)/0.8*Wd, yp=v=>Y0-v/Imax*Ht;
+  for(let v=0.2;v<=1.001;v+=0.2){svgEl("line",{x1:xp(v),y1:Y0,x2:xp(v),y2:Y0-Ht,stroke:"var(--line)","stroke-width":1},s);const e=svgEl("text",{x:xp(v),y:Y0+20,"text-anchor":"middle","font-size":14,fill:"var(--mute)","font-family":"var(--f-mono)"},s);e.textContent=fmt(v,1)}
+  [0,.5,1].forEach(f=>{const e=svgEl("text",{x:X0-8,y:yp(Imax*f)+5,"text-anchor":"end","font-size":14,fill:"var(--mute)","font-family":"var(--f-mono)"},s);e.textContent=fmt(Imax*f,0);svgEl("line",{x1:X0,y1:yp(Imax*f),x2:X0+Wd,y2:yp(Imax*f),stroke:"var(--line)","stroke-width":1},s)});
+  let d="";for(let v=0.2;v<=1.0001;v+=0.01){d+=(d?"L":"M")+xp(v).toFixed(1)+","+yp(Icalc(v)).toFixed(1)}
+  svgEl("path",{d,fill:"none",stroke:"var(--i)","stroke-width":4},s);
+  svgEl("line",{x1:xp(p),y1:Y0,x2:xp(p),y2:yp(I),stroke:"var(--accent)","stroke-width":2,"stroke-dasharray":"5 4"},s);
+  svgEl("circle",{cx:xp(p),cy:yp(I),r:9,fill:"var(--accent)",stroke:"var(--bg)","stroke-width":3},s);
+  const lab=svgEl("text",{x:Math.min(xp(p)+12,X0+Wd-4),y:Math.max(yp(I)-12,20),"font-size":16,"font-weight":700,fill:"var(--fg)","text-anchor":xp(p)>X0+Wd-80?"end":"start","font-family":"var(--f-mono)"},s);lab.textContent=fmt(I,1)+" A";
+  const ax=svgEl("text",{x:X0+Wd,y:Y0+40,"text-anchor":"end","font-size":14,fill:"var(--mute)","font-weight":700},s);ax.textContent="PF →";
+  const ay=svgEl("text",{x:10,y:20,"font-size":14,fill:"var(--mute)","font-weight":700},s);ay.textContent="I (A)";
+  // table
+  const rows=[1,.9,.8,.7,.6,.5];let near=rows.reduce((a,b)=>Math.abs(b-p)<Math.abs(a-p)?b:a);
+  $("t4").innerHTML=`<tr><th>PF</th><th>I (A)</th><th>× I</th><th>× I²R</th></tr>`+rows.map(v=>{const Ii=Icalc(v);return `<tr class="${v===near?"hit":""}"><td>${fmt(v,1)}</td><td>${fmt(Ii,1)}</td><td>${fmt(Ii/I1)}</td><td>${fmt((Ii/I1)**2)}</td></tr>`}).join("");
+}
+
+/* ---------------- tab 5: why ---------------- */
+const ICON={
+ motor:`<svg viewBox="0 0 52 52"><circle cx="24" cy="26" r="16" fill="none" stroke="var(--q)" stroke-width="4"/><text x="24" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="var(--q)">M</text><path d="M40 26h10" stroke="var(--fg)" stroke-width="4"/></svg>`,
+ tx:`<svg viewBox="0 0 52 52"><path d="M8 14a4 4 0 0 1 0 8a4 4 0 0 1 0 8a4 4 0 0 1 0 8M44 14a4 4 0 0 0 0 8a4 4 0 0 0 0 8a4 4 0 0 0 0 8" fill="none" stroke="var(--q)" stroke-width="3"/><path d="M22 10v34M30 10v34" stroke="var(--fg)" stroke-width="3"/></svg>`,
+ choke:`<svg viewBox="0 0 52 52"><path d="M2 26h8a5 5 0 0 1 10 0a5 5 0 0 1 10 0a5 5 0 0 1 10 0h10" fill="none" stroke="var(--q)" stroke-width="4"/></svg>`,
+ weld:`<svg viewBox="0 0 52 52"><path d="M10 42l18-18M28 24l6-14 4 10 8-4-10 18" fill="none" stroke="var(--q)" stroke-width="4" stroke-linejoin="round"/></svg>`
+};
+function upd5(){
+  const p=pf();$("pf5").value=fmt(p);$("pf5o").textContent=fmt(p);
+  const r=1/p,mx=1/.3,mx2=mx*mx;
+  const card=(ti,de,val,frac,ghost,col,extra="")=>`<div class="card" style="display:grid;gap:8px"><h3>${t(ti)}</h3><div class="mono" style="color:var(--mute)">${t(de)}</div><div class="mid" style="color:${col}">${val}</div><div class="bar"><i style="width:${(frac*100).toFixed(1)}%;background:${col}"></i>${ghost!=null?`<em style="left:${(ghost*100).toFixed(1)}%" title="PF 1"></em>`:""}</div>${extra}</div>`;
+  const pen=p<0.9;
+  $("why").innerHTML=
+    card("w1","w1d",fmt(r)+"×",r/mx,1/mx,"var(--i)")+
+    card("w2","w2d",fmt(r*r)+"×",r*r/mx2,1/mx2,"var(--bad)")+
+    card("w3","w3d",fmt(r)+"×",r/mx,1/mx,"var(--q)")+
+    card("w4","w4d",fmt(100*p,0)+" kW",p,1,"var(--p)")+
+    `<div class="card" style="display:grid;gap:8px"><h3>${t("w5")}</h3><div class="mono" style="color:var(--mute)">${t("w5d")}</div><div class="mid ${pen?"cBad":"cOk"}">${pen?"⚠ "+t("pen"):"✔ "+t("ok")}</div><div class="bar"><i style="width:${(p*100).toFixed(1)}%;background:${pen?"var(--bad)":"var(--ok)"}"></i><em style="left:90%"></em></div></div>`;
+  $("causes").innerHTML=[["motor","c1"],["tx","c2"],["choke","c3"],["weld","c4"]].map(([i,k])=>`<div>${ICON[i]}<b>${t(k)}</b></div>`).join("");
+  drawCap();
+}
+let capT=0,capAnim=null;
+function drawCap(){
+  const P=+$("cP").value,p1=+$("c1").value,p2=Math.max(+$("c2").value,p1);
+  $("cPo").textContent=P+" kW";$("c1o").textContent=fmt(p1);$("c2o").textContent=fmt(p2);
+  const t1=Math.tan(Math.acos(p1)),t2=Math.tan(Math.acos(p2)),Qc=P*(t1-t2);
+  $("rQc").textContent=fmt(Qc,1)+" kVAR";$("capBtn").textContent=st.cap?t("capOff"):t("capOn");
+  const s=$("sCap");s.innerHTML="";
+  const ox=40,oy=230,k=300/P*.95,Q1=P*t1,Q2=P*t2;const kk=Math.min(k,200/Math.max(Q1,1));
+  const bx=ox+P*kk,y1=oy-Q1*kk,y2=oy-Q2*kk,yc=y1+(y2-y1)*capT;
+  const ln=(x1,a,x2,b,c,w,dash)=>svgEl("line",{x1,y1:a,x2,y2:b,stroke:c,"stroke-width":w,"stroke-linecap":"round","stroke-dasharray":dash||""},s);
+  ln(ox,oy,bx,y1,"var(--s)",3,"6 5");ln(bx,oy,bx,y1,"var(--q)",3,"6 5");
+  ln(ox,oy,bx,oy,"var(--p)",6);ln(bx,oy,bx,yc,"var(--q)",6);ln(ox,oy,bx,yc,"var(--s)",6);
+  if(capT>0.02){svgEl("line",{x1:bx+26,y1:y1,x2:bx+26,y2:yc,stroke:"var(--accent)","stroke-width":5},s);
+    svgEl("path",{d:`M${bx+18},${yc-10} L${bx+26},${yc} L${bx+34},${yc-10}`,fill:"none",stroke:"var(--accent)","stroke-width":4},s);
+    const e=svgEl("text",{x:bx+38,y:(y1+yc)/2,fill:"var(--accent)","font-size":16,"font-weight":700,"font-family":"var(--f-mono)"},s);e.textContent="Qc"}
+  const tt=(x,y,str,c,anc="middle")=>{const e=svgEl("text",{x,y,fill:c,"font-size":16,"font-weight":700,"text-anchor":anc,"font-family":"var(--f-mono)"},s);e.textContent=str};
+  tt((ox+bx)/2,oy+22,"P "+P+" kW","var(--p)");
+  tt(ox+4,24,`${t("before")} PF ${fmt(p1)} → ${t("after")} PF ${fmt(p2)}`,"var(--fg)","start");
+  const pNow=Math.cos(Math.atan2(oy-yc,bx-ox));tt(ox+4,46,"PF = "+fmt(pNow),"var(--accent)","start");
+}
+function animCap(){const from=capT,to=st.cap?1:0,t0=performance.now();cancelAnimationFrame(capAnim);
+  const step=n=>{const k=Math.min(1,(n-t0)/900);capT=from+(to-from)*(1-Math.pow(1-k,3));drawCap();if(k<1)capAnim=requestAnimationFrame(step)};capAnim=requestAnimationFrame(step)}
+
+/* ---------------- KSEB tariff ---------------- */
+function tariffPct(p){p=Math.round(p*100)/100;
+  if(p>0.95)return 0.5*Math.round((p-0.95)*100);
+  if(p>=0.90)return -0.5*Math.round((0.95-p)*100);
+  return -2.5-1*Math.round((0.90-p)*100);}
+const inr=v=>(v<0?"−":"+")+"₹"+Math.abs(Math.round(v)).toLocaleString("en-IN");
+function updTariff(){
+  const p=+$("pfT").value,E=+$("eT").value,pc=tariffPct(p);
+  $("pfTo").textContent=fmt(p);$("eTo").textContent="₹"+E.toLocaleString("en-IN");
+  const r=$("rTf");r.textContent=(pc>0?"+":pc<0?"−":"")+fmt(Math.abs(pc),1)+"%";r.style.color=pc>0?"var(--ok)":pc<0?(p<0.9?"var(--bad)":"var(--q)"):"var(--fg)";
+  $("rTfR").textContent=pc===0?t("tfNone"):inr(E*pc/100)+" · "+(pc>0?t("tfInc"):t("tfPen"));
+  $("rKva").textContent=fmt(500/p,0)+" kVA";
+  const s=$("sTf");s.innerHTML="";const X0=56,X1=440,Y0=30,Y1=210,xp=v=>X0+(v-0.8)/0.2*(X1-X0);
+  const mn=-22.5,mx=2.5,yp=v=>Y0+(mx-v)/(mx-mn)*(Y1-Y0);
+  // zones
+  svgEl("rect",{x:xp(0.8),y:Y0,width:xp(0.9)-xp(0.8),height:Y1-Y0,fill:"var(--bad)","fill-opacity":.10},s);
+  svgEl("rect",{x:xp(0.9),y:Y0,width:xp(0.95)-xp(0.9),height:Y1-Y0,fill:"var(--q)","fill-opacity":.12},s);
+  svgEl("rect",{x:xp(0.95),y:Y0,width:xp(1)-xp(0.95),height:Y1-Y0,fill:"var(--ok)","fill-opacity":.12},s);
+  [0,-5,-10,-15,-20].forEach(v=>{svgEl("line",{x1:X0,x2:X1,y1:yp(v),y2:yp(v),stroke:"var(--line)","stroke-width":v===0?2:1},s);const e=svgEl("text",{x:X0-6,y:yp(v)+5,"text-anchor":"end","font-size":13,fill:"var(--mute)","font-family":"var(--f-mono)"},s);e.textContent=v+"%"});
+  [0.8,0.85,0.9,0.95,1].forEach(v=>{const e=svgEl("text",{x:xp(v),y:Y1+20,"text-anchor":"middle","font-size":13,fill:"var(--mute)","font-family":"var(--f-mono)"},s);e.textContent=fmt(v)});
+  let d="";for(let v=0.80;v<=1.0001;v+=0.01){d+=(d?"L":"M")+xp(v).toFixed(1)+","+yp(tariffPct(v)).toFixed(1)}
+  svgEl("path",{d,fill:"none",stroke:"var(--fg)","stroke-width":3.5},s);
+  svgEl("circle",{cx:xp(p),cy:yp(pc),r:9,fill:"var(--accent)",stroke:"var(--bg)","stroke-width":3},s);
+  const tl=svgEl("text",{x:X0,y:18,"font-size":14,"font-weight":700,fill:"var(--mute)"},s);tl.textContent="% "+t("adj");
+}
+/* ---------------- improve PF ---------------- */
+const MICON={
+ cap:`<svg viewBox="0 0 52 52"><path d="M4 26h16M32 26h16M20 12v28M32 12v28" stroke="var(--q)" stroke-width="4" fill="none"/></svg>`,
+ apfc:`<svg viewBox="0 0 52 52"><rect x="6" y="6" width="40" height="40" rx="4" fill="none" stroke="var(--s)" stroke-width="3"/><text x="26" y="24" text-anchor="middle" font-size="11" font-weight="700" fill="var(--s)">PF</text><text x="26" y="38" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ok)">0.98</text></svg>`,
+ syn:`<svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="18" fill="none" stroke="var(--accent)" stroke-width="4"/><text x="26" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="var(--accent)">SC</text></svg>`,
+ adv:`<svg viewBox="0 0 52 52"><circle cx="20" cy="26" r="14" fill="none" stroke="var(--q)" stroke-width="4"/><circle cx="40" cy="26" r="8" fill="none" stroke="var(--accent)" stroke-width="4"/><path d="M34 26h-2" stroke="var(--fg)" stroke-width="4"/></svg>`,
+ size:`<svg viewBox="0 0 52 52"><path d="M6 40h40" stroke="var(--fg)" stroke-width="3"/><rect x="10" y="22" width="10" height="18" fill="var(--bad)"/><rect x="30" y="10" width="10" height="30" fill="var(--ok)"/></svg>`,
+ svg:`<svg viewBox="0 0 52 52"><rect x="8" y="12" width="36" height="28" rx="3" fill="none" stroke="var(--p)" stroke-width="3"/><path d="M14 30 l6-10 l6 10 l6-10 l6 10" fill="none" stroke="var(--p)" stroke-width="3"/></svg>`
+};
+function updMethods(){
+  $("methods").innerHTML=[["cap","m1"],["apfc","m2"],["syn","m3"],["adv","m4"],["size","m5"],["svg","m6"]].map(([i,k])=>`<div>${MICON[i]}<div><h3>${t(k+"t")}</h3><p>${t(k+"d")}</p></div></div>`).join("");
+  const s=$("sWhere");s.innerHTML="";
+  const ln=(d,c,w=4)=>svgEl("path",{d,fill:"none",stroke:c,"stroke-width":w,"stroke-linecap":"round"},s);
+  const tx_=(x,y,str,c,sz=14)=>{const e=svgEl("text",{x,y,"text-anchor":"middle","font-size":sz,"font-weight":700,fill:c,"font-family":"var(--f-mono)"},s);e.textContent=str};
+  const cap=(x,y,c)=>{ln(`M${x},${y} v10 M${x-12},${y+10} h24 M${x-12},${y+18} h24 M${x},${y+18} v10`,c,4)};
+  const mot=(x,y)=>{svgEl("circle",{cx:x,cy:y,r:16,fill:"var(--panel)",stroke:"var(--fg)","stroke-width":3},s);tx_(x,y+5,"M","var(--fg)",14)};
+  // main panel
+  svgEl("rect",{x:20,y:20,width:110,height:40,rx:6,fill:"none",stroke:"var(--s)","stroke-width":3},s);tx_(75,45,"Main LT","var(--s)",14);
+  cap(75,60,"var(--s)");tx_(75,108,"APFC","var(--s)",13);
+  ln("M130,40 H300","var(--fg)",3);
+  svgEl("rect",{x:200,y:70,width:90,height:34,rx:6,fill:"none",stroke:"var(--q)","stroke-width":3},s);tx_(245,92,"SDB","var(--q)",13);
+  ln("M245,40 V70","var(--fg)",3);cap(270,104,"var(--q)");
+  ln("M215,104 V170 M245,104 V170","var(--fg)",3);mot(215,190);mot(245,190);
+  ln("M300,40 H380 V154 M380,120 H404","var(--fg)",3);mot(380,170);cap(404,120,"var(--p)");
+  tx_(380,220,"M + C","var(--p)",13);
+}
+/* ---------------- reactive energy animation ---------------- */
+let qPos=0,pPos=0;
+function drawReactive(dt){
+  const cv=$("cRe"),{x,w,h}=fit(cv),fp=fontPx();x.clearRect(0,0,w,h);
+  const sx=w*.12,yT=h*.28,yB=h*.72,xe=w*.70;
+  // source
+  x.strokeStyle=C.v;x.lineWidth=4;x.beginPath();x.arc(sx,h/2,Math.min(h*.14,48),0,7);x.stroke();
+  x.beginPath();const r=Math.min(h*.14,48);for(let k=0;k<=30;k++){const xx=sx-r*.6+k/30*r*1.2,yy=h/2-Math.sin(k/30*2*Math.PI)*r*.35;k?x.lineTo(xx,yy):x.moveTo(xx,yy)}x.stroke();
+  x.fillStyle=C.mute;x.font=`600 ${fp*.85}px sans-serif`;x.textAlign="center";x.fillText(t("src"),sx,h/2+r+fp*1.1);
+  // wires
+  x.strokeStyle=C.line;x.lineWidth=6;x.beginPath();x.moveTo(sx,h/2-r);x.lineTo(sx,yT);x.lineTo(xe,yT);x.moveTo(sx,h/2+r);x.lineTo(sx,yB);x.lineTo(xe,yB);x.stroke();
+  // resistor (top) glowing
+  x.fillStyle=C.heat;x.globalAlpha=.25+.2*Math.abs(Math.sin(theta));x.fillRect(xe,yT-fp*1.4,w*.18,fp*2.8);x.globalAlpha=1;
+  x.strokeStyle=C.p;x.lineWidth=4;x.beginPath();x.moveTo(xe,yT);for(let k=0;k<6;k++){x.lineTo(xe+w*.18*(k+.5)/6,yT+(k%2?1:-1)*fp*.8)}x.lineTo(xe+w*.18,yT);x.stroke();
+  x.fillStyle=C.p;x.fillText(t("ldR"),xe+w*.09,yT-fp*1.8);
+  // coil (bottom) with field
+  const e=Math.pow(Math.sin(theta),2), dE=Math.sin(2*theta);
+  const cx0=xe,cw=w*.18;
+  for(let k=1;k<=3;k++){x.strokeStyle=C.q;x.globalAlpha=e*(.7-k*.15);x.lineWidth=2.5;x.beginPath();x.ellipse(cx0+cw/2,yB,cw*.35+k*cw*.12*e+4,fp*(.6+k*.55)*e+2,0,0,7);x.stroke()}
+  x.globalAlpha=1;x.strokeStyle=C.q;x.lineWidth=4;x.beginPath();x.moveTo(cx0,yB);for(let k=0;k<4;k++){x.arc(cx0+cw*(k+.5)/4,yB,cw/8,Math.PI,0)}x.stroke();
+  x.fillStyle=C.q;x.fillText(t("ldL"),cx0+cw/2,yB+fp*2.4);
+  // stored energy bar
+  const bx=w*.93,bh=h*.5;x.strokeStyle=C.line;x.lineWidth=2;x.strokeRect(bx-10,h*.25,20,bh);x.fillStyle=C.q;x.fillRect(bx-10,h*.25+bh*(1-e),20,bh*e);
+  x.fillStyle=C.mute;x.font=`600 ${fp*.7}px sans-serif`;x.fillText(t("stored"),bx-4,h*.25-6);
+  // P packets: one way
+  if(st.play){pPos+=dt*90;qPos+=dt*140*dE}
+  x.fillStyle=C.p;const sp=34;for(let px=sx+((pPos)%sp);px<xe;px+=sp){x.beginPath();x.arc(px,yT,6,0,7);x.fill()}
+  // Q packets: back and forth
+  x.fillStyle=C.q;const qs=40;let off=((qPos%qs)+qs)%qs;for(let px=sx+off;px<xe;px+=qs){x.beginPath();x.moveTo(px+(dE>=0?8:-8),yB);x.lineTo(px+(dE>=0?-6:6),yB-7);x.lineTo(px+(dE>=0?-6:6),yB+7);x.closePath();x.fill()}
+  x.font=`700 ${fp*.9}px sans-serif`;x.fillStyle=C.p;x.fillText("P →",(sx+xe)/2,yT-fp*.9);
+  x.fillStyle=C.q;x.fillText(dE>=0?"Q → (store)":"Q ← (return)",(sx+xe)/2,yB-fp*.9);
+}
+/* ---------------- source side: sharing, generator, inverter ---------------- */
+function updShare(){
+  const QL=60,PL=80,qc=+$("shC").value,qi=+$("shI").value,qg=QL-qc-qi;
+  $("shCo").textContent=qc+" kVAR";$("shIo").textContent=qi+" kVAR";
+  $("rShG").textContent=qg+" kVAR";const pf_=PL/Math.hypot(PL,qg);const r=$("rShPf");
+  r.textContent=fmt(pf_)+(qg<0?" lead":"");r.style.color=qg<0?"var(--bad)":pf_>=0.95?"var(--ok)":pf_>=0.9?"var(--q)":"var(--bad)";
+  const s=$("sShare");s.innerHTML="";const X0=150,k=340/Math.max(QL,qc+qi);
+  const tx_=(x,y,str,c,anc="start",sz=14)=>{const e=svgEl("text",{x,y,"font-size":sz,"font-weight":700,fill:c,"text-anchor":anc,"font-family":"var(--f-body)"},s);e.textContent=str};
+  tx_(0,40,t("loadQ"),"var(--fg)");
+  svgEl("rect",{x:X0,y:22,width:QL*k,height:28,rx:4,fill:"var(--q)","fill-opacity":.35,stroke:"var(--q)","stroke-width":2},s);
+  tx_(X0+QL*k/2,42,QL+" kVAR","var(--fg)","middle");
+  // supply stack
+  let x=X0;const seg=(v,c,lab)=>{if(v<=0)return;svgEl("rect",{x,y:90,width:v*k,height:34,fill:c},s);if(v*k>44)tx_(x+v*k/2,112,v+"","var(--bg)","middle");x+=v*k};
+  seg(qc,"var(--accent)");seg(qi,"var(--p)");seg(Math.max(0,qg),"var(--q)");
+  svgEl("line",{x1:X0+QL*k,y1:14,x2:X0+QL*k,y2:134,stroke:"var(--fg)","stroke-width":2,"stroke-dasharray":"5 4"},s);
+  if(qg<0)tx_(X0+QL*k+6,150,"⚠ "+t("overC"),"var(--bad)","start",13);
+  tx_(0,112,"= Q","var(--fg)");
+  const lg=[["var(--accent)","shareC"],["var(--p)","shareI"],["var(--q)","share"]];
+  lg.forEach(([c,kk],i)=>{svgEl("rect",{x:i*172,y:172,width:14,height:14,fill:c},s);tx_(i*172+20,184,t(kk),"var(--mute)","start",13)});
+}
+function genCalc(E){const P=0.5,X=0.8,sd=Math.min(1,P*X/E),d=Math.asin(sd),Q=(E*Math.cos(d)-1)/X;return {P,Q,d,X,I:Math.hypot(P,Q)}}
+function updGen(){
+  const E=+$("gE").value,g=genCalc(E);$("gEo").textContent=fmt(E);
+  $("rGq").textContent=(g.Q>0?"+":"")+fmt(g.Q)+" pu";$("rGpf").textContent=fmt(g.P/g.I)+(g.Q>0.02?" lag":g.Q<-0.02?" lead":"");
+  const ch=$("rGst");if(g.Q>0.02){ch.textContent=t("over");ch.className="chip cQ"}else if(g.Q<-0.02){ch.textContent=t("under");ch.className="chip cS"}else{ch.textContent=t("normal");ch.className="chip cP"}
+  // phasors
+  const s=$("sGen");s.innerHTML="";const ox=20,oy=150,k=130;
+  const ar=(x1,y1,x2,y2,c,w=4,lab)=>{svgEl("line",{x1,y1,x2,y2,stroke:c,"stroke-width":w,"stroke-linecap":"round"},s);const a=Math.atan2(y2-y1,x2-x1);svgEl("path",{d:`M${x2},${y2} L${x2-10*Math.cos(a-.4)},${y2-10*Math.sin(a-.4)} L${x2-10*Math.cos(a+.4)},${y2-10*Math.sin(a+.4)}Z`,fill:c},s);
+    if(lab){const e=svgEl("text",{x:x2+6,y:y2-4,"font-size":16,"font-weight":700,fill:c,"font-family":"var(--f-mono)"},s);e.textContent=lab}};
+  const Ex=ox+k*E*Math.cos(g.d),Ey=oy-k*E*Math.sin(g.d);
+  ar(ox,oy,ox+k,oy,"var(--v)",4,"V");ar(ox,oy,Ex,Ey,"var(--accent)",4,"E");
+  svgEl("line",{x1:ox+k,y1:oy,x2:Ex,y2:Ey,stroke:"var(--mute)","stroke-width":2,"stroke-dasharray":"4 4"},s);
+  const Dx=E*Math.cos(g.d)-1,Dy=E*Math.sin(g.d),Ix=Dy/g.X,Iy=-Dx/g.X,ki=70;
+  ar(ox,oy,ox+ki*Ix,oy-ki*Iy,"var(--i)",4,"I");
+  const tl=svgEl("text",{x:6,y:20,"font-size":13,"font-weight":700,fill:"var(--mute)"},s);tl.textContent="E = "+fmt(E)+" · δ = "+Math.round(g.d*180/Math.PI)+"°";
+  // V-curve
+  const v=$("sVc");v.innerHTML="";const X0=36,X1=250,Y0=190,Y1=20,xp=e=>X0+(e-0.6)/1.0*(X1-X0),Im=1.0,yp=i=>Y0-i/Im*(Y0-Y1);
+  svgEl("line",{x1:X0,y1:Y0,x2:X1,y2:Y0,stroke:"var(--line)","stroke-width":2},v);svgEl("line",{x1:X0,y1:Y0,x2:X0,y2:Y1,stroke:"var(--line)","stroke-width":2},v);
+  let d="";for(let e=0.6;e<=1.6001;e+=0.02){d+=(d?"L":"M")+xp(e).toFixed(1)+","+yp(genCalc(e).I).toFixed(1)}
+  svgEl("path",{d,fill:"none",stroke:"var(--i)","stroke-width":3.5},v);
+  svgEl("circle",{cx:xp(E),cy:yp(g.I),r:8,fill:"var(--accent)",stroke:"var(--bg)","stroke-width":3},v);
+  const lb=(x,y,str,c,anc="middle")=>{const e=svgEl("text",{x,y,"font-size":12,"font-weight":700,fill:c,"text-anchor":anc,"font-family":"var(--f-mono)"},v);e.textContent=str};
+  lb(X1,Y0+16,"If →","var(--mute)","end");lb(X0+4,Y1-4,"I","var(--i)","start");lb(xp(0.75),Y0-6,"lead","var(--s)");lb(xp(1.45),Y0-6,"lag","var(--q)");lb((X0+X1)/2,14,"V-curve","var(--mute)");
+}
+function invVals(){const Id=+$("vSun").value/100,Iq=+$("vQ").value/100;return {Id,Iq,I:Math.hypot(Id,Iq),phi:Math.atan2(Iq,Id)}}
+function updInvSet(){
+  const v=invVals(),P=v.Id*100,Q=v.Iq*100,S=Math.hypot(P,Q);
+  $("vSuno").textContent=fmt(P,0)+" kW";$("vQo").textContent=(Q>0?"+":"")+fmt(Q,0)+" kVAR";
+  $("rVp").textContent=fmt(P,0)+" kW";$("rVq").textContent=(Q>0?"+":"")+fmt(Q,0)+" kVAR";$("rVs").textContent=fmt(S,0)+" kVA";
+  $("rVpf").textContent=S?fmt(P/S)+(Q>0?" lag":Q<0?" lead":""):"—";
+  const ch=$("rVst");if(S>100.5){ch.textContent="⚠ "+t("over");ch.className="chip cBad"}
+  else if(Q>0){ch.textContent="I "+t("lagsT")+" V → "+t("gives");ch.className="chip cQ"}
+  else if(Q<0){ch.textContent="I "+t("leadsT")+" V → "+t("takes");ch.className="chip cS"}
+  else{ch.textContent="I "+t("inph")+" V → P";ch.className="chip cP"}
+  $("tSum").innerHTML=`<tr><th style="text-align:left">${t("dev")}</th><th>${t("curr2")}</th><th>Q</th></tr>`+
+   [["motor","lagsT","takes","cQ"],["capacitor","leadsT","gives","cP"],["genOver","lagsT","gives","cP"],["genUnder","leadsT","takes","cQ"],["invQ",null,"either","cA"]].map(([d,c,q,cl])=>
+   `<tr><td style="text-align:left;font-family:var(--f-body)">${t(d)}</td><td>${c?t(c):"±"}</td><td class="${cl}" style="font-family:var(--f-body);font-weight:700">${t(q)}</td></tr>`).join("");
+}
+function drawInvWave(){
+  const cv=$("cInv"),{x,w,h}=fit(cv),fp=fontPx();x.clearRect(0,0,w,h);const v=invVals();
+  // phasor panel
+  const pw=Math.min(h,w*.34),cx=pw*.18,cy=h/2,R=pw*.7;
+  const arr=(x1,y1,x2,y2,c,lw,lab,dash)=>{if(dash)x.setLineDash([5,4]);arrow(x,x1,y1,x2,y2,c,lw);x.setLineDash([]);if(lab){x.fillStyle=c;x.font=`700 ${fp*.9}px sans-serif`;x.fillText(lab,x2+6,y2+(y2>cy?fp*.8:-4))}};
+  arr(cx,cy,cx+R,cy,C.v,3.5,"V");
+  if(v.Id>0.01)arr(cx,cy,cx+R*.8*v.Id,cy,C.p,3,"Id",true);
+  if(Math.abs(v.Iq)>0.01)arr(cx+R*.8*v.Id,cy,cx+R*.8*v.Id,cy+R*.8*v.Iq,C.q,3,"Iq",true);
+  if(v.I>0.01)arr(cx,cy,cx+R*.8*v.Id,cy+R*.8*v.Iq,C.i,4,"I");
+  // waves
+  const x0=pw+10,ww=w-x0-6,A=h*.36,y0=h/2,cyc=2,Ia=Math.min(1.2,v.I);
+  x.strokeStyle=C.line;x.lineWidth=1;x.beginPath();x.moveTo(x0,y0);x.lineTo(x0+ww,y0);x.stroke();
+  const line=(f,col,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.beginPath();for(let px=0;px<=ww;px+=2){const a=theta-2*Math.PI*cyc*px/ww,y=y0-f(a)*A;px?x.lineTo(x0+px,y):x.moveTo(x0+px,y)}x.stroke()};
+  line(a=>Math.sin(a),C.v,3);line(a=>Ia*Math.sin(a-v.phi),C.i,3.5);
+  x.font=`700 ${fp*.85}px sans-serif`;x.textAlign="left";x.textBaseline="top";x.fillStyle=C.v;x.fillText("v grid",x0+4,4);x.fillStyle=C.i;x.fillText("i inverter",x0+70,4);
+  x.textBaseline="alphabetic";
+}
+/* ---------------- solar inverter ---------------- */
+function updInv(){
+  const P=+$("iP").value;let Q=+$("iQ").value;const S=100,qa=Math.sqrt(Math.max(0,S*S-P*P));
+  $("iPo").textContent=P+" kW";$("iQo").textContent=(Q>0?"+":"")+Q+" kVAR";
+  $("rQa").textContent="± "+fmt(qa,0)+" kVAR";
+  const Sact=Math.hypot(P,Q),ipf=Sact?P/Sact:1;$("rIpf").textContent=fmt(ipf)+(Q>0?" lag":Q<0?" lead":"");
+  const bd=$("rIband");
+  if(Sact>S+0.5){bd.textContent="⚠ "+t("over");bd.className="chip cBad"}
+  else if(ipf>=0.95||P===0&&Q===0){bd.textContent="✔ "+t("inBand");bd.className="chip cOk"}
+  else{bd.textContent=t("outBand");bd.className="chip cQ"}
+  const s=$("sInv");s.innerHTML="";const cx=60,cy=170,R=150;
+  const kx=v=>cx+v/S*R, ky=v=>cy-v/S*R;
+  // 0.95 wedge
+  const a=Math.acos(0.95);svgEl("path",{d:`M${cx},${cy} L${cx+R*Math.cos(a)},${cy-R*Math.sin(a)} A${R},${R} 0 0 1 ${cx+R*Math.cos(a)},${cy+R*Math.sin(a)} Z`,fill:"var(--ok)","fill-opacity":.13},s);
+  svgEl("path",{d:`M${cx},${cy-R} A${R},${R} 0 0 1 ${cx},${cy+R}`,fill:"none",stroke:"var(--s)","stroke-width":4},s);
+  svgEl("line",{x1:cx,y1:cy,x2:cx+R+40,y2:cy,stroke:"var(--fg)","stroke-width":2},s);
+  svgEl("line",{x1:cx,y1:cy-R-10,x2:cx,y2:cy+R+10,stroke:"var(--fg)","stroke-width":2},s);
+  const tt=(x,y,str,c,anc="start",sz=15)=>{const e=svgEl("text",{x,y,fill:c,"font-size":sz,"font-weight":700,"text-anchor":anc,"font-family":"var(--f-mono)"},s);e.textContent=str};
+  tt(cx+R+42,cy+5,"P","var(--p)");tt(cx+6,cy-R-2,"+Q lag","var(--q)");tt(cx+6,cy+R+14,"−Q lead","var(--q)");
+  tt(cx+R*0.72,cy-R*0.78,"S = 100 kVA","var(--s)");
+  // available Q band at P
+  svgEl("line",{x1:kx(P),y1:ky(qa),x2:kx(P),y2:ky(-qa),stroke:"var(--q)","stroke-width":3,"stroke-dasharray":"6 5"},s);
+  svgEl("line",{x1:cx,y1:cy,x2:kx(P),y2:ky(Q),stroke:"var(--accent)","stroke-width":3},s);
+  svgEl("circle",{cx:kx(P),cy:ky(Q),r:10,fill:Sact>S+0.5?"var(--bad)":"var(--accent)",stroke:"var(--bg)","stroke-width":3},s);
+  tt(kx(P)+14,ky(Q)+5,`(${P}, ${Q})`,"var(--fg)");
+}
+function updNm(){
+  const L_=+$("nL").value,Q=+$("nQ").value,S_=+$("nS").value,Qi=Math.min(+$("nI").value,150);
+  ["nL","nQ","nS"].forEach(id=>$(id+"o").textContent=$(id).value+(id==="nQ"?" kVAR":" kW"));$("nIo").textContent=Qi+" kVAR";
+  const pb=L_/Math.hypot(L_,Q)||1, Pg=L_-S_, Qg=Math.max(0,Q-Qi), pa=Math.hypot(Pg,Qg)?Math.abs(Pg)/Math.hypot(Pg,Qg):1;
+  $("rNb").textContent=fmt(pb);const ra=$("rNa");ra.textContent=fmt(pa)+(Pg<0?" ("+t("export")+")":"");ra.style.color=pa>=0.95?"var(--ok)":pa>=0.9?"var(--q)":"var(--bad)";
+  const s=$("sNm");s.innerHTML="";const mx=Math.max(L_,Q,Math.abs(Pg),10),k=300/mx;
+  const bar=(y,lab,p,q)=>{const e=svgEl("text",{x:0,y:y+15,"font-size":14,"font-weight":700,fill:"var(--mute)"},s);e.textContent=lab;
+    const px=Math.abs(p)*k;svgEl("rect",{x:130,y,width:Math.max(1,px),height:20,fill:p<0?"var(--s)":"var(--p)"},s);
+    svgEl("rect",{x:130,y:y+24,width:Math.max(1,q*k),height:20,fill:"var(--q)"},s);
+    const a=svgEl("text",{x:136+px,y:y+15,"font-size":13,"font-weight":700,fill:"var(--fg)","font-family":"var(--f-mono)"},s);a.textContent=fmt(p,0)+" kW";
+    const b=svgEl("text",{x:136+q*k,y:y+39,"font-size":13,"font-weight":700,fill:"var(--fg)","font-family":"var(--f-mono)"},s);b.textContent=fmt(q,0)+" kVAR"};
+  bar(10,t("grid")+" · "+t("before"),L_,Q);bar(85,t("grid")+" · "+t("after"),Pg,Qg);
+}
+
+/* ---------------- rapid quiz ---------------- */
+const RQ={on:false,list:[],i:0,score:0,streak:0,best:0,t0:0,dur:15000,picked:null,done:false};
+function rqIntro(){const b=$("rq");RQ.on=false;
+  b.innerHTML=`<h2 style="font-family:var(--f-disp);font-size:2.4rem;margin:0;text-align:center">⚡ ${t("rqTitle")}</h2><p style="text-align:center;font-size:1.3rem;margin:0">${t("rqInfo")}</p><div style="text-align:center"><button class="btn on" id="rqStart" style="font-size:1.5rem;padding:12px 40px">${t("start")}</button></div>`;
+  $("rqStart").onclick=rqStart}
+function rqStart(){RQ.list=[...RP].sort(()=>Math.random()-.5).slice(0,10);RQ.i=0;RQ.score=0;RQ.streak=0;RQ.best=0;RQ.on=true;rqShow()}
+function rqShow(){const q=RQ.list[RQ.i],b=$("rq");RQ.picked=null;RQ.done=false;RQ.t0=performance.now();
+  b.innerHTML=`<div class="stat"><span>${RQ.i+1} / 10</span><span class="cA">${t("score")} ${RQ.score}</span><span class="cQ">🔥 ${t("streak")} ${RQ.streak}</span></div><div class="timer"><i id="rqBar"></i></div><div class="rqq pop">${tx(q.q)}</div><div class="opts" id="rqO"></div><div class="fb" id="rqF" style="text-align:center;font-size:1.4rem"></div>`;
+  q.o.forEach((o,oi)=>{const bt=document.createElement("button");bt.innerHTML=`<span class="k">${"ABC"[oi]}</span><span>${tx(o)}</span>`;bt.onclick=()=>rqPick(oi);$("rqO").appendChild(bt)})}
+function rqPick(oi){if(RQ.done)return;RQ.done=true;const q=RQ.list[RQ.i],bs=$("rqO").children;
+  [...bs].forEach((b,k)=>{b.disabled=true;if(k===q.a)b.classList.add("right");else if(k===oi)b.classList.add("wrong")});
+  if(oi===q.a){RQ.score++;RQ.streak++;RQ.best=Math.max(RQ.best,RQ.streak);$("rqF").innerHTML=`<span class="cOk">✔ ${t("right")}</span>`}
+  else{RQ.streak=0;$("rqF").innerHTML=`<span class="cBad">${oi<0?"⏱ "+t("time"):"✘"} → ${tx(q.o[q.a])}</span>`}
+  setTimeout(()=>{RQ.i++;if(RQ.i<10)rqShow();else rqEnd()},1400)}
+function rqEnd(){RQ.on=false;const s=RQ.score,g=s>=9?"g1":s>=6?"g2":"g3";
+  $("rq").innerHTML=`<h2 style="font-family:var(--f-disp);font-size:2.2rem;margin:0;text-align:center">${t("rqTitle")}</h2><div class="big pop" style="text-align:center;font-size:5rem;color:${s>=6?"var(--ok)":"var(--bad)"}">${s} / 10</div><p style="text-align:center;font-size:1.4rem;margin:0">${t(g)}</p><p class="stat" style="justify-content:center">🔥 ${t("streak")} ${RQ.best}</p><div style="text-align:center"><button class="btn on" id="rqAgain" style="font-size:1.3rem;padding:10px 32px">${t("again")}</button></div>`;
+  $("rqAgain").onclick=rqStart}
+function rqTick(){if(!RQ.on||RQ.done)return;const el=performance.now()-RQ.t0,f=Math.max(0,1-el/RQ.dur),bar=$("rqBar");
+  if(bar){bar.style.width=(f*100)+"%";bar.style.background=f<.3?"var(--bad)":"var(--accent)"}if(f<=0)rqPick(-1)}
+
+/* ---------------- shell ---------------- */
+function buildTabs(){const n=$("tabs");n.innerHTML="";for(let k=0;k<NT;k++){const b=document.createElement("button");b.setAttribute("role","tab");b.id="tb"+k;
+  b.setAttribute("aria-selected",k===st.tab);b.innerHTML=`<span class="n">${k+1}</span>${t("tab"+k)}`;b.onclick=()=>goTab(k);n.appendChild(b)}}
+function goTab(k){st.tab=k;for(let j=0;j<NT;j++){$("tab"+j).hidden=j!==k}buildTabs();store.set("pf_tab",k);
+  if(k===NT-1&&!RQ.on)rqIntro();updAll();window.scrollTo({top:0})}
+function updAll(){upd1();upd2();upd3();upd4();upd5();updTariff();updMethods();updInv();updNm();updShare();updGen();updInvSet()}
+function applyLang(){document.querySelectorAll("[data-i]").forEach(e=>e.textContent=t(e.dataset.i));
+  document.documentElement.lang=st.lang;["en","hi","ml"].forEach(l=>$("lg-"+l).setAttribute("aria-pressed",l===st.lang));
+  buildTabs();renderQuizzes();renderTips();if(st.tab===NT-1){RQ.on?rqShow():rqIntro()}updAll()}
+function setSkin(s){if(s)document.documentElement.setAttribute("data-skin",s);else document.documentElement.removeAttribute("data-skin");
+  ["dark","light","hc"].forEach(k=>$("sk-"+k).setAttribute("aria-pressed",k===s));store.set("pf_skin",s||"");readColors();updAll()}
+let scale=1;function setScale(v){scale=Math.min(1.8,Math.max(.8,v));document.documentElement.style.setProperty("--scale",scale);store.set("pf_scale",scale);requestAnimationFrame(updAll)}
+function setPhi(v){st.phi=Math.max(0,Math.min(89,v));updAll()}
+
+let sweepId=null;
+function sweep(){cancelAnimationFrame(sweepId);const t0=performance.now();
+  const step=n=>{const k=(n-t0)/7000;if(k>=1){setPhi(36.87);return}setPhi(80*Math.sin(Math.PI*k));sweepId=requestAnimationFrame(step)};sweepId=requestAnimationFrame(step)}
+
+function loop(n){const dt=Math.min(.05,(n-last)/1000);last=n;
+  if(st.play)theta+=dt*1.6;
+  if(st.tab===0){drawPhasor();drawWaves()}
+  if(st.tab===3)drawCable(st.play?dt:0);
+  if(st.tab===6){drawReactive(dt);drawInvWave()}
+  rqTick();requestAnimationFrame(loop)}
+
+/* wire events */
+document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{st.lang=b.dataset.lang;store.set("pf_lang",st.lang);applyLang()});
+document.querySelectorAll("[data-skin]").forEach(b=>b.onclick=()=>setSkin(b.dataset.skin));
+$("fs-up").onclick=()=>setScale(scale+.1);$("fs-dn").onclick=()=>setScale(scale-.1);$("fs-rs").onclick=()=>setScale(1);
+$("fullBtn").onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}};
+$("phi1").oninput=e=>setPhi(+e.target.value);$("phi2").oninput=e=>setPhi(+e.target.value);
+$("pf4").oninput=e=>setPhi(Math.acos(+e.target.value)*180/Math.PI);$("pf5").oninput=e=>setPhi(Math.acos(+e.target.value)*180/Math.PI);
+$("s2").oninput=upd2;["rR","rX","rI","rV"].forEach(id=>$(id).oninput=upd3);$("p4").oninput=upd4;
+$("cSer").onclick=()=>{st.par=false;upd3()};$("cPar").onclick=()=>{st.par=true;upd3()};
+["pfT","eT"].forEach(id=>$(id).oninput=updTariff);
+["iP","iQ"].forEach(id=>$(id).oninput=updInv);
+["nL","nQ","nS","nI"].forEach(id=>$(id).oninput=updNm);
+["shC","shI"].forEach(id=>$(id).oninput=updShare);$("gE").oninput=updGen;["vSun","vQ"].forEach(id=>$(id).oninput=updInvSet);
+["cP","c1","c2"].forEach(id=>$(id).oninput=drawCap);
+$("capBtn").onclick=()=>{st.cap=!st.cap;animCap();drawCap()};
+$("ph1").onclick=()=>{st.three=false;upd4()};$("ph3").onclick=()=>{st.three=true;upd4()};
+$("mR").onclick=()=>setPhi(0);$("mL").onclick=()=>{st.lead=false;if(st.phi<1)st.phi=36.87;updAll()};$("mC").onclick=()=>{st.lead=true;if(st.phi<1)st.phi=36.87;updAll()};
+$("playBtn").onclick=()=>{st.play=!st.play;upd1()};
+$("sweep1").onclick=sweep;$("sweep4").onclick=sweep;
+document.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT")return;
+  if(e.key==="ArrowRight")goTab((st.tab+1)%NT);else if(e.key==="ArrowLeft")goTab((st.tab+NT-1)%NT);
+  else if(e.key==="+"||e.key==="=")setScale(scale+.1);else if(e.key==="-")setScale(scale-.1)});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{readColors();updAll()});
+new MutationObserver(()=>{readColors();updAll()}).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+window.addEventListener("resize",()=>updAll());
+
+/* init */
+(function(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)st.play=false;
+  const l=store.get("pf_lang");if(l&&L[l])st.lang=l;
+  const sk=store.get("pf_skin");if(sk)document.documentElement.setAttribute("data-skin",sk);
+  ["dark","light","hc"].forEach(k=>$("sk-"+k).setAttribute("aria-pressed",k===sk));
+  const sc=parseFloat(store.get("pf_scale"));if(sc)scale=sc;document.documentElement.style.setProperty("--scale",scale);
+  readColors();applyLang();
+  const tb=parseInt(store.get("pf_tab"));goTab(isNaN(tb)?0:tb);
+  requestAnimationFrame(loop);
+})();
+</script>
+
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body></html>
