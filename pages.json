@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-15T08:56:15.708Z",
+  "updated": "2026-10-15T10:01:39.160Z",
   "sections": [
     {
       "name": "Electrical Machines & Control",
@@ -295,6 +295,19 @@
           "title": "Earth Leakage Breakers",
           "description": "",
           "section": "Protection Devices",
+          "sectionOrder": 999,
+          "order": 999
+        }
+      ]
+    },
+    {
+      "name": "Wiring",
+      "pages": [
+        {
+          "file": "pages/Two-Way Conduit Wiring.html",
+          "title": "Two-Way Conduit Wiring",
+          "description": "",
+          "section": "Wiring",
           "sectionOrder": 999,
           "order": 999
         }
