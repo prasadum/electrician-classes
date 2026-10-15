@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-14T08:48:11.301Z",
+  "updated": "2026-10-15T03:40:41.683Z",
   "sections": [
     {
       "name": "Electrical Machines & Control",
@@ -226,6 +226,19 @@
           "section": "Installation, Estimation & Appliances",
           "sectionOrder": 4,
           "order": 6
+        }
+      ]
+    },
+    {
+      "name": "AC Circuits",
+      "pages": [
+        {
+          "file": "pages/ac_basics.html",
+          "title": "Single-Phase AC Basics",
+          "description": "",
+          "section": "AC Circuits",
+          "sectionOrder": 999,
+          "order": 999
         }
       ]
     },
