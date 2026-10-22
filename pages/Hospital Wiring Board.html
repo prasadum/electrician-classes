@@ -1,0 +1,673 @@
+<!doctype html><html><head>
+<meta name="section" content="Wiring"><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Hospital Wiring Board</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Saira+Semi+Condensed:wght@500;700;800&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
+<style>
+/* Layout: workshop "station board" — header controls, step strip, two-column stage (instructions | live drawing), pager. */
+:root{
+  --bg:#EEF1EC; --surface:#FFFFFF; --ink:#16201B; --muted:#4F5C55; --line:#CCD4CD;
+  --accent:#8A4B1F; --accent-ink:#FFFFFF; --chip:#E2E7E1;
+  --ex-bg:#FFF4D6; --ex-line:#C99A1A; --safe-bg:#FDE7E4; --safe-line:#C0392B;
+  --board:#B26B36; --grain:#8F5326; --pipe:#1E1F1F; --pipe-hi:#5E6162; --fit:#F4F2EC; --fit-edge:#8F8A7F;
+  --chalk:#1E6FD9; --dim:#16201B;
+  --wL:#D62828; --wN:#1A1A1A; --wL1:#E2AE00; --wL2:#1F5FD1; --wLW:#F07C1A; --halo:rgba(0,0,0,.18);
+  --glow:#FFD84D; --ok:#1E8E3E;
+  --f-disp:"Saira Semi Condensed","Noto Sans Devanagari","Noto Sans Malayalam",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Noto Sans Devanagari","Noto Sans Malayalam",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --fs:20px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101512; --surface:#18201B; --ink:#E9EFEA; --muted:#A3B0A8; --line:#2E3A33;
+  --accent:#E8A06A; --accent-ink:#1A0F07; --chip:#222C26;
+  --ex-bg:#2B2410; --ex-line:#D9AA2B; --safe-bg:#2E1513; --safe-line:#F06A5A;
+  --chalk:#6FB1FF; --dim:#E9EFEA; --wL2:#4C8DF6; --halo:rgba(255,255,255,.55); --glow:#FFE066; --ok:#4CC873;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101512; --surface:#18201B; --ink:#E9EFEA; --muted:#A3B0A8; --line:#2E3A33;
+  --accent:#E8A06A; --accent-ink:#1A0F07; --chip:#222C26;
+  --ex-bg:#2B2410; --ex-line:#D9AA2B; --safe-bg:#2E1513; --safe-line:#F06A5A;
+  --chalk:#6FB1FF; --dim:#E9EFEA; --wL2:#4C8DF6; --halo:rgba(255,255,255,.55); --glow:#FFE066; --ok:#4CC873;
+  color-scheme:dark}
+/* explicit skins chosen in the page win over host/system */
+:root[data-skin="light"]{
+  --bg:#EEF1EC; --surface:#FFFFFF; --ink:#16201B; --muted:#4F5C55; --line:#CCD4CD;
+  --accent:#8A4B1F; --accent-ink:#FFFFFF; --chip:#E2E7E1;
+  --ex-bg:#FFF4D6; --ex-line:#C99A1A; --safe-bg:#FDE7E4; --safe-line:#C0392B;
+  --chalk:#1E6FD9; --dim:#16201B; --wL2:#1F5FD1; --halo:rgba(0,0,0,.18); --glow:#FFD84D; --ok:#1E8E3E;
+  color-scheme:light}
+:root[data-skin="dark"]{
+  --bg:#101512; --surface:#18201B; --ink:#E9EFEA; --muted:#A3B0A8; --line:#2E3A33;
+  --accent:#E8A06A; --accent-ink:#1A0F07; --chip:#222C26;
+  --ex-bg:#2B2410; --ex-line:#D9AA2B; --safe-bg:#2E1513; --safe-line:#F06A5A;
+  --chalk:#6FB1FF; --dim:#E9EFEA; --wL2:#4C8DF6; --halo:rgba(255,255,255,.55); --glow:#FFE066; --ok:#4CC873;
+  color-scheme:dark}
+:root[data-skin="hc"]{
+  --bg:#000000; --surface:#000000; --ink:#FFFFFF; --muted:#FFFFFF; --line:#FFFFFF;
+  --accent:#FFE600; --accent-ink:#000000; --chip:#000000;
+  --ex-bg:#000000; --ex-line:#FFE600; --safe-bg:#000000; --safe-line:#FF5A4D;
+  --board:#7A4420; --grain:#5C3115; --fit:#FFFFFF; --fit-edge:#000000; --pipe:#111111; --pipe-hi:#9A9A9A;
+  --chalk:#00E5FF; --dim:#FFFFFF; --wL:#FF3B3B; --wL1:#FFE600; --wL2:#3D9BFF; --wLW:#FF9A1F; --halo:rgba(255,255,255,.9);
+  --glow:#FFFF00; --ok:#00FF66;
+  color-scheme:dark}
+
+html{font-size:var(--fs)}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 24px}
+*{box-sizing:border-box}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center;justify-content:space-between;padding-block:.6rem;border-bottom:2px solid var(--line)}
+.brand{min-width:0}
+.brand h1{font-family:var(--f-disp);font-weight:800;font-size:1.5rem;line-height:1.1;margin:0;text-wrap:balance}
+.brand p{margin:.1rem 0 0;color:var(--muted);font-size:.8rem}
+.ctrls{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.seg{display:flex;border:2px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{background:var(--surface);border:0;padding:.3rem .65rem;cursor:pointer;font-size:.8rem;font-weight:700}
+.seg button+button{border-left:2px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.ctrls select{background:var(--surface);border:2px solid var(--line);border-radius:8px;padding:.28rem .5rem;font-size:.8rem;font-weight:700}
+.ctrls label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+.steps{display:flex;gap:.4rem;overflow-x:auto;padding-block:.6rem;scrollbar-width:thin}
+.steps button{flex:0 0 auto;display:flex;gap:.4rem;align-items:baseline;background:var(--chip);border:2px solid var(--line);border-radius:999px;padding:.25rem .75rem;cursor:pointer;font-size:.75rem;font-weight:700;white-space:nowrap}
+.steps button .n{font-family:var(--f-mono);color:var(--muted)}
+.steps button[aria-current="step"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.steps button[aria-current="step"] .n{color:inherit}
+
+.step{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:1.5rem;align-items:start;padding-block:.6rem 1rem}
+.step.wide{grid-template-columns:minmax(0,1fr)}
+@media (max-width:980px){.step{grid-template-columns:minmax(0,1fr)}}
+.txt{min-width:0}
+.eyebrow{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0 0 .2rem;font-weight:700}
+h2{font-family:var(--f-disp);font-weight:800;font-size:2rem;line-height:1.1;margin:0 0 .8rem;text-wrap:balance}
+h3{font-family:var(--f-disp);font-weight:700;font-size:1.2rem;margin:1rem 0 .4rem}
+ol.do{margin:0;padding:0;list-style:none;counter-reset:d;display:grid;gap:.55rem}
+ol.do li{counter-increment:d;display:grid;grid-template-columns:2rem minmax(0,1fr);gap:.6rem;align-items:start}
+ol.do li::before{content:counter(d);font-family:var(--f-mono);font-weight:700;font-size:.85rem;width:1.7rem;height:1.7rem;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--bg);margin-top:.1rem}
+.box{border-left:6px solid;padding:.7rem 1rem;border-radius:0 10px 10px 0;margin-top:1rem}
+.box .lbl{display:flex;gap:.45rem;align-items:center;font-family:var(--f-mono);font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.25rem}
+.box p{margin:0}
+.ex{background:var(--ex-bg);border-color:var(--ex-line)}
+.ex .lbl{color:var(--ex-line)}
+.safe{background:var(--safe-bg);border-color:var(--safe-line)}
+.safe .lbl{color:var(--safe-line)}
+:root[data-skin="hc"] .box{border:3px solid;border-left-width:8px}
+
+.vis{min-width:0;display:grid;gap:.8rem}
+.panel{background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:.8rem;min-width:0}
+.panel svg{display:block;width:100%;height:auto}
+.panel .cap{font-size:.75rem;color:var(--muted);margin:.4rem 0 0}
+.vbar{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;justify-content:space-between;margin-bottom:.4rem}
+.vbar b{font-family:var(--f-disp);font-size:1rem}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:.35rem .9rem;font-weight:700;font-size:.8rem;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+
+.photo{position:relative;border-radius:10px;overflow:hidden}
+.photo img{display:block;width:100%;height:auto}
+.pin{position:absolute;transform:translate(-50%,-50%);background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.7rem;padding:.12rem .5rem;border-radius:999px;border:2px solid #fff;white-space:nowrap;animation:pop .5s both}
+.pin.sw{background:#16201B;color:#fff}
+
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+.tw{overflow-x:auto}
+th,td{border:2px solid var(--line);padding:.35rem .55rem;text-align:left;vertical-align:top}
+th{font-family:var(--f-disp);background:var(--chip);font-weight:700}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:center;font-weight:700}
+.dot{display:inline-block;width:.9em;height:.9em;border-radius:50%;vertical-align:-.1em;margin-right:.2em;box-shadow:0 0 0 2px var(--halo)}
+.code{font-family:var(--f-mono);font-weight:700}
+
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.8rem}
+.tool{display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:.7rem;align-items:start}
+.tool svg{width:5.5rem;height:5.5rem}
+.tool h4{margin:0 0 .15rem;font-family:var(--f-disp);font-size:1.05rem}
+.tool p{margin:0;font-size:.85rem}
+
+.legend{display:flex;flex-wrap:wrap;gap:.35rem .9rem;font-size:.8rem}
+.tt td,.tt th{text-align:center}
+.tt tr.on td{background:var(--ex-bg)}
+.obs{cursor:pointer;min-width:4rem;font-weight:700}
+.chk{list-style:none;padding:0;margin:0;display:grid;gap:.35rem}
+.chk label{display:flex;gap:.55rem;align-items:flex-start;cursor:pointer}
+.chk input{width:1.2rem;height:1.2rem;margin-top:.2rem;accent-color:var(--accent)}
+.msg{font-weight:700;min-height:1.5em;font-size:.9rem}
+
+.pager{display:flex;gap:.8rem;align-items:center;justify-content:space-between;border-top:2px solid var(--line);padding-block:.7rem}
+.pager .pos{font-family:var(--f-mono);font-weight:700;font-variant-numeric:tabular-nums}
+.pager .btn{font-size:.95rem;padding:.5rem 1.2rem}
+.pager .btn:disabled{opacity:.35;cursor:default}
+
+/* SVG text + anims */
+svg text{font-family:var(--f-body)}
+.lbl-svg{fill:var(--ink);font-weight:700}
+.seq{animation:drop .55s cubic-bezier(.2,.8,.3,1.2) both;animation-delay:var(--d,0s);transform-box:fill-box;transform-origin:center}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw var(--t,1.4s) ease-in-out both;animation-delay:var(--d,0s)}
+.fade{animation:fade .5s both;animation-delay:var(--d,0s)}
+@keyframes drop{from{opacity:0;transform:translateY(-14px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:translate(-50%,-50%) scale(.6)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.flow{stroke-dasharray:10 8;animation:flow .7s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-18}}
+.saw-x{animation:sawx .45s ease-in-out infinite alternate}
+.saw-y{animation:sawy 7s linear infinite}
+.kerf{animation:kerf 7s linear infinite;transform-box:fill-box;transform-origin:top}
+@keyframes sawx{from{transform:translateX(-55px)}to{transform:translateX(55px)}}
+@keyframes sawy{0%{transform:translateY(-70px)}85%{transform:translateY(58px)}100%{transform:translateY(58px)}}
+@keyframes kerf{0%{transform:scaleY(0)}85%{transform:scaleY(1)}100%{transform:scaleY(1)}}
+.spin{animation:spin 1.2s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sink{animation:sink 3.6s ease-in-out infinite;transform-box:fill-box}
+@keyframes sink{0%{transform:translateY(-10px)}70%,100%{transform:translateY(0)}}
+.lampglow{transition:opacity .25s}
+.sw-hit{cursor:pointer}
+.tp{cursor:pointer}
+.tp:hover circle.ring{stroke-width:4}
+@media (prefers-reduced-motion:reduce){
+  .seq,.draw,.fade,.pin{animation:none!important;stroke-dashoffset:0}
+  .flow,.saw-x,.saw-y,.kerf,.spin,.sink{animation:none!important}
+}
+</style>
+
+<header class="bar">
+  <div class="brand"><h1 id="ttl"></h1><p id="sub"></p></div>
+  <div class="ctrls">
+    <div class="seg" id="langSeg" role="group" aria-label="Language">
+      <button id="l-en" data-l="en">EN</button><button id="l-hi" data-l="hi">हिंदी</button><button id="l-ml" data-l="ml">മലയാളം</button>
+    </div>
+    <label for="skin" id="skinLbl">Theme</label>
+    <select id="skin"></select>
+    <div class="seg" role="group" aria-label="Font size">
+      <button id="fsDown" aria-label="Smaller text">A−</button><button id="fsReset" aria-label="Default text size">A</button><button id="fsUp" aria-label="Larger text">A+</button>
+    </div>
+    <button class="btn ghost" id="fsBtn"></button>
+  </div>
+</header>
+<nav class="steps" id="nav" aria-label="Steps"></nav>
+<main id="stage"></main>
+<footer class="pager">
+  <button class="btn" id="prev"></button>
+  <span class="pos" id="pos"></span>
+  <button class="btn" id="next"></button>
+</footer>
+
+<script>
+const UI={
+ en:{ttl:"Hospital Wiring: Two Lamps, Four Conditions",sub:"Bright · one lamp · dim · off · PVC conduit on teak board · CTS Electrician practical",prev:"◀ Previous",next:"Next ▶",step:"Step",ex:"Real-world example",safe:"Safety",play:"Replay",theme:"Theme",auto:"Auto",light:"Light",dark:"Dark",hc:"High contrast",full:"Full screen",
+   tap:"Tap S1 or S2 to operate the switch",tmode:"Tester mode: tap any terminal dot",tyes:"Tester glows: phase present",tdim:"Tester glows dimly: lamps in series (about 115 V)",tno:"No glow: no phase",
+   supply:"Supply",board:"Teak wood board",xray:"Wires shown inside pipe (X-ray view)",photoCap:"Finished board, all lamps bright",
+   exp:"Expected",obs:"Observed (tap to record)",legend:"Wire code",run:"Run",pieces:"Pieces",route:"Route",wires:"Wires",count:"Count",item:"Item",qty:"Qty",where:"Where",
+   fault:"Fault",cause:"Likely cause",fix:"Remedy",final:"Final checklist",before:"Before supply",live:"With supply (only with instructor's permission)",
+   s1b:"S1 two-way (back view)",s2b:"S2 one-way (back view)",lh1:"Lamp holder L1",lh2:"Lamp holder L2",mark:"Mark 15 cm",cut:"Cut square",burr:"Remove burr",assembly:"Assembly sequence",marking:"Marking sequence",drawing:"Drawing sequence",saddle:"Saddle fixing",truth:"Truth table",dims:"Layout with dimensions",cond:"Condition",
+   bright:"Bright",dim:"Dim",off:"Off",on:"ON"},
+ hi:{ttl:"अस्पताल वायरिंग: दो लैंप, चार स्थितियाँ",sub:"तेज़ · एक लैंप · मंद · बंद · सागौन बोर्ड पर पीवीसी कंड्यूट · CTS इलेक्ट्रीशियन प्रैक्टिकल",prev:"◀ पिछला",next:"अगला ▶",step:"चरण",ex:"वास्तविक उदाहरण",safe:"सुरक्षा",play:"फिर से चलाएँ",theme:"थीम",auto:"ऑटो",light:"हल्का",dark:"गहरा",hc:"हाई कॉन्ट्रास्ट",full:"फुल स्क्रीन",
+   tap:"स्विच चलाने के लिए S1 या S2 पर टैप करें",tmode:"टेस्टर मोड: किसी भी टर्मिनल बिंदु पर टैप करें",tyes:"टेस्टर जलता है: फेज़ है",tdim:"टेस्टर मंद जलता है: लैंप सीरीज़ में (लगभग 115 V)",tno:"नहीं जलता: फेज़ नहीं",
+   supply:"सप्लाई",board:"सागौन लकड़ी बोर्ड",xray:"पाइप के अंदर तार दिखाए गए (एक्स-रे दृश्य)",photoCap:"पूरा बोर्ड, सभी लैंप तेज़",
+   exp:"अपेक्षित",obs:"प्रेक्षित (लिखने के लिए टैप करें)",legend:"तार कोड",run:"रन",pieces:"टुकड़े",route:"मार्ग",wires:"तार",count:"संख्या",item:"सामग्री",qty:"मात्रा",where:"कहाँ",
+   fault:"दोष",cause:"संभावित कारण",fix:"उपाय",final:"अंतिम जाँच सूची",before:"सप्लाई से पहले",live:"सप्लाई के साथ (केवल अनुदेशक की अनुमति से)",
+   s1b:"S1 टू-वे (पीछे से)",s2b:"S2 वन-वे (पीछे से)",lh1:"लैंप होल्डर L1",lh2:"लैंप होल्डर L2",mark:"15 cm मार्क करें",cut:"समकोण काटें",burr:"बर हटाएँ",assembly:"असेंबली क्रम",marking:"मार्किंग क्रम",drawing:"तार खींचने का क्रम",saddle:"सैडल फिक्सिंग",truth:"सत्य तालिका",dims:"माप सहित लेआउट",cond:"स्थिति",
+   bright:"तेज़",dim:"मंद",off:"बंद",on:"ON"},
+ ml:{ttl:"ഹോസ്പിറ്റൽ വയറിംഗ്: രണ്ട് ലാമ്പ്, നാല് അവസ്ഥകൾ",sub:"പൂർണ്ണം · ഒരു ലാമ്പ് · മങ്ങി · ഓഫ് · തേക്ക് ബോർഡിൽ PVC കോൺഡ്യൂട്ട് · CTS ഇലക്ട്രീഷ്യൻ പ്രാക്ടിക്കൽ",prev:"◀ മുമ്പത്തെ",next:"അടുത്തത് ▶",step:"ഘട്ടം",ex:"യഥാർത്ഥ ജീവിത ഉദാഹരണം",safe:"സുരക്ഷ",play:"വീണ്ടും പ്ലേ",theme:"തീം",auto:"ഓട്ടോ",light:"ലൈറ്റ്",dark:"ഡാർക്ക്",hc:"ഹൈ കോൺട്രാസ്റ്റ്",full:"ഫുൾ സ്ക്രീൻ",
+   tap:"സ്വിച്ച് പ്രവർത്തിപ്പിക്കാൻ S1 അല്ലെങ്കിൽ S2 ടാപ്പ് ചെയ്യുക",tmode:"ടെസ്റ്റർ മോഡ്: ഏതെങ്കിലും ടെർമിനൽ ബിന്ദുവിൽ ടാപ്പ് ചെയ്യുക",tyes:"ടെസ്റ്റർ കത്തുന്നു: ഫേസ് ഉണ്ട്",tdim:"ടെസ്റ്റർ മങ്ങി കത്തുന്നു: ലാമ്പുകൾ സീരീസിൽ (ഏകദേശം 115 V)",tno:"കത്തുന്നില്ല: ഫേസ് ഇല്ല",
+   supply:"സപ്ലൈ",board:"തേക്ക് തടി ബോർഡ്",xray:"പൈപ്പിനുള്ളിലെ വയറുകൾ കാണിച്ചിരിക്കുന്നു (എക്സ്-റേ കാഴ്ച)",photoCap:"പൂർത്തിയായ ബോർഡ്, എല്ലാ ലാമ്പുകളും പൂർണ്ണം",
+   exp:"പ്രതീക്ഷിച്ചത്",obs:"നിരീക്ഷിച്ചത് (രേഖപ്പെടുത്താൻ ടാപ്പ് ചെയ്യുക)",legend:"വയർ കോഡ്",run:"റൺ",pieces:"കഷണങ്ങൾ",route:"വഴി",wires:"വയറുകൾ",count:"എണ്ണം",item:"സാധനം",qty:"എണ്ണം",where:"എവിടെ",
+   fault:"തകരാർ",cause:"സാധ്യമായ കാരണം",fix:"പരിഹാരം",final:"അന്തിമ ചെക്ക്‌ലിസ്റ്റ്",before:"സപ്ലൈ നൽകുന്നതിന് മുൻപ്",live:"സപ്ലൈ നൽകി (ഇൻസ്ട്രക്ടറുടെ അനുമതിയോടെ മാത്രം)",
+   s1b:"S1 ടു-വേ (പിൻവശം)",s2b:"S2 വൺ-വേ (പിൻവശം)",lh1:"ലാമ്പ് ഹോൾഡർ L1",lh2:"ലാമ്പ് ഹോൾഡർ L2",mark:"15 cm മാർക്ക് ചെയ്യുക",cut:"ലംബമായി മുറിക്കുക",burr:"ബർ നീക്കുക",assembly:"അസംബ്ലി ക്രമം",marking:"മാർക്കിംഗ് ക്രമം",drawing:"വയർ വലിക്കൽ ക്രമം",saddle:"സാഡിൽ ഉറപ്പിക്കൽ",truth:"ട്രൂത്ത് ടേബിൾ",dims:"അളവുകളോടെ ലേഔട്ട്",cond:"അവസ്ഥ",
+   bright:"പൂർണ്ണം",dim:"മങ്ങി",off:"ഓഫ്",on:"ON"}
+};
+const COND={
+ off:{en:"All off",hi:"सब बंद",ml:"എല്ലാം ഓഫ്"},
+ dim:{en:"Both dim (series)",hi:"दोनों मंद (सीरीज़)",ml:"രണ്ടും മങ്ങി (സീരീസ്)"},
+ one:{en:"Only L1 bright",hi:"केवल L1 तेज़",ml:"L1 മാത്രം പൂർണ്ണം"},
+ both:{en:"Both bright (parallel)",hi:"दोनों तेज़ (पैरेलल)",ml:"രണ്ടും പൂർണ്ണം (പാരലൽ)"}
+};
+/* rows: [S1 position, S2 on, cond] */
+const ROWS=[[2,0,"off"],[1,0,"dim"],[1,1,"one"],[2,1,"both"]];
+const WIRES=[
+ {k:"P",c:"--wL",n:{en:"Phase (red)",hi:"फेज़ (लाल)",ml:"ഫേസ് (ചുവപ്പ്)"}},
+ {k:"N",c:"--wN",n:{en:"Neutral (black)",hi:"न्यूट्रल (काला)",ml:"ന്യൂട്രൽ (കറുപ്പ്)"}},
+ {k:"X",c:"--wLW",n:{en:"Lamp wire X from S2 to L2 and L1 (orange)",hi:"लैंप तार X: S2 से L2 और L1 (नारंगी)",ml:"ലാമ്പ് വയർ X: S2-ൽ നിന്ന് L2, L1 (ഓറഞ്ച്)"}},
+ {k:"C",c:"--wL1",n:{en:"Common of S1 to L2 (yellow)",hi:"S1 का कॉमन से L2 (पीला)",ml:"S1-ന്റെ കോമൺ മുതൽ L2 വരെ (മഞ്ഞ)"}}
+];
+const WC=Object.fromEntries(WIRES.map(w=>[w.k,w.c]));
+const RUNS=[
+ {p:"A",a:"supply",b:"J1",w:["P","N"],note:{en:"P to S1, N to L1",hi:"P → S1, N → L1",ml:"P → S1, N → L1"}},
+ {p:"U1",a:"J1",b:"L1",w:["N","N","X"],note:{en:"N to L1, N loop from L1 back to S1, X from L2",hi:"N → L1, N लूप L1 से S1 को, X: L2 से",ml:"N → L1, N ലൂപ്പ് L1-ൽ നിന്ന് S1-ലേക്ക്, X: L2-ൽ നിന്ന്"}},
+ {p:"D1",a:"J1",b:"S1",w:["P","P","N","C"],note:{en:"P in, P loop from S1 to S2, N from L1, C to L2",hi:"P अंदर, P लूप S1 से S2 को, N: L1 से, C → L2",ml:"P അകത്ത്, P ലൂപ്പ് S1-ൽ നിന്ന് S2-ലേക്ക്, N: L1-ൽ നിന്ന്, C → L2"}},
+ {p:"B",a:"J1",b:"J2",w:["P","C","X"],note:{en:"P to S2, C to L2, X from L2 to L1",hi:"P → S2, C → L2, X: L2 → L1",ml:"P → S2, C → L2, X: L2 → L1"}},
+ {p:"U2",a:"J2",b:"L2",w:["C","X","X"],note:{en:"C from S1, X from S2, X loop from L2 to L1",hi:"C: S1 से, X: S2 से, X लूप L2 से L1 को",ml:"C: S1-ൽ നിന്ന്, X: S2-ൽ നിന്ന്, X ലൂപ്പ് L2-ൽ നിന്ന് L1-ലേക്ക്"}},
+ {p:"D2",a:"J2",b:"S2",w:["P","X"],note:{en:"P from S1, X to L2",hi:"P: S1 से, X → L2",ml:"P: S1-ൽ നിന്ന്, X → L2"}}
+];
+const TOOLS=[
+ {i:"poker",n:{en:"Poker (bradawl)",hi:"पोकर (ब्रैडऑल)",ml:"പോക്കർ (ബ്രാഡോൾ)"},u:{en:"Makes a small pilot hole for each screw. Press and twist; do not lever sideways.",hi:"हर स्क्रू के लिए छोटा पायलट छेद बनाता है। दबाएँ और घुमाएँ; तिरछा न मोड़ें।",ml:"ഓരോ സ്ക്രൂവിനും ചെറിയ പൈലറ്റ് ദ്വാരം ഉണ്ടാക്കുന്നു. അമർത്തി തിരിക്കുക; ചരിച്ച് വളയ്ക്കരുത്."}},
+ {i:"hammer",n:{en:"Hammer",hi:"हथौड़ा",ml:"ചുറ്റിക"},u:{en:"Light taps only, to start the poker in hard teak. Never hammer a screw.",hi:"केवल हल्की चोट, कठोर सागौन में पोकर शुरू करने के लिए। स्क्रू पर कभी हथौड़ा न मारें।",ml:"കട്ടിയുള്ള തേക്കിൽ പോക്കർ തുടങ്ങാൻ ചെറിയ തട്ട് മാത്രം. സ്ക്രൂവിൽ ഒരിക്കലും ചുറ്റിക കൊണ്ട് അടിക്കരുത്."}},
+ {i:"saw",n:{en:"Hacksaw with blade",hi:"ब्लेड सहित हैकसॉ",ml:"ബ്ലേഡോടുകൂടിയ ഹാക്‌സോ"},u:{en:"Cuts the PVC pipe. Blade teeth point forward, away from the handle; blade tight. Full length, light pressure.",hi:"पीवीसी पाइप काटता है। ब्लेड के दाँत आगे की ओर (हैंडल से दूर); ब्लेड कसा हुआ। पूरी लंबाई, हल्का दबाव।",ml:"PVC പൈപ്പ് മുറിക്കുന്നു. ബ്ലേഡിന്റെ പല്ലുകൾ മുന്നോട്ട് (ഹാൻഡിലിൽ നിന്ന് അകലെ); ബ്ലേഡ് മുറുക്കി ഇടുക. മുഴുവൻ നീളം, ചെറിയ അമർത്തൽ."}},
+ {i:"sd",n:{en:"Screwdriver, heavy duty",hi:"हेवी ड्यूटी पेचकस",ml:"ഹെവി ഡ്യൂട്ടി സ്ക്രൂഡ്രൈവർ"},u:{en:"Tip must fill the screw slot. Push and turn; keep it upright.",hi:"टिप स्क्रू के खाँचे में पूरी बैठे। दबाएँ और घुमाएँ; सीधा रखें।",ml:"ടിപ്പ് സ്ക്രൂവിന്റെ വിടവിൽ മുഴുവനായി ഇരിക്കണം. അമർത്തി തിരിക്കുക; നേരെ പിടിക്കുക."}},
+ {i:"tester",n:{en:"Line tester",hi:"लाइन टेस्टर",ml:"ലൈൻ ടെസ്റ്റർ"},u:{en:"Shows phase. Check it first on a known live point. Touch the metal cap at the top, never the tip.",hi:"फेज़ दिखाता है। पहले किसी ज्ञात लाइव पॉइंट पर जाँचें। ऊपर की धातु की कैप छुएँ, टिप कभी नहीं।",ml:"ഫേസ് കാണിക്കുന്നു. ആദ്യം അറിയാവുന്ന ലൈവ് പോയിന്റിൽ പരിശോധിക്കുക. മുകളിലെ ലോഹ ക്യാപ് തൊടുക, ടിപ്പ് ഒരിക്കലും തൊടരുത്."}}
+];
+const MATS=[
+ [{en:"PVC conduit pipe 19 mm, 15 cm piece",hi:"पीवीसी कंड्यूट पाइप 19 mm, 15 cm टुकड़ा",ml:"PVC കോൺഡ്യൂട്ട് പൈപ്പ് 19 mm, 15 cm കഷണം"},"6",{en:"A, B, U1, D1, U2, D2",hi:"A, B, U1, D1, U2, D2",ml:"A, B, U1, D1, U2, D2"}],
+ [{en:"PVC round junction box, 4-way",hi:"पीवीसी गोल जंक्शन बॉक्स, 4-वे",ml:"PVC റൗണ്ട് ജംഗ്ഷൻ ബോക്സ്, 4-വേ"},"1",{en:"J1",hi:"J1",ml:"J1"}],
+ [{en:"PVC round junction box, 3-way",hi:"पीवीसी गोल जंक्शन बॉक्स, 3-वे",ml:"PVC റൗണ്ട് ജംഗ്ഷൻ ബോക്സ്, 3-വേ"},"1",{en:"J2",hi:"J2",ml:"J2"}],
+ [{en:"Saddle 19 mm with screws",hi:"स्क्रू सहित सैडल 19 mm",ml:"സ്ക്രൂ സഹിതം സാഡിൽ 19 mm"},"6",{en:"One per pipe piece",hi:"हर पाइप टुकड़े पर एक",ml:"ഓരോ പൈപ്പ് കഷണത്തിനും ഒന്ന്"}],
+ [{en:"Two-way switch 6 A with surface box",hi:"सरफेस बॉक्स सहित टू-वे स्विच 6 A",ml:"സർഫേസ് ബോക്സ് സഹിതം ടു-വേ സ്വിച്ച് 6 A"},"1",{en:"S1",hi:"S1",ml:"S1"}],
+ [{en:"One-way switch 6 A with surface box",hi:"सरफेस बॉक्स सहित वन-वे स्विच 6 A",ml:"സർഫേസ് ബോക്സ് സഹിതം വൺ-വേ സ്വിച്ച് 6 A"},"1",{en:"S2",hi:"S2",ml:"S2"}],
+ [{en:"Batten lamp holder on round block",hi:"राउंड ब्लॉक पर बैटन लैंप होल्डर",ml:"റൗണ്ട് ബ്ലോക്കിൽ ബാറ്റൻ ലാമ്പ് ഹോൾഡർ"},"2",{en:"L1, L2",hi:"L1, L2",ml:"L1, L2"}],
+ [{en:"Incandescent lamp 230 V, same wattage (e.g. 40 W)",hi:"इनकैंडेसेंट लैंप 230 V, समान वॉटेज (जैसे 40 W)",ml:"ഇൻകാൻഡസെന്റ് ലാമ്പ് 230 V, ഒരേ വാട്ടേജ് (ഉദാ: 40 W)"},"2",{en:"Testing",hi:"परीक्षण",ml:"ടെസ്റ്റിംഗ്"}],
+ [{en:"PVC insulated copper wire 1.5 sq mm (red, black, orange, yellow)",hi:"पीवीसी इंसुलेटेड कॉपर तार 1.5 sq mm (लाल, काला, नारंगी, पीला)",ml:"PVC ഇൻസുലേറ്റഡ് കോപ്പർ വയർ 1.5 sq mm (ചുവപ്പ്, കറുപ്പ്, ഓറഞ്ച്, മഞ്ഞ)"},{en:"as req.",hi:"आवश्यकतानुसार",ml:"ആവശ്യത്തിന്"},{en:"P, N, X, C",hi:"P, N, X, C",ml:"P, N, X, C"}],
+ [{en:"Wood screws",hi:"लकड़ी के स्क्रू",ml:"തടി സ്ക്രൂകൾ"},{en:"as req.",hi:"आवश्यकतानुसार",ml:"ആവശ്യത്തിന്"},{en:"Boxes, saddles",hi:"बॉक्स, सैडल",ml:"ബോക്സ്, സാഡിൽ"}]
+];
+const FAULTS=[
+ [{en:"Lamps do not dim; one stays off in the dim position",hi:"मंद स्थिति में लैंप मंद नहीं होते; एक बंद रहता है",ml:"മങ്ങിയ സ്ഥാനത്ത് ലാമ്പുകൾ മങ്ങുന്നില്ല; ഒന്ന് ഓഫ് ആയി നിൽക്കുന്നു"},{en:"L2 not connected to C of S1, or S1 terminal 1 or 2 swapped with C",hi:"L2, S1 के C से नहीं जुड़ा, या S1 का टर्मिनल 1 या 2, C से बदल गया",ml:"L2, S1-ന്റെ C-യുമായി ബന്ധിപ്പിച്ചിട്ടില്ല, അല്ലെങ്കിൽ S1-ന്റെ ടെർമിനൽ 1 അല്ലെങ്കിൽ 2, C-യുമായി മാറിപ്പോയി"},{en:"Yellow C wire to C; P to terminal 1; N to terminal 2",hi:"पीला C तार C पर; P टर्मिनल 1 पर; N टर्मिनल 2 पर",ml:"മഞ്ഞ C വയർ C-യിൽ; P ടെർമിനൽ 1-ൽ; N ടെർമിനൽ 2-ൽ"}],
+ [{en:"Fuse blows when S1 is operated",hi:"S1 चलाने पर फ्यूज़ उड़ता है",ml:"S1 പ്രവർത്തിപ്പിക്കുമ്പോൾ ഫ്യൂസ് പോകുന്നു"},{en:"C of S1 wrongly joined to P or N, so S1 shorts phase to neutral",hi:"S1 का C गलती से P या N से जुड़ा, इसलिए S1 फेज़ को न्यूट्रल से शॉर्ट करता है",ml:"S1-ന്റെ C തെറ്റായി P-യുമായോ N-മായോ ബന്ധിപ്പിച്ചു, അതിനാൽ S1 ഫേസും ന്യൂട്രലും ഷോർട്ട് ചെയ്യുന്നു"},{en:"Switch off; only C goes to L2, 1 to P, 2 to N",hi:"सप्लाई बंद करें; केवल C, L2 को; 1, P को; 2, N को",ml:"സപ്ലൈ ഓഫ് ചെയ്യുക; C മാത്രം L2-ലേക്ക്; 1, P-ലേക്ക്; 2, N-ലേക്ക്"}],
+ [{en:"Dim light is uneven; one lamp much brighter",hi:"मंद रोशनी असमान; एक लैंप बहुत तेज़",ml:"മങ്ങിയ വെളിച്ചം അസമം; ഒരു ലാമ്പ് കൂടുതൽ തെളിച്ചം"},{en:"Lamps of different wattage or type, or an LED lamp used",hi:"अलग वॉटेज या प्रकार के लैंप, या LED लैंप लगा",ml:"വ്യത്യസ്ത വാട്ടേജ് അല്ലെങ്കിൽ തരം ലാമ്പുകൾ, അല്ലെങ്കിൽ LED ലാമ്പ്"},{en:"Use two identical incandescent lamps",hi:"दो एक जैसे इनकैंडेसेंट लैंप लगाएँ",ml:"ഒരുപോലെയുള്ള രണ്ട് ഇൻകാൻഡസെന്റ് ലാമ്പുകൾ ഉപയോഗിക്കുക"}],
+ [{en:"Nothing works in any position",hi:"किसी भी स्थिति में कुछ नहीं जलता",ml:"ഒരു സ്ഥാനത്തും ഒന്നും പ്രവർത്തിക്കുന്നില്ല"},{en:"P loop at S1 terminal 1 loose, N not reaching L1, or X loop at L2 loose",hi:"S1 टर्मिनल 1 पर P लूप ढीला, N, L1 तक नहीं, या L2 पर X लूप ढीला",ml:"S1 ടെർമിനൽ 1-ലെ P ലൂപ്പ് അയഞ്ഞു, N L1-ൽ എത്തുന്നില്ല, അല്ലെങ്കിൽ L2-ലെ X ലൂപ്പ് അയഞ്ഞു"},{en:"Trace P and N from the supply end",hi:"सप्लाई सिरे से P और N ट्रेस करें",ml:"സപ്ലൈ അറ്റത്തുനിന്ന് P, N പിന്തുടരുക"}],
+ [{en:"Pipe pulls out of a box socket",hi:"पाइप बॉक्स सॉकेट से निकल जाता है",ml:"പൈപ്പ് ബോക്സ് സോക്കറ്റിൽ നിന്ന് ഊരി വരുന്നു"},{en:"Pipe not pushed fully in, or cut short of 15 cm",hi:"पाइप पूरा अंदर नहीं धकेला गया, या 15 cm से छोटा कटा",ml:"പൈപ്പ് പൂർണ്ണമായി കയറ്റിയില്ല, അല്ലെങ്കിൽ 15 cm-നേക്കാൾ ചെറുതായി മുറിച്ചു"},{en:"Push fully in; recut a short piece; re-fix the saddle",hi:"पूरा अंदर धकेलें; छोटा टुकड़ा फिर काटें; सैडल फिर कसें",ml:"പൂർണ്ണമായി കയറ്റുക; ചെറിയ കഷണം വീണ്ടും മുറിക്കുക; സാഡിൽ വീണ്ടും ഉറപ്പിക്കുക"}],
+ [{en:"Wire insulation cut",hi:"तार का इंसुलेशन कटा",ml:"വയർ ഇൻസുലേഷൻ മുറിഞ്ഞു"},{en:"Burr left inside a pipe end",hi:"पाइप सिरे के अंदर बर रह गया",ml:"പൈപ്പ് അറ്റത്ത് ബർ അവശേഷിച്ചു"},{en:"Remove burr; replace the damaged wire",hi:"बर हटाएँ; खराब तार बदलें",ml:"ബർ നീക്കുക; കേടായ വയർ മാറ്റുക"}]
+];
+const WORK={
+ head:{en:"Workmanship: strength of fixtures",hi:"कारीगरी: फिक्सिंग की मज़बूती",ml:"വർക്ക്മാൻഷിപ്പ്: ഫിക്സിംഗിന്റെ ഉറപ്പ്"},
+ note:{en:"Do this with supply OFF. Use hand force only: a firm push, pull and twist. Never test with a tool.",hi:"यह जाँच सप्लाई बंद रखकर करें। केवल हाथ का बल: मज़बूती से धकेलें, खींचें और घुमाएँ। औज़ार से कभी नहीं।",ml:"സപ്ലൈ ഓഫ് ചെയ്ത് ഇത് ചെയ്യുക. കൈയുടെ ബലം മാത്രം: ഉറപ്പോടെ തള്ളുക, വലിക്കുക, തിരിക്കുക. ഉപകരണം കൊണ്ട് ഒരിക്കലും അരുത്."},
+ cols:{en:["Check point","How to check","Result"],hi:["जाँच बिंदु","कैसे जाँचें","परिणाम"],ml:["പരിശോധനാ ബിന്ദു","എങ്ങനെ പരിശോധിക്കാം","ഫലം"]},
+ ok:{en:["OK","Not OK"],hi:["ठीक","ठीक नहीं"],ml:["ശരി","ശരിയല്ല"]},
+ ex:{en:"Before climbing a ladder you shake it to see that it is firm. Shake every fixture the same way before you hand over the job.",hi:"सीढ़ी पर चढ़ने से पहले उसे हिलाकर देखते हैं कि वह मज़बूत है। काम सौंपने से पहले हर फिक्सिंग को ऐसे ही हिलाकर जाँचें।",ml:"ഏണിയിൽ കയറുന്നതിന് മുൻപ് അത് ഉറച്ചതാണോ എന്ന് കുലുക്കി നോക്കുന്നു. ജോലി ഏൽപ്പിക്കുന്നതിന് മുൻപ് ഓരോ ഫിക്സിംഗും അതുപോലെ കുലുക്കി പരിശോധിക്കുക."},
+ rows:[
+  [{en:"Saddles (6)",hi:"सैडल (6)",ml:"സാഡിലുകൾ (6)"},{en:"Push the pipe sideways by hand near each saddle. No movement; both screws fully home; saddle not tilted.",hi:"हर सैडल के पास पाइप को हाथ से बगल में धकेलें। कोई हलचल नहीं; दोनों स्क्रू पूरे अंदर; सैडल तिरछा नहीं।",ml:"ഓരോ സാഡിലിനരികിലും പൈപ്പ് കൈകൊണ്ട് വശത്തേക്ക് തള്ളുക. അനക്കം ഇല്ല; രണ്ട് സ്ക്രൂകളും പൂർണ്ണമായി ഇറങ്ങി; സാഡിൽ ചരിഞ്ഞിട്ടില്ല."}],
+  [{en:"Junction boxes J1, J2",hi:"जंक्शन बॉक्स J1, J2",ml:"ജംഗ്ഷൻ ബോക്സുകൾ J1, J2"},{en:"Pull each pipe gently at its box socket. Box fixed to the board and does not turn; lid screws tight.",hi:"हर पाइप को बॉक्स सॉकेट पर हल्का खींचें। बॉक्स बोर्ड पर फिक्स, घूमता नहीं; ढक्कन स्क्रू कसे।",ml:"ഓരോ പൈപ്പും ബോക്സ് സോക്കറ്റിൽ ചെറുതായി വലിക്കുക. ബോക്സ് ബോർഡിൽ ഉറപ്പിച്ചു, തിരിയുന്നില്ല; അടപ്പിന്റെ സ്ക്രൂകൾ മുറുകി."}],
+  [{en:"Switch boxes S1, S2",hi:"स्विच बॉक्स S1, S2",ml:"സ്വിച്ച് ബോക്സുകൾ S1, S2"},{en:"Hold the box and try to rock and twist it. No movement; all fixing screws fitted.",hi:"बॉक्स पकड़कर हिलाने और घुमाने की कोशिश करें। कोई हलचल नहीं; सभी फिक्सिंग स्क्रू लगे।",ml:"ബോക്സ് പിടിച്ച് ആട്ടാനും തിരിക്കാനും ശ്രമിക്കുക. അനക്കം ഇല്ല; എല്ലാ ഫിക്സിംഗ് സ്ക്രൂകളും ഉണ്ട്."}],
+  [{en:"Lamp blocks and holders L1, L2",hi:"लैंप ब्लॉक और होल्डर L1, L2",ml:"ലാമ്പ് ബ്ലോക്കുകളും ഹോൾഡറുകളും L1, L2"},{en:"Rock each holder by hand. Block and holder firm; holder screwed to the block.",hi:"हर होल्डर को हाथ से हिलाएँ। ब्लॉक और होल्डर मज़बूत; होल्डर ब्लॉक पर स्क्रू से कसा।",ml:"ഓരോ ഹോൾഡറും കൈകൊണ്ട് ആട്ടുക. ബ്ലോക്കും ഹോൾഡറും ഉറപ്പിൽ; ഹോൾഡർ ബ്ലോക്കിൽ സ്ക്രൂ ചെയ്തിരിക്കുന്നു."}],
+  [{en:"Switch plates and covers",hi:"स्विच प्लेट और कवर",ml:"സ്വിച്ച് പ്ലേറ്റുകളും കവറുകളും"},{en:"Cover screws tight, plate sits flush, switch operates smoothly, no crack.",hi:"कवर स्क्रू कसे, प्लेट समतल बैठी, स्विच आसानी से चलता है, कोई दरार नहीं।",ml:"കവർ സ്ക്രൂകൾ മുറുകി, പ്ലേറ്റ് നിരപ്പായി ഇരിക്കുന്നു, സ്വിച്ച് സുഗമമായി പ്രവർത്തിക്കുന്നു, പൊട്ടലില്ല."}],
+  [{en:"Screw heads",hi:"स्क्रू हेड",ml:"സ്ക്രൂ തലകൾ"},{en:"Every screw straight and flush, slot not damaged. No hammered or loose screw.",hi:"हर स्क्रू सीधा और समतल, खाँचा खराब नहीं। कोई हथौड़े से ठोका या ढीला स्क्रू नहीं।",ml:"ഓരോ സ്ക്രൂവും നേരെയും നിരപ്പായും, വിടവ് കേടായിട്ടില്ല. ചുറ്റിക കൊണ്ട് അടിച്ചതോ അയഞ്ഞതോ ആയ സ്ക്രൂ ഇല്ല."}],
+  [{en:"Line and level",hi:"लाइन और लेवल",ml:"ലൈനും ലെവലും"},{en:"Main run level; both vertical runs plumb and parallel; lamps and switches in line with their pipes.",hi:"मुख्य रन समतल; दोनों ऊर्ध्वाधर रन साहुल में और समानांतर; लैंप और स्विच अपने पाइप की सीध में।",ml:"പ്രധാന റൺ നിരപ്പിൽ; രണ്ട് ലംബ റണ്ണുകളും കുത്തനെയും സമാന്തരവും; ലാമ്പുകളും സ്വിച്ചുകളും പൈപ്പിന്റെ നിരയിൽ."}],
+  [{en:"PVC parts",hi:"पीवीसी भाग",ml:"PVC ഭാഗങ്ങൾ"},{en:"No crack or white stress mark on saddles or boxes from over-tightening.",hi:"ज़्यादा कसने से सैडल या बॉक्स पर कोई दरार या सफ़ेद तनाव निशान नहीं।",ml:"അമിതമായി മുറുക്കിയതുമൂലം സാഡിൽ, ബോക്സ് എന്നിവയിൽ പൊട്ടലോ വെളുത്ത സ്ട്രെസ് അടയാളമോ ഇല്ല."}]
+ ]};
+const CHECK={
+ en:["6 pipe pieces, each 15 cm","Every pipe fully inside its box sockets","One saddle per pipe piece, all tight","Wire count in each run as per table","No joint in any pipe or box; loops only at terminals","Two identical lamps fitted","All 4 conditions correct: bright, one lamp, dim, off","All fixtures pass the strength check"],
+ hi:["6 पाइप टुकड़े, हर एक 15 cm","हर पाइप बॉक्स सॉकेट में पूरा अंदर","हर पाइप टुकड़े पर एक सैडल, सब कसे","हर रन में तारों की संख्या तालिका अनुसार","किसी पाइप या बॉक्स में जोड़ नहीं; लूप केवल टर्मिनल पर","दो एक जैसे लैंप लगे","चारों स्थितियाँ सही: तेज़, एक लैंप, मंद, बंद","सभी फिक्सिंग मज़बूती जाँच में ठीक"],
+ ml:["6 പൈപ്പ് കഷണങ്ങൾ, ഓരോന്നും 15 cm","ഓരോ പൈപ്പും ബോക്സ് സോക്കറ്റിൽ പൂർണ്ണമായി","ഓരോ പൈപ്പ് കഷണത്തിനും ഒരു സാഡിൽ, എല്ലാം മുറുകി","ഓരോ റണ്ണിലെയും വയർ എണ്ണം പട്ടിക പ്രകാരം","പൈപ്പിലോ ബോക്സിലോ ജോയിന്റ് ഇല്ല; ലൂപ്പ് ടെർമിനലിൽ മാത്രം","ഒരുപോലെയുള്ള രണ്ട് ലാമ്പുകൾ ഘടിപ്പിച്ചു","4 അവസ്ഥകളും ശരി: പൂർണ്ണം, ഒരു ലാമ്പ്, മങ്ങി, ഓഫ്","എല്ലാ ഫിക്സിംഗുകളും ഉറപ്പ് പരിശോധനയിൽ ശരി"]
+};
+const STEPS=[
+ {v:"photo",t:{en:"Aim of the job",hi:"कार्य का उद्देश्य",ml:"ജോലിയുടെ ലക്ഷ്യം"},
+  li:{en:["Wire two lamps, L1 and L2, to give four conditions: both bright, only one bright, both dim, and all off.","Control: S1 is a two-way switch, S2 is a one-way switch.","Work: PVC conduit, 15 cm pieces only, on a teak wood board.","You will: mark → cut → assemble → fix → draw wires → connect → test."],
+      hi:["दो लैंप L1 और L2 को इस तरह वायर करें कि चार स्थितियाँ मिलें: दोनों तेज़, केवल एक तेज़, दोनों मंद, और सब बंद।","नियंत्रण: S1 टू-वे स्विच है, S2 वन-वे स्विच है।","कार्य: सागौन लकड़ी के बोर्ड पर पीवीसी कंड्यूट, केवल 15 cm टुकड़े।","आप करेंगे: मार्किंग → कटिंग → असेंबली → फिक्सिंग → तार खींचना → कनेक्शन → परीक्षण।"],
+      ml:["L1, L2 എന്നീ രണ്ട് ലാമ്പുകൾ നാല് അവസ്ഥകൾ ലഭിക്കുന്ന വിധത്തിൽ വയർ ചെയ്യുക: രണ്ടും പൂർണ്ണ വെളിച്ചം, ഒന്ന് മാത്രം, രണ്ടും മങ്ങിയ വെളിച്ചം, എല്ലാം ഓഫ്.","നിയന്ത്രണം: S1 ടു-വേ സ്വിച്ച്, S2 വൺ-വേ സ്വിച്ച്.","ജോലി: തേക്ക് തടി ബോർഡിൽ PVC കോൺഡ്യൂട്ട്, 15 cm കഷണങ്ങൾ മാത്രം.","നിങ്ങൾ ചെയ്യുന്നത്: മാർക്കിംഗ് → മുറിക്കൽ → അസംബ്ലി → ഉറപ്പിക്കൽ → വയർ വലിക്കൽ → കണക്ഷൻ → ടെസ്റ്റ്."]},
+  ex:{en:"In a hospital ward at night, both lamps on dim give the patient soft light to sleep. One lamp is enough for the nurse's round. Both bright are used during treatment or cleaning.",hi:"रात में अस्पताल वार्ड में दोनों लैंप मंद रहते हैं ताकि मरीज़ सो सके। नर्स के राउंड के लिए एक लैंप काफ़ी है। इलाज या सफ़ाई के समय दोनों तेज़ जलाए जाते हैं।",ml:"രാത്രി ആശുപത്രി വാർഡിൽ രോഗിക്ക് ഉറങ്ങാൻ രണ്ട് ലാമ്പുകളും മങ്ങിയ വെളിച്ചത്തിൽ. നഴ്സിന്റെ റൗണ്ടിന് ഒരു ലാമ്പ് മതി. ചികിത്സയുടെയോ ശുചീകരണത്തിന്റെയോ സമയത്ത് രണ്ടും പൂർണ്ണ വെളിച്ചത്തിൽ."}},
+ {v:"tools",wide:1,t:{en:"Tools and their correct use",hi:"औज़ार और उनका सही उपयोग",ml:"ഉപകരണങ്ങളും ശരിയായ ഉപയോഗവും"},li:null,
+  ex:{en:"A pilot hole is like the small guide hole you make before driving a nail into hard wood: the screw goes in straight and the teak does not crack.",hi:"पायलट छेद कठोर लकड़ी में कील ठोकने से पहले बनाए गए छोटे गाइड छेद जैसा है: स्क्रू सीधा जाता है और सागौन नहीं फटता।",ml:"കട്ടിയുള്ള തടിയിൽ ആണി അടിക്കുന്നതിന് മുൻപ് ഉണ്ടാക്കുന്ന ചെറിയ ഗൈഡ് ദ്വാരം പോലെയാണ് പൈലറ്റ് ദ്വാരം: സ്ക്രൂ നേരെ കയറും, തേക്ക് പൊട്ടില്ല."},
+  sf:{en:"Keep the bench clear. No supply connected while working.",hi:"कार्य बेंच साफ रखें। काम करते समय सप्लाई न जोड़ें।",ml:"വർക്ക് ബെഞ്ച് വൃത്തിയായി സൂക്ഷിക്കുക. ജോലി ചെയ്യുമ്പോൾ സപ്ലൈ കണക്ട് ചെയ്യരുത്."}},
+ {v:"mats",t:{en:"Materials",hi:"सामग्री",ml:"സാമഗ്രികൾ"},
+  li:{en:["Collect every item in the table before you start.","S1 must be two-way (3 terminals: C, 1, 2). S2 is one-way (2 terminals).","Both lamps must be the same wattage and type, for example 2 × 40 W incandescent. LED lamps do not share voltage evenly in series and will not dim correctly."],
+      hi:["शुरू करने से पहले तालिका की हर सामग्री इकट्ठा करें।","S1 टू-वे होना चाहिए (3 टर्मिनल: C, 1, 2)। S2 वन-वे है (2 टर्मिनल)।","दोनों लैंप एक ही वॉटेज और प्रकार के हों, जैसे 2 × 40 W इनकैंडेसेंट। LED लैंप सीरीज़ में वोल्टेज बराबर नहीं बाँटते और सही मंद नहीं होते।"],
+      ml:["തുടങ്ങുന്നതിന് മുൻപ് പട്ടികയിലെ എല്ലാ സാധനങ്ങളും ശേഖരിക്കുക.","S1 ടു-വേ ആയിരിക്കണം (3 ടെർമിനലുകൾ: C, 1, 2). S2 വൺ-വേ (2 ടെർമിനലുകൾ).","രണ്ട് ലാമ്പുകളും ഒരേ വാട്ടേജും തരവും ആയിരിക്കണം, ഉദാ: 2 × 40 W ഇൻകാൻഡസെന്റ്. LED ലാമ്പുകൾ സീരീസിൽ വോൾട്ടേജ് തുല്യമായി പങ്കിടില്ല, ശരിയായി മങ്ങുകയുമില്ല."]},
+  ex:{en:"A cook keeps all ingredients ready before lighting the stove. Ready materials mean no running around in the middle of the job.",hi:"रसोइया चूल्हा जलाने से पहले सारी सामग्री तैयार रखता है। सामग्री तैयार हो तो काम के बीच में भागदौड़ नहीं होती।",ml:"പാചകക്കാരൻ അടുപ്പ് കത്തിക്കുന്നതിന് മുൻപ് എല്ലാ ചേരുവകളും തയ്യാറാക്കി വയ്ക്കുന്നു. സാധനങ്ങൾ തയ്യാറാണെങ്കിൽ ജോലിക്കിടയിൽ ഓടേണ്ടി വരില്ല."}},
+ {v:"circuit",t:{en:"Circuit diagram: how four conditions are made",hi:"परिपथ आरेख: चार स्थितियाँ कैसे बनती हैं",ml:"സർക്യൂട്ട് ഡയഗ്രം: നാല് അവസ്ഥകൾ എങ്ങനെ ഉണ്ടാകുന്നു"},
+  li:{en:["The diagram is drawn on the board layout: L1 above S1, L2 above S2, supply entering from the left.","S2 (one-way) takes phase P to the lamp wire X. X goes to L2 and loops on to L1.","L1 is connected between X and neutral N.","L2 is connected between X and terminal C of S1.","S1 (two-way): terminal 1 gets phase P (looped on to S2), terminal 2 gets neutral N (looped from L1).","S2 decides whether phase reaches X. S1 decides what the far end of L2 sees: phase (1) or neutral (2)."],
+      hi:["आरेख बोर्ड लेआउट पर बना है: S1 के ऊपर L1, S2 के ऊपर L2, सप्लाई बाईं ओर से।","S2 (वन-वे) फेज़ P को लैंप तार X तक ले जाता है। X, L2 पर जाता है और वहाँ से लूप होकर L1 पर।","L1, X और न्यूट्रल N के बीच जुड़ा है।","L2, X और S1 के टर्मिनल C के बीच जुड़ा है।","S1 (टू-वे): टर्मिनल 1 पर फेज़ P (आगे S2 को लूप), टर्मिनल 2 पर न्यूट्रल N (L1 से लूप)।","S2 तय करता है कि फेज़ X तक पहुँचे या नहीं। S1 तय करता है कि L2 के दूसरे सिरे पर फेज़ (1) मिले या न्यूट्रल (2)।"],
+      ml:["ഡയഗ്രം ബോർഡ് ലേഔട്ടിൽ തന്നെ വരച്ചിരിക്കുന്നു: S1-ന് മുകളിൽ L1, S2-ന് മുകളിൽ L2, സപ്ലൈ ഇടതുവശത്തുനിന്ന്.","S2 (വൺ-വേ) ഫേസ് P-യെ ലാമ്പ് വയർ X-ലേക്ക് എത്തിക്കുന്നു. X, L2-ലേക്കും അവിടെ നിന്ന് ലൂപ്പ് ചെയ്ത് L1-ലേക്കും.","L1, X-നും ന്യൂട്രൽ N-നും ഇടയിൽ ബന്ധിപ്പിച്ചിരിക്കുന്നു.","L2, X-നും S1-ന്റെ ടെർമിനൽ C-ക്കും ഇടയിൽ ബന്ധിപ്പിച്ചിരിക്കുന്നു.","S1 (ടു-വേ): ടെർമിനൽ 1-ൽ ഫേസ് P (S2-ലേക്ക് ലൂപ്പ്), ടെർമിനൽ 2-ൽ ന്യൂട്രൽ N (L1-ൽ നിന്ന് ലൂപ്പ്).","ഫേസ് X-ൽ എത്തണോ എന്ന് S2 തീരുമാനിക്കുന്നു. L2-ന്റെ മറ്റേ അറ്റത്ത് ഫേസ് (1) വേണോ ന്യൂട്രൽ (2) വേണോ എന്ന് S1 തീരുമാനിക്കുന്നു."]},
+  sf:{en:"S1 has phase on terminal 1 and neutral on terminal 2. Use a good 6 A switch and keep its cover fitted.",hi:"S1 के टर्मिनल 1 पर फेज़ और टर्मिनल 2 पर न्यूट्रल है। अच्छा 6 A स्विच लगाएँ और उसका कवर हमेशा लगा रखें।",ml:"S1-ന്റെ ടെർമിനൽ 1-ൽ ഫേസും ടെർമിനൽ 2-ൽ ന്യൂട്രലും ഉണ്ട്. നല്ല 6 A സ്വിച്ച് ഉപയോഗിക്കുക, അതിന്റെ കവർ എപ്പോഴും ഘടിപ്പിക്കുക."},
+  ex:{en:"Two people sharing one bucket of water: in series, each lamp gets only half the voltage (about 115 V), so both glow dim. In parallel, each lamp gets its own full bucket of 230 V and glows bright.",hi:"दो लोग एक ही बाल्टी पानी बाँटें: सीरीज़ में हर लैंप को केवल आधा वोल्टेज (लगभग 115 V) मिलता है, इसलिए दोनों मंद जलते हैं। पैरेलल में हर लैंप को अपनी पूरी 230 V की बाल्टी मिलती है और वह तेज़ जलता है।",ml:"രണ്ടുപേർ ഒരു ബക്കറ്റ് വെള്ളം പങ്കിടുന്നതുപോലെ: സീരീസിൽ ഓരോ ലാമ്പിനും പകുതി വോൾട്ടേജ് (ഏകദേശം 115 V) മാത്രം, അതിനാൽ രണ്ടും മങ്ങി കത്തുന്നു. പാരലലിൽ ഓരോ ലാമ്പിനും സ്വന്തം 230 V ബക്കറ്റ് മുഴുവനും കിട്ടും, അതിനാൽ പൂർണ്ണമായി കത്തുന്നു."}},
+ {v:"layout",t:{en:"Layout and pipe plan",hi:"लेआउट और पाइप योजना",ml:"ലേഔട്ടും പൈപ്പ് പ്ലാനും"},
+  li:{en:["Every run is one 15 cm piece. Six pieces in all: A, B, U1, D1, U2, D2.","Main run: supply → A → J1 → B → J2.","At J1 (4-way box): U1 up to lamp L1, D1 down to switch S1.","At J2 (3-way box): U2 up to lamp L2, D2 down to switch S2.","The table gives the wires in each run. D1 carries 4 wires, the most on the board."],
+      hi:["हर रन एक 15 cm टुकड़ा है। कुल छह टुकड़े: A, B, U1, D1, U2, D2।","मुख्य रन: सप्लाई → A → J1 → B → J2।","J1 (4-वे बॉक्स) पर: U1 ऊपर लैंप L1 तक, D1 नीचे स्विच S1 तक।","J2 (3-वे बॉक्स) पर: U2 ऊपर लैंप L2 तक, D2 नीचे स्विच S2 तक।","तालिका में हर रन के तार दिए हैं। D1 में 4 तार हैं, बोर्ड पर सबसे अधिक।"],
+      ml:["ഓരോ റണ്ണും ഒരു 15 cm കഷണം. ആകെ ആറ് കഷണങ്ങൾ: A, B, U1, D1, U2, D2.","പ്രധാന റൺ: സപ്ലൈ → A → J1 → B → J2.","J1-ൽ (4-വേ ബോക്സ്): U1 മുകളിലേക്ക് ലാമ്പ് L1 വരെ, D1 താഴേക്ക് സ്വിച്ച് S1 വരെ.","J2-ൽ (3-വേ ബോക്സ്): U2 മുകളിലേക്ക് ലാമ്പ് L2 വരെ, D2 താഴേക്ക് സ്വിച്ച് S2 വരെ.","ഓരോ റണ്ണിലെയും വയറുകൾ പട്ടികയിൽ. D1-ൽ 4 വയറുകൾ, ബോർഡിലെ ഏറ്റവും കൂടുതൽ."]},
+  ex:{en:"The junction box is like a bus stand: routes meet and turn here, and you can open it to pull or check wires.",hi:"जंक्शन बॉक्स बस स्टैंड जैसा है: मार्ग यहाँ मिलते और मुड़ते हैं, और तार खींचने या जाँचने के लिए इसे खोला जा सकता है।",ml:"ജംഗ്ഷൻ ബോക്സ് ഒരു ബസ് സ്റ്റാൻഡ് പോലെയാണ്: റൂട്ടുകൾ ഇവിടെ ചേരുകയും തിരിയുകയും ചെയ്യുന്നു, വയർ വലിക്കാനോ പരിശോധിക്കാനോ ഇത് തുറക്കാം."}},
+ {v:"marking",t:{en:"Marking the board",hi:"बोर्ड पर मार्किंग",ml:"ബോർഡിൽ മാർക്കിംഗ്"},
+  li:{en:["Snap a chalked marking thread for the main horizontal line.","Mark the centre of J1 and J2 so that each pipe between them is 15 cm.","Draw the vertical lines through J1 and J2: one 15 cm piece up to each lamp, one down to each switch.","Place all fittings dry, without screws, and check that every 15 cm piece fits between its boxes.","Make pilot holes with the poker at every screw point. On hard teak, tap the poker lightly with the hammer."],
+      hi:["मुख्य क्षैतिज रेखा के लिए चॉक लगे मार्किंग धागे को झटकें।","J1 और J2 के केंद्र इस तरह मार्क करें कि उनके बीच हर पाइप 15 cm हो।","J1 और J2 से ऊर्ध्वाधर रेखाएँ खींचें: हर लैंप तक ऊपर एक 15 cm टुकड़ा, हर स्विच तक नीचे एक।","सभी फिटिंग बिना स्क्रू के रखकर जाँचें कि हर 15 cm टुकड़ा अपने बॉक्सों के बीच ठीक बैठता है।","हर स्क्रू पॉइंट पर पोकर से पायलट छेद बनाएँ। कठोर सागौन पर पोकर को हथौड़े से हल्का ठोकें।"],
+      ml:["പ്രധാന തിരശ്ചീന രേഖയ്ക്ക് ചോക്ക് പുരട്ടിയ മാർക്കിംഗ് നൂൽ തട്ടുക.","ഇടയിലെ ഓരോ പൈപ്പും 15 cm ആകുന്ന വിധത്തിൽ J1, J2 എന്നിവയുടെ മധ്യം മാർക്ക് ചെയ്യുക.","J1, J2 എന്നിവയിലൂടെ ലംബ രേഖകൾ വരയ്ക്കുക: ഓരോ ലാമ്പിലേക്കും മുകളിലേക്ക് ഒരു 15 cm കഷണം, ഓരോ സ്വിച്ചിലേക്കും താഴേക്ക് ഒന്ന്.","എല്ലാ ഫിറ്റിംഗുകളും സ്ക്രൂ ഇല്ലാതെ വച്ച്, ഓരോ 15 cm കഷണവും ബോക്സുകൾക്കിടയിൽ ശരിയായി ഇരിക്കുന്നുണ്ടോ എന്ന് പരിശോധിക്കുക.","ഓരോ സ്ക്രൂ പോയിന്റിലും പോക്കർ ഉപയോഗിച്ച് പൈലറ്റ് ദ്വാരം ഉണ്ടാക്കുക. കട്ടിയുള്ള തേക്കിൽ പോക്കറിൽ ചുറ്റിക കൊണ്ട് ചെറുതായി തട്ടുക."]},
+  ex:{en:"A tailor marks the cloth with chalk before cutting. Measure twice, cut once.",hi:"दर्ज़ी काटने से पहले कपड़े पर चॉक से निशान लगाता है। दो बार नापें, एक बार काटें।",ml:"തയ്യൽക്കാരൻ മുറിക്കുന്നതിന് മുൻപ് തുണിയിൽ ചോക്ക് കൊണ്ട് അടയാളമിടുന്നു. രണ്ടു തവണ അളക്കുക, ഒരു തവണ മുറിക്കുക."}},
+ {v:"cut",t:{en:"Cutting the pipe pieces",hi:"पाइप के टुकड़े काटना",ml:"പൈപ്പ് കഷണങ്ങൾ മുറിക്കൽ"},
+  li:{en:["Measure 15 cm and mark a line all round the pipe.","Hold the pipe firmly. Start with a few short strokes on the mark.","Cut straight and square, using the full blade length. Cut on the forward stroke; lift slightly on the return.","Remove burrs inside and outside with a knife or file.","Make 6 pieces and check each one: 15 cm. A square cut sits fully in the box socket."],
+      hi:["15 cm नापें और पाइप के चारों ओर रेखा बनाएँ।","पाइप को मज़बूती से पकड़ें। निशान पर कुछ छोटे स्ट्रोक से शुरू करें।","पूरी ब्लेड लंबाई से सीधा और समकोण काटें। आगे के स्ट्रोक पर काटें; वापसी में हल्का उठाएँ।","चाकू या रेती से अंदर और बाहर के बर हटाएँ।","6 टुकड़े बनाएँ और हर एक जाँचें: 15 cm। समकोण कट बॉक्स सॉकेट में पूरा बैठता है।"],
+      ml:["15 cm അളന്ന് പൈപ്പിന് ചുറ്റും വര വരയ്ക്കുക.","പൈപ്പ് ഉറപ്പായി പിടിക്കുക. അടയാളത്തിൽ കുറച്ച് ചെറിയ സ്ട്രോക്കുകൾ കൊണ്ട് തുടങ്ങുക.","മുഴുവൻ ബ്ലേഡ് നീളം ഉപയോഗിച്ച് നേരെയും ലംബമായും മുറിക്കുക. മുന്നോട്ടുള്ള സ്ട്രോക്കിൽ മുറിക്കുക; തിരികെ വരുമ്പോൾ ചെറുതായി ഉയർത്തുക.","കത്തി അല്ലെങ്കിൽ ഫയൽ ഉപയോഗിച്ച് അകത്തും പുറത്തുമുള്ള ബർ നീക്കം ചെയ്യുക.","6 കഷണങ്ങൾ ഉണ്ടാക്കി ഓരോന്നും പരിശോധിക്കുക: 15 cm. ലംബമായ മുറിവ് ബോക്സ് സോക്കറ്റിൽ പൂർണ്ണമായി ഇരിക്കും."]},
+  sf:{en:"Keep fingers away from the cutting line. Blade teeth face forward.",hi:"उंगलियाँ कटिंग लाइन से दूर रखें। ब्लेड के दाँत आगे की ओर।",ml:"വിരലുകൾ മുറിക്കുന്ന വരയിൽ നിന്ന് അകറ്റി വയ്ക്കുക. ബ്ലേഡിന്റെ പല്ലുകൾ മുന്നോട്ട്."},
+  ex:{en:"A burr inside the pipe is like a sharp edge inside a shirt sleeve: every time the wire is pulled, its insulation gets scratched.",hi:"पाइप के अंदर का बर कमीज़ की आस्तीन के अंदर तेज़ किनारे जैसा है: हर बार तार खींचने पर उसका इंसुलेशन छिलता है।",ml:"പൈപ്പിനുള്ളിലെ ബർ ഷർട്ടിന്റെ കൈക്കുള്ളിലെ മൂർച്ചയുള്ള അറ്റം പോലെയാണ്: വയർ വലിക്കുമ്പോഴെല്ലാം അതിന്റെ ഇൻസുലേഷൻ ഉരയും."}},
+ {v:"assembly",t:{en:"Assembling the pipe run",hi:"पाइप रन की असेंबली",ml:"പൈപ്പ് റൺ അസംബ്ലി"},
+  li:{en:["Push pipe A into the left side of J1.","Fit pipe B between the right side of J1 and the left side of J2.","At J1: fit U1 on top and D1 at the bottom.","At J2: fit U2 on top and D2 at the bottom.","U1 enters lamp block L1, U2 enters L2, D1 enters the S1 box, D2 enters the S2 box.","Push every pipe fully into its socket. No gap should be seen."],
+      hi:["पाइप A को J1 की बाईं ओर डालें।","पाइप B को J1 की दाईं ओर और J2 की बाईं ओर के बीच लगाएँ।","J1 पर: ऊपर U1 और नीचे D1 लगाएँ।","J2 पर: ऊपर U2 और नीचे D2 लगाएँ।","U1 लैंप ब्लॉक L1 में, U2 L2 में, D1 S1 बॉक्स में, D2 S2 बॉक्स में जाता है।","हर पाइप को सॉकेट में पूरा धकेलें। कोई गैप न दिखे।"],
+      ml:["പൈപ്പ് A, J1-ന്റെ ഇടതുവശത്ത് കയറ്റുക.","പൈപ്പ് B, J1-ന്റെ വലതുവശത്തിനും J2-ന്റെ ഇടതുവശത്തിനും ഇടയിൽ ഘടിപ്പിക്കുക.","J1-ൽ: മുകളിൽ U1, താഴെ D1 ഘടിപ്പിക്കുക.","J2-ൽ: മുകളിൽ U2, താഴെ D2 ഘടിപ്പിക്കുക.","U1 ലാമ്പ് ബ്ലോക്ക് L1-ലേക്കും U2 L2-ലേക്കും D1 S1 ബോക്സിലേക്കും D2 S2 ബോക്സിലേക്കും കയറുന്നു.","ഓരോ പൈപ്പും സോക്കറ്റിൽ പൂർണ്ണമായി കയറ്റുക. ഒരു വിടവും കാണരുത്."]},
+  ex:{en:"Like water pipes at home: tee, bend and box are the joints. A pipe not pushed fully in leaks water; here it leaves the wire exposed.",hi:"घर के पानी के पाइप की तरह: टी, बेंड और बॉक्स जोड़ हैं। पूरा न धकेला गया पाइप पानी टपकाता है; यहाँ तार खुला रह जाता है।",ml:"വീട്ടിലെ വെള്ള പൈപ്പുകൾ പോലെ: ടീ, ബെൻഡ്, ബോക്സ് എന്നിവ ജോയിന്റുകളാണ്. മുഴുവൻ കയറ്റാത്ത പൈപ്പ് വെള്ളം ചോർത്തും; ഇവിടെ വയർ പുറത്ത് കാണപ്പെടും."}},
+ {v:"fixing",t:{en:"Fixing saddles and boxes",hi:"सैडल और बॉक्स फिक्स करना",ml:"സാഡിലുകളും ബോക്സുകളും ഉറപ്പിക്കൽ"},
+  li:{en:["Place one saddle on each 15 cm piece, near its middle. Six saddles in all.","Pilot hole with the poker, then drive both screws with the screwdriver, a little at a time on each side.","Fix J1 and J2, the S1 and S2 boxes and both lamp round blocks with screws.","Check: pipes straight, level and firm. Nothing must move when pushed."],
+      hi:["हर 15 cm टुकड़े पर बीच के पास एक सैडल रखें। कुल छह सैडल।","पोकर से पायलट छेद, फिर पेचकस से दोनों स्क्रू, हर तरफ़ थोड़ा-थोड़ा कसें।","J1 और J2, S1 और S2 बॉक्स और दोनों लैंप राउंड ब्लॉक स्क्रू से फिक्स करें।","जाँचें: पाइप सीधे, समतल और मज़बूत। धकेलने पर कुछ भी नहीं हिलना चाहिए।"],
+      ml:["ഓരോ 15 cm കഷണത്തിലും നടുവിനടുത്ത് ഒരു സാഡിൽ വയ്ക്കുക. ആകെ ആറ് സാഡിലുകൾ.","പോക്കർ കൊണ്ട് പൈലറ്റ് ദ്വാരം, തുടർന്ന് സ്ക്രൂഡ്രൈവർ കൊണ്ട് രണ്ട് സ്ക്രൂകളും ഓരോ വശത്തും അൽപ്പാൽപ്പമായി മുറുക്കുക.","J1, J2, S1, S2 ബോക്സുകൾ, രണ്ട് ലാമ്പ് റൗണ്ട് ബ്ലോക്കുകൾ എന്നിവ സ്ക്രൂ ഉപയോഗിച്ച് ഉറപ്പിക്കുക.","പരിശോധിക്കുക: പൈപ്പുകൾ നേരെ, നിരപ്പിൽ, ഉറപ്പിൽ. തള്ളിയാൽ ഒന്നും അനങ്ങരുത്."]},
+  sf:{en:"Do not over-tighten. PVC saddles and boxes can crack.",hi:"ज़्यादा न कसें। पीवीसी सैडल और बॉक्स टूट सकते हैं।",ml:"അമിതമായി മുറുക്കരുത്. PVC സാഡിലുകളും ബോക്സുകളും പൊട്ടാം."},
+  ex:{en:"A saddle holds the pipe the way a belt clip holds a mobile pouch: firm, but not crushing it.",hi:"सैडल पाइप को वैसे पकड़ता है जैसे बेल्ट क्लिप मोबाइल पाउच को: मज़बूती से, पर दबाकर तोड़े बिना।",ml:"ബെൽറ്റ് ക്ലിപ്പ് മൊബൈൽ പൗച്ചിനെ പിടിക്കുന്നതുപോലെ സാഡിൽ പൈപ്പിനെ പിടിക്കുന്നു: ഉറപ്പോടെ, പക്ഷേ ഞെരിക്കാതെ."}},
+ {v:"wires",t:{en:"Drawing wires",hi:"तार खींचना",ml:"വയർ വലിക്കൽ"},
+  li:{en:["Straighten each wire before drawing.","Draw from box to box. J1, J2, the switch boxes and lamp blocks are your pulling points.","Count wires with the Layout table. D1 carries 4 wires, the most on the board.","Only one P and one N enter from the supply. P loops at S1 terminal 1 to feed S2. N loops at L1 to feed S1 terminal 2. X loops at L2 to feed L1.","No joints in pipes or boxes. Loops are made only at terminals.","Leave about 10 cm extra at every switch and lamp point."],
+      hi:["खींचने से पहले हर तार सीधा करें।","बॉक्स से बॉक्स तक खींचें। J1, J2, स्विच बॉक्स और लैंप ब्लॉक खींचने के पॉइंट हैं।","लेआउट तालिका से तार गिनें। D1 में 4 तार हैं, बोर्ड पर सबसे अधिक।","सप्लाई से केवल एक P और एक N आते हैं। P, S1 टर्मिनल 1 पर लूप होकर S2 को जाता है। N, L1 पर लूप होकर S1 टर्मिनल 2 को जाता है। X, L2 पर लूप होकर L1 को जाता है।","पाइप या बॉक्स में कोई जोड़ नहीं। लूप केवल टर्मिनल पर।","हर स्विच और लैंप पॉइंट पर लगभग 10 cm अतिरिक्त छोड़ें।"],
+      ml:["വലിക്കുന്നതിന് മുൻപ് ഓരോ വയറും നേരെയാക്കുക.","ബോക്സിൽ നിന്ന് ബോക്സിലേക്ക് വലിക്കുക. J1, J2, സ്വിച്ച് ബോക്സുകൾ, ലാമ്പ് ബ്ലോക്കുകൾ എന്നിവയാണ് വലിക്കാനുള്ള പോയിന്റുകൾ.","ലേഔട്ട് പട്ടിക നോക്കി വയറുകൾ എണ്ണുക. D1-ൽ 4 വയറുകൾ, ബോർഡിലെ ഏറ്റവും കൂടുതൽ.","സപ്ലൈയിൽ നിന്ന് ഒരു P-യും ഒരു N-ഉം മാത്രം. P, S1 ടെർമിനൽ 1-ൽ ലൂപ്പ് ചെയ്ത് S2-ലേക്ക്. N, L1-ൽ ലൂപ്പ് ചെയ്ത് S1 ടെർമിനൽ 2-ലേക്ക്. X, L2-ൽ ലൂപ്പ് ചെയ്ത് L1-ലേക്ക്.","പൈപ്പിലോ ബോക്സിലോ ജോയിന്റ് പാടില്ല. ലൂപ്പ് ടെർമിനലിൽ മാത്രം.","ഓരോ സ്വിച്ച്, ലാമ്പ് പോയിന്റിലും ഏകദേശം 10 cm അധികം വിടുക."]},
+  ex:{en:"Like threading a needle: a straight thread goes in easily. Pull gently and steadily; do not jerk.",hi:"सुई में धागा डालने जैसा: सीधा धागा आसानी से जाता है। धीरे और लगातार खींचें; झटका न दें।",ml:"സൂചിയിൽ നൂൽ കോർക്കുന്നതുപോലെ: നേരെയുള്ള നൂൽ എളുപ്പം കയറും. സാവധാനം സ്ഥിരമായി വലിക്കുക; വെട്ടി വലിക്കരുത്."}},
+ {v:"term",t:{en:"Connections at switches and lamps",hi:"स्विच और लैंप पर कनेक्शन",ml:"സ്വിച്ചുകളിലെയും ലാമ്പുകളിലെയും കണക്ഷനുകൾ"},
+  li:{en:["Strip only about 1 cm of insulation. Twist the strands.","Three terminals take two wires (a loop): S1 terminal 1 (P ×2), L1 neutral terminal (N ×2), L2 X terminal (X ×2). Twist each pair together before inserting.","Insert fully and tighten. No bare copper outside the terminal.","Follow the terminal charts exactly.","Supply end: P and N are connected to the supply only by the instructor."],
+      hi:["केवल लगभग 1 cm इंसुलेशन छीलें। स्ट्रैंड्स को मरोड़ें।","तीन टर्मिनलों पर दो तार (लूप) आते हैं: S1 टर्मिनल 1 (P ×2), L1 न्यूट्रल टर्मिनल (N ×2), L2 X टर्मिनल (X ×2)। डालने से पहले हर जोड़ी को साथ मरोड़ें।","पूरा डालें और कसें। टर्मिनल के बाहर नंगा तांबा न दिखे।","टर्मिनल चार्ट का ठीक पालन करें।","सप्लाई सिरा: P और N केवल अनुदेशक द्वारा सप्लाई से जोड़े जाते हैं।"],
+      ml:["ഏകദേശം 1 cm ഇൻസുലേഷൻ മാത്രം കളയുക. സ്ട്രാൻഡുകൾ പിരിക്കുക.","മൂന്ന് ടെർമിനലുകളിൽ രണ്ട് വയറുകൾ (ലൂപ്പ്) വരുന്നു: S1 ടെർമിനൽ 1 (P ×2), L1 ന്യൂട്രൽ ടെർമിനൽ (N ×2), L2 X ടെർമിനൽ (X ×2). കയറ്റുന്നതിന് മുൻപ് ഓരോ ജോഡിയും ഒരുമിച്ച് പിരിക്കുക.","പൂർണ്ണമായി കയറ്റി മുറുക്കുക. ടെർമിനലിന് പുറത്ത് നഗ്ന ചെമ്പ് കാണരുത്.","ടെർമിനൽ ചാർട്ടുകൾ കൃത്യമായി പാലിക്കുക.","സപ്ലൈ അറ്റം: P, N എന്നിവ ഇൻസ്ട്രക്ടർ മാത്രമേ സപ്ലൈയുമായി ബന്ധിപ്പിക്കൂ."]},
+  ex:{en:"S1 works like a two-way water valve that connects the far end of L2 either to the supply pipe (phase) or to the drain pipe (neutral).",hi:"S1 दो-तरफ़ा पानी वाल्व की तरह है जो L2 के दूसरे सिरे को या तो सप्लाई पाइप (फेज़) से या ड्रेन पाइप (न्यूट्रल) से जोड़ता है।",ml:"L2-ന്റെ മറ്റേ അറ്റത്തെ സപ്ലൈ പൈപ്പുമായോ (ഫേസ്) ഡ്രെയിൻ പൈപ്പുമായോ (ന്യൂട്രൽ) ബന്ധിപ്പിക്കുന്ന ഒരു ടു-വേ വാട്ടർ വാൽവ് പോലെയാണ് S1."}},
+ {v:"test",t:{en:"Testing",hi:"परीक्षण",ml:"ടെസ്റ്റിംഗ്"},li:null,
+  pre:{en:["Visual check: all covers fitted, saddles tight, no bare copper.","Strength check of all fixtures by hand (see the last step).","Tug test: pull each wire gently at its terminal. It must not come out.","Trace P: supply → S1 terminal 1 → loop → S2 IN. Trace N: supply → L1 → loop → S1 terminal 2.","Continuity test with the instructor's series test lamp or multimeter, if available."],
+       hi:["दृश्य जाँच: सभी कवर लगे, सैडल कसे, कोई नंगा तांबा नहीं।","सभी फिक्सिंग की हाथ से मज़बूती जाँच (अंतिम चरण देखें)।","टग टेस्ट: हर तार को टर्मिनल पर हल्का खींचें। बाहर नहीं आना चाहिए।","P ट्रेस करें: सप्लाई → S1 टर्मिनल 1 → लूप → S2 IN। N ट्रेस करें: सप्लाई → L1 → लूप → S1 टर्मिनल 2।","उपलब्ध हो तो अनुदेशक के सीरीज़ टेस्ट लैंप या मल्टीमीटर से निरंतरता परीक्षण।"],
+       ml:["ദൃശ്യ പരിശോധന: എല്ലാ കവറുകളും ഘടിപ്പിച്ചു, സാഡിലുകൾ മുറുകി, നഗ്ന ചെമ്പ് ഇല്ല.","എല്ലാ ഫിക്സിംഗുകളുടെയും ഉറപ്പ് കൈകൊണ്ട് പരിശോധിക്കുക (അവസാന ഘട്ടം കാണുക).","ടഗ് ടെസ്റ്റ്: ഓരോ വയറും ടെർമിനലിൽ ചെറുതായി വലിക്കുക. പുറത്തുവരരുത്.","P പിന്തുടരുക: സപ്ലൈ → S1 ടെർമിനൽ 1 → ലൂപ്പ് → S2 IN. N പിന്തുടരുക: സപ്ലൈ → L1 → ലൂപ്പ് → S1 ടെർമിനൽ 2.","ലഭ്യമെങ്കിൽ ഇൻസ്ട്രക്ടറുടെ സീരീസ് ടെസ്റ്റ് ലാമ്പ് അല്ലെങ്കിൽ മൾട്ടിമീറ്റർ ഉപയോഗിച്ച് കണ്ടിന്യൂയിറ്റി ടെസ്റ്റ്."]},
+  liv:{en:["Tester on IN of S2 and terminal 1 of S1: glows.","Tester on terminal 2 of S1 and the N terminal of L1: no glow.","Operate S1 and S2 in all 4 positions and record the result in the table.","All-off condition: tester on both lamp holders must not glow.","Only-L1 condition: L2 is dark but both its terminals are live. Never change a lamp just because it is dark; switch off the supply first.","Switch OFF the supply after testing."],
+       hi:["S2 के IN और S1 के टर्मिनल 1 पर टेस्टर: जलता है।","S1 के टर्मिनल 2 और L1 के N टर्मिनल पर टेस्टर: नहीं जलता।","S1 और S2 को चारों स्थितियों में चलाएँ और परिणाम तालिका में लिखें।","सब-बंद स्थिति: दोनों लैंप होल्डर पर टेस्टर नहीं जलना चाहिए।","केवल-L1 स्थिति: L2 बुझा है पर उसके दोनों टर्मिनल लाइव हैं। लैंप बुझा देखकर उसे न बदलें; पहले सप्लाई बंद करें।","परीक्षण के बाद सप्लाई बंद करें।"],
+       ml:["S2-ന്റെ IN-ലും S1-ന്റെ ടെർമിനൽ 1-ലും ടെസ്റ്റർ: കത്തുന്നു.","S1-ന്റെ ടെർമിനൽ 2-ലും L1-ന്റെ N ടെർമിനലിലും ടെസ്റ്റർ: കത്തുന്നില്ല.","S1, S2 എന്നിവ 4 സ്ഥാനങ്ങളിലും പ്രവർത്തിപ്പിച്ച് ഫലം പട്ടികയിൽ രേഖപ്പെടുത്തുക.","എല്ലാം-ഓഫ് അവസ്ഥ: രണ്ട് ലാമ്പ് ഹോൾഡറുകളിലും ടെസ്റ്റർ കത്തരുത്.","L1-മാത്രം അവസ്ഥ: L2 അണഞ്ഞിരിക്കുന്നു, പക്ഷേ അതിന്റെ രണ്ട് ടെർമിനലുകളും ലൈവ് ആണ്. ലാമ്പ് അണഞ്ഞതുകൊണ്ട് മാത്രം അത് മാറ്റരുത്; ആദ്യം സപ്ലൈ ഓഫ് ചെയ്യുക.","ടെസ്റ്റിന് ശേഷം സപ്ലൈ ഓഫ് ചെയ്യുക."]},
+  sf:{en:"Never test live without the instructor. Stand on a dry floor and use one hand.",hi:"अनुदेशक के बिना कभी लाइव परीक्षण न करें। सूखे फ़र्श पर खड़े हों और एक हाथ का उपयोग करें।",ml:"ഇൻസ്ട്രക്ടർ ഇല്ലാതെ ഒരിക്കലും ലൈവ് ടെസ്റ്റ് ചെയ്യരുത്. ഉണങ്ങിയ തറയിൽ നിൽക്കുക, ഒരു കൈ മാത്രം ഉപയോഗിക്കുക."},
+  ex:{en:"A dark lamp is not a dead lamp, just as a closed water tap still has pressure behind it. Isolate the supply before you touch any holder.",hi:"बुझा लैंप मरा हुआ लैंप नहीं है, जैसे बंद नल के पीछे भी पानी का दबाव रहता है। किसी होल्डर को छूने से पहले सप्लाई अलग करें।",ml:"അടച്ച വാട്ടർ ടാപ്പിന് പിന്നിലും മർദ്ദം ഉള്ളതുപോലെ, അണഞ്ഞ ലാമ്പ് ഡെഡ് അല്ല. ഏതെങ്കിലും ഹോൾഡർ തൊടുന്നതിന് മുൻപ് സപ്ലൈ വേർപെടുത്തുക."}},
+ {v:"faults",wide:1,t:{en:"Common faults and final checklist",hi:"सामान्य दोष और अंतिम जाँच सूची",ml:"സാധാരണ തകരാറുകളും അന്തിമ ചെക്ക്‌ലിസ്റ്റും"},li:null,
+  ex:{en:"A pilot runs a checklist before every take-off, even after a thousand flights. Do the same before you call the instructor.",hi:"पायलट हर उड़ान से पहले जाँच सूची पढ़ता है, हज़ार उड़ानों के बाद भी। अनुदेशक को बुलाने से पहले आप भी ऐसा ही करें।",ml:"ആയിരം യാത്രകൾക്ക് ശേഷവും ഓരോ ടേക്ക്-ഓഫിന് മുൻപും പൈലറ്റ് ചെക്ക്‌ലിസ്റ്റ് പരിശോധിക്കുന്നു. ഇൻസ്ട്രക്ടറെ വിളിക്കുന്നതിന് മുൻപ് നിങ്ങളും അങ്ങനെ ചെയ്യുക."}}
+];
+
+/* ---------- state ---------- */
+const S={lang:"en",step:0,s1:1,s2:0,tester:null,obs:{},chk:{},work:{}};
+const store={get(k,d){try{const v=localStorage.getItem("hw_"+k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem("hw_"+k,JSON.stringify(v))}catch(e){}}};
+S.lang=store.get("lang","en");S.step=Math.min(store.get("step",0),STEPS.length-1);
+let fs=store.get("fs",20),skin=store.get("skin","auto");
+const $=s=>document.querySelector(s);
+const u=k=>UI[S.lang][k];
+const L=o=>typeof o==="string"?o:(o[S.lang]||o.en);
+const nm=k=>({supply:u("supply")}[k]||k);
+
+/* ---------- board drawing: 1 cm = 10 units; every run is one 15 cm piece ---------- */
+const MY=330,J1=213,J2=429,LY=102,SY=555,BW=600,BH=650;
+const PIPE_GEO={A:[30,MY,180,MY],B:[246,MY,396,MY],U1:[J1,297,J1,147],D1:[J1,363,J1,513],U2:[J2,297,J2,147],D2:[J2,363,J2,513]};
+const PORDER=["A","B","U1","D1","U2","D2"];
+function sadd(p){const [x1,y1,x2,y2]=PIPE_GEO[p];return [(x1+x2)/2,(y1+y2)/2,y1===y2?"h":"v"]}
+function boardBg(){
+  let g=`<rect x="0" y="0" width="${BW}" height="${BH}" rx="10" fill="var(--board)"/>`;
+  for(let i=0;i<9;i++){const y=30+i*72;g+=`<path d="M0 ${y} C 180 ${y-14}, 380 ${y+16}, ${BW} ${y-6}" stroke="var(--grain)" stroke-width="2" fill="none" opacity=".45"/>`}
+  return g;
+}
+function pipeLine(p,cls,d){const [x1,y1,x2,y2]=PIPE_GEO[p];const h=y1===y2;
+  return `<g class="${cls||""}" style="--d:${d||0}s"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--pipe)" stroke-width="20"/><line x1="${x1-(h?0:5)}" y1="${y1-(h?5:0)}" x2="${x2-(h?0:5)}" y2="${y2-(h?5:0)}" stroke="var(--pipe-hi)" stroke-width="3" opacity=".7"/></g>`}
+function jbox(x,cls,d,name){return `<g class="${cls||""}" style="--d:${d||0}s"><circle cx="${x}" cy="${MY}" r="33" fill="var(--pipe)"/><circle cx="${x}" cy="${MY}" r="25" fill="none" stroke="var(--pipe-hi)" stroke-width="2"/><text x="${x}" y="${MY+6}" text-anchor="middle" font-size="17" font-weight="800" fill="#fff">${name}</text></g>`}
+function lampBlock(x,cls,d,glow){return `<g class="${cls||""}" style="--d:${d||0}s">${glow?`<circle cx="${x}" cy="${LY}" r="62" fill="#FFD84D" opacity=".6"/>`:""}<circle cx="${x}" cy="${LY}" r="45" fill="var(--fit)" stroke="var(--fit-edge)" stroke-width="2"/><circle cx="${x}" cy="${LY}" r="22" fill="var(--fit)" stroke="var(--fit-edge)" stroke-width="2"/><circle cx="${x}" cy="${LY}" r="10" fill="${glow?"#FFE14D":"#C9A35C"}" stroke="var(--fit-edge)"/></g>`}
+function swBox(cx,cls,d){const cy=SY;return `<g class="${cls||""}" style="--d:${d||0}s"><rect x="${cx-42}" y="${cy-42}" width="84" height="84" rx="6" fill="var(--fit)" stroke="var(--fit-edge)" stroke-width="2"/><rect x="${cx-12}" y="${cy-20}" width="24" height="40" rx="3" fill="#ffffff" stroke="var(--fit-edge)"/><rect x="${cx-8}" y="${cy-16}" width="16" height="16" rx="2" fill="#d9d6cf"/></g>`}
+function saddle(p,cls,d){const [x,y,o]=sadd(p);const st=`class="${cls||""}" style="--d:${d||0}s"`;
+  return o==="h"?`<g ${st}><rect x="${x-5}" y="${y-22}" width="10" height="44" rx="2" fill="#C9CED1" stroke="#6d7377"/><circle cx="${x}" cy="${y-27}" r="5" fill="#C9CED1" stroke="#6d7377"/><circle cx="${x}" cy="${y+27}" r="5" fill="#C9CED1" stroke="#6d7377"/></g>`
+   :`<g ${st}><rect x="${x-22}" y="${y-5}" width="44" height="10" rx="2" fill="#C9CED1" stroke="#6d7377"/><circle cx="${x-27}" cy="${y}" r="5" fill="#C9CED1" stroke="#6d7377"/><circle cx="${x+27}" cy="${y}" r="5" fill="#C9CED1" stroke="#6d7377"/></g>`}
+function tag(x,y,t,size){size=size||17;return `<g><rect x="${x-4}" y="${y-size}" width="${String(t).length*size*.62+10}" height="${size+8}" rx="5" fill="rgba(0,0,0,.62)"/><text x="${x+1}" y="${y}" font-size="${size}" fill="#fff" font-weight="700">${t}</text></g>`}
+function labels(){
+  const pt={A:[120,304],B:[276,304],U1:[230,190],D1:[230,480],U2:[446,190],D2:[446,480]};
+  let s=PORDER.map(p=>tag(pt[p][0],pt[p][1],p,15)).join("");
+  s+=tag(10,300,nm("supply"),15);
+  s+=`<g font-size="24" font-weight="800" fill="#fff"><text x="${J1-58}" y="${LY+8}" text-anchor="end">L1</text><text x="${J2+58}" y="${LY+8}">L2</text><text x="${J1-52}" y="${SY+8}" text-anchor="end">S1</text><text x="${J2+52}" y="${SY+8}">S2</text></g>`;
+  return s;
+}
+function dims(){
+  const h=(x1,x2,y)=>`<g stroke="#fff" stroke-width="1.5"><line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/><line x1="${x1}" y1="${y-7}" x2="${x1}" y2="${y+7}"/><line x1="${x2}" y1="${y-7}" x2="${x2}" y2="${y+7}"/></g><text x="${(x1+x2)/2}" y="${y+20}" text-anchor="middle" font-size="15" fill="#fff" font-weight="700">15 cm</text>`;
+  const v=(x,y1,y2,side)=>`<g stroke="#fff" stroke-width="1.5"><line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}"/><line x1="${x-7}" y1="${y1}" x2="${x+7}" y2="${y1}"/><line x1="${x-7}" y1="${y2}" x2="${x+7}" y2="${y2}"/></g><text x="${side>0?x+8:x-8}" y="${(y1+y2)/2+5}" text-anchor="${side>0?"start":"end"}" font-size="15" fill="#fff" font-weight="700">15 cm</text>`;
+  return h(30,180,378)+h(246,396,378)+v(160,147,297,-1)+v(160,363,513,-1)+v(500,147,297,1)+v(500,363,513,1);
+}
+/* routes traced from the given wiring diagram: N loops at L1, P loops at S1, X loops at L2 */
+const ROUTE={
+ N1:["N","M14 324 H204 V120"],
+ P1:["P","M14 336 H201 V540"],
+ N2:["N","M213 120 V330 H209 V540"],
+ P2:["P","M225 540 V338 H424 V540"],
+ C:["C","M217 540 V330 H420 V120"],
+ Xa:["X","M434 540 V330 H438 V120"],
+ Xb:["X","M429 120 V322 H222 V120"]
+};
+function wireLayer(anim){
+  return Object.entries(ROUTE).map(([k,[w,d]],i)=>{const a=anim?`class="draw" style="--d:${i*.9}s;--t:1.5s"`:"";
+   return `<path d="${d}" pathLength="1" fill="none" stroke="#fff" stroke-width="6" stroke-linejoin="round" opacity=".55" ${a}/><path d="${d}" pathLength="1" fill="none" stroke="var(${WC[w]})" stroke-width="3.5" stroke-linejoin="round" ${a}/>`}).join("");
+}
+function layoutSVG(o){
+  o=o||{};
+  let s=`<svg viewBox="-4 -4 ${BW+8} ${BH+8}" role="img" aria-label="${u("dims")}">`+boardBg();
+  if(o.marks){
+    s+=`<g stroke="var(--chalk)" stroke-width="2.5" fill="none" stroke-dasharray="1"><path class="draw" pathLength="1" style="--t:1.2s" d="M20 ${MY} H${BW-60}"/><path class="draw" pathLength="1" style="--d:1.2s;--t:.8s" d="M${J1} 40 V620"/><path class="draw" pathLength="1" style="--d:1.6s;--t:.8s" d="M${J2} 40 V620"/></g>`;
+    [[J1,MY],[J2,MY],[J1,LY],[J2,LY],[J1,SY],[J2,SY]].forEach((c,i)=>{s+=`<g class="seq" style="--d:${2.5+i*.2}s" stroke="#fff" stroke-width="3"><line x1="${c[0]-10}" y1="${c[1]-10}" x2="${c[0]+10}" y2="${c[1]+10}"/><line x1="${c[0]+10}" y1="${c[1]-10}" x2="${c[0]-10}" y2="${c[1]+10}"/></g>`});
+    const holes=[];PORDER.forEach(p=>{const [x,y,o2]=sadd(p);if(o2==="h"){holes.push([x,y-27],[x,y+27])}else{holes.push([x-27,y],[x+27,y])}});
+    [J1,J2].forEach(x=>holes.push([x-24,MY-24],[x+24,MY+24],[x,LY-34],[x,LY+34],[x-34,SY+34],[x+34,SY-34]));
+    holes.forEach((h,i)=>{s+=`<circle class="seq" style="--d:${4+i*.08}s" cx="${h[0]}" cy="${h[1]}" r="4.5" fill="#2a1608" stroke="#fff" stroke-width="1.5"/>`});
+    s+=`<g class="fade" style="--d:6.4s" fill="none" stroke="#fff" stroke-dasharray="6 5" stroke-width="1.5" opacity=".8">${[J1,J2].map(x=>`<rect x="${x-42}" y="${SY-42}" width="84" height="84" rx="6"/><circle cx="${x}" cy="${LY}" r="45"/><circle cx="${x}" cy="${MY}" r="33"/>`).join("")}</g>`;
+  } else {
+    const seq=o.seq?["A","J1","B","J2","U1","D1","U2","D2","L1","L2","S1","S2"]:null;
+    const D=k=>seq?seq.indexOf(k)*.4:0;const C=seq?"seq":"";
+    s+=`<g${o.xray?` opacity=".55"`:""}>`;
+    PORDER.forEach(p=>s+=pipeLine(p,C,D(p)));
+    s+=jbox(J1,C,D("J1"),"J1")+jbox(J2,C,D("J2"),"J2")+`</g>`;
+    s+=lampBlock(J1,C,D("L1"),o.glow)+lampBlock(J2,C,D("L2"),o.glow)+swBox(J1,C,D("S1"))+swBox(J2,C,D("S2"));
+    if(o.saddles) PORDER.forEach((p,i)=>s+=saddle(p,o.saddleAnim?"seq":"",o.saddleAnim?.3+i*.45:0));
+    if(o.wires) s+=wireLayer(o.wireAnim);
+    if(o.dims) s+=dims();
+  }
+  s+=labels()+`<text x="${BW-10}" y="24" text-anchor="end" font-size="15" fill="#fff" opacity=".85">${u("board")}</text></svg>`;
+  return s;
+}
+
+/* ---------- tool icons ---------- */
+const ICON={
+ poker:`<svg viewBox="0 0 100 100"><rect x="38" y="8" width="24" height="38" rx="9" fill="var(--accent)"/><rect x="44" y="44" width="12" height="6" fill="#9aa"/><path d="M47 50 L53 50 L50 94 Z" fill="#8a9196" stroke="#555" /></svg>`,
+ hammer:`<svg viewBox="0 0 100 100"><rect x="44" y="34" width="11" height="60" rx="4" fill="var(--accent)"/><path d="M18 18 H76 L84 26 V38 H18 Z" fill="#6f777c"/><rect x="14" y="18" width="8" height="20" rx="2" fill="#4c5357"/></svg>`,
+ saw:`<svg viewBox="0 0 100 100"><path d="M14 30 V20 H86 V30" fill="none" stroke="#6f777c" stroke-width="6"/><rect x="80" y="26" width="12" height="40" rx="5" fill="var(--accent)" transform="rotate(-10 86 46)"/><line x1="14" y1="34" x2="84" y2="34" stroke="#8a9196" stroke-width="4"/><path d="${Array.from({length:12},(_,i)=>`M${16+i*6} 36 l3 5 l3 -5`).join(" ")}" fill="none" stroke="#555" stroke-width="1.5"/><path d="M30 60 H62 M54 54 L62 60 L54 66" stroke="var(--ink)" stroke-width="3" fill="none"/></svg>`,
+ sd:`<svg viewBox="0 0 100 100"><rect x="38" y="6" width="24" height="40" rx="8" fill="var(--accent)"/><rect x="47" y="46" width="6" height="40" fill="#8a9196"/><path d="M45 86 H55 L53 94 H47 Z" fill="#555"/></svg>`,
+ tester:`<svg viewBox="0 0 100 100"><rect x="38" y="20" width="24" height="54" rx="6" fill="var(--accent)" opacity=".9"/><rect x="44" y="30" width="12" height="22" rx="3" fill="#FFB347"/><rect x="40" y="6" width="20" height="14" rx="3" fill="#9aa1a5"/><path d="M45 74 H55 L52 96 H48 Z" fill="#8a9196"/><text x="50" y="66" text-anchor="middle" font-size="9" fill="var(--accent-ink)" font-weight="700">500V</text></svg>`
+};
+
+/* ---------- circuit model (wiring diagram drawn on the board layout) ---------- */
+function model(){const X=S.s2?1:(S.s1===1?.5:0),Cv=S.s1===1?1:0;return {X,Cv,l1:X,l2:Math.abs(X-Cv)}}
+const lvl=v=>v>=1?"bright":v>0?"dim":"off";
+function curRow(){return ROWS.find(r=>r[0]===S.s1&&r[1]===S.s2)}
+function circuitSVG(tester){
+  const m=model(),on1=m.l1>0,on2=m.l2>0,any=on1||on2,dimMode=!S.s2&&any;
+  const live={N1:on1,N2:S.s1===2&&on2,P1:S.s2||(S.s1===1&&on2),P2:S.s2,C:on2,Xa:S.s2,Xb:on1&&(S.s2||dimMode)};
+  const w=(d,k,lv)=>`<path d="${d}" fill="none" stroke="var(--halo)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="var(${WC[k]})" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>${lv?`<path class="flow" d="${d}" fill="none" stroke="var(--glow)" stroke-width="2.2" stroke-linecap="round"/>`:""}`;
+  let g=`<svg viewBox="0 0 900 620" role="img" aria-label="Hospital wiring diagram on the board layout">`;
+  /* conduit outline (H) drawn faintly behind the wires, as in the given diagram */
+  g+=`<g fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="6 5"><path d="M286 96 V300 M424 96 V300 M424 300 H636 M286 372 V540 M424 372 V540 M424 372 H636 M636 96 V300 M774 96 V540 M636 372 V540"/></g>`;
+  /* supply */
+  g+=`<text x="40" y="306" font-size="24" font-weight="800" class="lbl-svg">N</text><text x="40" y="378" font-size="24" font-weight="800" class="lbl-svg">P</text>`;
+  g+=w("M70 300 H120","N",any)+`<rect x="120" y="290" width="44" height="20" rx="10" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/><circle cx="133" cy="300" r="7" fill="none" stroke="var(--ink)" stroke-width="2"/><circle cx="151" cy="300" r="7" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
+  g+=w("M70 372 H120","P",S.s2||(S.s1===1&&on2))+`<rect x="120" y="363" width="44" height="18" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>`;
+  /* N1: supply → L1 left terminal */
+  g+=w("M164 300 H300 V96","N",live.N1);
+  /* N2: L1 left → S1 terminal 2 */
+  g+=w("M300 96 L332 140 V488","N",live.N2);
+  /* P1: supply → S1 terminal 1 (bottom) */
+  g+=w("M164 372 H300 V540 H356","P",live.P1);
+  /* P2: S1 terminal 1 loop → S2 IN */
+  g+=w("M356 540 H410 V386 H650 V540 H676","P",live.P2);
+  /* C: S1 common → L2 left */
+  g+=w("M380 520 V344 H650 V96","C",live.C);
+  /* Xa: S2 OUT → L2 right */
+  g+=w("M736 540 H760 V96","X",live.Xa);
+  /* Xb: L2 right loop → L1 right, crossing C with a hop */
+  g+=w("M760 96 L722 140 V320 H660 A10 10 0 0 0 640 320 H410 V96","X",live.Xb);
+  /* lamps on top lines */
+  const lamp=(x1,x2,v,name)=>{const lv=lvl(v),cx=(x1+x2)/2;return `<line x1="${x1}" y1="96" x2="${cx-22}" y2="96" stroke="var(--ink)" stroke-width="3"/><line x1="${cx+22}" y1="96" x2="${x2}" y2="96" stroke="var(--ink)" stroke-width="3"/><circle cx="${cx}" cy="96" r="${lv==="bright"?46:38}" fill="var(--glow)" opacity="${lv==="bright"?.6:lv==="dim"?.28:0}"/><circle cx="${cx}" cy="96" r="22" fill="${lv==="bright"?"var(--glow)":lv==="dim"?"#E8A84A":"var(--surface)"}" stroke="var(--ink)" stroke-width="4"/><path d="M${cx-15} 81 L${cx+15} 111 M${cx+15} 81 L${cx-15} 111" stroke="var(--ink)" stroke-width="3.5"/><text x="${cx}" y="34" text-anchor="middle" font-size="24" font-weight="800" class="lbl-svg">${name}</text><text x="${cx}" y="54" text-anchor="middle" font-size="15" fill="var(--muted)">${u(lv)}</text>`};
+  g+=lamp(300,410,m.l1,"L1")+lamp(650,760,m.l2,"L2");
+  g+=[[300,96],[410,96],[650,96],[760,96]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="var(--ink)"/>`).join("");
+  /* S1 two-way: C (380,520), 2 (332,494), 1 (356,540) */
+  const tp=S.s1===1?[356,540]:[332,494];
+  g+=`<g class="sw-hit" data-sw="s1" tabindex="0" role="button" aria-label="S1"><rect x="300" y="470" width="120" height="90" fill="transparent"/>
+   <line x1="380" y1="520" x2="${tp[0]+(S.s1===1?6:4)}" y2="${tp[1]-(S.s1===1?6:-4)}" stroke="var(--ink)" stroke-width="6" stroke-linecap="round"/>
+   ${[[380,520],[332,494],[356,540]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="var(--surface)" stroke="var(--ink)" stroke-width="3"/>`).join("")}
+   <text x="394" y="522" font-size="15" font-weight="700" class="lbl-svg">C</text><text x="314" y="490" font-size="15" font-weight="700" class="lbl-svg">2</text><text x="346" y="526" font-size="15" font-weight="700" class="lbl-svg">1</text>
+   <text x="355" y="586" text-anchor="middle" font-size="28" font-weight="800" fill="var(--accent)">S1</text></g>`;
+  /* S2 one-way: IN (676,540), OUT (736,540) */
+  g+=`<g class="sw-hit" data-sw="s2" tabindex="0" role="button" aria-label="S2"><rect x="650" y="490" width="120" height="70" fill="transparent"/>
+   <line x1="676" y1="540" x2="${S.s2?728:722}" y2="${S.s2?540:512}" stroke="var(--ink)" stroke-width="6" stroke-linecap="round"/>
+   <circle cx="676" cy="540" r="7" fill="var(--surface)" stroke="var(--ink)" stroke-width="3"/><circle cx="736" cy="540" r="7" fill="var(--surface)" stroke="var(--ink)" stroke-width="3"/>
+   <text x="664" y="566" text-anchor="middle" font-size="13" class="lbl-svg">IN</text><text x="742" y="566" text-anchor="middle" font-size="13" class="lbl-svg">OUT</text>
+   <text x="706" y="586" text-anchor="middle" font-size="28" font-weight="800" fill="var(--accent)">S2</text><text x="800" y="545" font-size="15" fill="var(--muted)">${S.s2?"ON":"OFF"}</text></g>`;
+  g+=`<text x="356" y="608" text-anchor="middle" font-size="15" fill="var(--muted)">→ ${S.s1}</text>`;
+  if(tester){
+    const V={P:1,N:0,S2IN:1,S2OUT:m.X,L2X:m.X,L2C:m.Cv,L1X:m.X,L1N:0,S1C:m.Cv,S1_1:1,S1_2:0};
+    const pts={P:[90,372],N:[90,300],S2IN:[676,540],S2OUT:[736,540],L2X:[760,96],L2C:[650,96],L1X:[410,96],L1N:[300,96],S1C:[380,520],S1_1:[356,540],S1_2:[332,494]};
+    g+=Object.entries(pts).map(([k,p])=>{const sel=S.tester===k;return `<g class="tp" data-tp="${k}" tabindex="0" role="button" aria-label="test ${k}"><circle cx="${p[0]}" cy="${p[1]}" r="15" fill="transparent"/><circle class="ring" cx="${p[0]}" cy="${p[1]}" r="12" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="4 3"/>${sel?`<circle cx="${p[0]}" cy="${p[1]}" r="19" fill="${V[k]?"var(--glow)":"none"}" opacity="${V[k]>=1?.7:.35}" stroke="var(--accent)" stroke-width="3"/>`:""}</g>`}).join("");
+    circuitSVG.V=V;
+  }
+  const r=curRow();
+  g+=`</svg>`;
+  return g+`<div class="cond-pill" style="text-align:center;margin-top:.4rem"><span style="display:inline-block;padding:.35rem 1.2rem;border-radius:8px;border:2px solid var(--ink);font-weight:800;background:${any?"var(--glow)":"var(--chip)"};color:${any?"#000":"var(--ink)"}">${L(COND[r[2]])}</span></div>`;
+}
+function circuitPanel(tester){
+  const svg=circuitSVG(tester);let msg="";
+  if(tester&&S.tester){const v=circuitSVG.V[S.tester];msg=v>=1?`<span style="color:var(--ok)">● ${u("tyes")}</span>`:v>0?`<span style="color:var(--ok)">● ${u("tdim")}</span>`:`<span style="color:var(--muted)">○ ${u("tno")}</span>`}
+  return `<div class="panel" id="circ"><div class="vbar"><b>${tester?u("tmode"):u("tap")}</b></div>${svg}<p class="msg" aria-live="polite">${msg}</p></div>`;
+}
+function truthTable(){
+  const r0=curRow();
+  return `<div class="tw"><table class="tt"><thead><tr><th>S1</th><th>S2</th><th>L1</th><th>L2</th><th>${u("cond")}</th></tr></thead><tbody>${ROWS.map(r=>{const X=r[1]?1:(r[0]===1?.5:0),Cv=r[0]===1?1:0;return `<tr class="${r===r0?"on":""}"><td class="code">${r[0]}</td><td class="code">${r[1]?"ON":"OFF"}</td><td>${u(lvl(X))}</td><td>${u(lvl(Math.abs(X-Cv)))}</td><td>${L(COND[r[2]])}</td></tr>`}).join("")}</tbody></table></div>`;
+}
+
+/* ---------- other visuals ---------- */
+function legend(){return `<div class="legend">${WIRES.map(w=>`<span><span class="dot" style="background:var(${w.c})"></span><b class="code">${w.k}</b> ${L(w.n)}</span>`).join("")}</div>`}
+function cutSVG(){
+  return `<svg viewBox="0 0 640 300" role="img" aria-label="hacksaw cutting">
+  <text x="20" y="28" font-size="18" font-weight="700" class="lbl-svg">1 · ${u("mark")}</text>
+  <rect x="20" y="60" width="260" height="34" rx="4" fill="var(--pipe)"/><rect x="20" y="64" width="260" height="4" fill="var(--pipe-hi)"/>
+  <rect x="20" y="104" width="180" height="22" fill="#E9C46A" stroke="#7a5c12"/>${Array.from({length:16},(_,i)=>`<line x1="${20+i*12}" y1="104" x2="${20+i*12}" y2="${i%5===0?122:114}" stroke="#4a3608" stroke-width="1.5"/>`).join("")}
+  <text x="200" y="146" text-anchor="middle" font-size="15" font-weight="700" class="lbl-svg">15 cm</text>
+  <line x1="200" y1="52" x2="200" y2="102" stroke="var(--chalk)" stroke-width="4" class="draw" pathLength="1" style="--d:.3s;--t:.8s;stroke-dasharray:1"/>
+  <text x="20" y="200" font-size="18" font-weight="700" class="lbl-svg">3 · ${u("burr")}</text>
+  <ellipse cx="80" cy="250" rx="22" ry="34" fill="var(--pipe)"/><ellipse cx="80" cy="250" rx="13" ry="24" fill="var(--surface)"/>
+  ${Array.from({length:7},(_,i)=>{const a=i/7*6.28;return `<path d="M${80+13*Math.cos(a)} ${250+24*Math.sin(a)} l${-5*Math.cos(a)} ${-5*Math.sin(a)}" stroke="#d33" stroke-width="3"/>`}).join("")}
+  <rect x="120" y="244" width="110" height="12" rx="3" fill="#7d858a" class="saw-x" style="animation-duration:.6s"/>
+  <text x="340" y="28" font-size="18" font-weight="700" class="lbl-svg">2 · ${u("cut")}</text>
+  <rect x="300" y="190" width="70" height="80" fill="#5f676b"/><rect x="570" y="190" width="70" height="80" fill="#5f676b"/>
+  <defs><clipPath id="pc"><circle cx="470" cy="190" r="66"/></clipPath></defs>
+  <circle cx="470" cy="190" r="66" fill="var(--pipe)"/><circle cx="470" cy="190" r="50" fill="var(--surface)"/>
+  <g clip-path="url(#pc)"><rect class="kerf" x="466" y="124" width="8" height="132" fill="var(--glow)" opacity=".9"/></g>
+  <g class="saw-y"><g class="saw-x">
+    <path d="M360 120 V92 H580 V120" fill="none" stroke="#7d858a" stroke-width="7"/>
+    <rect x="578" y="88" width="22" height="58" rx="8" fill="var(--accent)"/>
+    <line x1="360" y1="122" x2="580" y2="122" stroke="#a8b0b4" stroke-width="5"/>
+    <path d="${Array.from({length:36},(_,i)=>`M${362+i*6} 124 l3 6 l3 -6`).join(" ")}" fill="none" stroke="#555" stroke-width="1.4"/>
+  </g></g>
+  <path d="M400 290 H540 M528 282 L540 290 L528 298" stroke="var(--ink)" stroke-width="3" fill="none"/></svg>`;
+}
+function saddleSVG(){
+  return `<svg viewBox="0 0 520 220" role="img" aria-label="saddle fixing">
+  <rect x="0" y="0" width="520" height="220" rx="10" fill="var(--board)"/>
+  <rect x="20" y="96" width="480" height="40" rx="4" fill="var(--pipe)"/><rect x="20" y="102" width="480" height="5" fill="var(--pipe-hi)" opacity=".7"/>
+  <rect x="440" y="90" width="44" height="52" rx="4" fill="#2b2c2d" stroke="var(--pipe-hi)" stroke-width="2"/><line x1="462" y1="90" x2="462" y2="142" stroke="var(--pipe-hi)" stroke-width="1.5"/>
+  <path d="M190 150 V112 Q260 76 330 112 V150" fill="none" stroke="#C9CED1" stroke-width="10"/>
+  <rect x="170" y="146" width="44" height="12" rx="3" fill="#C9CED1" stroke="#6d7377"/><rect x="306" y="146" width="44" height="12" rx="3" fill="#C9CED1" stroke="#6d7377"/>
+  <g class="sink"><g class="spin"><circle cx="192" cy="152" r="11" fill="#d7dcdf" stroke="#555" stroke-width="2"/><line x1="183" y1="152" x2="201" y2="152" stroke="#333" stroke-width="3"/></g></g>
+  <g class="sink" style="animation-delay:1.8s"><g class="spin" style="animation-delay:1.8s"><circle cx="328" cy="152" r="11" fill="#d7dcdf" stroke="#555" stroke-width="2"/><line x1="319" y1="152" x2="337" y2="152" stroke="#333" stroke-width="3"/></g></g>
+  <g class="sink"><rect x="187" y="20" width="10" height="122" fill="#8a9196"/><rect x="178" y="0" width="28" height="36" rx="8" fill="var(--accent)"/></g>
+  <text x="260" y="206" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">${u("saddle")}</text></svg>`;
+}
+function termPanel(title,rows,round){
+  const n=rows.length,step=n===2?100:70,x0=150-(n-1)*step/2;
+  let g=`<svg viewBox="0 0 300 260" role="img" aria-label="${title}"><text x="150" y="24" text-anchor="middle" font-size="18" font-weight="800" class="lbl-svg">${title}</text>`;
+  g+=round?`<circle cx="150" cy="175" r="78" fill="var(--fit)" stroke="var(--fit-edge)" stroke-width="2"/><circle cx="150" cy="175" r="38" fill="var(--fit)" stroke="var(--fit-edge)" stroke-width="2"/>`:`<rect x="30" y="110" width="240" height="130" rx="10" fill="var(--fit)" stroke="var(--fit-edge)" stroke-width="2"/>`;
+  rows.forEach((r,i)=>{const x=x0+i*step,ws=r[1],ty=round?175:160;
+    {const t=ws.length>1?ws[0]+" ×2":ws[0];const w=t.length*12+14;g+=`<rect x="${x-w/2}" y="36" width="${w}" height="26" rx="5" fill="#222"/><text x="${x}" y="56" text-anchor="middle" font-size="18" font-weight="800" fill="#fff">${t}</text>`;}
+    ws.forEach((wk,j)=>{const off=ws.length>1?(j?7:-7):0;
+      g+=`<path d="M${x+off} 64 V${ty}" stroke="var(--halo)" stroke-width="9" fill="none"/><path d="M${x+off} 64 V${ty}" stroke="var(${WC[wk]})" stroke-width="6" fill="none" class="draw" pathLength="1" style="--d:${(i+j)*.35}s;--t:.8s;stroke-dasharray:1"/>`;
+    });
+    g+=`<circle cx="${x}" cy="${ty}" r="15" fill="#d9b85c" stroke="#7a5c12" stroke-width="2"/><line x1="${x-9}" y1="${ty}" x2="${x+9}" y2="${ty}" stroke="#5a420c" stroke-width="3"/>`;
+    if(r[0]) g+=`<text x="${x}" y="${ty+46}" text-anchor="middle" font-size="19" font-weight="800" fill="#16201B">${r[0]}</text>`;
+  });
+  return g+`</svg>`;
+}
+function termSVG(){
+  return `<div class="tools" style="grid-template-columns:repeat(auto-fit,minmax(13rem,1fr))">
+   <div class="panel">${termPanel(u("s1b"),[["1",["P","P"]],["C",["C"]],["2",["N"]]])}</div>
+   <div class="panel">${termPanel(u("s2b"),[["IN",["P"]],["OUT",["X"]]])}</div>
+   <div class="panel">${termPanel(u("lh1"),[["",["N","N"]],["",["X"]]],1)}</div>
+   <div class="panel">${termPanel(u("lh2"),[["",["C"]],["",["X","X"]]],1)}</div></div>`;
+}
+function obsTable(){
+  const opts=["—"].concat(ROWS.map(r=>L(COND[r[2]])));
+  return `<div class="tw"><table class="tt"><thead><tr><th>S1</th><th>S2</th><th>${u("exp")}</th><th>${u("obs")}</th></tr></thead><tbody>${ROWS.map((r,i)=>`<tr><td class="code">${r[0]}</td><td class="code">${r[1]?"ON":"OFF"}</td><td>${L(COND[r[2]])}</td><td class="obs" data-obs="${i}" tabindex="0" role="button">${opts[S.obs[i]||0]}</td></tr>`).join("")}</tbody></table></div>`;
+}
+function workTable(){const c=L(WORK.cols),ok=L(WORK.ok);const n=Object.values(S.work).filter(v=>v===1).length;
+  return `<div class="panel tw"><table><thead><tr><th>#</th><th>${c[0]}</th><th>${c[1]}</th><th>${c[2]}</th></tr></thead><tbody>${WORK.rows.map((r,i)=>{const v=S.work[i];return `<tr><td class="num">${i+1}</td><td><b>${L(r[0])}</b></td><td>${L(r[1])}</td><td class="obs code" data-work="${i}" tabindex="0" role="button" style="white-space:nowrap;color:${v===1?"var(--ok)":v===2?"var(--safe-line)":"inherit"}">${v===1?"✔ "+ok[0]:v===2?"✘ "+ok[1]:"—"}</td></tr>`}).join("")}</tbody><tfoot><tr><td colspan="3" style="text-align:right"><b>${ok[0]}</b></td><td class="num">${n} / ${WORK.rows.length}</td></tr></tfoot></table></div>`}
+
+/* ---------- render ---------- */
+function exBox(st){return st.ex?`<div class="box ex"><div class="lbl"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="6" r="5" fill="currentColor"/><rect x="5.5" y="11" width="5" height="4" rx="1" fill="currentColor"/></svg>${u("ex")}</div><p>${L(st.ex)}</p></div>`:""}
+function sfBox(st){return st.sf?`<div class="box safe"><div class="lbl"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 1 L15 14 H1 Z" fill="currentColor"/><rect x="7.2" y="5.5" width="1.6" height="4.5" fill="var(--safe-bg)"/><rect x="7.2" y="11" width="1.6" height="1.6" fill="var(--safe-bg)"/></svg>${u("safe")}</div><p>${L(st.sf)}</p></div>`:""}
+const ol=a=>`<ol class="do">${a.map(x=>`<li><span>${x}</span></li>`).join("")}</ol>`;
+function replayBtn(id){return `<button class="btn ghost" data-replay="${id}">↻ ${u("play")}</button>`}
+const ANIM={marking:{marks:1},assembly:{seq:1},fixing:{saddles:1,saddleAnim:1},wires:{saddles:1,wires:1,wireAnim:1,xray:1}};
+function visual(st){
+  switch(st.v){
+   case "photo":return `<div class="panel">${layoutSVG({saddles:1,glow:"b"})}<p class="cap">${u("photoCap")}</p></div>`;
+   case "tools":return `<div class="tools">${TOOLS.map(t=>`<div class="panel tool">${ICON[t.i]}<div><h4>${L(t.n)}</h4><p>${L(t.u)}</p></div></div>`).join("")}</div>`;
+   case "mats":return `<div class="panel"><div class="tw"><table><thead><tr><th>${u("item")}</th><th>${u("qty")}</th><th>${u("where")}</th></tr></thead><tbody>${MATS.map(r=>`<tr><td>${L(r[0])}</td><td class="num">${L(r[1])}</td><td>${L(r[2])}</td></tr>`).join("")}</tbody></table></div></div><div class="panel"><b>${u("legend")}</b>${legend()}</div>`;
+   case "circuit":return circuitPanel(false)+`<div class="panel"><div class="vbar"><b>${u("truth")}</b></div>${truthTable()}</div><div class="panel">${legend()}</div>`;
+   case "layout":return `<div class="panel"><div class="vbar"><b>${u("dims")}</b></div>${layoutSVG({dims:1,saddles:1})}</div><div class="panel"><div class="tw"><table><thead><tr><th>${u("pieces")}</th><th>${u("route")}</th><th>${u("wires")}</th><th>${u("count")}</th></tr></thead><tbody>${RUNS.map(p=>`<tr><td class="code">${p.p}</td><td>${nm(p.a)} → ${nm(p.b)}</td><td>${p.w.map(w=>`<span class="dot" style="background:var(${WC[w]})"></span><span class="code">${w}</span>`).join(" &nbsp;")}${p.note?`<br><small style="color:var(--muted)">${L(p.note)}</small>`:""}</td><td class="num">${p.w.length}</td></tr>`).join("")}</tbody></table></div></div>`;
+   case "marking":return `<div class="panel" id="anim"><div class="vbar"><b>${u("marking")}</b>${replayBtn("marking")}</div><div class="slot">${layoutSVG(ANIM.marking)}</div></div>`;
+   case "cut":return `<div class="panel">${cutSVG()}</div>`;
+   case "assembly":return `<div class="panel" id="anim"><div class="vbar"><b>${u("assembly")}</b>${replayBtn("assembly")}</div><div class="slot">${layoutSVG(ANIM.assembly)}</div></div>`;
+   case "fixing":return `<div class="panel" id="anim"><div class="vbar"><b>${u("saddle")}</b>${replayBtn("fixing")}</div><div class="slot">${layoutSVG(ANIM.fixing)}</div></div><div class="panel">${saddleSVG()}</div>`;
+   case "wires":return `<div class="panel" id="anim"><div class="vbar"><b>${u("drawing")}</b>${replayBtn("wires")}</div><div class="slot">${layoutSVG(ANIM.wires)}</div><p class="cap">${u("xray")}</p></div><div class="panel">${legend()}</div>`;
+   case "term":return termSVG()+`<div class="panel">${legend()}</div>`;
+   case "test":return circuitPanel(true)+`<div class="panel">${obsTable()}</div>`;
+   case "faults":return "";
+  }
+}
+function render(){
+  const st=STEPS[S.step],lang=S.lang;
+  document.documentElement.lang=lang;
+  $("#ttl").textContent=u("ttl");$("#sub").textContent=u("sub");
+  $("#prev").textContent=u("prev");$("#next").textContent=u("next");$("#fsBtn").textContent="⛶ "+u("full");
+  $("#skinLbl").textContent=u("theme");
+  $("#skin").innerHTML=["auto","light","dark","hc"].map(k=>`<option value="${k}" ${k===skin?"selected":""}>${u(k)}</option>`).join("");
+  ["en","hi","ml"].forEach(k=>$("#l-"+k).setAttribute("aria-pressed",k===lang));
+  $("#nav").innerHTML=STEPS.map((s,i)=>`<button data-go="${i}" ${i===S.step?'aria-current="step"':""}><span class="n">${String(i+1).padStart(2,"0")}</span>${L(s.t)}</button>`).join("");
+  $("#pos").textContent=`${u("step")} ${S.step+1} / ${STEPS.length}`;
+  $("#prev").disabled=S.step===0;$("#next").disabled=S.step===STEPS.length-1;
+  let txt=`<p class="eyebrow">${u("step")} ${String(S.step+1).padStart(2,"0")}</p><h2>${L(st.t)}</h2>`;
+  if(st.li) txt+=ol(L(st.li));
+  if(st.v==="test") txt+=`<h3>${u("before")}</h3>${ol(L(st.pre))}<h3>${u("live")}</h3>${ol(L(st.liv))}`;
+  let html;
+  if(st.v==="faults"){
+    html=`<section class="step wide"><div class="txt">${txt}<div class="panel tw" style="margin-top:.6rem"><table><thead><tr><th>${u("fault")}</th><th>${u("cause")}</th><th>${u("fix")}</th></tr></thead><tbody>${FAULTS.map(r=>`<tr>${r.map((c,j)=>`<td>${j===0?`<b>${L(c)}</b>`:L(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+     <h3>${L(WORK.head)}</h3><p style="margin:.2rem 0 .6rem">${L(WORK.note)}</p>${workTable()}<div class="box ex"><div class="lbl">${u("ex")}</div><p>${L(WORK.ex)}</p></div>
+     <h3>${u("final")}</h3><ul class="chk">${L(CHECK).map((c,i)=>`<li><label><input type="checkbox" id="chk${i}" data-chk="${i}" ${S.chk[i]?"checked":""}>${c}</label></li>`).join("")}</ul>${exBox(st)}</div></section>`;
+  } else if(st.wide){
+    html=`<section class="step wide"><div class="txt">${txt}</div><div class="vis">${visual(st)}</div><div class="txt">${sfBox(st)}${exBox(st)}</div></section>`;
+  } else {
+    html=`<section class="step"><div class="txt">${txt}${sfBox(st)}${exBox(st)}</div><div class="vis">${visual(st)}</div></section>`;
+  }
+  $("#stage").innerHTML=html;
+  store.set("lang",lang);store.set("step",S.step);
+  const cur=$("#nav [aria-current]");if(cur)cur.scrollIntoView({block:"nearest",inline:"center"});
+}
+function go(i){S.step=Math.max(0,Math.min(STEPS.length-1,i));S.tester=null;render();window.scrollTo({top:0})}
+function applySkin(){if(skin==="auto")document.documentElement.removeAttribute("data-skin");else document.documentElement.setAttribute("data-skin",skin);store.set("skin",skin)}
+function applyFs(){fs=Math.max(14,Math.min(34,fs));document.documentElement.style.setProperty("--fs",fs+"px");store.set("fs",fs)}
+
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-go],[data-l],[data-sw],[data-tp],[data-replay],[data-obs],[data-work],#prev,#next,#fsDown,#fsUp,#fsReset,#fsBtn");
+  if(!t)return;
+  if(t.dataset.go!==undefined)go(+t.dataset.go);
+  else if(t.dataset.l){S.lang=t.dataset.l;render()}
+  else if(t.dataset.sw==="s1"){S.s1=S.s1===1?2:1;render()}
+  else if(t.dataset.sw==="s2"){S.s2^=1;render()}
+  else if(t.dataset.tp){S.tester=t.dataset.tp;render()}
+  else if(t.dataset.replay){const slot=$("#anim .slot");slot.innerHTML="";requestAnimationFrame(()=>slot.innerHTML=layoutSVG(ANIM[t.dataset.replay]))}
+  else if(t.dataset.obs!==undefined){const i=t.dataset.obs;S.obs[i]=((S.obs[i]||0)+1)%5;render()}
+  else if(t.dataset.work!==undefined){const i=t.dataset.work;S.work[i]=((S.work[i]||0)+1)%3;render()}
+  else if(t.id==="prev")go(S.step-1);
+  else if(t.id==="next")go(S.step+1);
+  else if(t.id==="fsDown"){fs-=2;applyFs()}
+  else if(t.id==="fsUp"){fs+=2;applyFs()}
+  else if(t.id==="fsReset"){fs=20;applyFs()}
+  else if(t.id==="fsBtn"){try{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen().catch(()=>{})}catch(err){}}
+});
+document.addEventListener("change",e=>{
+  if(e.target.id==="skin"){skin=e.target.value;applySkin()}
+  if(e.target.dataset.chk!==undefined)S.chk[e.target.dataset.chk]=e.target.checked;
+});
+document.addEventListener("keydown",e=>{
+  if(e.target.matches("select,input"))return;
+  if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-sw],[data-tp],[data-obs],[data-work]")){e.preventDefault();e.target.dispatchEvent(new MouseEvent("click",{bubbles:true}));return}
+  if(e.key==="ArrowRight"||e.key==="PageDown")go(S.step+1);
+  if(e.key==="ArrowLeft"||e.key==="PageUp")go(S.step-1);
+});
+applySkin();applyFs();render();
+</script>
+
+
+<!-- site home link -->
+<a href="../index.html" title="All lessons" style="position:fixed;left:10px;bottom:10px;z-index:2147483647;background:rgba(11,107,203,.92);color:#fff;font:600 13px/1 system-ui,sans-serif;padding:9px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">&#8962; All lessons</a>
+</body></html>
