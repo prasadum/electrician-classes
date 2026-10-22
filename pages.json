@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-15T10:01:39.160Z",
+  "updated": "2026-10-22T10:07:06.963Z",
   "sections": [
     {
       "name": "Electrical Machines & Control",
@@ -303,6 +303,14 @@
     {
       "name": "Wiring",
       "pages": [
+        {
+          "file": "pages/Hospital Wiring Board.html",
+          "title": "Hospital Wiring Board",
+          "description": "",
+          "section": "Wiring",
+          "sectionOrder": 999,
+          "order": 999
+        },
         {
           "file": "pages/Two-Way Conduit Wiring.html",
           "title": "Two-Way Conduit Wiring",
